@@ -1,7 +1,7 @@
 {
   "$schema": "./node_modules/wrangler/config-schema.json",
   // Statische Website aus site/ als Cloudflare Worker (Static Assets), kein eigener Worker-Code nötig.
-  "name": "kwm-1924",
+  "name": "kwm-redesign",
   "compatibility_date": "2026-09-24",
   "assets": {
     "directory": "./site",
