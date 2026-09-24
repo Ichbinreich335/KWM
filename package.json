@@ -1,0 +1,30 @@
+{
+  "name": "kwm-1924",
+  "version": "1.0.0",
+  "description": "Redesign-Entwurf kwm-1924.de – statische Website in site/",
+  "scripts": {
+    "build": "node tools/build.mjs",
+    "watch": "node tools/build.mjs --watch",
+    "dev": "node tools/build.mjs && python3 -m http.server 4391 -d site",
+    "shots": "node .shots/shoot.mjs http://localhost:4391/ latest",
+    "preview": "node tools/build.mjs && wrangler dev",
+    "deploy": "node tools/build.mjs && wrangler deploy"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ichbinreich335/KWM.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Ichbinreich335/KWM/issues"
+  },
+  "homepage": "https://github.com/Ichbinreich335/KWM#readme",
+  "devDependencies": {
+    "playwright": "^1.63.0",
+    "wrangler": "^4.138.0"
+  },
+  "private": true
+}
