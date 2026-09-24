@@ -1,0 +1,12 @@
+import { chromium } from 'playwright';
+import fs from 'fs';
+const tag = process.argv[2] || 'r2';
+const files = fs.readdirSync('.shots').filter(f => f.startsWith(`${tag}-390-seg`)).sort((a,b)=>parseInt(a.match(/seg(\d+)/)[1])-parseInt(b.match(/seg(\d+)/)[1]));
+const html = `<body style="margin:0;background:#888;display:flex;gap:12px;padding:12px;align-items:flex-start">${files.map(f=>`<img src="${f}" style="width:390px">`).join('')}</body>`;
+fs.writeFileSync('.shots/mob.html', html);
+const b = await chromium.launch(); const p = await b.newPage({ viewport: { width: 12 + files.length * 402, height: 1000 } });
+await p.goto('file://' + process.cwd() + '/.shots/mob.html'); await p.waitForTimeout(400);
+const half = Math.ceil(files.length / 2);
+await p.screenshot({ path: `.shots/${tag}-mob-a.jpg`, quality: 70, fullPage: true, clip: { x: 0, y: 0, width: 12 + half * 402, height: 1724 } });
+await p.screenshot({ path: `.shots/${tag}-mob-b.jpg`, quality: 70, fullPage: true, clip: { x: half * 402, y: 0, width: 12 + (files.length - half) * 402, height: 1724 } });
+await b.close();

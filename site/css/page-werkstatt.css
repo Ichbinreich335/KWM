@@ -1,0 +1,55 @@
+/* Werkstatt: Seiten-spezifische Kompositionen */
+
+/* Panorama-Band unter dem Seitenkopf */
+.panorama { margin-top: clamp(40px, 6vw, 80px); }
+.panorama img { width: 100%; height: auto; aspect-ratio: 2560 / 398; object-fit: cover; min-height: 180px; object-position: 30% 50%; }
+.panorama figcaption { padding-inline: var(--m); }
+
+/* Arbeitsweise: Regal links, Text rechts, Fakten */
+.method { row-gap: 56px; align-items: start; }
+.method__media { grid-column: 1 / 7; margin-left: calc(var(--m) * -1); }
+.method__media img { width: 100%; aspect-ratio: 954 / 905; object-fit: cover; }
+.method__media figcaption { padding-left: var(--m); }
+.method__text { grid-column: 8 / 13; }
+.method__rule { font-family: var(--f-display); font-size: clamp(1.7rem, 2.6vw, 2.5rem); line-height: 1.12; letter-spacing: -0.01em; text-wrap: balance; margin-bottom: 32px; }
+.method__text p { max-width: 46ch; }
+.method__facts { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--g); border-top: 1px solid var(--ink); padding-top: 22px; margin-top: 24px; }
+.method__facts dt { font-size: 12.5px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-2); margin-bottom: 8px; }
+.method__facts dd { font-family: var(--f-text); font-size: 18px; line-height: 1.4; }
+
+/* Chronik auf Tonfläche */
+.chronik { padding-block: var(--section); margin-top: var(--section); }
+.chronik .chapter__head { border-top-color: var(--clay-ink); }
+.chronik .datelist { border-top-color: var(--clay-ink); }
+.chronik .datelist__text { max-width: 70ch; }
+.chronik__strip { grid-column: 1 / -1; max-width: 900px; margin-bottom: clamp(40px, 5vw, 64px); }
+.chronik__strip img { width: 100%; aspect-ratio: 900 / 140; object-fit: cover; }
+.datelist__row--quiet .datelist__year, .datelist__row--quiet .datelist__text { color: var(--ink-2); }
+
+/* Team */
+.team-strip { padding-inline: var(--m); margin-bottom: clamp(40px, 5vw, 64px); max-width: calc(900px + 2 * var(--m)); }
+.team-strip img { width: 100%; aspect-ratio: 900 / 140; object-fit: cover; }
+.person dl { margin: 0; }
+.person__bio { display: grid; grid-template-columns: 5.5em 1fr; column-gap: 12px; row-gap: 4px; font-size: 14.5px; line-height: 1.45; }
+.person__bio dt { color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.person .link-arrow { margin-top: 8px; }
+
+/* Zollverein */
+.page-werkstatt #zollverein { padding-bottom: var(--section); }
+.place { row-gap: 40px; align-items: end; }
+.place__text { grid-column: 1 / 7; }
+.place__text .h2 { margin-bottom: 28px; }
+.place__text p { font-family: var(--f-text); font-size: 18px; line-height: 1.55; max-width: 48ch; }
+.place__info { grid-column: 8 / -1; border-top: 1px solid var(--ink); }
+.place__info > div { padding: 16px 0; border-bottom: 1px solid var(--hair); }
+.place__info dt { font-size: 12.5px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-2); margin-bottom: 4px; }
+.place__info dd { font-size: 16px; line-height: 1.5; }
+.place__info a { text-decoration: none; }
+.place__info a:hover { text-decoration: underline; }
+
+@media (max-width: 900px) {
+  .method__media, .method__text, .place__text, .place__info { grid-column: 1 / -1; }
+  .method__media { margin-inline: calc(var(--m) * -1); }
+  .method__facts { grid-template-columns: 1fr 1fr; row-gap: 24px; }
+  .panorama img { min-height: 150px; object-position: 22% 50%; }
+}
