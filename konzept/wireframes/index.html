@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wireframe v0 – Keramik Lager &amp; Website-Verwaltung</title>
+<style>
+  :root { --g1:#f4f4f4; --g2:#e2e2e2; --g3:#bdbdbd; --g4:#777; --ink:#111; --acc:#2f6f6f; }
+  * { box-sizing: border-box; }
+  body { margin:0; font:15px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; color:var(--ink); background:#fff; }
+  .wrap { max-width:1180px; margin:0 auto; padding:12px 16px 40px; }
+  h1 { font-size:18px; margin:0 0 6px; }
+  h2 { font-size:17px; margin:0 0 8px; }
+  h3 { font-size:13px; text-transform:uppercase; letter-spacing:.05em; color:var(--g4); margin:0 0 8px; }
+  .head { border:2px dashed var(--g3); padding:10px 12px; background:var(--g1); margin-bottom:12px; }
+  .legend { margin:6px 0 0; padding:0; list-style:none; font-size:13px; color:#333; }
+  .legend li { padding:1px 0; }
+  .tabs { display:flex; flex-wrap:wrap; gap:4px; margin-bottom:0; border-bottom:2px solid var(--ink); }
+  .tabs .grp { width:100%; font-size:11px; text-transform:uppercase; color:var(--g4); letter-spacing:.06em; margin-top:4px; }
+  .tab { border:1px solid var(--g3); border-bottom:0; background:var(--g2); padding:7px 10px; font:inherit; font-size:13px; cursor:pointer; }
+  .tab[aria-selected="true"] { background:#fff; border-color:var(--ink); font-weight:700; box-shadow:inset 0 3px 0 var(--acc); }
+  .tab.admin { border-style:dashed; }
+  .screen { display:none; padding-top:12px; }
+  .screen.on { display:block; }
+  .note { background:var(--g1); border-left:4px solid var(--acc); padding:7px 10px; font-size:13px; color:#333; margin:0 0 12px; }
+  .hint { font-size:12px; color:var(--g4); margin:4px 0; }
+  .box { border:1px solid var(--g4); background:var(--g1); padding:10px; margin-bottom:12px; }
+  .row { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-bottom:8px; }
+  .row.sp { justify-content:space-between; }
+  input, select, textarea, .btn, .field { font:inherit; font-size:14px; border:1px solid var(--g4); background:#fff; padding:6px 8px; min-height:34px; color:var(--ink); }
+  textarea { width:100%; min-height:70px; }
+  input[type=checkbox] { min-height:0; width:18px; height:18px; }
+  .btn { background:var(--g2); cursor:default; }
+  .btn.pri { background:var(--ink); color:#fff; border-color:var(--ink); }
+  .btn.acc { background:var(--acc); color:#fff; border-color:var(--acc); }
+  .btn.big { width:100%; padding:14px; font-size:16px; }
+  .seg { display:inline-flex; } .seg span { border:1px solid var(--g4); padding:5px 10px; font-size:13px; background:#fff; }
+  .seg span.on { background:var(--ink); color:#fff; }
+  .layout { display:grid; grid-template-columns:190px minmax(0,1fr); gap:14px; }
+  .side { border:1px solid var(--g4); padding:10px; background:var(--g1); align-self:start; }
+  .side ul { list-style:none; margin:0 0 8px; padding:0; }
+  .side li { padding:5px 6px; font-size:14px; border-bottom:1px dotted var(--g3); }
+  .side li.on { background:var(--g2); font-weight:700; }
+  .tw { overflow-x:auto; border:1px solid var(--g4); }
+  table { border-collapse:collapse; width:100%; min-width:860px; font-size:13px; }
+  th, td { border-bottom:1px solid var(--g2); padding:6px 8px; text-align:left; white-space:nowrap; vertical-align:middle; }
+  th { background:var(--g2); font-size:12px; }
+  tr.sel td { background:#e9f1f1; }
+  .ph { background:var(--g3); color:#fff; display:flex; align-items:center; justify-content:center; font-size:12px; text-align:center; }
+  .th { width:44px; height:44px; }
+  .chip { display:inline-block; border:1px solid var(--g4); border-radius:12px; padding:1px 9px; font-size:12px; background:#fff; }
+  .chip::after { content:" ▾"; color:var(--g4); }
+  .badge { display:inline-block; padding:1px 8px; font-size:12px; border:1px solid var(--g4); background:#fff; }
+  .badge.ok { border-color:var(--acc); color:var(--acc); }
+  .intern { color:var(--g4); font-size:12px; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(170px,1fr)); gap:12px; }
+  .card { border:1px solid var(--g4); padding:8px; background:#fff; }
+  .card .ph { height:130px; margin-bottom:6px; }
+  .card b { display:block; }
+  .form { display:grid; grid-template-columns:1fr 1fr; gap:10px 14px; }
+  .form label { display:block; font-size:12px; color:#333; }
+  .form label > .field, .form label > input, .form label > select { display:block; width:100%; margin-top:2px; }
+  .full { grid-column:1 / -1; }
+  .open { border:1px solid var(--ink); background:#fff; margin-top:-1px; font-size:14px; }
+  .open div { padding:5px 8px; border-bottom:1px solid var(--g2); }
+  .open div.on { background:var(--g2); font-weight:700; }
+  .photos { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:8px; }
+  .photos .ph { height:90px; }
+  .stepper { display:inline-flex; align-items:center; gap:6px; }
+  .stepper .btn { width:38px; text-align:center; font-size:18px; padding:2px; }
+  .stepper .num { min-width:44px; text-align:center; font-size:18px; }
+  .bar { background:var(--ink); color:#fff; padding:8px 12px; display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-bottom:8px; font-size:13px; }
+  .bar .btn { background:#fff; color:var(--ink); }
+  .phone { width:375px; max-width:100%; margin:0 auto; border:3px solid var(--ink); border-radius:22px; padding:10px; background:#fff; }
+  .phone .li { display:flex; gap:10px; align-items:center; border-bottom:1px solid var(--g2); padding:8px 0; }
+  .phone .li .th { width:52px; height:52px; flex:none; }
+  .pick { max-height:300px; overflow:auto; border:1px solid var(--g4); background:#fff; }
+  .pick .li { display:flex; gap:10px; align-items:center; border-bottom:1px solid var(--g2); padding:6px 8px; }
+  .pick .li .th { width:40px; height:40px; flex:none; }
+  .split { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  @media (max-width:760px) {
+    .layout, .split, .form { grid-template-columns:minmax(0,1fr); }
+    .side { order:-1; }
+    .side ul { display:flex; flex-wrap:wrap; gap:4px; }
+    .side li { border:1px solid var(--g3); }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="head">
+    <h1>Wireframe v0 – zur Abstimmung, kein Design</h1>
+    <ul class="legend">
+      <li>1) Lager-App (Mitarbeitende) → nur freigegebene, öffentliche Felder → öffentliche Website (Astro)</li>
+      <li>2) Website-Verwaltung (nur Admin) → Ausstellungen, Aktuelles, Galerien → öffentliche Website</li>
+      <li>3) Interne Preise und Lagerorte erscheinen nie auf der öffentlichen Website.</li>
+    </ul>
+  </div>
+
+  <div class="tabs" role="tablist">
+    <div class="grp">Lager-App</div>
+    <button class="tab" role="tab" data-t="s1" aria-selected="true">1 Tabelle</button>
+    <button class="tab" role="tab" data-t="s2" aria-selected="false">2 Galerie</button>
+    <button class="tab" role="tab" data-t="s3" aria-selected="false">3 Stück bearbeiten</button>
+    <button class="tab" role="tab" data-t="s4" aria-selected="false">4 Handy</button>
+    <button class="tab" role="tab" data-t="s5" aria-selected="false">5 Aktionen (optional)</button>
+    <div class="grp">Website-Verwaltung (nur Admin)</div>
+    <button class="tab admin" role="tab" data-t="s6" aria-selected="false">6 Ausstellung anlegen</button>
+    <button class="tab admin" role="tab" data-t="s7" aria-selected="false">7 Website-Inhalte</button>
+  </div>
+
+  <!-- ===== 1 TABELLE ===== -->
+  <section class="screen on" id="s1">
+    <p class="note"><b>Was man hier sieht/kann:</b> alle Stücke auf einen Blick, suchen, filtern, neues Stück anlegen. Typ lässt sich direkt in der Zeile per Auswahl ändern. Preis ist intern und nie öffentlich. Die „Gespeicherten Ansichten“ gibt der Admin vor.</p>
+    <div class="row sp">
+      <div class="row" style="margin:0"><input placeholder="🔍 Suchen: Name, Inv.-Nr. …" style="min-width:230px"></div>
+      <div class="row" style="margin:0">
+        <span class="seg"><span class="on">Tabelle</span><span>Galerie</span></span>
+        <span class="btn pri">+ Neues Stück</span>
+      </div>
+    </div>
+    <div class="layout">
+      <aside class="side">
+        <h3>Gespeicherte Ansichten</h3>
+        <ul><li class="on">Alle Stücke</li><li>Verfügbar</li><li>Schalen</li><li>In Galerien</li><li>Ohne Foto</li></ul>
+        <div class="hint">Vom Admin vorgegeben.</div>
+      </aside>
+      <div>
+        <div class="row filters">
+          <select><option>Typ: alle</option></select>
+          <select><option>Warenart: alle</option></select>
+          <select><option>Status: alle</option></select>
+          <select><option>Künstler:in: alle</option></select>
+          <select><option>Lagerort: alle</option></select>
+        </div>
+        <div class="tw"><table id="tbl1"></table></div>
+        <div class="hint">Beispieldaten, erfunden.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 2 GALERIE ===== -->
+  <section class="screen" id="s2">
+    <p class="note"><b>Was man hier sieht/kann:</b> dieselben Stücke und Filter, nur als Kacheln – gut zum Durchblättern nach Aussehen. Klick auf eine Kachel öffnet „Stück bearbeiten“.</p>
+    <div class="row sp">
+      <input placeholder="🔍 Suchen …" style="min-width:230px">
+      <div class="row" style="margin:0"><span class="seg"><span>Tabelle</span><span class="on">Galerie</span></span><span class="btn pri">+ Neues Stück</span></div>
+    </div>
+    <div class="row">
+      <select><option>Typ: alle</option></select><select><option>Warenart: alle</option></select>
+      <select><option>Status: alle</option></select><select><option>Künstler:in: alle</option></select><select><option>Lagerort: alle</option></select>
+    </div>
+    <div class="grid" id="grid2"></div>
+  </section>
+
+  <!-- ===== 3 BEARBEITEN ===== -->
+  <section class="screen" id="s3">
+    <p class="note"><b>Was man hier sieht/kann:</b> ein Stück erfassen oder ändern. Felder und Auswahllisten legt nur der Admin fest; Mitarbeitende füllen sie nur aus.</p>
+    <div class="box"><h3>Grunddaten</h3>
+      <div class="form">
+        <label class="full">Name<input value="Schale „Dünen“, matt-weiß"></label>
+        <label>Typ
+          <span class="field" style="display:block;margin-top:2px">Schale ▴</span>
+          <div class="open"><div>Teller</div><div class="on">Schale ✓</div><div>Karaffe</div><div>Vase</div><div>Obertopf</div><div>… (Liste pflegt der Admin)</div></div>
+        </label>
+        <div>
+          <label>Warenart<select><option>Unikat</option><option>Edition</option><option>Lagerware</option></select></label>
+          <label style="margin-top:10px">Künstler:in<select><option>Mara Keller</option></select></label>
+          <label style="margin-top:10px">Jahr<input value="2025"></label>
+        </div>
+      </div>
+    </div>
+    <div class="box"><h3>Material</h3>
+      <div class="form">
+        <label>Ton<input value="Steinzeug, hell"></label>
+        <label>Glasur<input value="Dünenweiß, matt"></label>
+        <label>Brenntemperatur<input value="1260 °C"></label>
+        <label>Maße (B × H × T, cm)<input value="24 × 9 × 24"></label>
+      </div>
+    </div>
+    <div class="box"><h3>Fotos</h3>
+      <div class="photos"><div class="ph">Foto</div><div class="ph">Foto</div><div class="ph">Foto</div></div>
+      <div class="btn acc big">📷 Foto aufnehmen / hochladen</div>
+      <div class="hint">Am Handy öffnet sich direkt die Kamera.</div>
+    </div>
+    <div class="box"><h3>Bestand &amp; Ort</h3>
+      <div class="form">
+        <label>Stückzahl<br><span class="stepper"><span class="btn">−</span><span class="num">3</span><span class="btn">+</span></span></label>
+        <label>Lagerort<select><option>Regal B / Fach 2</option></select></label>
+        <label>Status<select><option>verfügbar</option><option>reserviert</option><option>verkauft</option><option>in Kommission</option></select></label>
+      </div>
+    </div>
+    <div class="box"><h3>Kommission</h3>
+      <div class="form">
+        <label>Galerie<select><option>– keine –</option><option>Galerie Lindenhof</option></select></label>
+        <label>Seit Datum<input value="" placeholder="TT.MM.JJJJ"></label>
+      </div>
+    </div>
+    <div class="box"><h3>Preis <span class="intern">🔒 intern</span></h3>
+      <label>Verkaufspreis (€)<input value="180,00" style="width:160px"></label>
+      <div class="hint">Wird nie auf der öffentlichen Website angezeigt.</div>
+    </div>
+    <div class="row"><span class="btn pri" style="padding:10px 28px">Speichern</span><span class="btn">Abbrechen</span></div>
+    <div class="hint">Versionsverlauf: zuletzt geändert von Anna, heute 10:42</div>
+  </section>
+
+  <!-- ===== 4 HANDY ===== -->
+  <section class="screen" id="s4">
+    <p class="note"><b>Was man hier sieht/kann:</b> am Handy eine einfache Liste und ein großer Kamera-Button für Schnellerfassung: Foto machen, Name eintippen, fertig. Den Rest ergänzt man später am Laptop.</p>
+    <div class="phone">
+      <div class="row sp" style="margin-bottom:6px"><b>Lager</b><span class="intern">Anna ▾</span></div>
+      <input placeholder="🔍 Suchen" style="width:100%;margin-bottom:8px">
+      <div class="btn acc big" style="margin-bottom:6px">📷 Neues Stück fotografieren</div>
+      <div id="phoneList"></div>
+      <div class="hint" style="text-align:center">Nach dem Foto: Name + Typ eintippen → Speichern</div>
+    </div>
+  </section>
+
+  <!-- ===== 5 AKTIONEN ===== -->
+  <section class="screen" id="s5">
+    <p class="note"><b>Was man hier sieht/kann:</b> mehrere Stücke abhaken und gemeinsam bearbeiten, z. B. ein PDF (Angebotsliste, wahlweise mit oder ohne Preis), den Status ändern oder reservieren.</p>
+    <div class="bar"><b>3 ausgewählt</b> →
+      <span class="btn">PDF erstellen (mit Preis)</span><span class="btn">PDF erstellen (ohne Preis)</span>
+      <span class="btn">Status ändern</span><span class="btn">Reservieren</span>
+    </div>
+    <div class="tw"><table id="tbl5"></table></div>
+  </section>
+
+  <!-- ===== 6 AUSSTELLUNG ===== -->
+  <section class="screen" id="s6">
+    <p class="note"><b>Nur Admin.</b> Layout kommt fest aus der Website-Vorlage, hier nur Felder ausfüllen. Die Stückliste zeigt nur Name, Foto und Inv.-Nr. – keine Preise.</p>
+    <div class="box"><h3>Ausstellung</h3>
+      <div class="form">
+        <label class="full">Titel<input value="Erde und Feuer"></label>
+        <label>Von<input value="12.11.2026"></label>
+        <label>Bis<input value="20.12.2026"></label>
+        <label>Galerie<select><option>Galerie Lindenhof</option></select></label>
+        <label>Status<select><option>Entwurf</option><option>geplant</option><option>veröffentlicht</option></select></label>
+        <label class="full">Text<textarea>Kurzer Einleitungstext zur Ausstellung …</textarea></label>
+        <div class="full"><label style="margin-bottom:4px">Titelbild</label>
+          <div class="row"><div class="ph th" style="width:120px;height:80px">Foto</div><span class="btn">Bild wählen</span></div></div>
+      </div>
+    </div>
+    <div class="box"><h3>Stücke aus dem Lager auswählen</h3>
+      <input placeholder="🔍 Stück suchen …" style="width:100%;margin-bottom:8px">
+      <div class="pick" id="pick6"></div>
+      <div class="hint">2 ausgewählt</div>
+    </div>
+    <div class="row"><span class="btn">Vorschau</span><span class="btn pri">Veröffentlichen</span><span class="btn">Als Entwurf speichern</span></div>
+  </section>
+
+  <!-- ===== 7 INHALTE ===== -->
+  <section class="screen" id="s7">
+    <p class="note"><b>Nur Admin.</b> Überblick über alles, was auf der öffentlichen Website steht oder geplant ist, mit Status.</p>
+    <div class="row sp"><div class="seg"><span class="on">Alle</span><span>Aktuelles</span><span>Ausstellungen</span><span>Galerien</span></div><span class="btn pri">+ Neu</span></div>
+    <div class="tw"><table style="min-width:520px">
+      <tr><th>Art</th><th>Titel</th><th>Zeitraum</th><th>Status</th></tr>
+      <tr><td>Ausstellung</td><td>Erde und Feuer</td><td>12.11.–20.12.2026</td><td><span class="badge">Entwurf</span></td></tr>
+      <tr><td>Ausstellung</td><td>Sommer im Atelier</td><td>01.06.–31.07.2026</td><td><span class="badge ok">veröffentlicht</span></td></tr>
+      <tr><td>Aktuelles</td><td>Neue Karaffen-Serie</td><td>seit 15.09.2026</td><td><span class="badge ok">veröffentlicht</span></td></tr>
+      <tr><td>Aktuelles</td><td>Weihnachtsmarkt 2026</td><td>ab 01.12.2026</td><td><span class="badge">geplant</span></td></tr>
+      <tr><td>Galerie</td><td>Galerie Lindenhof</td><td>–</td><td><span class="badge ok">veröffentlicht</span></td></tr>
+      <tr><td>Galerie</td><td>Kunsthaus Nord</td><td>–</td><td><span class="badge">Entwurf</span></td></tr>
+    </table></div>
+  </section>
+
+</div>
+
+<script>
+  // Beispieldaten (erfunden)
+  var D = [
+    ["KW-0142","Schale „Dünen“","Schale","Unikat",1,"verfügbar","Regal B/2","180 €"],
+    ["KW-0143","Teller „Salz“ 26 cm","Teller","Edition",12,"verfügbar","Regal A/1","48 €"],
+    ["KW-0150","Karaffe „Quelle“","Karaffe","Edition",4,"reserviert","Regal C/3","95 €"],
+    ["KW-0161","Vase „Schilf“ hoch","Vase","Unikat",1,"in Kommission","Galerie Lindenhof","240 €"],
+    ["KW-0170","Obertopf „Moos“","Obertopf","Lagerware",18,"verfügbar","Lager 2 / Palette 4","29 €"],
+    ["KW-0172","Schale „Tide“ flach","Schale","Edition",6,"verkauft","–","68 €"],
+    ["KW-0175","Teller „Asche“ 20 cm","Teller","Lagerware",24,"verfügbar","Regal A/2","32 €"],
+    ["KW-0181","Vase „Dämmerung“","Vase","Unikat",1,"in Kommission","Kunsthaus Nord","310 €"]
+  ];
+  function esc(s){ return String(s); }
+  function badge(s){ return '<span class="badge'+(s==="verfügbar"?' ok':'')+'">'+s+'</span>'; }
+  function tbl(sel){
+    var h = '<tr>'+(sel?'<th></th>':'')+'<th>Foto</th><th>Inv.-Nr.</th><th>Name</th><th>Typ</th><th>Warenart</th><th>Bestand</th><th>Status</th><th>Lagerort</th><th>Preis <span class="intern">🔒 intern</span></th></tr>';
+    D.forEach(function(r,i){
+      var on = sel && i<3;
+      h += '<tr'+(on?' class="sel"':'')+'>'+(sel?'<td><input type="checkbox"'+(on?' checked':'')+'></td>':'')
+        +'<td><div class="ph th">Foto</div></td><td>'+r[0]+'</td><td>'+r[1]+'</td><td><span class="chip">'+r[2]+'</span></td><td>'+r[3]+'</td><td>'+r[4]
+        +'</td><td>'+badge(r[5])+'</td><td>'+r[6]+'</td><td>'+r[7]+' <span class="intern">intern</span></td></tr>';
+    });
+    return h;
+  }
+  document.getElementById("tbl1").innerHTML = tbl(false);
+  document.getElementById("tbl5").innerHTML = tbl(true);
+  document.getElementById("grid2").innerHTML = D.map(function(r){
+    return '<div class="card"><div class="ph">Foto</div><b>'+r[1]+'</b><span class="chip">'+r[2]+'</span> '+badge(r[5])+'</div>';
+  }).join("");
+  document.getElementById("phoneList").innerHTML = D.slice(0,5).map(function(r){
+    return '<div class="li"><div class="ph th">Foto</div><div style="flex:1"><b>'+r[1]+'</b><div class="intern">'+r[0]+' · '+r[2]+' · '+r[4]+' Stk.</div></div>'+badge(r[5])+'</div>';
+  }).join("");
+  document.getElementById("pick6").innerHTML = D.slice(0,6).map(function(r,i){
+    return '<div class="li"><input type="checkbox"'+(i==0||i==3?' checked':'')+'><div class="ph th">Foto</div><div><b>'+r[1]+'</b><div class="intern">'+r[0]+'</div></div></div>';
+  }).join("");
+
+  // Tab-Umschaltung
+  var tabs = document.querySelectorAll(".tab");
+  function show(id){
+    tabs.forEach(function(t){ t.setAttribute("aria-selected", t.dataset.t===id ? "true":"false"); });
+    document.querySelectorAll(".screen").forEach(function(s){ s.classList.toggle("on", s.id===id); });
+  }
+  tabs.forEach(function(t){ t.addEventListener("click", function(){ show(t.dataset.t); }); });
+</script>
+</body>
+</html>
