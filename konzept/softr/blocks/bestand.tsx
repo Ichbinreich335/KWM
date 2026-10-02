@@ -4,7 +4,7 @@ import { useCurrentUser } from "@/lib/user";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Sheet, SheetClose, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ArrowRight, Check, Download, ImageOff, Loader2, Minus, Pencil, Plus, Search, Table2, X } from "lucide-react";
 import { toast } from "sonner";
 
@@ -93,7 +93,7 @@ const STATUS_ACTIVE: Record<string, string> = {
   [AUSGESTELLT]: "bg-violet-700 text-white border-violet-700",
 };
 const UNDO_MS = 10000;
-const SHEET_CLASS = "w-full overflow-y-auto [&>button:last-child]:hidden";
+const DIALOG_CLASS = "w-[calc(100vw-2rem)] max-h-[90vh] overflow-y-auto [&>button:last-child]:hidden";
 
 type Opt = { id: string; label: string };
 type Attachment = { id?: string; url: string; filename?: string; thumbnails?: { url: string; size: string }[] };
@@ -364,27 +364,27 @@ function Chip({ active, onClick, children, disabled, activeClass }: { active: bo
 
 function PanelHeader({ title, description }: { title: string; description: string }) {
   return (
-    <SheetHeader className="flex-row items-start justify-between gap-3 space-y-0">
+    <DialogHeader className="flex-row items-start justify-between gap-3 space-y-0 text-left">
       <div className="min-w-0">
-        <SheetTitle className="text-xl break-words hyphens-auto">{title}</SheetTitle>
-        <SheetDescription>{description}</SheetDescription>
+        <DialogTitle className="text-xl break-words hyphens-auto">{title}</DialogTitle>
+        <DialogDescription>{description}</DialogDescription>
       </div>
-      <SheetClose asChild>
+      <DialogClose asChild>
         <Button variant="ghost" className="h-11 w-11 p-0 shrink-0" aria-label="Schließen">
           <X className="w-6 h-6" aria-hidden />
         </Button>
-      </SheetClose>
-    </SheetHeader>
+      </DialogClose>
+    </DialogHeader>
   );
 }
 
 function DoneButton() {
   return (
-    <SheetClose asChild>
+    <DialogClose asChild>
       <Button variant="outline" className="w-full h-12 text-base">
         Fertig
       </Button>
-    </SheetClose>
+    </DialogClose>
   );
 }
 
@@ -578,8 +578,8 @@ function UnikatDetail({
   ];
 
   return (
-    <Sheet open onOpenChange={(o) => !o && onClose()}>
-      <SheetContent side="right" className={`${SHEET_CLASS} sm:max-w-xl`}>
+    <Dialog open onOpenChange={(o) => !o && onClose()}>
+      <DialogContent className={`${DIALOG_CLASS} max-w-3xl`}>
         <PanelHeader title={u.name || "Ohne Namen"} description={[u.inv, u.typ, u.preis !== null ? euro.format(u.preis) : ""].filter(Boolean).join(" · ")} />
         <div className="px-4 pb-8 space-y-6" lang="de">
           {!update.enabled && <Badge text={u.status} />}
@@ -796,8 +796,8 @@ function UnikatDetail({
             </section>
           )}
         </div>
-      </SheetContent>
-    </Sheet>
+      </DialogContent>
+    </Dialog>
   );
 }
 
@@ -841,8 +841,8 @@ function EditionDetail({ e, onClose, onSave, lagerorte, canEdit }: { e: Edition;
   const [busy, setBusy] = useState(false);
   const value = Number(anzahl) || 0;
   return (
-    <Sheet open onOpenChange={(o) => !o && onClose()}>
-      <SheetContent side="right" className={`${SHEET_CLASS} sm:max-w-md`}>
+    <Dialog open onOpenChange={(o) => !o && onClose()}>
+      <DialogContent className={`${DIALOG_CLASS} max-w-lg`}>
         <PanelHeader title={e.modell} description={[e.typ, e.zustand, e.glasur].filter(Boolean).join(" · ")} />
         <div className="px-4 pb-8 space-y-6">
           {e.foto[0] && <img src={thumb(e.foto[0], "large")} alt={e.modell} className="w-full max-h-72 object-contain rounded-xl bg-muted" />}
@@ -881,8 +881,8 @@ function EditionDetail({ e, onClose, onSave, lagerorte, canEdit }: { e: Edition;
           )}
           <DoneButton />
         </div>
-      </SheetContent>
-    </Sheet>
+      </DialogContent>
+    </Dialog>
   );
 }
 

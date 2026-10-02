@@ -3,7 +3,7 @@ import { datasource, q, useRecord, useRecordUpdate } from "@/lib/datasource";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
-import { Sheet, SheetClose, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Loader2, X } from "lucide-react";
 import { toast } from "sonner";
 
@@ -113,19 +113,19 @@ export default function Block() {
   const f = record?.fields;
 
   return (
-    <Sheet open={!!recordId} onOpenChange={(o) => !o && setRecordId(null)}>
-      <SheetContent side="right" className="w-full sm:max-w-md overflow-y-auto [&>button:last-child]:hidden">
-        <SheetHeader className="flex-row items-start justify-between gap-3 space-y-0">
+    <Dialog open={!!recordId} onOpenChange={(o) => !o && setRecordId(null)}>
+      <DialogContent className="w-[calc(100vw-2rem)] max-w-lg max-h-[90vh] overflow-y-auto [&>button:last-child]:hidden">
+        <DialogHeader className="flex-row items-start justify-between gap-3 space-y-0 text-left">
           <div className="min-w-0">
-            <SheetTitle className="text-xl">Preis und Website</SheetTitle>
-            <SheetDescription>{f ? `${str(f.name)} · ${str(f.inv)}` : "Stück wird geladen …"}</SheetDescription>
+            <DialogTitle className="text-xl">Preis und Website</DialogTitle>
+            <DialogDescription>{f ? `${str(f.name)} · ${str(f.inv)}` : "Stück wird geladen …"}</DialogDescription>
           </div>
-          <SheetClose asChild>
+          <DialogClose asChild>
             <Button variant="ghost" className="h-11 w-11 p-0 shrink-0" aria-label="Schließen">
               <X className="w-6 h-6" aria-hidden />
             </Button>
-          </SheetClose>
-        </SheetHeader>
+          </DialogClose>
+        </DialogHeader>
         {status === "error" ? (
           <p role="alert" className="px-4 text-base text-destructive">
             Das Stück konnte nicht geladen werden.
@@ -143,7 +143,7 @@ export default function Block() {
             <Loader2 className="w-5 h-5 animate-spin" aria-hidden /> Wird geladen …
           </div>
         )}
-      </SheetContent>
-    </Sheet>
+      </DialogContent>
+    </Dialog>
   );
 }

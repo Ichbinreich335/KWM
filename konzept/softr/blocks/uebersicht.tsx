@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from "react";
 import { datasource, q, useRecords } from "@/lib/datasource";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { AlertTriangle, ImageOff, Loader2 } from "lucide-react";
+import { AlertTriangle, ChevronRight, ImageOff, Loader2 } from "lucide-react";
 
 const ds = datasource.define({ unikate: "unikate", edition: "edition", partner: "partner" });
 
@@ -33,14 +33,14 @@ const editionSelect = q.select({
 });
 
 const PAGE_SIZE = 100;
-const RECENT_COUNT = 10;
+const RECENT_COUNT = 6;
 const LOW_STOCK = 5;
 const VERFUEGBAR = "verfügbar";
 const RESERVIERT = "reserviert";
 const KOMMISSION = "in Kommission";
 const AUSGESTELLT = "ausgestellt";
 const SOON_DAYS = 14;
-const AUFGABEN_MAX = 4;
+const AUSSER_HAUS_MAX = 8;
 const DAY_MS = 86400000;
 const VERKAUFT = "verkauft";
 const ROHLING = "Rohling";
@@ -132,8 +132,9 @@ function formatDate(iso: string): string {
 
 function fristStatus(iso: string): "ueberfaellig" | "bald" | "ok" | "" {
   if (!iso) return "";
-  const heute = new Date(new Date().toISOString().slice(0, 10)).getTime();
-  const tage = (new Date(iso.slice(0, 10)).getTime() - heute) / DAY_MS;
+  const heute = new Date();
+  heute.setHours(0, 0, 0, 0);
+  const tage = (new Date(`${iso.slice(0, 10)}T00:00:00`).getTime() - heute.getTime()) / DAY_MS;
   return tage < 0 ? "ueberfaellig" : tage <= SOON_DAYS ? "bald" : "ok";
 }
 
@@ -156,14 +157,22 @@ function useAllPages(query: { hasNextPage?: boolean; isFetchingNextPage?: boolea
   }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 }
 
-function Tile({ label, value, sub, href }: { label: string; value: string; sub?: string; href: string }) {
+function Tile({ label, value, sub, warn, href }: { label: string; value: string; sub?: string; warn?: string; href: string }) {
   return (
-    <a href={href} className="block rounded-xl border bg-card p-4 hover:border-primary/50 hover:shadow-sm transition min-h-28">
-      <p className="text-sm text-muted-foreground">{label}</p>
+    <a href={href} className="group block rounded-xl border bg-card p-4 hover:border-primary/50 hover:shadow-sm transition min-h-28">
+      <p className="flex items-center justify-between gap-2 text-sm text-muted-foreground">
+        {label}
+        <ChevronRight className="w-4 h-4 opacity-40 group-hover:opacity-100" aria-hidden />
+      </p>
       <p className="text-3xl font-semibold mt-1 tabular-nums">{value}</p>
       {sub && <p className="text-sm text-muted-foreground mt-1">{sub}</p>}
+      {warn && <p className="text-sm text-red-800 mt-1">{warn}</p>}
     </a>
   );
+}
+
+function tabelleLink(params: Record<string, string>): string {
+  return `/tabelle?${new URLSearchParams(params).toString()}`;
 }
 
 function Section({ title, description, children }: { title: string; description?: string; children: React.ReactNode }) {
@@ -313,6 +322,7 @@ export default function Block() {
       rohlinge: editionen.filter((e) => e.zustand === ROHLING).reduce((n, e) => n + e.anzahl, 0),
       glasiert: editionen.filter((e) => e.zustand !== ROHLING).reduce((n, e) => n + e.anzahl, 0),
       verkauftOhneDatum: by(VERKAUFT).filter((u) => !u.verkauftAm).length,
+      ueberfaellig: kommission.filter((u) => fristStatus(u.rueckgabe) === "ueberfaellig").length,
     };
   }, [unikate, editionen, jahr]);
 
@@ -342,16 +352,6 @@ export default function Block() {
     });
   }, [editionen]);
 
-  const aufgaben = useMemo(() => {
-    const imHaus = (u: Unikat) => u.status !== VERKAUFT && u.status !== KOMMISSION && u.status !== AUSGESTELLT;
-    return [
-      { titel: "Ohne Foto", items: unikate.filter((u) => !u.foto && u.status !== VERKAUFT) },
-      { titel: "Ohne Lagerort", items: unikate.filter((u) => imHaus(u) && !u.lagerort) },
-      { titel: "Verkauft ohne Datum", items: unikate.filter((u) => u.status === VERKAUFT && !u.verkauftAm) },
-      { titel: "Rückgabe überfällig", items: unikate.filter((u) => fristStatus(u.rueckgabe) === "ueberfaellig") },
-    ].filter((a) => a.items.length > 0);
-  }, [unikate]);
-
   const knapp = editionen.filter((e) => e.anzahl < LOW_STOCK).sort((a, b) => a.anzahl - b.anzahl);
 
   const partnerQuery = useRecords({ from: ds.partner, select: partnerSelect, count: PAGE_SIZE });
@@ -366,21 +366,22 @@ export default function Block() {
     [partnerQuery.data],
   );
   const ausserHaus = useMemo(() => {
-    const groups = new Map<string, { key: string; name: string; art: string; ort: string; wert: number; items: Unikat[] }>();
+    const groups = new Map<string, { key: string; name: string; art: string; ort: string; items: Unikat[] }>();
     unikate
       .filter((u) => u.status === KOMMISSION || u.status === AUSGESTELLT)
       .forEach((u) => {
         const key = u.galerieId || "ohne";
         const info = partnerInfo.get(u.galerieId);
-        const g = groups.get(key) ?? { key, name: u.galerie || "Ohne Partner", art: info?.art ?? "", ort: info?.ort ?? "", wert: 0, items: [] };
+        const g = groups.get(key) ?? { key, name: u.galerie || "Ohne Partner", art: info?.art ?? "", ort: info?.ort ?? "", items: [] };
         g.items.push(u);
-        g.wert += u.preis;
         groups.set(key, g);
       });
-    const byFrist = (a: Unikat, b: Unikat) => (a.rueckgabe || "9").localeCompare(b.rueckgabe || "9");
     return [...groups.values()]
-      .map((g) => ({ ...g, items: [...g.items].sort(byFrist) }))
-      .sort((a, b) => byFrist(a.items[0], b.items[0]));
+      .map((g) => ({
+        ...g,
+        naechste: g.items.map((u) => u.rueckgabe.slice(0, 10)).filter(Boolean).sort()[0] ?? "",
+      }))
+      .sort((a, b) => (a.naechste || "9").localeCompare(b.naechste || "9"));
   }, [unikate, partnerInfo]);
 
   const zuletzt = useMemo(() => {
@@ -390,7 +391,6 @@ export default function Block() {
         href: `/bestand?id=${u.id}`,
         titel: u.name || "Ohne Namen",
         zeile: `${u.inv} · ${u.status}${u.lagerort ? ` · ${u.lagerort}` : ""}`,
-        art: "Unikat",
         foto: u.foto,
         zeit: latest(u.erfasstAm, u.geaendertAm),
       })),
@@ -399,7 +399,6 @@ export default function Block() {
         href: "/bestand?tab=edition",
         titel: e.modell,
         zeile: `${e.zustand}${e.glasur ? ` · ${e.glasur}` : ""} · ${zahl.format(e.anzahl)} Stück`,
-        art: "Edition",
         foto: e.foto,
         zeit: latest(e.erfasstAm, e.geaendertAm),
       })),
@@ -432,18 +431,28 @@ export default function Block() {
           </div>
         ) : (
           <>
-            <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3">
-              <Tile label="Unikate verfügbar" value={zahl.format(stats.verfuegbar)} sub={`Wert ${euro.format(stats.verfuegbarWert)}`} href="/bestand?tab=verfuegbar" />
-              <Tile label="Reserviert" value={zahl.format(stats.reserviert)} href="/tabelle?status=reserviert" />
+            <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-3">
+              <Tile label="Verfügbar" value={zahl.format(stats.verfuegbar)} sub={`Wert ${euro.format(stats.verfuegbarWert)}`} href="/bestand?tab=verfuegbar" />
+              <Tile label="Reserviert" value={zahl.format(stats.reserviert)} href={tabelleLink({ status: RESERVIERT })} />
               <Tile
                 label="Außer Haus"
                 value={zahl.format(stats.kommission)}
                 sub={stats.galerien === 1 ? "bei 1 Partner" : `bei ${stats.galerien} Partnern`}
-                href="#ausser-haus"
+                warn={stats.ueberfaellig > 0 ? `${stats.ueberfaellig} Rückgabe überfällig` : undefined}
+                href={tabelleLink({ status: `${KOMMISSION},${AUSGESTELLT}` })}
               />
-              <Tile label={`Verkauft ${jahr}`} value={zahl.format(stats.verkauftJahr)} sub={`Umsatz ${euro.format(stats.umsatzJahr)}`} href="/tabelle?status=verkauft" />
-              <Tile label="Rohlinge gesamt" value={zahl.format(stats.rohlinge)} sub="Editionsware, unglasiert" href="/bestand?tab=edition" />
-              <Tile label="Glasierte Editionsware" value={zahl.format(stats.glasiert)} sub="Stück auf Lager" href="/bestand?tab=edition" />
+              <Tile
+                label={`Verkauft ${jahr}`}
+                value={zahl.format(stats.verkauftJahr)}
+                sub={`Umsatz ${euro.format(stats.umsatzJahr)}`}
+                href={tabelleLink({ status: VERKAUFT, verkauftJahr: String(jahr) })}
+              />
+              <Tile
+                label="Editionsware"
+                value={zahl.format(stats.rohlinge + stats.glasiert)}
+                sub={`davon ${zahl.format(stats.rohlinge)} Rohlinge`}
+                href="/bestand?tab=edition"
+              />
             </div>
             {stats.verkauftOhneDatum > 0 && (
               <p className="text-sm text-muted-foreground">
@@ -451,84 +460,61 @@ export default function Block() {
               </p>
             )}
 
-            <section id="ausser-haus" className="rounded-xl border bg-card p-4 sm:p-5 space-y-4 min-w-0" aria-labelledby="ausser-haus-titel">
-              <div>
-                <h2 id="ausser-haus-titel" className="text-lg font-semibold">
-                  Außer Haus
-                </h2>
-                <p className="text-sm text-muted-foreground">Was gerade in Galerien, Museen oder Ausstellungen ist und wann es zurückkommt.</p>
+            <section className="rounded-xl border bg-card p-4 sm:p-5 space-y-3 min-w-0" aria-labelledby="ausser-haus-titel">
+              <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+                <div>
+                  <h2 id="ausser-haus-titel" className="text-lg font-semibold">
+                    Außer Haus nach Partner
+                  </h2>
+                  <p className="text-sm text-muted-foreground">Galerien, Museen und Ausstellungen, früheste Rückgabe zuerst.</p>
+                </div>
+                {ausserHaus.length > 0 && (
+                  <a href={tabelleLink({ status: `${KOMMISSION},${AUSGESTELLT}` })} className="inline-flex items-center min-h-11 text-base font-medium text-primary hover:underline">
+                    Alle {zahl.format(stats.kommission)} Stück als Tabelle
+                    <ChevronRight className="w-4 h-4" aria-hidden />
+                  </a>
+                )}
               </div>
               {ausserHaus.length === 0 ? (
                 <p className="text-base text-muted-foreground">Zurzeit ist nichts außer Haus.</p>
               ) : (
-                <div className="grid grid-cols-[repeat(auto-fill,minmax(min(100%,18rem),1fr))] gap-3" lang="de">
-                  {ausserHaus.map((g) => (
-                    <div key={g.key} className="rounded-lg border p-3 space-y-2 min-w-0">
-                      <div className="flex items-start justify-between gap-2">
-                        <div className="min-w-0">
-                          <p className="font-semibold hyphens-auto">{g.name}</p>
-                          <p className="text-sm text-muted-foreground">{[g.art, g.ort].filter(Boolean).join(" · ")}</p>
-                        </div>
-                        <span className="text-sm tabular-nums shrink-0 text-right">
-                          {g.items.length} Stück
-                          <br />
-                          {euro.format(g.wert)}
-                        </span>
-                      </div>
-                      <ul className="divide-y">
-                        {g.items.map((u) => {
-                          const frist = fristStatus(u.rueckgabe);
-                          return (
-                            <li key={u.id}>
-                              <a href={`/bestand?id=${u.id}`} className="block min-h-11 py-1.5 rounded-md hover:bg-muted/40">
-                                <span className="block font-medium">{u.name}</span>
-                                <span className="flex flex-wrap items-center gap-2 mt-0.5">
-                                <span className="text-sm text-muted-foreground">{u.status}</span>
-                                {u.rueckgabe && (
-                                  <span
-                                    className={`text-sm shrink-0 rounded-full px-2 py-0.5 ${
-                                      frist === "ueberfaellig" ? "bg-red-100 text-red-800" : frist === "bald" ? "bg-amber-100 text-amber-900" : "text-muted-foreground"
-                                    }`}
-                                  >
-                                    {frist === "ueberfaellig" ? "überfällig seit " : "zurück bis "}
-                                    {formatDate(u.rueckgabe)}
-                                  </span>
-                                )}
-                                </span>
-                              </a>
-                            </li>
-                          );
-                        })}
-                      </ul>
-                    </div>
-                  ))}
-                </div>
+                <ul className="divide-y" lang="de">
+                  {ausserHaus.slice(0, AUSSER_HAUS_MAX).map((g) => {
+                    const frist = fristStatus(g.naechste);
+                    return (
+                      <li key={g.key}>
+                        <a
+                          href={tabelleLink({ status: `${KOMMISSION},${AUSGESTELLT}`, ...(g.key === "ohne" ? {} : { partner: g.name }) })}
+                          className="flex items-center gap-3 min-h-14 py-2 rounded-md hover:bg-muted/40"
+                        >
+                          <span className="flex-1 min-w-0">
+                            <span className="block font-medium hyphens-auto">{g.name}</span>
+                            <span className="block text-sm text-muted-foreground">{[g.art, g.ort].filter(Boolean).join(" · ")}</span>
+                          </span>
+                          <span className="text-right shrink-0">
+                            <span className="block tabular-nums">{zahl.format(g.items.length)} Stück</span>
+                            {g.naechste && (
+                              <span
+                                className={`inline-block text-sm rounded-full px-2 py-0.5 mt-0.5 ${
+                                  frist === "ueberfaellig" ? "bg-red-100 text-red-800" : frist === "bald" ? "bg-amber-100 text-amber-900" : "text-muted-foreground"
+                                }`}
+                              >
+                                {frist === "ueberfaellig" ? "überfällig seit " : "zurück bis "}
+                                {formatDate(g.naechste)}
+                              </span>
+                            )}
+                          </span>
+                          <ChevronRight className="w-5 h-5 text-muted-foreground shrink-0" aria-hidden />
+                        </a>
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+              {ausserHaus.length > AUSSER_HAUS_MAX && (
+                <p className="text-sm text-muted-foreground">und {ausserHaus.length - AUSSER_HAUS_MAX} weitere Partner in der Tabelle</p>
               )}
             </section>
-
-            {aufgaben.length > 0 && (
-              <Section title="Zu erledigen" description="Angaben, die noch fehlen. Antippen öffnet das Stück im Bestand.">
-                <div className="grid grid-cols-[repeat(auto-fill,minmax(min(100%,16rem),1fr))] gap-3" lang="de">
-                  {aufgaben.map((a) => (
-                    <div key={a.titel} className="rounded-lg border p-3 min-w-0">
-                      <p className="font-semibold">
-                        {a.titel} <span className="text-muted-foreground font-normal tabular-nums">· {a.items.length}</span>
-                      </p>
-                      <ul className="mt-1">
-                        {a.items.slice(0, AUFGABEN_MAX).map((u) => (
-                          <li key={u.id}>
-                            <a href={`/bestand?id=${u.id}`} className="block min-h-11 py-2 hyphens-auto hover:underline">
-                              {u.name || "Ohne Namen"} <span className="text-sm text-muted-foreground">{u.inv}</span>
-                            </a>
-                          </li>
-                        ))}
-                      </ul>
-                      {a.items.length > AUFGABEN_MAX && <p className="text-sm text-muted-foreground">und {a.items.length - AUFGABEN_MAX} weitere</p>}
-                    </div>
-                  ))}
-                </div>
-              </Section>
-            )}
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               <Section title="Unikate im Bestand nach Typ" description="Ohne verkaufte Stücke">
@@ -542,6 +528,23 @@ export default function Block() {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              <Section title="Zuletzt erfasst oder geändert" description={`Die ${RECENT_COUNT} neuesten Einträge`}>
+                <ul className="divide-y">
+                  {zuletzt.map((z) => (
+                    <li key={z.key}>
+                      <a href={z.href} className="flex items-center gap-3 py-2.5 min-h-11 hover:bg-muted/40 rounded-md">
+                        <Thumb foto={z.foto} />
+                        <span className="flex-1 min-w-0">
+                          <span className="block font-medium break-words">{z.titel}</span>
+                          <span className="block text-sm text-muted-foreground break-words">{z.zeile}</span>
+                          <span className="block text-xs text-muted-foreground sm:hidden">{formatDateTime(z.zeit)}</span>
+                        </span>
+                        <span className="hidden sm:block text-xs text-muted-foreground text-right shrink-0">{formatDateTime(z.zeit)}</span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </Section>
               <Section title="Nachschub nötig" description={`Editionsware mit weniger als ${LOW_STOCK} Stück`}>
                 {knapp.length === 0 ? (
                   <p className="text-base text-muted-foreground">Alles ausreichend vorrätig.</p>
@@ -567,26 +570,6 @@ export default function Block() {
                 )}
               </Section>
             </div>
-
-            <Section title="Zuletzt erfasst oder geändert" description={`Die ${RECENT_COUNT} neuesten Einträge`}>
-              <ul className="grid grid-cols-1 md:grid-cols-2 gap-x-6">
-                {zuletzt.map((z) => (
-                  <li key={z.key} className="border-t first:border-t-0 md:[&:nth-child(2)]:border-t-0">
-                    <a href={z.href} className="flex items-center gap-3 py-2.5 min-h-11 hover:bg-muted/40 rounded-md">
-                      <Thumb foto={z.foto} />
-                      <span className="flex-1 min-w-0">
-                        <span className="block font-medium break-words">{z.titel}</span>
-                        <span className="block text-sm text-muted-foreground break-words">{z.zeile}</span>
-                      </span>
-                      <span className="text-right shrink-0">
-                        <span className="inline-block text-xs rounded-full border px-2 py-0.5">{z.art}</span>
-                        <span className="block text-xs text-muted-foreground mt-1">{formatDateTime(z.zeit)}</span>
-                      </span>
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </Section>
           </>
         )}
       </div>

@@ -5,8 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Sheet, SheetClose, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ArrowDown, ArrowUp, Bookmark, ChevronLeft, ChevronRight, Columns3, Download, ImageOff, Loader2, Plus, Search, SlidersHorizontal, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
 
@@ -451,11 +450,29 @@ function useAllPages(query: { hasNextPage?: boolean; isFetchingNextPage?: boolea
 function initialConditions(): Condition[] {
   const params = new URLSearchParams(window.location.search);
   const out: Condition[] = [];
-  const status = params.get("status");
-  const art = params.get("art");
-  if (status) out.push({ id: newId(), field: "status", op: "anyOf", value: [status] });
-  if (art) out.push({ id: newId(), field: "art", op: "anyOf", value: [art] });
+  const list = (key: string) => (params.get(key) ?? "").split(",").map((v) => v.trim()).filter(Boolean);
+  const status = list("status");
+  const art = list("art");
+  const partner = list("partner");
+  const verkauftJahr = Number(params.get("verkauftJahr"));
+  if (status.length) out.push({ id: newId(), field: "status", op: "anyOf", value: status });
+  if (art.length) out.push({ id: newId(), field: "art", op: "anyOf", value: art });
+  if (partner.length) out.push({ id: newId(), field: "galerie", op: "anyOf", value: partner });
+  if (Number.isInteger(verkauftJahr) && verkauftJahr > 0) {
+    out.push({ id: newId(), field: "verkauftAm", op: "after", value: `${verkauftJahr - 1}-12-31` });
+    out.push({ id: newId(), field: "verkauftAm", op: "before", value: `${verkauftJahr + 1}-01-01` });
+  }
   return out;
+}
+
+function initialColumns(): ColKey[] {
+  const conditions = initialConditions();
+  const has = (field: ColKey, values?: string[]) =>
+    conditions.some((c) => c.field === field && (!values || (Array.isArray(c.value) && c.value.some((v) => values.includes(v)))));
+  const extra: ColKey[] = [];
+  if (has("galerie") || has("status", ["in Kommission", "ausgestellt"])) extra.push("galerie", "rueckgabe");
+  if (has("verkauftAm")) extra.push("verkauftAm");
+  return [...DEFAULT_VISIBLE, ...extra.filter((k) => !DEFAULT_VISIBLE.includes(k))];
 }
 
 const selectClass = "h-11 rounded-md border border-input bg-background px-2 text-base";
@@ -569,19 +586,19 @@ function Detail({ r, onClose }: { r: Row; onClose: () => void }) {
   if (r.art === UNIKAT) fields.push(["Bildnachweis", r.bildnachweis], ["Erfasst von", r.erfasstVon]);
   const href = r.art === UNIKAT ? `/bestand?id=${r.id}` : "/bestand?tab=edition";
   return (
-    <Sheet open onOpenChange={(o) => !o && onClose()}>
-      <SheetContent side="right" className="w-full sm:max-w-lg overflow-y-auto [&>button:last-child]:hidden">
-        <SheetHeader className="flex-row items-start justify-between gap-3 space-y-0">
+    <Dialog open onOpenChange={(o) => !o && onClose()}>
+      <DialogContent className="w-[calc(100vw-2rem)] max-w-2xl max-h-[90vh] overflow-y-auto [&>button:last-child]:hidden">
+        <DialogHeader className="flex-row items-start justify-between gap-3 space-y-0 text-left">
           <div className="min-w-0">
-            <SheetTitle className="text-xl break-words hyphens-auto">{r.name || "Ohne Namen"}</SheetTitle>
-            <SheetDescription>{[r.art, r.inv, r.typ].filter(Boolean).join(" · ")}</SheetDescription>
+            <DialogTitle className="text-xl break-words hyphens-auto">{r.name || "Ohne Namen"}</DialogTitle>
+            <DialogDescription>{[r.art, r.inv, r.typ].filter(Boolean).join(" · ")}</DialogDescription>
           </div>
-          <SheetClose asChild>
+          <DialogClose asChild>
             <Button variant="ghost" className="h-11 w-11 p-0 shrink-0" aria-label="Schließen">
               <X className="w-6 h-6" aria-hidden />
             </Button>
-          </SheetClose>
-        </SheetHeader>
+          </DialogClose>
+        </DialogHeader>
         <div className="px-4 pb-8 space-y-5">
           {r.foto ? (
             <img src={thumb(r.foto, "large")} alt={r.name} className="w-full max-h-80 object-contain rounded-xl bg-muted" />
@@ -601,14 +618,14 @@ function Detail({ r, onClose }: { r: Row; onClose: () => void }) {
           <Button asChild className="w-full h-12 text-base">
             <a href={href}>Im Bestand bearbeiten</a>
           </Button>
-          <SheetClose asChild>
+          <DialogClose asChild>
             <Button variant="outline" className="w-full h-12 text-base">
               Fertig
             </Button>
-          </SheetClose>
+          </DialogClose>
         </div>
-      </SheetContent>
-    </Sheet>
+      </DialogContent>
+    </Dialog>
   );
 }
 
@@ -657,7 +674,7 @@ export default function Block() {
   const [conditions, setConditions] = useState<Condition[]>(initialConditions);
   const [conj, setConj] = useState<Conj>("und");
   const [filterOpen, setFilterOpen] = useState(() => initialConditions().length > 0);
-  const [columns, setColumns] = useState<ColKey[]>(DEFAULT_VISIBLE);
+  const [columns, setColumns] = useState<ColKey[]>(initialColumns);
   const [sort, setSort] = useState<Sort>(null);
   const [viewId, setViewId] = useState("");
   const [saveOpen, setSaveOpen] = useState(false);
