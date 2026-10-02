@@ -6,13 +6,14 @@
 <title>Keramische Werkstatt Margaretenhöhe · seit 1924</title>
 <meta name="description" content="Gedrehte Gefäße von Young-Jae Lee und ein Manufakturprogramm nach den Formprinzipien des Bauhauses. Keramische Werkstatt Margaretenhöhe, Zeche Zollverein, Essen.">
 <link rel="icon" href="../img/kwm/logo.svg" type="image/svg+xml">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500&family=Libre+Caslon+Display&family=Libre+Caslon+Text:ital@0;1&display=swap" rel="stylesheet">
+<link rel="preload" href="fonts/libre-caslon-display-normal-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/jost-normal-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="fonts/fonts.css">
 <link rel="stylesheet" href="styles.css">
 <link rel="stylesheet" href="css/pages.css">
 
-<script>document.documentElement.classList.add('js')</script>
+<link rel="stylesheet" href="css/signaturen.css">
+<script>document.documentElement.classList.add('js');try{const g=new URLSearchParams(location.search).get('grund')||localStorage.getItem('kwm-grund');if(g)document.documentElement.dataset.grund=g}catch(e){}</script>
 </head>
 <body class="page-home">
 
@@ -55,6 +56,7 @@
       <img src="../img/kwm/kummerschalen.webp" width="937" height="1040" alt="Viele flache Schalen von Young-Jae Lee auf einem Steinboden, seladonblau, schwarz gesprenkelt und rotbraun glasiert" fetchpriority="high" data-parallax>
       <figcaption class="hero__credit">Kummerschalen · Foto: Christopher Clem Franken</figcaption>
     </figure>
+    <div class="hero__profile" data-sig="profil"></div>
     <div class="hero__text">
       <h1 class="hero__title" id="hero-title" data-reveal="words">Immer sind es Schalen, und doch ist keine wie die andere.</h1>
       <p class="hero__source" data-reveal="fade">Thomas Wagner über die Schalen von Young-Jae Lee</p>
@@ -66,57 +68,21 @@
     </div>
   </section>
 
-  <!-- Aktuell -->
-  <section class="now" id="aktuelles" aria-labelledby="now-title">
-    <div class="now__head grid">
-      <h2 class="h2" id="now-title" data-reveal="words">Aktuell</h2>
-      <a class="link-arrow now__all" href="aktuelles.html">Alle Termine</a>
-    </div>
-    <div class="now__body grid">
-      <article class="now__feature">
-        <a class="now__feature-link" href="aktuelles.html#kosmos">
-          <figure class="now__feature-media" data-reveal="img">
-            <img src="../img/kwm/schalen-trio.webp" width="2000" height="931" loading="lazy" alt="Vier Schalen von Young-Jae Lee: rotbraun, weiß mit blauem Tropfen, rosé und hellbraun">
-          </figure>
-          <p class="now__date">23. April – 25. Oktober 2026</p>
-          <h3 class="now__title">„99 Schalen – ein Kosmos“</h3>
-          <p class="now__place">Museum für Ostasiatische Kunst, Universitätsstraße 100, Köln</p>
-        </a>
-      </article>
-      <ol class="now__list">
-        <li>
-          <a class="now__item" href="aktuelles.html#jahn">
-            <img src="../img/kwm/teeschale.webp" width="1200" height="1200" loading="lazy" alt="">
-            <span class="now__date">14. Juli – 12. September 2026</span>
-            <span class="now__title now__title--s">„Young-Jae Lee“</span>
-            <span class="now__place">Galerie Jahn und Jahn, München</span>
-          </a>
-        </li>
-        <li>
-          <a class="now__item" href="aktuelles.html#kummerschalen">
-            <img src="../img/kwm/seladon-schalen.webp" width="900" height="600" loading="lazy" alt="">
-            <span class="now__date">16. August – 31. Oktober 2026</span>
-            <span class="now__title now__title--s">„Kummerschalen“</span>
-            <span class="now__place">Willibrordi-Dom, Wesel</span>
-          </a>
-        </li>
-        <li>
-          <a class="now__item" href="aktuelles.html#popup">
-            <img src="../img/kwm/regal.webp" width="954" height="905" loading="lazy" alt="">
-            <span class="now__date">6. – 8. November 2026</span>
-            <span class="now__title now__title--s">Mode, Taschen, Keramik &amp; Licht im Dialog</span>
-            <span class="now__place">Pop-up in der Werkstatt, Zeche Zollverein</span>
-          </a>
-        </li>
-      </ol>
-    </div>
-  </section>
-
   <!-- Lede -->
   <section class="lede grid" aria-label="Über die Werkstatt">
     <p class="lede__text" data-reveal="words">Aus der ständigen Wiederholung einer handwerklichen Technik, dem Drehen auf der Töpferscheibe, erwächst die vollkommene Schönheit einer Form.</p>
     <p class="lede__col lede__col--a" data-reveal="fade">1924 auf Initiative von Margarete Krupp für die Siedlung Margaretenhöhe gegründet. Seit 1927 den Formprinzipien des Bauhauses verpflichtet – über Otto Lindigs Schüler Johannes Leßmann.</p>
     <p class="lede__col lede__col--b" data-reveal="fade">Seit 1986 geprägt von Young-Jae Lee: Meisterstücke aus ihrer eigenen Hand und ein Geschirr, das seitdem nahezu unverändert in der Werkstatt gedreht wird.</p>
+    <nav class="lines" aria-label="Zwei Linien der Werkstatt">
+      <a class="lines__item" href="meisterstuecke.html" data-reveal="fade">
+        <span class="lines__name">Meisterstücke</span>
+        <span class="lines__what">Unikate aus der Hand von Young-Jae Lee: Schalen, Kummen, Vasen</span>
+      </a>
+      <a class="lines__item" href="manufaktur.html" data-reveal="fade">
+        <span class="lines__name">Manufaktur</span>
+        <span class="lines__what">Geschirr nach Bauhaus-Formprinzipien, in der Werkstatt gedreht und glasiert</span>
+      </a>
+    </nav>
   </section>
 
   <!-- Young-Jae Lee -->
@@ -214,16 +180,7 @@
       <h2 class="h2" id="hand-title" data-reveal="words">Gegen den Uhrzeigersinn.</h2>
       <p data-reveal="fade">Young-Jae Lee dreht ihre Gefäße nach der östlichen Weise – gegen den Uhrzeigersinn. Abgedreht wird nach der westlichen, im Uhrzeigersinn: Der lederharte Ton wird mit dem Dreheisen spanweise abgetragen.</p>
       <p data-reveal="fade">Porzellan liefert einen weißen Scherben, Steinzeug einen beigen, erdigen. Zum Teil mischt sie beide Massen, um die beste Drehfähigkeit und Tondichte zu erreichen.</p>
-      <div class="wheels" aria-hidden="true">
-        <figure class="wheel">
-          <svg viewBox="0 0 120 120" class="wheel__disc" data-wheel="-1"><circle cx="60" cy="60" r="56"/><circle cx="60" cy="60" r="44"/><circle cx="60" cy="60" r="31"/><circle cx="60" cy="60" r="17"/><line x1="60" y1="4" x2="60" y2="30"/><circle class="wheel__dot" cx="60" cy="10" r="3"/></svg>
-          <figcaption>Drehen<br>östlich, gegen den Uhrzeigersinn</figcaption>
-        </figure>
-        <figure class="wheel">
-          <svg viewBox="0 0 120 120" class="wheel__disc" data-wheel="1"><circle cx="60" cy="60" r="56"/><circle cx="60" cy="60" r="44"/><circle cx="60" cy="60" r="31"/><circle cx="60" cy="60" r="17"/><line x1="60" y1="4" x2="60" y2="30"/><circle class="wheel__dot" cx="60" cy="10" r="3"/></svg>
-          <figcaption>Abdrehen<br>westlich, im Uhrzeigersinn</figcaption>
-        </figure>
-      </div>
+      <div class="throw" data-sig="drehen"></div>
     </div>
   </section>
 
@@ -256,6 +213,42 @@
           <a class="link-arrow" href="aktuelles.html#kosmos">Zur Ausstellung</a>
         </div>
       </div>
+    </div>
+  </section>
+
+  <!-- Aktuell -->
+  <section class="now now--after" id="aktuelles" aria-labelledby="now-title">
+    <div class="now__head grid">
+      <h2 class="h2" id="now-title" data-reveal="words">Außerdem zu sehen</h2>
+      <a class="link-arrow now__all" href="aktuelles.html">Alle Termine</a>
+    </div>
+    <div class="now__body grid">
+      <ol class="now__list">
+        <li>
+          <a class="now__item" href="aktuelles.html#jahn">
+            <img src="../img/kwm/teeschale.webp" width="1200" height="1200" loading="lazy" alt="">
+            <span class="now__date">14. Juli – 12. September 2026</span>
+            <span class="now__title now__title--s">„Young-Jae Lee“</span>
+            <span class="now__place">Galerie Jahn und Jahn, München</span>
+          </a>
+        </li>
+        <li>
+          <a class="now__item" href="aktuelles.html#kummerschalen">
+            <img src="../img/kwm/seladon-schalen.webp" width="900" height="600" loading="lazy" alt="">
+            <span class="now__date">16. August – 31. Oktober 2026</span>
+            <span class="now__title now__title--s">„Kummerschalen“</span>
+            <span class="now__place">Willibrordi-Dom, Wesel</span>
+          </a>
+        </li>
+        <li>
+          <a class="now__item" href="aktuelles.html#popup">
+            <img src="../img/kwm/regal.webp" width="954" height="905" loading="lazy" alt="">
+            <span class="now__date">6. – 8. November 2026</span>
+            <span class="now__title now__title--s">Mode, Taschen, Keramik &amp; Licht im Dialog</span>
+            <span class="now__place">Pop-up in der Werkstatt, Zeche Zollverein</span>
+          </a>
+        </li>
+      </ol>
     </div>
   </section>
 
@@ -362,6 +355,7 @@
       </p>
     </div>
   </section>
+
   <figure class="panorama" data-reveal="img">
     <img src="../img/kwm/werkstatt-panorama.webp" width="2560" height="398" loading="lazy" alt="Young-Jae Lee am Arbeitstisch vor Regalen voller ungebrannter Gefäße">
   </figure>
@@ -384,7 +378,7 @@
     </div>
     <div class="footer__col">
       <p class="footer__label">Geöffnet</p>
-      <p>Mo – Fr 9 – 17 Uhr<br>Sa 11 – 15 Uhr<br>sonst nach Vereinbarung</p>
+      <p>Mo–Fr 9–17 Uhr<br>Sa 11–15 Uhr<br>sonst nach Vereinbarung</p>
     </div>
     <div class="footer__col">
       <p class="footer__label">Kontakt</p>
@@ -405,7 +399,9 @@
   </filter>
 </svg>
 
-<script src="main.js" defer></script>
+<script type="module" src="main.js"></script>
+<script type="module" src="js/signaturen.js"></script>
+<script type="module" src="js/grund.js"></script>
 </body>
 </html>
 

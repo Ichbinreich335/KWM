@@ -1,3 +1,5 @@
+import { random, pickGlaze as pickFrom } from './js/keramik.js';
+
 (() => {
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const $ = (s, c = document) => c.querySelector(s);
@@ -53,8 +55,7 @@
     });
   });
 
-  /* ---------- Scrollgebundene Bewegung: Drehscheiben, Einstiegsbild, Kopfzeile ---------- */
-  const wheels = $$('[data-wheel]');
+  /* ---------- Scrollgebundene Bewegung: Einstiegsbild, Kopfzeile ---------- */
   const heroImg = $('[data-parallax]');
   const masthead = $('[data-masthead]');
   let lastY = window.scrollY;
@@ -62,7 +63,6 @@
   const onScroll = () => {
     const y = window.scrollY;
     if (!reduced) {
-      wheels.forEach((w) => w.style.setProperty('--rot', `${y * 0.22 * Number(w.dataset.wheel)}deg`));
       if (heroImg && y < window.innerHeight * 1.2) heroImg.style.translate = `0 ${y * 0.08}px`;
     }
     if (masthead) {
@@ -139,34 +139,8 @@
     const N = 99;
     const GOLDEN = Math.PI * (3 - Math.sqrt(5));
 
-    // Glasuren: Rand, Mitte (wo die Glasur sich sammelt), Gewicht, Sprenkel
-    const GLAZES = [
-      { name: 'Seladon', rim: '#C3D2C4', pool: '#7FA493', w: 16 },
-      { name: 'Hellblau', rim: '#CBD9DD', pool: '#8DAFB9', w: 11 },
-      { name: 'Weiß', rim: '#EEEAE1', pool: '#D3CCBE', w: 13 },
-      { name: 'Craquelé', rim: '#DDD8CA', pool: '#BAB19D', w: 6 },
-      { name: 'Dunkelgrün', rim: '#56725F', pool: '#2D4739', w: 8 },
-      { name: 'Rostbraun', rim: '#A2623F', pool: '#6C3522', w: 9 },
-      { name: 'Eisenbraun', rim: '#77533C', pool: '#3E2A1D', w: 8 },
-      { name: 'Schwarz gesprenkelt', rim: '#4A4744', pool: '#23211F', w: 5, speckle: '#D9D2C4' },
-      { name: 'Seladon gesprenkelt', rim: '#BCCDC0', pool: '#86A797', w: 6, speckle: '#3A3530' },
-      { name: 'Rosé', rim: '#D9BDB5', pool: '#B98E86', w: 4 },
-      { name: 'Kupferrot', rim: '#A8413A', pool: '#6E1F1C', w: 3 },
-    ];
-    const totalW = GLAZES.reduce((a, g) => a + g.w, 0);
-
-    let seed = 1924;
-    const rand = () => {
-      seed |= 0; seed = (seed + 0x6D2B79F5) | 0;
-      let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
-      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-    };
-    const pickGlaze = () => {
-      let r = rand() * totalW;
-      for (const g of GLAZES) { if ((r -= g.w) <= 0) return g; }
-      return GLAZES[0];
-    };
+    const rand = random(1924);
+    const pickGlaze = () => pickFrom(rand);
 
     // Feste Eigenschaften jeder Schale, unabhängig von der Bühnengröße
     const bowls = Array.from({ length: N }, (_, i) => ({

@@ -6,13 +6,14 @@
 <title>Young-Jae Lee · Keramische Werkstatt Margaretenhöhe</title>
 <meta name="description" content="Young-Jae Lee, geboren 1951 in Seoul, leitet seit 1987 die Keramische Werkstatt Margaretenhöhe in Essen. Biografie, Texte, Ausstellungen, Sammlungen.">
 <link rel="icon" href="../img/kwm/logo.svg" type="image/svg+xml">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500&family=Libre+Caslon+Display&family=Libre+Caslon+Text:ital@0;1&display=swap" rel="stylesheet">
+<link rel="preload" href="fonts/libre-caslon-display-normal-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/jost-normal-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="fonts/fonts.css">
 <link rel="stylesheet" href="styles.css">
 <link rel="stylesheet" href="css/pages.css">
 <link rel="stylesheet" href="css/page-young-jae-lee.css">
-<script>document.documentElement.classList.add('js')</script>
+<link rel="stylesheet" href="css/signaturen.css">
+<script>document.documentElement.classList.add('js');try{const g=new URLSearchParams(location.search).get('grund')||localStorage.getItem('kwm-grund');if(g)document.documentElement.dataset.grund=g}catch(e){}</script>
 </head>
 <body class="page-yjl">
 
@@ -302,7 +303,7 @@
     </div>
     <div class="footer__col">
       <p class="footer__label">Geöffnet</p>
-      <p>Mo – Fr 9 – 17 Uhr<br>Sa 11 – 15 Uhr<br>sonst nach Vereinbarung</p>
+      <p>Mo–Fr 9–17 Uhr<br>Sa 11–15 Uhr<br>sonst nach Vereinbarung</p>
     </div>
     <div class="footer__col">
       <p class="footer__label">Kontakt</p>
@@ -323,7 +324,9 @@
   </filter>
 </svg>
 
-<script src="main.js" defer></script>
+<script type="module" src="main.js"></script>
+<script type="module" src="js/signaturen.js"></script>
+<script type="module" src="js/grund.js"></script>
 </body>
 </html>
 
