@@ -1156,7 +1156,10 @@ export default function Block() {
   });
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState<Sort>(DEFAULT_SORT);
-  const [filters, setFilters] = useState<Filters>(NO_FILTERS);
+  const [filters, setFilters] = useState<Filters>(() => {
+    const status = initialParam("status");
+    return STATUS_LIST.includes(status) ? { ...NO_FILTERS, status: [status] } : NO_FILTERS;
+  });
   const [filterOpen, setFilterOpen] = useState(false);
   const [saveOpen, setSaveOpen] = useState(false);
   const [viewId, setViewId] = useState("");
@@ -1184,6 +1187,8 @@ export default function Block() {
 
   const lagerorte = toOptions(useLinkedRecords({ from: ds.unikate, select: unikatSelect, field: "lagerort", sortOrder: "ASC" }).data as LinkedPages);
   const galerien = toOptions(useLinkedRecords({ from: ds.unikate, select: unikatSelect, field: "galerie", sortOrder: "ASC" }).data as LinkedPages);
+  const kuenstler = toOptions(useLinkedRecords({ from: ds.unikate, select: unikatSelect, field: "kuenstler", sortOrder: "ASC" }).data as LinkedPages);
+  const glasuren = toOptions(useLinkedRecords({ from: ds.unikate, select: unikatSelect, field: "glasur", sortOrder: "ASC" }).data as LinkedPages);
 
   const unikate = useMemo(
     () => (unikateQuery.data?.pages.flatMap((p) => p.items) ?? []).map((i) => toUnikat(i as RawItem)),
@@ -1201,14 +1206,22 @@ export default function Block() {
   const filterOptionValues = useMemo(() => {
     const out = {} as Record<ListKey, string[]>;
     for (const { key } of LIST_FILTERS) {
-      const set = new Set<string>(key === "typ" ? TYP_LIST : key === "status" ? STATUS_LIST : []);
+      const master: Record<ListKey, string[]> = {
+        typ: TYP_LIST,
+        status: STATUS_LIST,
+        kuenstler: kuenstler.map((o) => o.label),
+        glasur: glasuren.map((o) => o.label),
+        lagerort: lagerorte.map((o) => o.label),
+        galerie: galerien.map((o) => o.label),
+      };
+      const set = new Set<string>(master[key]);
       unikate.forEach((u) => filterValues(u, key).forEach((v) => v && set.add(v)));
       out[key] = [...set].sort((a, b) =>
         key === "typ" || key === "status" ? 0 : a.localeCompare(b, "de"),
       );
     }
     return out;
-  }, [unikate]);
+  }, [unikate, kuenstler, glasuren, lagerorte, galerien]);
 
   const activeTab = TABS.find((t) => t.key === tab) ?? TABS[0];
   const effectiveFilters: Filters = tab === "tabelle" ? filters : { ...NO_FILTERS, ...activeTab.preset };
