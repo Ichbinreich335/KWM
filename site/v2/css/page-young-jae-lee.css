@@ -18,7 +18,7 @@
 .stance__media img { width: 100%; aspect-ratio: 1; object-fit: cover; mix-blend-mode: multiply; }
 .stance__text { grid-column: 7 / 12; padding-top: clamp(24px, 10vh, 120px); }
 .stance__text .h2 { margin-bottom: 32px; }
-.stance__text p { font-family: var(--f-text); font-size: 18px; line-height: 1.6; max-width: 48ch; }
+.stance__text p { font-family: var(--f-text); font-size: 18px; line-height: 1.6; max-width: 48ch; text-wrap: pretty; }
 .stance__text .prose__source { display: block; margin-top: -6px; margin-bottom: 28px; }
 
 /* Erinnerung: Tonfläche mit Catoir-Passage und Schalen am Boden */
@@ -37,8 +37,8 @@
 .texts__author { grid-column: 1 / 4; font-size: 14px; color: var(--ink-2); margin: 0; }
 .texts__title { grid-column: 4 / 9; font-family: var(--f-display); font-size: clamp(1.5rem, 2.3vw, 2.3rem); line-height: 1.08; margin: 0; text-wrap: balance; }
 .texts__title small { display: block; font-family: var(--f-text); font-size: 15px; line-height: 1.4; color: var(--ink-2); margin-top: 8px; }
-.texts__excerpt { grid-column: 9 / 13; font-family: var(--f-text); font-size: 16px; line-height: 1.5; margin: 0; }
-.texts__links { grid-column: 9 / 13; display: flex; gap: 12px 24px; flex-wrap: wrap; margin: 6px 0 0; }
+.texts__excerpt { grid-column: 9 / 13; font-family: var(--f-text); font-size: 16px; line-height: 1.5; margin: 0; text-wrap: pretty; }
+.texts__links { grid-column: 9 / 13; display: flex; gap: 18px 24px; flex-wrap: wrap; margin: 6px 0 0; }
 
 /* Wandbild zwischen den Kapiteln */
 .plate { margin-top: var(--section); }
@@ -52,8 +52,8 @@
 /* Publikationen */
 .pubs { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--g); border-top: 1px solid var(--ink); }
 .pubs li { padding: 16px 0; border-bottom: 1px solid var(--hair); padding-right: 24px; }
-.pubs__title { display: block; font-family: var(--f-text); font-size: 17px; line-height: 1.35; }
-.pubs__meta { display: block; font-size: 13.5px; color: var(--ink-2); margin-top: 4px; }
+.pubs__title { display: block; font-family: var(--f-text); font-size: 17px; line-height: 1.35; text-wrap: balance; }
+.pubs__meta { display: block; font-size: 13.5px; color: var(--ink-2); margin-top: 4px; text-wrap: pretty; }
 
 .chapter__more { grid-column: 1 / -1; margin-top: 28px; }
 .page-yjl #publikationen { padding-bottom: var(--section); }

@@ -13,7 +13,7 @@
 <link rel="stylesheet" href="css/pages.css">
 <link rel="stylesheet" href="css/page-young-jae-lee.css">
 <link rel="stylesheet" href="css/signaturen.css">
-<script>document.documentElement.classList.add('js');try{const g=new URLSearchParams(location.search).get('grund')||localStorage.getItem('kwm-grund');if(g)document.documentElement.dataset.grund=g}catch(e){}</script>
+<script>document.documentElement.classList.add('js');try{if(!sessionStorage.getItem('kwm-logo')){sessionStorage.setItem('kwm-logo','1');document.documentElement.classList.add('logo-draw')}}catch(e){document.documentElement.classList.add('logo-draw')}try{const g=new URLSearchParams(location.search).get('grund')||localStorage.getItem('kwm-grund');if(g)document.documentElement.dataset.grund=g}catch(e){}</script>
 </head>
 <body class="page-yjl">
 
@@ -31,20 +31,26 @@
     </svg>
     <span class="brand__name">Keramische Werkstatt<br>Margaretenhöhe</span>
   </a>
-  <nav class="nav" aria-label="Hauptnavigation">
-    <ul class="nav__list" id="nav-list">
-      <li><a href="meisterstuecke.html" data-nav="meisterstuecke">Meisterstücke</a></li>
-      <li><a href="manufaktur.html" data-nav="manufaktur">Manufaktur</a></li>
-      <li><a href="young-jae-lee.html" data-nav="young-jae-lee" aria-current="page">Young-Jae Lee</a></li>
-      <li><a href="werkstatt.html" data-nav="werkstatt">Werkstatt</a></li>
-      <li><a href="aktuelles.html" data-nav="aktuelles">Aktuelles</a></li>
-      <li><a href="besuch.html" data-nav="besuch">Besuch</a></li>
-    </ul>
-  </nav>
-  <div class="lang" aria-label="Sprache"><a href="#" aria-current="true">DE</a><span aria-hidden="true">/</span><a href="https://kwm-1924.de/en/news/current/" lang="en">EN</a></div>
-  <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="nav-list" data-menu-toggle>
+  <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="nav" data-menu-toggle>
     <span class="menu-toggle__label">Menü</span><span class="menu-toggle__bars" aria-hidden="true"></span>
   </button>
+  <nav class="nav" id="nav" aria-label="Hauptnavigation">
+    <ul class="nav__list" id="nav-list">
+      <li><a href="meisterstuecke.html" data-nav="meisterstuecke"><span class="nav__name">Meisterstücke</span><span class="nav__desc">Unikate aus der Hand von Young-Jae Lee</span></a></li>
+      <li><a href="manufaktur.html" data-nav="manufaktur"><span class="nav__name">Manufaktur</span><span class="nav__desc">Geschirr, in der Werkstatt gedreht und glasiert</span></a></li>
+      <li><a href="young-jae-lee.html" data-nav="young-jae-lee" aria-current="page"><span class="nav__name">Young-Jae Lee</span><span class="nav__desc">Keramikerin, leitet die Werkstatt seit 1987</span></a></li>
+      <li><a href="werkstatt.html" data-nav="werkstatt"><span class="nav__name">Werkstatt</span><span class="nav__desc">Seit 1924, Bauhaus-Linie, Team</span></a></li>
+      <li><a href="aktuelles.html" data-nav="aktuelles"><span class="nav__name">Aktuelles</span><span class="nav__desc">Ausstellungen und Termine</span></a></li>
+      <li><a href="besuch.html" data-nav="besuch"><span class="nav__name">Besuch</span><span class="nav__desc">Öffnungszeiten, Anfahrt, Kontakt</span></a></li>
+    </ul>
+    <div class="nav__contact">
+      <a class="nav__phone" href="tel:+49201305080">+49 201 30 50 80</a>
+      <p class="nav__hours">Mo–Fr 9–17 Uhr, Sa 11–15 Uhr</p>
+      <a class="nav__mail" href="mailto:kontakt@kwm1924.de">Anfrage per E-Mail <span class="nav__mail-addr">kontakt@kwm1924.de</span></a>
+      <div class="lang lang--menu" role="group" aria-label="Sprache"><a href="#" aria-current="true">DE</a><span aria-hidden="true">/</span><a href="https://kwm-1924.de/en/news/current/" lang="en">EN</a></div>
+    </div>
+  </nav>
+  <div class="lang" role="group" aria-label="Sprache"><a href="#" aria-current="true">DE</a><span aria-hidden="true">/</span><a href="https://kwm-1924.de/en/news/current/" lang="en">EN</a></div>
 </header>
 
 
@@ -54,7 +60,7 @@
     <h1 class="page-hero__title" id="page-title" data-reveal="words">Young-Jae Lee</h1>
     <p class="page-hero__lede" data-reveal="fade">Geboren 1951 in Seoul, Studium in Seoul und Wiesbaden. Seit 1987 leitet sie die Keramische Werkstatt Margaretenhöhe in Essen – alle Meisterstücke stammen aus ihrer Hand.</p>
     <figure class="page-hero__media" data-reveal="img">
-      <img src="../img/kwm/portrait-yjl.webp" srcset="../img/kwm/portrait-yjl-900.webp 900w, ../img/kwm/portrait-yjl.webp 2000w" sizes="100vw" width="2000" height="1312" alt="Young-Jae Lee arbeitet an einem Tisch voller ungebrannter Gefäße, hinter ihr Regale mit Vasen und Schalen" fetchpriority="high">
+      <img src="../img/kwm/portrait-yjl.webp" srcset="../img/kwm/portrait-yjl-900.webp 900w, ../img/kwm/portrait-yjl-1400.webp 1400w, ../img/kwm/portrait-yjl.webp 2000w" sizes="100vw" width="2000" height="1312" alt="Young-Jae Lee arbeitet an einem Tisch voller ungebrannter Gefäße, hinter ihr Regale mit Vasen und Schalen" fetchpriority="high">
       <figcaption>Young-Jae Lee in der Werkstatt</figcaption>
     </figure>
   </section>
@@ -140,13 +146,13 @@
         </li>
         <li class="texts__row">
           <p class="texts__author">Gisela Jahn</p>
-          <h3 class="texts__title">Gefäße drehen, Gefäße betrachten, Gefäße benützen<small>Über die Schalen- und Vasenserien von Young-Jae Lee</small></h3>
+          <h3 class="texts__title">Gefäße drehen, Gefäße betrachten, Gefäße benützen <small>Über die Schalen- und Vasenserien von Young-Jae Lee</small></h3>
           <p class="texts__excerpt">„Viele hundert Schalen hat Young-Jae Lee gedreht. In letzter Zeit sind es sich verhalten öffnende Schalen, manche wie ein Blütenkelch, andere trichterförmig.“</p>
           <p class="texts__links"><a class="link-arrow" href="https://kwm-1924.de/gefaesse-drehen-geefaesse-betrachten-gefaesse-benuetzenueber-die-schalen-und-vasenserien-von-young-jae-lee/">Online lesen</a><a class="link-arrow" href="https://kwm-1924.de/wp-content/uploads/2023/08/jahn.pdf">PDF</a></p>
         </li>
         <li class="texts__row">
           <p class="texts__author">P. Friedhelm Mennekes S. J.</p>
-          <h3 class="texts__title">»Wie erlange ich Erkenntnis der Liebe?«<small>Künstlerische und mystische Aspekte der Devotion</small></h3>
+          <h3 class="texts__title">»Wie erlange ich Erkenntnis der Liebe?« <small>Künstlerische und mystische Aspekte der Devotion</small></h3>
           <p class="texts__excerpt">„Devotion, … das heißt die Verehrung oder auch die Kunst der Hingabe …“</p>
           <p class="texts__links"><a class="link-arrow" href="https://kwm-1924.de/wie-erlange-ich-erkenntnis-der-liebekuenstlerische-und-mystische-aspekte-der-devotion/">Online lesen</a><a class="link-arrow" href="https://kwm-1924.de/wp-content/uploads/2023/08/mennekes.pdf">PDF</a></p>
         </li>
@@ -157,13 +163,13 @@
         </li>
         <li class="texts__row">
           <p class="texts__author">Thomas Wagner</p>
-          <h3 class="texts__title">Die aufgehobene Zeit<small>Elf Bemerkungen zu eintausendeinhundertundelf Schalen von Young-Jae Lee</small></h3>
+          <h3 class="texts__title">Die aufgehobene Zeit <small>Elf Bemerkungen zu eintausendeinhundertundelf Schalen von Young-Jae Lee</small></h3>
           <p class="texts__excerpt">„Immer sind es Schalen, und doch ist keine wie die andere.“</p>
           <p class="texts__links"><a class="link-arrow" href="https://kwm-1924.de/die-aufgehobene-zeitelf-bemerkungen-zu-eintausendeinhundertundelf-schalen-von-young-jae-lee/">Online lesen</a><a class="link-arrow" href="https://kwm-1924.de/wp-content/uploads/2023/08/wagner_zeit-1.pdf">PDF</a></p>
         </li>
         <li class="texts__row">
           <p class="texts__author">Thomas Wagner</p>
-          <h3 class="texts__title">Galaxie 333<small>Anmerkungen zu den Schalen von Young-Jae Lee</small></h3>
+          <h3 class="texts__title">Galaxie 333 <small>Anmerkungen zu den Schalen von Young-Jae Lee</small></h3>
           <p class="texts__excerpt">„Young-Jae Lees Vasen und Schalen sind immer ästhetisches Objekt und Gebrauchsgegenstand, Gefäß und Skulptur.“</p>
           <p class="texts__links"><a class="link-arrow" href="https://kwm-1924.de/galaxie-333-anmerkungen-zu-den-schalen-von-young-jae-lee/">Online lesen</a><a class="link-arrow" href="https://kwm-1924.de/wp-content/uploads/2023/08/wagner_333.pdf">PDF</a></p>
         </li>
@@ -172,7 +178,7 @@
   </section>
 
   <figure class="plate" data-reveal="img">
-    <img src="../img/kwm/schalen-trio.webp" width="2000" height="931" loading="lazy" alt="Vier Schalen von Young-Jae Lee in Rotbraun, Weiß mit blauem Tupfen, Rosé und Grau">
+    <img src="../img/kwm/schalen-trio.webp" srcset="../img/kwm/schalen-trio-800.webp 800w, ../img/kwm/schalen-trio-1400.webp 1400w, ../img/kwm/schalen-trio.webp 2000w" sizes="100vw" width="2000" height="931" loading="lazy" alt="Vier Schalen von Young-Jae Lee in Rotbraun, Weiß mit blauem Tupfen, Rosé und Grau">
     <figcaption>Schalen von Young-Jae Lee</figcaption>
   </figure>
 

@@ -17,6 +17,9 @@
 .push { margin-top: clamp(64px, 16vh, 200px); }
 .push-s { margin-top: clamp(32px, 7vh, 96px); }
 
+.catalog__ask { padding-block: 12px; margin-block: -7px -12px; font-size: 13px; color: var(--ink-2); text-underline-offset: 0.28em; }
+.catalog__ask:hover { color: var(--ink); }
+
 .catalog__quote { margin: 0; align-self: center; padding-block: clamp(24px, 4vw, 56px); }
 .catalog__quote p {
   font-family: var(--f-display);

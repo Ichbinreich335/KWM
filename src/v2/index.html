@@ -43,7 +43,7 @@
     <h2 class="artist__name grid" id="artist-title"><span data-reveal="words">Young-Jae Lee</span></h2>
     <div class="artist__spread grid">
       <figure class="artist__portrait" data-reveal="img">
-        <img src="../img/kwm/portrait-yjl.webp" srcset="../img/kwm/portrait-yjl-900.webp 900w, ../img/kwm/portrait-yjl.webp 2000w" sizes="(min-width: 900px) 64vw, 100vw" width="2000" height="1313" loading="lazy" alt="Young-Jae Lee in der Werkstatt, vor ihr ungebrannte Schalen und Vasen, hinter ihr Regale voller Gefäße">
+        <img src="../img/kwm/portrait-yjl.webp" srcset="../img/kwm/portrait-yjl-900.webp 900w, ../img/kwm/portrait-yjl-1400.webp 1400w, ../img/kwm/portrait-yjl.webp 2000w" sizes="(min-width: 901px) 72vw, 100vw" width="2000" height="1313" loading="lazy" alt="Young-Jae Lee in der Werkstatt, vor ihr ungebrannte Schalen und Vasen, hinter ihr Regale voller Gefäße">
         <figcaption>Young-Jae Lee in der Keramischen Werkstatt Margaretenhöhe</figcaption>
       </figure>
       <div class="artist__story">
@@ -107,7 +107,7 @@
 
     <div class="rail" data-rail>
       <ol class="rail__track" data-drag tabindex="0" aria-label="Werkschau, horizontal scrollbar">
-        <li class="rail__item"><a href="meisterstuecke.html#vasen"><img src="../img/kwm/spindelvase1.webp" width="600" height="400" loading="lazy" alt="Zwei Spindelvasen, weiß und hellgrau"><span class="rail__name">Spindelvase</span><span class="rail__spec">H 35,5 cm, D 37 cm · Petalit-Eichenasche-Feldspat-Glasur · Holzofen 1260 °C · 2006/07</span></a></li>
+        <li class="rail__item"><a href="meisterstuecke.html#vasen"><img src="../img/kwm/spindelvase1-einzeln.webp" width="600" height="400" loading="lazy" alt="Weiße Spindelvase mit weiter Schulter und schmalem Fuß"><span class="rail__name">Spindelvase</span><span class="rail__spec">H 35,5 cm, D 37 cm · Petalit-Eichenasche-Feldspat-Glasur · Holzofen 1260 °C · 2006/07</span></a></li>
         <li class="rail__item"><a href="meisterstuecke.html#kummen"><img src="../img/kwm/kumme_2.webp" width="600" height="400" loading="lazy" alt="Zwei Kummen mit blau gesprenkelter Glasur"><span class="rail__name">Kumme</span><span class="rail__spec">H 18 cm, D 14,6 cm · Petalit-Eichenasche-Glasur · Holzofen · Essen 1995</span></a></li>
         <li class="rail__item"><a href="meisterstuecke.html#schalen"><img src="../img/kwm/schale_spitz_xl_1.webp" width="600" height="400" loading="lazy" alt="Spitze Schale mit hellblauer Innenglasur"><span class="rail__name">Schale, spitz</span><span class="rail__spec">H 10,5 cm, D 21,5 cm · Strontium-Feldspat-Glasur · 2003–2005</span></a></li>
         <li class="rail__item"><a href="meisterstuecke.html#vasen"><img src="../img/kwm/kugelvase.webp" width="600" height="400" loading="lazy" alt="Weiße Kugelvase"><span class="rail__name">Kugelvase</span><span class="rail__spec">H 25 cm, D 32,5 cm · Barium-Feldspat-Glasur · Holzofen · Essen 1996</span></a></li>
@@ -119,7 +119,7 @@
       </ol>
       <div class="rail__foot grid">
         <div class="chronicle__progress rail__progress" aria-hidden="true"><span data-drag-progress></span></div>
-        <p class="rail__hint" aria-hidden="true">Ziehen oder scrollen <span class="arrow"></span></p>
+        <p class="rail__hint" aria-hidden="true"><span class="hint--fine">Ziehen oder scrollen</span><span class="hint--touch">Wischen</span><span class="arrow"></span></p>
       </div>
     </div>
   </section>
@@ -132,8 +132,33 @@
     <div class="spread__text">
       <h2 class="h2" id="hand-title" data-reveal="words">Gegen den Uhrzeigersinn.</h2>
       <p data-reveal="fade">Young-Jae Lee dreht ihre Gefäße nach der östlichen Weise – gegen den Uhrzeigersinn. Abgedreht wird nach der westlichen, im Uhrzeigersinn: Der lederharte Ton wird mit dem Dreheisen spanweise abgetragen.</p>
-      <p data-reveal="fade">Porzellan liefert einen weißen Scherben, Steinzeug einen beigen, erdigen. Zum Teil mischt sie beide Massen, um die beste Drehfähigkeit und Tondichte zu erreichen.</p>
-      <div class="throw" data-sig="drehen"></div>
+    </div>
+  </section>
+
+  <!-- Drehen und Abdrehen: scrollgebundene Werkzeichnung (js/sig-drehen.js) -->
+  <section class="throw" data-sig="drehen" aria-label="Drehen und Abdrehen in drei Schritten">
+    <div class="throw__sticky">
+      <div class="throw__text">
+        <ol class="throw__steps">
+          <li class="throw__step" data-phase="drehen">
+            <h3 class="throw__name">Drehen</h3>
+            <p class="throw__dir">Östliche Weise, gegen den Uhrzeigersinn</p>
+            <p class="throw__body">Der Ton wird auf der Scheibe hochgezogen und zur Form geführt.</p>
+          </li>
+          <li class="throw__step" data-phase="abdrehen">
+            <h3 class="throw__name">Abdrehen</h3>
+            <p class="throw__dir">Westliche Weise, im Uhrzeigersinn</p>
+            <p class="throw__body">Die Schale steht kopfüber. Der lederharte Ton wird mit dem Dreheisen spanweise abgetragen, die Wand wird dünner, der Fuß entsteht.</p>
+          </li>
+          <li class="throw__step" data-phase="fertig">
+            <h3 class="throw__name">Die fertige Schale</h3>
+            <p class="throw__dir">Porzellan und Steinzeug</p>
+            <p class="throw__body">Porzellan liefert einen weißen Scherben, Steinzeug einen beigen, erdigen. Zum Teil mischt sie beide Massen, um die beste Drehfähigkeit und Tondichte zu erreichen.</p>
+          </li>
+        </ol>
+        <p class="throw__hint">Die Scheibe lässt sich mit der Hand drehen.</p>
+      </div>
+      <div class="throw__scene"></div>
     </div>
   </section>
 
@@ -166,6 +191,10 @@
           <a class="link-arrow" href="aktuelles.html#kosmos">Zur Ausstellung</a>
         </div>
       </div>
+      <div class="cosmos__caption">
+        <p class="cosmos__show">„99 Schalen – ein Kosmos“<br>Museum für Ostasiatische Kunst, Köln<br>bis 25. Oktober 2026</p>
+        <a class="link-arrow" href="aktuelles.html#kosmos">Zur Ausstellung</a>
+      </div>
     </div>
   </section>
 
@@ -178,16 +207,8 @@
     <div class="now__body grid">
       <ol class="now__list">
         <li>
-          <a class="now__item" href="aktuelles.html#jahn">
-            <img src="../img/kwm/teeschale.webp" width="1200" height="1200" loading="lazy" alt="">
-            <span class="now__date">14. Juli – 12. September 2026</span>
-            <span class="now__title now__title--s">„Young-Jae Lee“</span>
-            <span class="now__place">Galerie Jahn und Jahn, München</span>
-          </a>
-        </li>
-        <li>
           <a class="now__item" href="aktuelles.html#kummerschalen">
-            <img src="../img/kwm/seladon-schalen.webp" width="900" height="600" loading="lazy" alt="">
+            <img src="../img/kwm/seladon-schalen-kachel.webp" width="240" height="240" loading="lazy" alt="">
             <span class="now__date">16. August – 31. Oktober 2026</span>
             <span class="now__title now__title--s">„Kummerschalen“</span>
             <span class="now__place">Willibrordi-Dom, Wesel</span>
@@ -195,8 +216,8 @@
         </li>
         <li>
           <a class="now__item" href="aktuelles.html#popup">
-            <img src="../img/kwm/regal.webp" width="954" height="905" loading="lazy" alt="">
-            <span class="now__date">6. – 8. November 2026</span>
+            <img src="../img/kwm/regal-kachel.webp" width="240" height="240" loading="lazy" alt="">
+            <span class="now__date">6.–8. November 2026</span>
             <span class="now__title now__title--s">Mode, Taschen, Keramik &amp; Licht im Dialog</span>
             <span class="now__place">Pop-up in der Werkstatt, Zeche Zollverein</span>
           </a>
@@ -246,13 +267,13 @@
       </div>
     </div>
 
-    <div class="scale" role="list" aria-label="Die sechstonige Farbskala des Geschirrs">
-      <div class="scale__band" role="listitem" style="--c:#E9E7DF; --t:#1B1815"><img class="scale__sample" src="../img/kwm/weiss.webp" alt="" width="100" height="100"><span class="scale__name">weiß</span></div>
-      <div class="scale__band" role="listitem" style="--c:#BCC7B3; --t:#1B1815"><img class="scale__sample" src="../img/kwm/hellgruen_matt.webp" alt="" width="100" height="100"><span class="scale__name">hellgrün<br>matt</span></div>
-      <div class="scale__band" role="listitem" style="--c:#98B6A2; --t:#1B1815"><img class="scale__sample" src="../img/kwm/hellgruen_glaenzend.webp" alt="" width="100" height="100"><span class="scale__name">hellgrün<br>glänzend</span></div>
-      <div class="scale__band" role="listitem" style="--c:#2F5444; --t:#EDEBE4"><img class="scale__sample" src="../img/kwm/dunkelgruen_glaenzend.webp" alt="" width="100" height="100"><span class="scale__name">dunkelgrün<br>glänzend</span></div>
-      <div class="scale__band" role="listitem" style="--c:#4D5F52; --t:#EDEBE4"><img class="scale__sample" src="../img/kwm/dunkelgruen_matt.webp" alt="" width="100" height="100"><span class="scale__name">dunkelgrün<br>matt</span></div>
-      <div class="scale__band" role="listitem" style="--c:#7B452D; --t:#EDEBE4"><img class="scale__sample" src="../img/kwm/rostbraun.webp" alt="" width="100" height="100"><span class="scale__name">rostbraun</span></div>
+    <div class="scale" role="group" aria-label="Die sechstonige Farbskala des Geschirrs: Glasurproben, antippen zum Vergrößern" data-sig="farbskala">
+      <button type="button" class="scale__band" aria-pressed="false" style="--c:#e2ddcd; --t:#1B1815" data-grund="#e2ddcd" data-dunkel="#cec6b3" data-hell="#ece9db" data-finish="satin" data-speckle="#9a6a2c" data-seed="3"><img class="scale__sample" src="../img/kwm/weiss.webp" alt="" width="100" height="100"><span class="scale__label"><span class="scale__title">weiß</span></span></button>
+      <button type="button" class="scale__band" aria-pressed="false" style="--c:#cfe0d6; --t:#1B1815" data-grund="#cfe0d6" data-dunkel="#c1d2c8" data-hell="#daeae0" data-finish="matt" data-seed="4"><img class="scale__sample" src="../img/kwm/hellgruen_matt.webp" alt="" width="100" height="100"><span class="scale__label"><span class="scale__title">hellgrün</span><span class="scale__meta">matt</span></span></button>
+      <button type="button" class="scale__band" aria-pressed="false" style="--c:#94ae9b; --t:#1B1815" data-grund="#94ae9b" data-dunkel="#85a593" data-hell="#98b29f" data-finish="glanz" data-schichten data-seed="5"><img class="scale__sample" src="../img/kwm/hellgruen_glaenzend.webp" alt="" width="100" height="100"><span class="scale__label"><span class="scale__title">hellgrün</span><span class="scale__meta">glänzend</span></span></button>
+      <button type="button" class="scale__band" aria-pressed="false" style="--c:#3f3b22; --t:#F4F1E8" data-grund="#3f3b22" data-dunkel="#3c381f" data-hell="#423d23" data-finish="glanz" data-seed="6"><img class="scale__sample" src="../img/kwm/dunkelgruen_glaenzend.webp" alt="" width="100" height="100"><span class="scale__label"><span class="scale__title">dunkelgrün</span><span class="scale__meta">glänzend</span></span></button>
+      <button type="button" class="scale__band" aria-pressed="false" style="--c:#44462e; --t:#F4F1E8" data-grund="#44462e" data-dunkel="#363820" data-hell="#64634d" data-finish="matt" data-speckle="#a3a28b" data-seed="7"><img class="scale__sample" src="../img/kwm/dunkelgruen_matt.webp" alt="" width="100" height="100"><span class="scale__label"><span class="scale__title">dunkelgrün</span><span class="scale__meta">matt</span></span></button>
+      <button type="button" class="scale__band" aria-pressed="false" style="--c:#8d590a; --t:#FFFDF6" data-grund="#8d590a" data-dunkel="#864d01" data-hell="#916216" data-finish="satin" data-speckle="#6a3a04" data-seed="8"><img class="scale__sample" src="../img/kwm/rostbraun.webp" alt="" width="100" height="100"><span class="scale__label"><span class="scale__title">rostbraun</span></span></button>
     </div>
     <p class="scale__note grid"><span>In monatelangen Experimenten entstand die sechstonige Farbskala – von Schattierungen des Jadegrün über ein gebrochenes Weiß bis zu Rostbraun.</span></p>
 
@@ -279,7 +300,6 @@
   <section class="chronicle on-clay" id="werkstatt" aria-labelledby="chron-title">
     <div class="chronicle__head grid">
       <h2 class="h2" id="chron-title" data-reveal="words">Hundert Jahre an der Scheibe.</h2>
-      <p class="chronicle__hint" aria-hidden="true">Ziehen oder scrollen <span class="arrow"></span></p>
     </div>
     <ol class="chronicle__track" data-drag tabindex="0" aria-label="Chronik der Werkstatt">
       <li><span class="chronicle__year">1924</span><p>Margarete Krupp realisiert die Siedlung Margaretenhöhe in Essen. Hermann Kätelhön initiiert eine Keramikwerkstatt auf dem Gelände, Leiter wird Will Lammert.</p></li>
@@ -294,6 +314,7 @@
     <div class="chronicle__foot grid">
       <div class="chronicle__progress" aria-hidden="true"><span data-drag-progress></span></div>
       <a class="link-arrow chronicle__more" href="werkstatt.html">Werkstatt, Team und Chronik</a>
+      <p class="chronicle__hint" aria-hidden="true"><span class="hint--fine">Ziehen oder scrollen</span><span class="hint--touch">Wischen</span><span class="arrow"></span></p>
     </div>
   </section>
 
@@ -304,6 +325,7 @@
       <p class="visit__lead">Wenn Sie Stücke aus unserem Programm erwerben möchten, senden wir Ihnen gerne weitere Informationen oder ein Angebot zu. Oder Sie kommen vorbei.</p>
       <p class="visit__actions">
         <a class="button" href="mailto:kontakt@kwm1924.de?subject=Anfrage">Anfrage schreiben</a>
+        <a class="link-arrow" href="tel:+49201305080">+49 201 30 50 80</a>
         <a class="link-arrow" href="besuch.html">Öffnungszeiten &amp; Anfahrt</a>
       </p>
     </div>

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Aktuelles · Keramische Werkstatt Margaretenhöhe</title>
-<meta name="description" content="Ausstellungen 2026 mit Werken von Young-Jae Lee und der Keramischen Werkstatt Margaretenhöhe: Köln, München, Wesel und ein Pop-up in der Werkstatt auf Zollverein.">
+<meta name="description" content="Ausstellungen 2026 mit Werken von Young-Jae Lee und der Keramischen Werkstatt Margaretenhöhe: Köln, Wesel und ein Pop-up in der Werkstatt auf Zollverein.">
 <link rel="icon" href="../img/kwm/logo.svg" type="image/svg+xml">
 <link rel="preload" href="fonts/libre-caslon-display-normal-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/jost-normal-latin.woff2" as="font" type="font/woff2" crossorigin>
@@ -13,7 +13,7 @@
 <link rel="stylesheet" href="css/pages.css">
 <link rel="stylesheet" href="css/page-aktuelles.css">
 <link rel="stylesheet" href="css/signaturen.css">
-<script>document.documentElement.classList.add('js');try{const g=new URLSearchParams(location.search).get('grund')||localStorage.getItem('kwm-grund');if(g)document.documentElement.dataset.grund=g}catch(e){}</script>
+<script>document.documentElement.classList.add('js');try{if(!sessionStorage.getItem('kwm-logo')){sessionStorage.setItem('kwm-logo','1');document.documentElement.classList.add('logo-draw')}}catch(e){document.documentElement.classList.add('logo-draw')}try{const g=new URLSearchParams(location.search).get('grund')||localStorage.getItem('kwm-grund');if(g)document.documentElement.dataset.grund=g}catch(e){}</script>
 </head>
 <body class="page-aktuelles">
 
@@ -31,20 +31,26 @@
     </svg>
     <span class="brand__name">Keramische Werkstatt<br>Margaretenhöhe</span>
   </a>
-  <nav class="nav" aria-label="Hauptnavigation">
-    <ul class="nav__list" id="nav-list">
-      <li><a href="meisterstuecke.html" data-nav="meisterstuecke">Meisterstücke</a></li>
-      <li><a href="manufaktur.html" data-nav="manufaktur">Manufaktur</a></li>
-      <li><a href="young-jae-lee.html" data-nav="young-jae-lee">Young-Jae Lee</a></li>
-      <li><a href="werkstatt.html" data-nav="werkstatt">Werkstatt</a></li>
-      <li><a href="aktuelles.html" data-nav="aktuelles" aria-current="page">Aktuelles</a></li>
-      <li><a href="besuch.html" data-nav="besuch">Besuch</a></li>
-    </ul>
-  </nav>
-  <div class="lang" aria-label="Sprache"><a href="#" aria-current="true">DE</a><span aria-hidden="true">/</span><a href="https://kwm-1924.de/en/news/current/" lang="en">EN</a></div>
-  <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="nav-list" data-menu-toggle>
+  <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="nav" data-menu-toggle>
     <span class="menu-toggle__label">Menü</span><span class="menu-toggle__bars" aria-hidden="true"></span>
   </button>
+  <nav class="nav" id="nav" aria-label="Hauptnavigation">
+    <ul class="nav__list" id="nav-list">
+      <li><a href="meisterstuecke.html" data-nav="meisterstuecke"><span class="nav__name">Meisterstücke</span><span class="nav__desc">Unikate aus der Hand von Young-Jae Lee</span></a></li>
+      <li><a href="manufaktur.html" data-nav="manufaktur"><span class="nav__name">Manufaktur</span><span class="nav__desc">Geschirr, in der Werkstatt gedreht und glasiert</span></a></li>
+      <li><a href="young-jae-lee.html" data-nav="young-jae-lee"><span class="nav__name">Young-Jae Lee</span><span class="nav__desc">Keramikerin, leitet die Werkstatt seit 1987</span></a></li>
+      <li><a href="werkstatt.html" data-nav="werkstatt"><span class="nav__name">Werkstatt</span><span class="nav__desc">Seit 1924, Bauhaus-Linie, Team</span></a></li>
+      <li><a href="aktuelles.html" data-nav="aktuelles" aria-current="page"><span class="nav__name">Aktuelles</span><span class="nav__desc">Ausstellungen und Termine</span></a></li>
+      <li><a href="besuch.html" data-nav="besuch"><span class="nav__name">Besuch</span><span class="nav__desc">Öffnungszeiten, Anfahrt, Kontakt</span></a></li>
+    </ul>
+    <div class="nav__contact">
+      <a class="nav__phone" href="tel:+49201305080">+49 201 30 50 80</a>
+      <p class="nav__hours">Mo–Fr 9–17 Uhr, Sa 11–15 Uhr</p>
+      <a class="nav__mail" href="mailto:kontakt@kwm1924.de">Anfrage per E-Mail <span class="nav__mail-addr">kontakt@kwm1924.de</span></a>
+      <div class="lang lang--menu" role="group" aria-label="Sprache"><a href="#" aria-current="true">DE</a><span aria-hidden="true">/</span><a href="https://kwm-1924.de/en/news/current/" lang="en">EN</a></div>
+    </div>
+  </nav>
+  <div class="lang" role="group" aria-label="Sprache"><a href="#" aria-current="true">DE</a><span aria-hidden="true">/</span><a href="https://kwm-1924.de/en/news/current/" lang="en">EN</a></div>
 </header>
 
 
@@ -66,7 +72,7 @@
     <!-- 99 Schalen -->
     <article class="feature feature--wide grid" aria-labelledby="f-mok">
       <figure class="feature__media" data-reveal="img">
-        <img src="../img/kwm/schalen-trio.webp" width="2000" height="931" alt="Vier Schalen von Young-Jae Lee: ochsenblutrot, weiß mit blauem Tupfen, rosé und hellbraun" loading="lazy">
+        <img src="../img/kwm/schalen-trio.webp" srcset="../img/kwm/schalen-trio-800.webp 800w, ../img/kwm/schalen-trio-1400.webp 1400w, ../img/kwm/schalen-trio.webp 2000w" sizes="100vw" width="2000" height="931" alt="Vier Schalen von Young-Jae Lee: ochsenblutrot, weiß mit blauem Tupfen, rosé und hellbraun" loading="lazy">
         <figcaption>Schalen von Young-Jae Lee</figcaption>
       </figure>
       <div class="feature__text">
@@ -75,22 +81,6 @@
         <div class="feature__body" data-reveal="fade">
           <p class="feature__place"><strong>Museum für Ostasiatische Kunst (MOK)</strong>Universitätsstraße 100<br>50674 Köln</p>
           <a class="link-arrow" href="https://museum-fuer-ostasiatische-kunst.de/99-Schalen-ein-Kosmos">Zur Ausstellung im MOK</a>
-        </div>
-      </div>
-    </article>
-
-    <!-- Jahn und Jahn -->
-    <article class="feature feature--flip grid" aria-labelledby="f-jahn">
-      <figure class="feature__media" data-reveal="img">
-        <img src="../img/kwm/portrait-yjl.webp" srcset="../img/kwm/portrait-yjl-900.webp 900w, ../img/kwm/portrait-yjl.webp 2000w" sizes="(min-width: 900px) 62vw, 100vw" width="2000" height="1313" alt="Young-Jae Lee arbeitet in der Werkstatt vor Regalen mit ungebrannten Vasen und Schalen" loading="lazy" style="object-position: 30% 50%">
-        <figcaption>Young-Jae Lee in der Werkstatt</figcaption>
-      </figure>
-      <div class="feature__text">
-        <p class="feature__date" data-reveal="fade">14. Juli –<br>12. September 2026</p>
-        <h2 class="h2 feature__title" id="f-jahn" data-reveal="words">„Young-Jae Lee“</h2>
-        <div data-reveal="fade">
-          <p class="feature__place"><strong>Galerie Jahn und Jahn GmbH</strong>Baaderstraße 56C<br>80469 München</p>
-          <a class="link-arrow" href="https://www.jahnundjahn.com/">jahnundjahn.com</a>
         </div>
       </div>
     </article>
@@ -108,7 +98,7 @@
         <dl class="feature__facts" data-reveal="fade">
           <div><dt>Ort</dt><dd>Willibrordi-Dom<br>Großer Markt, 46483 Wesel</dd></div>
           <div><dt>Eröffnung</dt><dd>Sonntag, 16. August 2026, 11 Uhr<br>Gottesdienst zur Ausstellung, 12.15 Uhr Eröffnung der Ausstellung. Die Künstlerin wird anwesend sein.</dd></div>
-          <div><dt>Öffnungszeiten Dom</dt><dd>Di – So 14.30 – 17.00 Uhr<br>Mi und Sa 10 – 12 Uhr</dd></div>
+          <div><dt>Öffnungszeiten Dom</dt><dd>Di–So 14.30–17.00 Uhr<br>Mi und Sa 10–12 Uhr</dd></div>
         </dl>
       </div>
     </article>
@@ -121,11 +111,11 @@
           <figcaption>In der Werkstatt · Foto: Haydar Koyupinar</figcaption>
         </figure>
         <div class="feature__text">
-          <p class="feature__date" data-reveal="fade">6. – 8. November 2026</p>
+          <p class="feature__date" data-reveal="fade">6.–8. November 2026</p>
           <h2 class="h2 feature__title" id="f-popup" data-reveal="words">Mode, Taschen, Keramik &amp; Licht im Dialog</h2>
           <p class="feature__lead" data-reveal="fade">Pop-up-Store in den Räumen der Keramischen Werkstatt Margaretenhöhe.</p>
           <dl class="feature__facts" data-reveal="fade">
-            <div><dt>Geöffnet</dt><dd>Fr und Sa 11 – 18 Uhr<br>So 11 – 16 Uhr</dd></div>
+            <div><dt>Geöffnet</dt><dd>Fr und Sa 11–18 Uhr<br>So 11–16 Uhr</dd></div>
             <div><dt>In Kooperation mit</dt><dd>Burggraf Burggraf (Taschen)<br>Joachim Kern (Mode)<br>Christiane Kuntz (Mode)<br>Dietrich Pampus (Vintage Leuchten)</dd></div>
             <div><dt>Ort</dt><dd>Bullmannaue 19, 45327 Essen<br>auf dem Gelände der Zeche Zollverein</dd></div>
           </dl>
@@ -145,11 +135,12 @@
 
     <div class="years">
       <details class="year">
-        <summary><span class="year__num">2026</span><span class="year__teaser">Umbrella, Dänemark · No Nonsense, Köln · Künstlerzeche Unser Fritz, Herne</span><span class="year__toggle" aria-hidden="true"></span></summary>
+        <summary><span class="year__num">2026</span><span class="year__teaser">Umbrella, Dänemark · Künstlerzeche Unser Fritz, Herne · Galerie Jahn und Jahn, München</span><span class="year__toggle" aria-hidden="true"></span></summary>
         <div class="year__list"><ul>
           <li><span class="t">„Young-Jae Lee – Schalen“</span><span class="p">Umbrella, west coast exhibitions, Nørre Nebel, Dänemark</span><span class="d">7. März – 24. Mai</span></li>
-          <li><span class="t">Mode, Taschen, Keramik und Licht im Dialog</span><span class="p">No Nonsense – Pop Up Store, Köln</span><span class="d">28. – 30. Mai</span></li>
+          <li><span class="t">Mode, Taschen, Keramik und Licht im Dialog</span><span class="p">No Nonsense – Pop Up Store, Köln</span><span class="d">28.–30. Mai</span></li>
           <li><span class="t">„Stille Gäste“</span><span class="p">Künstlerzeche Unser Fritz, Herne</span><span class="d">13. Juni – 5. Juli</span></li>
+          <li><span class="t">„Young-Jae Lee“</span><span class="p">Galerie Jahn und Jahn GmbH, Baaderstraße 56C, 80469 München · <a class="tap" href="https://www.jahnundjahn.com/">jahnundjahn.com</a></span><span class="d">14. Juli – 12. September</span></li>
         </ul><a class="link-arrow" href="https://kwm-1924.de/neuigkeiten/vergangene/2026-2/">Alle Angaben zu 2026</a></div>
       </details>
 
@@ -157,13 +148,13 @@
         <summary><span class="year__num">2025</span><span class="year__teaser">St. Jakobi, Chemnitz · Galerie Jahn und Jahn, München · Gallery Tokyo</span><span class="year__toggle" aria-hidden="true"></span></summary>
         <div class="year__list"><ul>
           <li><span class="t">Weihnachtsausstellung 2025</span><span class="p">in der Werkstatt, mit Christine Atmer de Reig (Keramik), Vivien Reig Atmer (Schmuck) und Masami Takeuchi (Kintsugi)</span><span class="d">22. November – 23. Dezember</span></li>
-          <li><span class="t">„OPEN House“ – Future Heritage. Das Erbe von Morgen</span><span class="p">Festival in Essen</span><span class="d">6. – 7. September</span></li>
-          <li><span class="t">„Lee Young-Jae“</span><span class="p">Gallery Tokyo, Japan</span><span class="d">21. – 26. Juni</span></li>
-          <li><span class="t">„100 + 1 Übungsstücke“</span><span class="p">Ausstellung</span><span class="d">2. – 30. Juni</span></li>
+          <li><span class="t">„OPEN House“ – Future Heritage. Das Erbe von Morgen</span><span class="p">Festival in Essen</span><span class="d">6.–7. September</span></li>
+          <li><span class="t">„Lee Young-Jae“</span><span class="p">Gallery Tokyo, Japan</span><span class="d">21.–26. Juni</span></li>
+          <li><span class="t">„100 + 1 Übungsstücke“</span><span class="p">Ausstellung</span><span class="d">2.–30. Juni</span></li>
           <li><span class="t">„Young-Jae Lee: Keramik“</span><span class="p">Galerie Jahn und Jahn, München</span><span class="d">14. März – 26. April</span></li>
           <li><span class="t">„Young-Jae Lee: Vasen“</span><span class="p">St. Jakobi, Chemnitz – verlängert bis Ende 2025</span><span class="d">ab 9. März</span></li>
           <li><span class="t">„Young-Jae Lee: SCHALEN“</span><span class="p">Stadtkirche St. Jakobi, Chemnitz</span><span class="d">29. August 2024 – 2. März 2025</span></li>
-          <li><span class="t">Messe „Ambiente“</span><span class="p">Messe Frankfurt, Halle 3.1, Stand A60</span><span class="d">7. – 11. Februar</span></li>
+          <li><span class="t">Messe „Ambiente“</span><span class="p">Messe Frankfurt, Halle 3.1, Stand A60</span><span class="d">7.–11. Februar</span></li>
         </ul><a class="link-arrow" href="https://kwm-1924.de/neuigkeiten/vergangene/2025-2/">Alle Angaben zu 2025</a></div>
       </details>
 
@@ -175,7 +166,7 @@
           <li><span class="t">„TEE“</span><span class="p">Galerie Metzger, Johannesberg</span><span class="d">27. Oktober – 17. November</span></li>
           <li><span class="t">„100 Jahre Keramische Werkstatt Margaretenhöhe – Young-Jae Lee im Hetjens“</span><span class="p">Hetjens Museum, Düsseldorf</span><span class="d">16. Mai – 1. September</span></li>
           <li><span class="t">Bayerischer Kunstgewerbeverein</span><span class="p">München</span><span class="d">17. Mai – 29. Juni</span></li>
-          <li><span class="t">Diessener Töpfermarkt</span><span class="p">Diessen</span><span class="d">9. – 12. Mai</span></li>
+          <li><span class="t">Diessener Töpfermarkt</span><span class="p">Diessen</span><span class="d">9.–12. Mai</span></li>
           <li><span class="t">„50 Jahre – 50 Schätze“</span><span class="p">Museum für Ostasiatische Kunst, Köln</span><span class="d">19. Januar – 29. September</span></li>
         </ul><a class="link-arrow" href="https://kwm-1924.de/neuigkeiten/vergangene/2024-2/">Alle Angaben zu 2024</a></div>
       </details>
@@ -187,18 +178,18 @@
           <li><span class="t">„Gefäße – retrospektiv“ – Young-Jae Lee</span><span class="p">„Blaues Haus“, Dießen am Ammersee</span><span class="d"></span></li>
           <li><span class="t">Raum 49</span><span class="p">Zürich, Vernissage am 30. März 2023</span><span class="d"></span></li>
           <li><span class="t">Goldschmiede &amp; Galerie Udo Adam-Pasquale</span><span class="p">Köln-Sülz</span><span class="d">25. März – 13. Mai</span></li>
-          <li><span class="t">Gallery Toukyo</span><span class="p">Tokyo</span><span class="d">1. – 5. Mai</span></li>
+          <li><span class="t">Gallery Toukyo</span><span class="p">Tokyo</span><span class="d">1.–5. Mai</span></li>
         </ul><a class="link-arrow" href="https://kwm-1924.de/neuigkeiten/vergangene/jahr_2023/">Alle Angaben zu 2023</a></div>
       </details>
 
       <details class="year">
         <summary><span class="year__num">2022</span><span class="year__teaser">Pucker Gallery, Boston · Galerie Jahn und Jahn · Gallery Nichinichi, Kyoto</span><span class="year__toggle" aria-hidden="true"></span></summary>
         <div class="year__list"><ul>
-          <li><span class="t">Yui Tombana – Zeichnungen</span><span class="p">eine Ausstellung in unserer Werkstatt</span><span class="d">2. – 29. Juli</span></li>
+          <li><span class="t">Yui Tombana – Zeichnungen</span><span class="p">eine Ausstellung in unserer Werkstatt</span><span class="d">2.–29. Juli</span></li>
           <li><span class="t">„HOME! 3/5 Identitäten“</span><span class="p">Kunsthaus Essen</span><span class="d">4. März – 3. April</span></li>
           <li><span class="t">„Young-Jae LEE – Spindelvasen und Spinatschalen“</span><span class="p">Galerie Jahn und Jahn, München</span><span class="d">28. Januar – 12. März</span></li>
           <li><span class="t">„Hope / Hoffnung – Works by Young-Jae Lee“</span><span class="p">Pucker Gallery, Boston</span><span class="d">15. Januar – 27. Februar</span></li>
-          <li><span class="t">„Young-Jae LEE – Vessels are Sculpture“</span><span class="p">Gallery Nichinichi, Kyoto, Japan</span><span class="d">3. – 24. Januar</span></li>
+          <li><span class="t">„Young-Jae LEE – Vessels are Sculpture“</span><span class="p">Gallery Nichinichi, Kyoto, Japan</span><span class="d">3.–24. Januar</span></li>
           <li><span class="t">„WIR. Bilder für eine neue Kunst des Zusammenlebens“</span><span class="p">Große Kunstschau Worpswede</span><span class="d">20. Juni 2021 – 6. März 2022</span></li>
         </ul><a class="link-arrow" href="https://kwm-1924.de/neuigkeiten/vergangene/jahr_2022/">Alle Angaben zu 2022</a></div>
       </details>
@@ -209,8 +200,8 @@
           <li><span class="t">Weihnachtsausstellung in der Keramischen Werkstatt</span><span class="p">mit Schmuck von Karin Kolster-Kelly und Ulrika Mertens</span><span class="d">6. November – 23. Dezember</span></li>
           <li><span class="t">„Young-Jae Lee – In collaboration with KDK“</span><span class="p">Gallery Damdam, Berlin</span><span class="d">17. September – 13. November</span></li>
           <li><span class="t">„Young-Jae Lee – Gefässe“</span><span class="p">Galerie Karsten Greve, St. Moritz</span><span class="d">10. September – 30. Oktober</span></li>
-          <li><span class="t">„Viereckig“</span><span class="p">Galerie Banki, Kashiwa, Japan</span><span class="d">11. – 25. September</span></li>
-          <li><span class="t">Gallery Toukyo</span><span class="p">Tokyo</span><span class="d">2. – 6. April</span></li>
+          <li><span class="t">„Viereckig“</span><span class="p">Galerie Banki, Kashiwa, Japan</span><span class="d">11.–25. September</span></li>
+          <li><span class="t">Gallery Toukyo</span><span class="p">Tokyo</span><span class="d">2.–6. April</span></li>
           <li><span class="t">„1000°“</span><span class="p">Kunsthaus Dresden, Städtische Galerie für Gegenwartskunst</span><span class="d"></span></li>
         </ul><a class="link-arrow" href="https://kwm-1924.de/neuigkeiten/vergangene/jahr_2021/">Alle Angaben zu 2021</a></div>
       </details>
@@ -253,9 +244,9 @@
         <summary><span class="year__num">2017</span><span class="year__teaser">Kloster Beuerberg · HfBK Dresden · Shinsegae Gallery, Korea</span><span class="year__toggle" aria-hidden="true"></span></summary>
         <div class="year__list"><ul>
           <li><span class="t">Shinsegae Gallery</span><span class="p">Dai-gu, Incheon, Busan, Korea</span><span class="d">Herbst 2017</span></li>
-          <li><span class="t">Gallery Kan</span><span class="p">Fukushima, Japan</span><span class="d">1. – 11. September</span></li>
+          <li><span class="t">Gallery Kan</span><span class="p">Fukushima, Japan</span><span class="d">1.–11. September</span></li>
           <li><span class="t">„HINGABE“ – Gefäße von Young-Jae Lee</span><span class="p">Gartenpavillon des Kloster Beuerberg, Diözesanmuseum Freising</span><span class="d">27. Mai – 3. Oktober</span></li>
-          <li><span class="t">Gallery Tohkyo</span><span class="p">Tokyo, Japan</span><span class="d">21. – 25. Juli</span></li>
+          <li><span class="t">Gallery Tohkyo</span><span class="p">Tokyo, Japan</span><span class="d">21.–25. Juli</span></li>
           <li><span class="t">Young-Jae Lee „Gefäße“</span><span class="p">Oktogon der Hochschule für Bildende Künste Dresden</span><span class="d">3. Mai – 25. Juni</span></li>
         </ul><a class="link-arrow" href="https://kwm-1924.de/neuigkeiten/vergangene/jahr_2017/">Alle Angaben zu 2017</a></div>
       </details>

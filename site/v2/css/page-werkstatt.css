@@ -27,7 +27,7 @@
 .datelist__row--quiet .datelist__year, .datelist__row--quiet .datelist__text { color: var(--ink-2); }
 
 /* Team */
-.team-strip { padding-inline: var(--m); margin-bottom: clamp(40px, 5vw, 64px); max-width: calc(900px + 2 * var(--m)); }
+.team-strip { margin: 0 var(--m) clamp(40px, 5vw, 64px); max-width: 1000px; }
 .team-strip img { width: 100%; aspect-ratio: 900 / 140; object-fit: cover; }
 .person dl { margin: 0; }
 .person__bio { display: grid; grid-template-columns: 5.5em 1fr; column-gap: 12px; row-gap: 4px; font-size: 14.5px; line-height: 1.45; }
@@ -52,4 +52,5 @@
   .method__media { margin-inline: calc(var(--m) * -1); }
   .method__facts { grid-template-columns: 1fr 1fr; row-gap: 24px; }
   .panorama img { min-height: 150px; object-position: 22% 50%; }
+  .team-strip { margin-inline: 0; max-width: none; }
 }

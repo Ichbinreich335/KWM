@@ -17,7 +17,11 @@ import { random, pickGlaze as pickFrom } from './js/keramik.js';
   };
   toggle?.addEventListener('click', () => setMenu(toggle.getAttribute('aria-expanded') !== 'true'));
   $$('.nav a').forEach((a) => a.addEventListener('click', () => setMenu(false)));
-  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') setMenu(false); });
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Escape' || toggle?.getAttribute('aria-expanded') !== 'true') return;
+    setMenu(false);
+    toggle.focus();
+  });
 
   /* ---------- Wörter für die Zeilen-Einblendung aufteilen ---------- */
   $$('[data-reveal="words"]').forEach((el) => {
@@ -84,8 +88,8 @@ import { random, pickGlaze as pickFrom } from './js/keramik.js';
       if (!bar) return;
       const max = track.scrollWidth - track.clientWidth;
       const visible = Math.min(1, track.clientWidth / track.scrollWidth);
-      bar.style.width = `${visible * 100}%`;
-      bar.style.transform = `translateX(${max > 0 ? (track.scrollLeft / max) * ((1 - visible) / visible) * 100 : 0}%)`;
+      const travel = max > 0 ? (track.scrollLeft / max) * (1 - visible) * 100 : 0;
+      bar.style.transform = `translateX(${travel}%) scaleX(${visible})`;
     };
     track.addEventListener('scroll', progress, { passive: true });
     window.addEventListener('resize', progress, { passive: true });
@@ -117,14 +121,33 @@ import { random, pickGlaze as pickFrom } from './js/keramik.js';
   });
 
   /* ---------- Sprungleiste der Unterseiten: aktuellen Abschnitt markieren ---------- */
+  const subnav = $('.subnav');
   const subLinks = $$('.subnav a[href^="#"]');
-  if (subLinks.length) {
+  if (subnav) {
+    // Randausblendung, wenn die Leiste seitlich weiterläuft
+    const fade = () => {
+      const max = subnav.scrollWidth - subnav.clientWidth;
+      const parts = [];
+      if (max > 1 && subnav.scrollLeft > 1) parts.push('start');
+      if (max > 1 && subnav.scrollLeft < max - 1) parts.push('end');
+      subnav.dataset.more = parts.join(' ');
+    };
+    subnav.addEventListener('scroll', fade, { passive: true });
+    window.addEventListener('resize', fade, { passive: true });
+    fade();
+
     const byId = new Map(subLinks.map((a) => [a.getAttribute('href').slice(1), a]));
     const sio = new IntersectionObserver((entries) => {
       entries.forEach((e) => {
-        if (!e.isIntersecting) return;
-        subLinks.forEach((a) => a.classList.remove('is-current'));
-        byId.get(e.target.id)?.classList.add('is-current');
+        const current = e.isIntersecting && byId.get(e.target.id);
+        if (!current) return;
+        subLinks.forEach((a) => {
+          a.classList.toggle('is-current', a === current);
+          if (a === current) a.setAttribute('aria-current', 'true'); else a.removeAttribute('aria-current');
+        });
+        // aktiven Eintrag in die Mitte der Leiste holen
+        const left = current.offsetLeft - (subnav.clientWidth - current.offsetWidth) / 2;
+        subnav.scrollTo({ left, behavior: reduced ? 'auto' : 'smooth' });
       });
     }, { rootMargin: '-35% 0px -60% 0px' });
     byId.forEach((_, id) => { const el = document.getElementById(id); if (el) sio.observe(el); });

@@ -13,7 +13,7 @@
 <link rel="stylesheet" href="css/pages.css">
 <link rel="stylesheet" href="css/page-manufaktur.css">
 <link rel="stylesheet" href="css/signaturen.css">
-<script>document.documentElement.classList.add('js');try{const g=new URLSearchParams(location.search).get('grund')||localStorage.getItem('kwm-grund');if(g)document.documentElement.dataset.grund=g}catch(e){}</script>
+<script>document.documentElement.classList.add('js');try{if(!sessionStorage.getItem('kwm-logo')){sessionStorage.setItem('kwm-logo','1');document.documentElement.classList.add('logo-draw')}}catch(e){document.documentElement.classList.add('logo-draw')}try{const g=new URLSearchParams(location.search).get('grund')||localStorage.getItem('kwm-grund');if(g)document.documentElement.dataset.grund=g}catch(e){}</script>
 </head>
 <body class="page-manufaktur">
 
@@ -31,20 +31,26 @@
     </svg>
     <span class="brand__name">Keramische Werkstatt<br>Margaretenhöhe</span>
   </a>
-  <nav class="nav" aria-label="Hauptnavigation">
-    <ul class="nav__list" id="nav-list">
-      <li><a href="meisterstuecke.html" data-nav="meisterstuecke">Meisterstücke</a></li>
-      <li><a href="manufaktur.html" data-nav="manufaktur" aria-current="page">Manufaktur</a></li>
-      <li><a href="young-jae-lee.html" data-nav="young-jae-lee">Young-Jae Lee</a></li>
-      <li><a href="werkstatt.html" data-nav="werkstatt">Werkstatt</a></li>
-      <li><a href="aktuelles.html" data-nav="aktuelles">Aktuelles</a></li>
-      <li><a href="besuch.html" data-nav="besuch">Besuch</a></li>
-    </ul>
-  </nav>
-  <div class="lang" aria-label="Sprache"><a href="#" aria-current="true">DE</a><span aria-hidden="true">/</span><a href="https://kwm-1924.de/en/news/current/" lang="en">EN</a></div>
-  <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="nav-list" data-menu-toggle>
+  <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="nav" data-menu-toggle>
     <span class="menu-toggle__label">Menü</span><span class="menu-toggle__bars" aria-hidden="true"></span>
   </button>
+  <nav class="nav" id="nav" aria-label="Hauptnavigation">
+    <ul class="nav__list" id="nav-list">
+      <li><a href="meisterstuecke.html" data-nav="meisterstuecke"><span class="nav__name">Meisterstücke</span><span class="nav__desc">Unikate aus der Hand von Young-Jae Lee</span></a></li>
+      <li><a href="manufaktur.html" data-nav="manufaktur" aria-current="page"><span class="nav__name">Manufaktur</span><span class="nav__desc">Geschirr, in der Werkstatt gedreht und glasiert</span></a></li>
+      <li><a href="young-jae-lee.html" data-nav="young-jae-lee"><span class="nav__name">Young-Jae Lee</span><span class="nav__desc">Keramikerin, leitet die Werkstatt seit 1987</span></a></li>
+      <li><a href="werkstatt.html" data-nav="werkstatt"><span class="nav__name">Werkstatt</span><span class="nav__desc">Seit 1924, Bauhaus-Linie, Team</span></a></li>
+      <li><a href="aktuelles.html" data-nav="aktuelles"><span class="nav__name">Aktuelles</span><span class="nav__desc">Ausstellungen und Termine</span></a></li>
+      <li><a href="besuch.html" data-nav="besuch"><span class="nav__name">Besuch</span><span class="nav__desc">Öffnungszeiten, Anfahrt, Kontakt</span></a></li>
+    </ul>
+    <div class="nav__contact">
+      <a class="nav__phone" href="tel:+49201305080">+49 201 30 50 80</a>
+      <p class="nav__hours">Mo–Fr 9–17 Uhr, Sa 11–15 Uhr</p>
+      <a class="nav__mail" href="mailto:kontakt@kwm1924.de">Anfrage per E-Mail <span class="nav__mail-addr">kontakt@kwm1924.de</span></a>
+      <div class="lang lang--menu" role="group" aria-label="Sprache"><a href="#" aria-current="true">DE</a><span aria-hidden="true">/</span><a href="https://kwm-1924.de/en/news/current/" lang="en">EN</a></div>
+    </div>
+  </nav>
+  <div class="lang" role="group" aria-label="Sprache"><a href="#" aria-current="true">DE</a><span aria-hidden="true">/</span><a href="https://kwm-1924.de/en/news/current/" lang="en">EN</a></div>
 </header>
 
 
@@ -75,7 +81,7 @@
     </div>
   </section>
 
-  <nav class="subnav" aria-label="Kapitel dieser Seite" data-subnav>
+  <nav class="subnav" aria-label="Kapitel dieser Seite">
     <a href="#geschirr">Geschirr</a>
     <a href="#edition">Edition</a>
     <a href="#farben">Farben</a>
@@ -468,6 +474,7 @@
     <p class="cta-band__text" data-reveal="fade">Bei Interesse senden wir Ihnen gerne weitere Informationen oder ein Angebot zu. Für eine Bestellung können Sie auch unsere Anfrageformulare nutzen.</p>
     <p class="cta-band__actions mf-cta" data-reveal="fade">
       <a class="button" href="mailto:kontakt@kwm1924.de?subject=Anfrage%20Manufakturprogramm">Anfrage schreiben</a>
+      <a class="link-arrow" href="tel:+49201305080">+49 201 30 50 80</a>
       <a class="link-arrow" href="https://kwm-1924.de/wp-content/uploads/2026/07/2026_04_Anfrage_inquiry_Geschirr_tableware.pdf">Formular Geschirr (PDF)</a>
       <a class="link-arrow" href="https://kwm-1924.de/wp-content/uploads/2023/09/anfrage_inquiry_editionen_editions.pdf">Formular Edition (PDF)</a>
     </p>
@@ -475,19 +482,6 @@
 
   <script>
   (() => {
-    // Sprungmarken: aktuelles Kapitel markieren
-    const nav = document.querySelector('[data-subnav]');
-    if (nav && 'IntersectionObserver' in window) {
-      const links = [...nav.querySelectorAll('a')];
-      const io = new IntersectionObserver((entries) => {
-        entries.forEach((e) => {
-          if (!e.isIntersecting) return;
-          links.forEach((a) => a.classList.toggle('is-current', a.getAttribute('href') === `#${e.target.id}`));
-        });
-      }, { rootMargin: '-40% 0px -55% 0px' });
-      links.forEach((a) => { const s = document.querySelector(a.getAttribute('href')); if (s) io.observe(s); });
-    }
-
     // Glasurbühne: die Probe wird zur Fläche
     const root = document.querySelector('[data-glaze]');
     if (!root) return;

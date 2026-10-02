@@ -28,7 +28,7 @@
     </div>
   </section>
 
-  <nav class="subnav" aria-label="Kapitel dieser Seite" data-subnav>
+  <nav class="subnav" aria-label="Kapitel dieser Seite">
     <a href="#geschirr">Geschirr</a>
     <a href="#edition">Edition</a>
     <a href="#farben">Farben</a>
@@ -421,6 +421,7 @@
     <p class="cta-band__text" data-reveal="fade">Bei Interesse senden wir Ihnen gerne weitere Informationen oder ein Angebot zu. Für eine Bestellung können Sie auch unsere Anfrageformulare nutzen.</p>
     <p class="cta-band__actions mf-cta" data-reveal="fade">
       <a class="button" href="mailto:kontakt@kwm1924.de?subject=Anfrage%20Manufakturprogramm">Anfrage schreiben</a>
+      <a class="link-arrow" href="tel:+49201305080">+49 201 30 50 80</a>
       <a class="link-arrow" href="https://kwm-1924.de/wp-content/uploads/2026/07/2026_04_Anfrage_inquiry_Geschirr_tableware.pdf">Formular Geschirr (PDF)</a>
       <a class="link-arrow" href="https://kwm-1924.de/wp-content/uploads/2023/09/anfrage_inquiry_editionen_editions.pdf">Formular Edition (PDF)</a>
     </p>
@@ -428,19 +429,6 @@
 
   <script>
   (() => {
-    // Sprungmarken: aktuelles Kapitel markieren
-    const nav = document.querySelector('[data-subnav]');
-    if (nav && 'IntersectionObserver' in window) {
-      const links = [...nav.querySelectorAll('a')];
-      const io = new IntersectionObserver((entries) => {
-        entries.forEach((e) => {
-          if (!e.isIntersecting) return;
-          links.forEach((a) => a.classList.toggle('is-current', a.getAttribute('href') === `#${e.target.id}`));
-        });
-      }, { rootMargin: '-40% 0px -55% 0px' });
-      links.forEach((a) => { const s = document.querySelector(a.getAttribute('href')); if (s) io.observe(s); });
-    }
-
     // Glasurbühne: die Probe wird zur Fläche
     const root = document.querySelector('[data-glaze]');
     if (!root) return;
