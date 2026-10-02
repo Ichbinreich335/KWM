@@ -21,7 +21,8 @@ Ist ein MCP nicht erreichbar, z. B. in Cloud-Sessions ohne Netzwerkfreigabe: das
 - Statischer Prototyp: 7 Seiten in `src/*.html`, Partials in `src/partials/` (head, header, footer), zusammengesetzt von `tools/build.mjs` nach `site/`.
 - Assets in `site/`: `styles.css`, `main.js` (Animationen), `img/`, `css/`, `_headers`, `robots.txt`, `404.html`.
 - Deploy: Cloudflare Workers Static Assets (`wrangler.jsonc`, Name `kwm-redesign`, `html_handling: auto-trailing-slash`, `not_found_handling: 404-page`).
-- Screenshot-Skripte für den Vorher-nachher-Vergleich liegen in `.shots/` (Playwright).
+- Screenshot-Skripte für den Vorher-nachher-Vergleich liegen in `.shots/` (Playwright). Vor dem Umbau einmal die **Vorher-Screens** aller Seiten nach `.shots/vorher/` ablegen. Danach gilt der Loop aus `CLAUDE.md` (Abschnitt „Selbstprüfung im Loop“).
+- Bericht: `konzept/ASTRO-BERICHT.md`.
 
 ## Phase 1: Umbau 1:1, ohne sichtbare Änderung (eigener Branch/PR)
 1. Astro (aktuelle Version **laut astro-docs-MCP**), Ausgabe `static`. Kein SSR.

@@ -7,6 +7,8 @@
 
 Was weder MCP noch API können, schreibt der Agent auf und gibt es dem Admin als kurze Klick-Anleitung.
 
+**Prüfung:** Loop aus `CLAUDE.md` (Abschnitt „Selbstprüfung im Loop“). Playwright öffnet die veröffentlichte App-URL und meldet sich als Werkstatt-Nutzer an. Den Testnutzer legt die Session selbst an, der Zugang steht nur in `.env` als `SOFTR_TEST_EMAIL` / `SOFTR_TEST_PASSWORD`. Geprüft wird auch mit einem Admin-Login, ob der Preis nur dort erscheint. Screens nach `konzept/vergleich/softr-*.png`, Bericht nach `konzept/vergleich/SOFTR-BERICHT.md`.
+
 ## Voraussetzungen (macht der Admin)
 1. Ein kostenloses Konto bei softr.io anlegen.
 2. Im Repo-Ordner `claude` starten. Der Softr-MCP ist in `.mcp.json` eingetragen (`https://mcp.softr.io/mcp`). Danach `/mcp` aufrufen, `softr` wählen und sich per OAuth anmelden.

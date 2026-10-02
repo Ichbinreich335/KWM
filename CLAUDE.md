@@ -21,6 +21,19 @@ Website und Lager-App der Keramischen Werkstatt Margaretenhöhe. Aktuelle Entsch
 - Offene Designfragen mit dem Skill `grilling` klären. Für UI-Ideen den Skill `prototype` nutzen.
 - Sprache für Nutzertexte und Commits: Deutsch.
 
+## Selbstprüfung im Loop (Pflicht in jeder Session)
+- **Playwright nach jeder sichtbaren Änderung:** Screenshots der betroffenen Seiten bzw. Screens auf Desktop (1440 px) und Mobil (390 px). Browser-Konsole auf Fehler prüfen. Ablage unter `.shots/<thema>/` (Website) bzw. `konzept/vergleich/` (Lager-Apps).
+- **Screens selbst ansehen** und gegen die Abnahmekriterien des Auftrags und die Checkliste unten prüfen. Bei Abweichung beheben und erneut prüfen.
+- **Optik-Checkliste:**
+  - Alle Texte deutsch, keine Platzhalter, keine abgeschnittenen Texte
+  - Am Handy kein horizontales Scrollen, Tippflächen mindestens 44 px
+  - Ausreichender Kontrast, einheitliche Farben, Abstände und Schriftgrößen
+  - Leere Zustände und Fehlermeldungen verständlich
+- **Loop:** Iterieren, bis alle Kriterien erfüllt sind. Pro abgeschlossenem Punkt ein Commit und ein Push auf den eigenen Branch.
+- **Blocker** (Kosten, Löschen, Live-Schaltung, fehlender Login): im Bericht festhalten und mit dem nächsten unabhängigen Punkt weitermachen. Nicht warten.
+- **Bericht am Ende** (Datei laut Auftrag): erledigt, offen, Screens, was der Admin tun muss.
+- **Neues Feedback des Admins** hat Vorrang vor dem laufenden Punkt.
+
 ## Codequalität (Ziel: produktionsreif, nicht „vibe-coded“)
 - Astro + TypeScript (strict). Klare Struktur: `layouts/`, `components/`, `pages/`, Inhalte aus Sanity.
 - Keine toten Dateien, keine auskommentierten Blöcke, keine Debug-Reste, keine Magic Numbers im Markup. CSS über bestehende Variablen.

@@ -4,6 +4,8 @@
 **Modell:** Für diesen Prototyp reicht ein mittleres Modell.
 **Referenz:** Der lokal gebaute Baserow-Prototyp v2, siehe `konzept/vergleich/baserow-v2-*.png` und `BASEROW-V2-BERICHT.md`. Die Aufbau-Skripte liegen in `konzept/baserow-demo/skripte/`.
 
+**Prüfung:** Loop aus `CLAUDE.md` (Abschnitt „Selbstprüfung im Loop“). Playwright meldet sich als App-Nutzer der Werkstatt an (Zugang in `.env` als `BASEROW_APP_TEST_EMAIL` / `BASEROW_APP_TEST_PASSWORD`; den Nutzer legt die Session selbst an).
+
 ## Kernfrage
 Kann die Werkstatt in einer **eigenen Oberfläche (Application Builder)** arbeiten, getrennt von der **reinen Datenbank-Tabelle**? Diese Oberfläche braucht:
 - Erfassen mit Foto
