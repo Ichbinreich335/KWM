@@ -1,0 +1,66 @@
+/* Meisterstücke */
+
+.ms-intro { padding-block: var(--section); row-gap: 40px; align-items: start; }
+.ms-intro__statement {
+  grid-column: 1 / 8;
+  margin: 0;
+  font-family: var(--f-display);
+  font-size: clamp(2rem, 3.8vw, 3.8rem);
+  line-height: 1.05;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+.ms-intro__text { grid-column: 9 / 13; padding-top: 10px; }
+.ms-intro__text p { max-width: 44ch; }
+
+/* Versatz im Katalog: das asymmetrische Magazin-Raster */
+.push { margin-top: clamp(64px, 16vh, 200px); }
+.push-s { margin-top: clamp(32px, 7vh, 96px); }
+
+.catalog__quote { margin: 0; align-self: center; padding-block: clamp(24px, 4vw, 56px); }
+.catalog__quote p {
+  font-family: var(--f-display);
+  font-size: clamp(1.9rem, 3.2vw, 3.2rem);
+  line-height: 1.06;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+  margin: 0 0 18px;
+}
+.catalog__quote footer { font-size: 13px; color: var(--ink-2); }
+
+.catalog__item--mood .catalog__frame img { aspect-ratio: 3 / 2; }
+.catalog__item--band .catalog__frame img { aspect-ratio: 16 / 7; }
+
+/* Kummen auf Tonfläche */
+.chapter--clay { margin-top: var(--section); padding-bottom: var(--section); }
+.chapter--clay .chapter__head { border-top-color: var(--clay-ink); }
+.chapter--clay .catalog__frame { background: var(--clay-deep); }
+
+/* Spindelvasen: ruhige Dreierreihe */
+.spindle { margin-top: clamp(96px, 12vw, 180px); padding-bottom: 36px; row-gap: 16px; align-items: baseline; border-top: 0; }
+.spindle__title { grid-column: 1 / 7; font-family: var(--f-display); font-size: clamp(1.8rem, 2.8vw, 2.8rem); line-height: 1.05; }
+.spindle__text { grid-column: 8 / 13; margin: 0; color: var(--ink-2); max-width: 46ch; }
+.catalog--spindle { padding-top: 28px; border-top: 1px solid var(--hair); margin-inline: var(--m); padding-inline: 0; }
+
+/* Arbeitsweise: Teeschale bleibt stehen, der Text zieht vorbei */
+.steps { align-items: start; row-gap: 48px; }
+.steps__media { grid-column: 1 / 6; position: sticky; top: calc(var(--head) + 72px); }
+.steps__media img { width: 100%; aspect-ratio: 1; object-fit: cover; }
+.steps__list { grid-column: 7 / 13; border-top: 1px solid var(--ink); }
+.steps__item { padding: 22px 0 20px; border-bottom: 1px solid var(--hair); display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: 8px var(--g); }
+.steps__item dt { font-family: var(--f-display); font-size: clamp(1.35rem, 1.8vw, 1.75rem); line-height: 1.1; }
+.steps__item dd { font-size: 16px; line-height: 1.6; }
+
+@media (max-width: 900px) {
+  .ms-intro__statement, .ms-intro__text { grid-column: 1 / -1; }
+  .catalog > * { grid-column: 1 / -1 !important; }
+  .push, .push-s { margin-top: 0; }
+  .catalog__item--band .catalog__frame img { aspect-ratio: 4 / 3; }
+  .spindle__title, .spindle__text { grid-column: 1 / -1; }
+  .steps__media { grid-column: 1 / -1; position: static; }
+  .steps__list { grid-column: 1 / -1; }
+  .steps__item { grid-template-columns: 1fr; }
+}
+@media (min-width: 901px) and (max-width: 1200px) {
+  .catalog--spindle .catalog__item { grid-column: span 6; }
+}

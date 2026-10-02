@@ -1,0 +1,122 @@
+/* Bausteine der Unterseiten. Tokens, Raster, Typografie und Motion kommen aus styles.css. */
+
+/* Seitenkopf: großer Titel, Lede, randloses Bild */
+.page-hero { padding-top: calc(var(--head) + clamp(56px, 8vw, 120px)); row-gap: 40px; align-items: end; }
+.page-hero__title {
+  grid-column: 1 / 9;
+  font-family: var(--f-display);
+  font-size: clamp(3.2rem, 9vw, 8.5rem);
+  line-height: 0.92;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+.page-hero__lede {
+  grid-column: 9 / 13;
+  font-family: var(--f-text);
+  font-size: clamp(1.15rem, 1.5vw, 1.4rem);
+  line-height: 1.45;
+  margin: 0;
+  text-wrap: pretty;
+}
+.page-hero__media { grid-column: 1 / -1; margin-inline: calc(var(--m) * -1); margin-top: clamp(24px, 4vw, 56px); }
+.page-hero__media img { width: 100%; height: min(78vh, 820px); object-fit: cover; }
+.page-hero__media figcaption { padding-inline: var(--m); }
+
+/* Sprungmarken innerhalb einer Seite */
+.subnav {
+  position: sticky;
+  top: var(--head);
+  z-index: 40;
+  display: flex;
+  gap: 6px 28px;
+  flex-wrap: wrap;
+  padding: 14px var(--m);
+  background: var(--ground);
+  border-bottom: 1px solid var(--hair);
+  font-size: 14px;
+  transition: top 0.6s var(--ease);
+}
+.masthead.is-hidden ~ main .subnav { top: 0; }
+.subnav a { text-decoration: none; color: var(--ink-2); }
+.subnav a:hover, .subnav a.is-current { color: var(--ink); text-decoration: underline; }
+
+/* Kapitel: Überschrift links, Text rechts, Linie oben */
+.chapter { padding-block: var(--section) 0; }
+.chapter:last-of-type, .chapter:has(+ .cta-band) { padding-bottom: var(--section); }
+.chapter__head { border-top: 1px solid var(--ink); margin-inline: var(--m); padding-inline: 0; padding-top: 24px; row-gap: 24px; align-items: start; margin-bottom: clamp(40px, 6vw, 80px); }
+.chapter__head .h2 { grid-column: 1 / 8; }
+.chapter__intro { grid-column: 9 / 13; margin: 0; color: var(--ink-2); max-width: 44ch; }
+
+/* Werk- und Produktkatalog */
+.catalog {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: clamp(40px, 5vw, 72px) var(--g);
+  padding-inline: var(--m);
+}
+.catalog__item { grid-column: span 4; }
+.catalog__item--wide { grid-column: span 8; }
+.catalog__item--half { grid-column: span 6; }
+.catalog__frame { overflow: hidden; background: var(--ground-2); }
+.catalog__frame img { width: 100%; aspect-ratio: 3 / 2; object-fit: cover; transition: transform 1.2s var(--ease); }
+.catalog__item--tall .catalog__frame img { aspect-ratio: 4 / 5; }
+.catalog__item:hover .catalog__frame img { transform: scale(1.04); }
+.catalog__name { display: block; font-family: var(--f-text); font-size: 19px; margin-top: 14px; color: var(--ink); }
+.catalog__spec { display: block; font-size: 13px; line-height: 1.5; color: var(--ink-2); margin-top: 4px; }
+.catalog__item figcaption { margin-top: 0; }
+
+/* Fließtext */
+.prose { grid-column: 3 / 11; font-family: var(--f-text); font-size: clamp(1.1rem, 1.35vw, 1.3rem); line-height: 1.6; }
+.prose p { margin-bottom: 1.1em; }
+.prose--narrow { grid-column: 4 / 10; }
+.prose__source { font-family: var(--f-sans); font-size: 13px; color: var(--ink-2); }
+
+/* Jahreszahl-Liste (Chronik, Biografie, Ausstellungen, Auszeichnungen) */
+.datelist { grid-column: 1 / -1; border-top: 1px solid var(--ink); }
+.datelist__row { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--g); padding: 18px 0; border-bottom: 1px solid var(--hair); align-items: baseline; }
+.datelist__year { grid-column: 1 / 3; font-family: var(--f-display); font-size: clamp(1.3rem, 2.4vw, 2.4rem); line-height: 1; font-variant-numeric: lining-nums; white-space: nowrap; }
+.datelist__text { grid-column: 3 / 10; margin: 0; font-size: 16px; }
+.datelist__meta { grid-column: 10 / 13; font-size: 13.5px; color: var(--ink-2); margin: 0; }
+
+/* Personen */
+.people { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 56px var(--g); padding-inline: var(--m); }
+.person { grid-column: span 4; border-top: 1px solid var(--ink); padding-top: 18px; }
+.person__name { font-family: var(--f-display); font-size: clamp(1.6rem, 2.2vw, 2.2rem); line-height: 1.05; margin-bottom: 6px; }
+.person__role { font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-2); margin-bottom: 16px; }
+.person p { font-size: 15px; margin-bottom: 6px; }
+
+/* Glasurproben */
+.swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 32px var(--g); padding-inline: var(--m); }
+.swatch-card img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 50%; transition: transform 0.9s var(--ease); }
+.swatch-card:hover img { transform: scale(1.06) rotate(-8deg); }
+.swatch-card figcaption { font-size: 14px; color: var(--ink); text-align: center; margin-top: 12px; }
+
+/* Abschlussband mit Anfrage */
+.cta-band { background: var(--coal); color: var(--on-coal); padding-block: clamp(80px, 10vw, 160px); row-gap: 32px; align-items: end; }
+.cta-band .h2 { grid-column: 1 / 8; }
+.cta-band__text { grid-column: 9 / 13; color: var(--on-coal-2); margin: 0 0 24px; }
+.cta-band__actions { grid-column: 9 / 13; display: flex; flex-wrap: wrap; gap: 16px 28px; align-items: center; }
+.cta-band .button { background: var(--on-coal); color: var(--coal); border-color: var(--on-coal); }
+.cta-band .button:hover { background: transparent; color: var(--on-coal); }
+
+/* Flächen in Tonfarbe */
+.on-clay { background: var(--clay); color: var(--clay-ink); --ink-2: #5B4632; --hair: rgba(46, 35, 25, 0.2); --cover: var(--clay); }
+
+@media (max-width: 900px) {
+  .page-hero__title, .page-hero__lede { grid-column: 1 / -1; }
+  .page-hero__media img { height: 56svh; }
+  .chapter__head .h2, .chapter__intro { grid-column: 1 / -1; }
+  .catalog__item, .catalog__item--wide, .catalog__item--half { grid-column: 1 / -1; }
+  .prose, .prose--narrow { grid-column: 1 / -1; }
+  .datelist__year { grid-column: 1 / 4; }
+  .datelist__text { grid-column: 4 / -1; }
+  .datelist__meta { grid-column: 4 / -1; }
+  .person { grid-column: 1 / -1; }
+  .cta-band .h2, .cta-band__text, .cta-band__actions { grid-column: 1 / -1; }
+  .subnav { overflow-x: auto; flex-wrap: nowrap; white-space: nowrap; }
+}
+@media (min-width: 901px) and (max-width: 1200px) {
+  .catalog__item { grid-column: span 6; }
+  .catalog__item--wide { grid-column: 1 / -1; }
+  .person { grid-column: span 6; }
+}

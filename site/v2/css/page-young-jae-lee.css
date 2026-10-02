@@ -1,0 +1,73 @@
+/* Young-Jae Lee: Seiten-spezifische Kompositionen */
+
+.yjl-hero .page-hero__media img { height: min(86vh, 900px); object-position: 30% 40%; }
+
+/* Haltung: großes Zitat, dann Bild und Text versetzt */
+.stance { padding-top: var(--section); row-gap: clamp(56px, 8vw, 120px); align-items: start; }
+.stance__quote { grid-column: 1 / 11; margin: 0; }
+.stance__quote p {
+  font-family: var(--f-display);
+  font-size: clamp(2rem, 4.4vw, 4.4rem);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+  margin-bottom: 22px;
+}
+.stance__quote footer { font-size: 13px; color: var(--ink-2); }
+.stance__media { grid-column: 1 / 6; }
+.stance__media img { width: 100%; aspect-ratio: 1; object-fit: cover; mix-blend-mode: multiply; }
+.stance__text { grid-column: 7 / 12; padding-top: clamp(24px, 10vh, 120px); }
+.stance__text .h2 { margin-bottom: 32px; }
+.stance__text p { font-family: var(--f-text); font-size: 18px; line-height: 1.6; max-width: 48ch; }
+.stance__text .prose__source { display: block; margin-top: -6px; margin-bottom: 28px; }
+
+/* Erinnerung: Tonfläche mit Catoir-Passage und Schalen am Boden */
+.memory { padding-block: var(--section); margin-top: var(--section); row-gap: 48px; align-items: center; }
+.memory__text { grid-column: 1 / 7; }
+.memory__text .h2 { margin-bottom: 36px; }
+.memory__text blockquote { margin: 0; }
+.memory__text blockquote p { font-family: var(--f-text); font-size: clamp(1.2rem, 1.65vw, 1.55rem); line-height: 1.5; text-wrap: pretty; }
+.memory__text footer { font-size: 13px; color: var(--ink-2); }
+.memory__media { grid-column: 8 / -1; margin-right: calc(var(--m) * -1); }
+.memory__media img { width: 100%; aspect-ratio: 937 / 1040; object-fit: cover; }
+
+/* Texte über Young-Jae Lee */
+.texts { grid-column: 1 / -1; border-top: 1px solid var(--ink); }
+.texts__row { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--g); row-gap: 8px; padding: 28px 0; border-bottom: 1px solid var(--hair); align-items: baseline; }
+.texts__author { grid-column: 1 / 4; font-size: 14px; color: var(--ink-2); margin: 0; }
+.texts__title { grid-column: 4 / 9; font-family: var(--f-display); font-size: clamp(1.5rem, 2.3vw, 2.3rem); line-height: 1.08; margin: 0; text-wrap: balance; }
+.texts__title small { display: block; font-family: var(--f-text); font-size: 15px; line-height: 1.4; color: var(--ink-2); margin-top: 8px; }
+.texts__excerpt { grid-column: 9 / 13; font-family: var(--f-text); font-size: 16px; line-height: 1.5; margin: 0; }
+.texts__links { grid-column: 9 / 13; display: flex; gap: 12px 24px; flex-wrap: wrap; margin: 6px 0 0; }
+
+/* Wandbild zwischen den Kapiteln */
+.plate { margin-top: var(--section); }
+.plate img { width: 100%; height: min(80vh, 820px); object-fit: cover; }
+.plate figcaption { padding-inline: var(--m); }
+
+/* Sammlungen */
+.museums { grid-column: 1 / -1; columns: 3; column-gap: var(--g); font-size: 15.5px; }
+.museums li { break-inside: avoid; padding: 9px 0; border-top: 1px solid var(--hair); }
+
+/* Publikationen */
+.pubs { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--g); border-top: 1px solid var(--ink); }
+.pubs li { padding: 16px 0; border-bottom: 1px solid var(--hair); padding-right: 24px; }
+.pubs__title { display: block; font-family: var(--f-text); font-size: 17px; line-height: 1.35; }
+.pubs__meta { display: block; font-size: 13.5px; color: var(--ink-2); margin-top: 4px; }
+
+.chapter__more { grid-column: 1 / -1; margin-top: 28px; }
+.page-yjl #publikationen { padding-bottom: var(--section); }
+.page-yjl .datelist__year { white-space: nowrap; }
+
+@media (max-width: 900px) {
+  .stance__quote, .stance__media, .stance__text { grid-column: 1 / -1; }
+  .stance__text { padding-top: 0; }
+  .memory__text, .memory__media { grid-column: 1 / -1; }
+  .memory__media { margin-inline: calc(var(--m) * -1); }
+  .memory__media figcaption { padding-inline: var(--m); }
+  .texts__author, .texts__title, .texts__excerpt, .texts__links { grid-column: 1 / -1; }
+  .museums { columns: 1; }
+  .pubs { grid-template-columns: 1fr; }
+  .plate img { height: 60svh; }
+  .page-yjl .datelist__year { font-size: 1.3rem; }
+}
