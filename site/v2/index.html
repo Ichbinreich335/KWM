@@ -62,7 +62,7 @@
       <img src="../img/kwm/kummerschalen.webp" width="937" height="1040" alt="Viele flache Schalen von Young-Jae Lee auf einem Steinboden, seladonblau, schwarz gesprenkelt und rotbraun glasiert" fetchpriority="high" data-parallax>
       <figcaption class="hero__credit">Kummerschalen · Foto: Christopher Clem Franken</figcaption>
     </figure>
-    <div class="hero__profile" data-sig="profil"></div>
+    <div class="hero__profile" data-sig="profil" hidden></div>
     <div class="hero__text">
       <h1 class="hero__title" id="hero-title" data-reveal="words">Immer sind es Schalen, und doch ist keine wie die andere.</h1>
       <p class="hero__source" data-reveal="fade">Thomas Wagner über die Schalen von Young-Jae Lee</p>
@@ -89,6 +89,42 @@
         <span class="lines__what">Geschirr nach Bauhaus-Formprinzipien, in der Werkstatt gedreht und glasiert</span>
       </a>
     </nav>
+  </section>
+
+  <!-- Aktuell -->
+  <section class="now now--dark" id="aktuelles" aria-labelledby="now-title">
+    <div class="now__head grid">
+      <h2 class="h2" id="now-title" data-reveal="words">Aktuell</h2>
+      <a class="link-arrow now__all" href="aktuelles.html">Alle Ausstellungen und Termine</a>
+    </div>
+    <div class="now__body grid">
+      <ol class="now__list">
+        <li>
+          <a class="now__item" href="aktuelles.html#kosmos">
+            <img src="../img/kwm/schalen-trio-800.webp" srcset="../img/kwm/schalen-trio-800.webp 800w, ../img/kwm/schalen-trio-1400.webp 1400w" sizes="(min-width: 900px) 31vw, 100vw" width="800" height="372" loading="lazy" alt="Vier Schalen von Young-Jae Lee: rotbraun, weiß mit blauem Tropfen, rosé und hellbraun">
+            <span class="now__date">23. April – 25. Oktober 2026</span>
+            <span class="now__title now__title--s">„99 Schalen – ein Kosmos“</span>
+            <span class="now__place">Museum für Ostasiatische Kunst, Köln</span>
+          </a>
+        </li>
+        <li>
+          <a class="now__item" href="aktuelles.html#kummerschalen">
+            <img src="../img/kwm/seladon-schalen.webp" width="900" height="600" loading="lazy" alt="Seladonfarbene Schalen von Young-Jae Lee">
+            <span class="now__date">16. August – 31. Oktober 2026</span>
+            <span class="now__title now__title--s">„Kummerschalen“</span>
+            <span class="now__place">Willibrordi-Dom, Wesel</span>
+          </a>
+        </li>
+        <li>
+          <a class="now__item" href="aktuelles.html#popup">
+            <img src="../img/kwm/regal.webp" width="954" height="905" loading="lazy" alt="Regal voller ungebrannter Gefäße in der Werkstatt">
+            <span class="now__date">6.–8. November 2026</span>
+            <span class="now__title now__title--s">Mode, Taschen, Keramik &amp; Licht im Dialog</span>
+            <span class="now__place">Pop-up in der Werkstatt, Zeche Zollverein</span>
+          </a>
+        </li>
+      </ol>
+    </div>
   </section>
 
   <!-- Young-Jae Lee -->
@@ -189,7 +225,7 @@
   </section>
 
   <!-- Drehen und Abdrehen: scrollgebundene Werkzeichnung (js/sig-drehen.js) -->
-  <section class="throw" data-sig="drehen" aria-label="Drehen und Abdrehen in drei Schritten">
+  <section class="throw" data-sig="drehen" hidden aria-label="Drehen und Abdrehen in drei Schritten">
     <div class="throw__sticky">
       <div class="throw__text">
         <ol class="throw__steps">
@@ -248,34 +284,6 @@
         <p class="cosmos__show">„99 Schalen – ein Kosmos“<br>Museum für Ostasiatische Kunst, Köln<br>bis 25. Oktober 2026</p>
         <a class="link-arrow" href="aktuelles.html#kosmos">Zur Ausstellung</a>
       </div>
-    </div>
-  </section>
-
-  <!-- Aktuell -->
-  <section class="now now--after" id="aktuelles" aria-labelledby="now-title">
-    <div class="now__head grid">
-      <h2 class="h2" id="now-title" data-reveal="words">Außerdem zu sehen</h2>
-      <a class="link-arrow now__all" href="aktuelles.html">Alle Termine</a>
-    </div>
-    <div class="now__body grid">
-      <ol class="now__list">
-        <li>
-          <a class="now__item" href="aktuelles.html#kummerschalen">
-            <img src="../img/kwm/seladon-schalen-kachel.webp" width="240" height="240" loading="lazy" alt="">
-            <span class="now__date">16. August – 31. Oktober 2026</span>
-            <span class="now__title now__title--s">„Kummerschalen“</span>
-            <span class="now__place">Willibrordi-Dom, Wesel</span>
-          </a>
-        </li>
-        <li>
-          <a class="now__item" href="aktuelles.html#popup">
-            <img src="../img/kwm/regal-kachel.webp" width="240" height="240" loading="lazy" alt="">
-            <span class="now__date">6.–8. November 2026</span>
-            <span class="now__title now__title--s">Mode, Taschen, Keramik &amp; Licht im Dialog</span>
-            <span class="now__place">Pop-up in der Werkstatt, Zeche Zollverein</span>
-          </a>
-        </li>
-      </ol>
     </div>
   </section>
 
@@ -350,7 +358,7 @@
   </section>
 
   <!-- Werkstatt / Chronik -->
-  <section class="chronicle on-clay" id="werkstatt" aria-labelledby="chron-title">
+  <section class="chronicle" id="werkstatt" aria-labelledby="chron-title">
     <div class="chronicle__head grid">
       <h2 class="h2" id="chron-title" data-reveal="words">Hundert Jahre an der Scheibe.</h2>
     </div>

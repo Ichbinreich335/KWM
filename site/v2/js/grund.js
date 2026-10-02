@@ -1,13 +1,13 @@
-// Grundton-Umschalter für den Farbtest (Entwurf): Creme, Porzellan, Galerie.
+// Grundton-Umschalter für den Farbtest (Entwurf): Galerie (Standard), Porzellan, Creme.
 // Eingeklappt nur ein kleiner Knopf; Auswahl per ?grund=… oder Klick, gemerkt nur in diesem Browser.
 const TONES = [
-  { id: 'creme', name: 'Creme' },
-  { id: 'porzellan', name: 'Porzellan' },
   { id: 'galerie', name: 'Galerie' },
+  { id: 'porzellan', name: 'Porzellan' },
+  { id: 'creme', name: 'Creme' },
 ];
 const KEY = 'kwm-grund';
 const root = document.documentElement;
-const current = () => TONES.find((t) => t.id === (root.dataset.grund || 'creme')) || TONES[0];
+const current = () => TONES.find((t) => t.id === (root.dataset.grund || 'galerie')) || TONES[0];
 
 const css = document.createElement('link');
 css.rel = 'stylesheet';
@@ -52,7 +52,7 @@ list.addEventListener('click', (e) => {
   const btn = e.target.closest('.grund__btn');
   if (!btn) return;
   const id = btn.dataset.grund;
-  if (id === 'creme') delete root.dataset.grund; else root.dataset.grund = id;
+  if (id === 'galerie') delete root.dataset.grund; else root.dataset.grund = id;
   try { localStorage.setItem(KEY, id); } catch { /* Speicher nicht verfügbar: Auswahl gilt nur für diese Seite */ }
   sync();
   open(false);

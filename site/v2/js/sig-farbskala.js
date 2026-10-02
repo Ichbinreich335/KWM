@@ -10,7 +10,6 @@ const OPEN_GROW = 2.6;
 const OTHER_GROW = 0.8;
 const BAND_COUNT = 6;
 const INTRO_STAGGER = 130;
-const TRANSITION_MS = 1150;
 const SPRING = 5.5;
 const REST_EDGE = 0.34;
 const OPEN_EDGE = 0.2;
@@ -337,7 +336,6 @@ export default function init(el) {
   let raf = 0;
   let last = 0;
   let introDone = false;
-  let settleUntil = 0;
 
   const active = () => (hovered >= 0 ? hovered : focused >= 0 ? focused : pinned);
 
@@ -347,10 +345,9 @@ export default function init(el) {
     let moving = false;
     for (const t of tiles) {
       if (t.step(dt)) moving = true;
-      if (now < settleUntil && t.glaze.finish === 'glanz') t.dirty = true;
       if (t.dirty) t.draw();
     }
-    raf = moving || now < settleUntil ? requestAnimationFrame(frame) : 0;
+    raf = moving ? requestAnimationFrame(frame) : 0;
   };
   const wake = () => {
     if (raf) return;
@@ -360,7 +357,6 @@ export default function init(el) {
 
   const apply = () => {
     const a = active();
-    settleUntil = performance.now() + TRANSITION_MS;
     el.classList.toggle('has-open', a >= 0);
     tiles.forEach((t, i) => {
       t.el.classList.toggle('is-open', i === a);
@@ -391,17 +387,9 @@ export default function init(el) {
   tiles.forEach((t) => { t.target = 0; t.p = 0; });
   tiles.forEach((t) => t.draw());
 
-  // Zeigerbewegung verschiebt den Reflex
   bands.forEach((b, i) => {
     b.addEventListener('pointerenter', (e) => { if (e.pointerType === 'mouse') { hovered = i; apply(); } });
     b.addEventListener('pointerleave', (e) => { if (e.pointerType === 'mouse' && hovered === i) { hovered = -1; apply(); } });
-    b.addEventListener('pointermove', (e) => {
-      if (e.pointerType !== 'mouse') return;
-      const r = b.getBoundingClientRect();
-      const t = tiles[i];
-      t.mxTarget = Math.min(1, Math.max(0, narrow.matches ? (e.clientY - r.top) / r.height : (e.clientX - r.left) / r.width));
-      wake();
-    });
     b.addEventListener('focus', () => { if (b.matches(':focus-visible')) { focused = i; apply(); } });
     b.addEventListener('blur', () => { if (focused === i) { focused = -1; apply(); } });
     b.addEventListener('click', () => { pinned = pinned === i ? -1 : i; apply(); });
