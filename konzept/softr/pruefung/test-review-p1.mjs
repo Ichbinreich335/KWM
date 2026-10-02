@@ -1,0 +1,54 @@
+import { chromium, openApp, metrics } from './lib.mjs';
+const OUT = new URL('../../vergleich', import.meta.url).pathname;
+const VPS = { m: { width: 390, height: 844 }, t: { width: 820, height: 1180 } };
+const browser = await chromium.launch();
+const tap = async (l) => { await l.evaluate((el) => el.scrollIntoView({ block: 'center' })); await l.click(); };
+for (const [k, vp] of Object.entries(VPS)) {
+  const { ctx, page, errs, go } = await openApp(browser, vp);
+  await go('/bestand');
+  const b = page.locator('#vibe-coding1');
+  await b.getByText(/von \d+ Unikaten/).waitFor({ timeout: 40000 });
+  await page.waitForTimeout(1500);
+  await b.screenshot({ path: `${OUT}/softr-10-bestand-alle-${k}.png` });
+  console.log(k, 'metrics', JSON.stringify(await metrics(page)));
+  await b.getByLabel('Suche').fill('Playwright');
+  await tap(b.getByRole('button', { name: /Test-Schale/ }).first());
+  const det = page.getByRole('dialog');
+  await det.waitFor();
+  await page.waitForTimeout(1200);
+  await page.screenshot({ path: `${OUT}/softr-17-bestand-detail-${k}.png` });
+  const close = det.getByRole('button', { name: 'Schließen' });
+  console.log(k, 'Schließen-Knopf:', await close.count(), JSON.stringify(await close.first().boundingBox()), '| Close (englisch):', await det.getByRole('button', { name: 'Close' }).count());
+  const schnell = await det.getByText('Schnell ändern').boundingBox();
+  console.log(k, 'Schnell ändern bei y =', Math.round(schnell?.y ?? -1));
+  if (k === 'm') {
+    const aktuell = await det.getByRole('button', { pressed: true }).first().innerText();
+    const ziel = aktuell.includes('reserviert') ? 'verfügbar' : 'reserviert';
+    console.log('Status vorher:', aktuell.trim(), '→', ziel);
+    await tap(det.getByRole('button', { name: ziel, exact: true }));
+    const undo = det.getByRole('button', { name: 'Rückgängig' });
+    await undo.waitFor({ timeout: 20000 });
+    await page.screenshot({ path: `${OUT}/softr-19-bestand-rueckgaengig-${k}.png` });
+    await undo.click();
+    await page.waitForTimeout(3000);
+    await page.waitForTimeout(1500);
+    console.log('Status nach Rückgängig:', await det.getByRole('button', { pressed: true }).first().innerText());
+    await tap(det.getByRole('button', { name: 'Fertig' }));
+    await page.waitForTimeout(600);
+    console.log('Panel nach Fertig offen:', await page.getByRole('dialog').count());
+    await b.getByLabel('Suche').fill('');
+    await tap(b.getByRole('tab', { name: /Editionsware/ }));
+    await page.waitForTimeout(800);
+    await b.screenshot({ path: `${OUT}/softr-12-bestand-edition-${k}.png` });
+    await tap(b.getByRole('button', { name: 'Karaffe „Quelle“: eins mehr' }));
+    const u2 = page.getByRole('button', { name: 'Rückgängig' });
+    await u2.waitFor({ timeout: 20000 });
+    console.log('±1-Toast:', await page.getByText(/Karaffe „Quelle“: \d+ → \d+/).innerText());
+    await u2.click();
+    await page.waitForTimeout(2500);
+    console.log('Anzahl nach Rückgängig:', await b.getByLabel(/^Anzahl \d+/).nth(0).getAttribute('aria-label'));
+  }
+  console.log(k, 'errors', errs);
+  await ctx.close();
+}
+await browser.close();

@@ -4,8 +4,8 @@ import { useCurrentUser } from "@/lib/user";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import { ArrowRight, Check, Download, ImageOff, Loader2, Minus, Pencil, Plus, Search, Table2 } from "lucide-react";
+import { Sheet, SheetClose, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { ArrowRight, Check, Download, ImageOff, Loader2, Minus, Pencil, Plus, Search, Table2, X } from "lucide-react";
 import { toast } from "sonner";
 
 const ds = datasource.define({ unikate: "unikate", edition: "edition" });
@@ -76,6 +76,15 @@ const STATUS_STYLE: Record<string, string> = {
   [ROHLING]: "bg-stone-100 text-stone-700 border-stone-200",
   glasiert: "bg-teal-50 text-teal-800 border-teal-200",
 };
+
+const STATUS_ACTIVE: Record<string, string> = {
+  verfügbar: "bg-emerald-600 text-white border-emerald-600",
+  reserviert: "bg-amber-400 text-amber-950 border-amber-400",
+  [VERKAUFT]: "bg-zinc-500 text-white border-zinc-500",
+  [KOMMISSION]: "bg-sky-600 text-white border-sky-600",
+};
+const UNDO_MS = 10000;
+const SHEET_CLASS = "w-full overflow-y-auto [&>button:last-child]:hidden";
 
 type Opt = { id: string; label: string };
 type Attachment = { id?: string; url: string; filename?: string; thumbnails?: { url: string; size: string }[] };
@@ -325,17 +334,44 @@ function Thumb({ fotos, size, className }: { fotos: Attachment[]; size: "small" 
   return <img src={thumb(first, size)} alt="" loading="lazy" className={`${className} object-cover`} />;
 }
 
-function Chip({ active, onClick, children, disabled }: { active: boolean; onClick: () => void; children: string; disabled?: boolean }) {
+function Chip({ active, onClick, children, disabled, activeClass }: { active: boolean; onClick: () => void; children: string; disabled?: boolean; activeClass?: string }) {
   return (
     <button
       type="button"
       aria-pressed={active}
       disabled={disabled}
       onClick={onClick}
-      className={`min-h-11 px-4 rounded-full border text-base disabled:opacity-60 ${active ? "bg-primary text-primary-foreground border-primary" : "bg-background hover:bg-muted border-input"}`}
+      className={`inline-flex items-center gap-1.5 min-h-11 px-4 rounded-full border text-base disabled:opacity-60 ${active ? activeClass ?? "bg-primary text-primary-foreground border-primary" : "bg-background hover:bg-muted border-input"}`}
     >
+      {active && <Check className="w-4 h-4" aria-hidden />}
       {children}
     </button>
+  );
+}
+
+function PanelHeader({ title, description }: { title: string; description: string }) {
+  return (
+    <SheetHeader className="flex-row items-start justify-between gap-3 space-y-0">
+      <div className="min-w-0">
+        <SheetTitle className="text-xl break-words hyphens-auto">{title}</SheetTitle>
+        <SheetDescription>{description}</SheetDescription>
+      </div>
+      <SheetClose asChild>
+        <Button variant="ghost" className="h-11 w-11 p-0 shrink-0" aria-label="Schließen">
+          <X className="w-6 h-6" aria-hidden />
+        </Button>
+      </SheetClose>
+    </SheetHeader>
+  );
+}
+
+function DoneButton() {
+  return (
+    <SheetClose asChild>
+      <Button variant="outline" className="w-full h-12 text-base">
+        Fertig
+      </Button>
+    </SheetClose>
   );
 }
 
@@ -364,9 +400,9 @@ function UnikatCard({ u, onOpen }: { u: Unikat; onOpen: () => void }) {
   const ort = u.status === KOMMISSION && u.galerie ? u.galerie.label : u.lagerort?.label;
   return (
     <button type="button" onClick={onOpen} className="w-full text-left flex gap-3 rounded-xl border bg-card p-3 min-w-0 hover:border-primary/50 hover:shadow-sm transition">
-      <Thumb fotos={u.fotos} size="medium" className="w-24 h-24 shrink-0 rounded-lg" />
+      <Thumb fotos={u.fotos} size="medium" className="w-20 h-20 sm:w-24 sm:h-24 shrink-0 rounded-lg" />
       <div className="min-w-0 flex-1 space-y-1.5">
-        <p className="font-semibold text-base leading-snug break-words">{u.name || "Ohne Namen"}</p>
+        <p className="font-semibold text-base leading-snug hyphens-auto">{u.name || "Ohne Namen"}</p>
         <p className="text-sm text-muted-foreground">
           {u.inv} · {u.typ}
         </p>
@@ -431,17 +467,24 @@ function UnikatDetail({
   const [photoIndex, setPhotoIndex] = useState(0);
   const [newFiles, setNewFiles] = useState<File[]>([]);
   const [busy, setBusy] = useState(false);
+  const [undo, setUndo] = useState<{ text: string; fields: Record<string, unknown> } | null>(null);
   const { uploadAsync } = useUpload();
   const update = useRecordUpdate({ from: ds.unikate, fields: unikatWerkstattFields });
+  useEffect(() => {
+    if (!undo) return;
+    const timer = window.setTimeout(() => setUndo(null), UNDO_MS);
+    return () => window.clearTimeout(timer);
+  }, [undo]);
   const set = <K extends keyof EditForm>(k: K, v: EditForm[K]) => setForm((s) => ({ ...s, [k]: v }));
   const photo = u.fotos[Math.min(photoIndex, u.fotos.length - 1)];
 
-  async function quickSave(fields: Record<string, unknown>, message: string) {
+  async function quickSave(fields: Record<string, unknown>, message: string, undoFields?: Record<string, unknown>) {
     setBusy(true);
     try {
       await update.mutateAsync({ recordId: u.id, fields } as never);
       await onSaved();
       toast.success(message);
+      setUndo(undoFields ? { text: message, fields: undoFields } : null);
     } catch {
       toast.error("Speichern hat nicht geklappt. Bitte erneut versuchen.");
     } finally {
@@ -451,10 +494,10 @@ function UnikatDetail({
 
   function changeStatus(status: string) {
     if (status === u.status || busy) return;
-    const fields: Record<string, unknown> = { status };
-    if (status === VERKAUFT) fields.verkauftAm = today();
+    const fields: Record<string, unknown> = { status, verkauftAm: status === VERKAUFT ? today() : null };
     if (status !== KOMMISSION) fields.galerie = [];
-    quickSave(fields, `Status: ${status}`);
+    const before = { status: u.status, verkauftAm: u.verkauftAm ? u.verkauftAm.slice(0, 10) : null, galerie: link(u.galerie?.id) };
+    quickSave(fields, `Status: ${status}`, before);
   }
 
   async function saveAll() {
@@ -510,38 +553,10 @@ function UnikatDetail({
 
   return (
     <Sheet open onOpenChange={(o) => !o && onClose()}>
-      <SheetContent side="right" className="w-full sm:max-w-xl overflow-y-auto">
-        <SheetHeader>
-          <SheetTitle className="text-xl">{u.name || "Ohne Namen"}</SheetTitle>
-          <SheetDescription>
-            {u.inv} · {u.typ}
-          </SheetDescription>
-        </SheetHeader>
-        <div className="px-4 pb-8 space-y-6">
-          {photo ? (
-            <div className="space-y-2">
-              <img src={thumb(photo, "large")} alt={u.name} className="w-full max-h-80 object-contain rounded-xl bg-muted" />
-              {u.fotos.length > 1 && (
-                <div className="flex gap-2 overflow-x-auto">
-                  {u.fotos.map((a, i) => (
-                    <button key={a.id ?? a.url} type="button" aria-label={`Foto ${i + 1} zeigen`} onClick={() => setPhotoIndex(i)} className={`shrink-0 rounded-md overflow-hidden border-2 ${i === photoIndex ? "border-primary" : "border-transparent"}`}>
-                      <img src={thumb(a, "small")} alt="" className="w-16 h-16 object-cover" />
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-          ) : (
-            <div className="h-32 rounded-xl bg-muted flex items-center justify-center gap-2 text-muted-foreground">
-              <ImageOff className="w-5 h-5" aria-hidden /> Noch kein Foto
-            </div>
-          )}
-
-          <div className="flex flex-wrap items-center gap-3">
-            <Badge text={u.status} />
-            {u.preis !== null && <span className="text-lg font-semibold">{euro.format(u.preis)}</span>}
-          </div>
-
+      <SheetContent side="right" className={`${SHEET_CLASS} sm:max-w-xl`}>
+        <PanelHeader title={u.name || "Ohne Namen"} description={[u.inv, u.typ, u.preis !== null ? euro.format(u.preis) : ""].filter(Boolean).join(" · ")} />
+        <div className="px-4 pb-8 space-y-6" lang="de">
+          {!update.enabled && <Badge text={u.status} />}
           {update.enabled && (
             <section className="rounded-xl border p-4 space-y-4" aria-labelledby="schnell-titel">
               <h3 id="schnell-titel" className="text-base font-semibold">
@@ -551,7 +566,7 @@ function UnikatDetail({
                 <p className="text-sm text-muted-foreground mb-2">Status</p>
                 <div className="flex flex-wrap gap-2">
                   {statusListe.map((s) => (
-                    <Chip key={s.id} active={u.status === s.label} disabled={busy} onClick={() => changeStatus(s.label)}>
+                    <Chip key={s.id} active={u.status === s.label} activeClass={STATUS_ACTIVE[s.label]} disabled={busy} onClick={() => changeStatus(s.label)}>
                       {s.label}
                     </Chip>
                   ))}
@@ -565,7 +580,7 @@ function UnikatDetail({
                   id="d-lagerort"
                   value={u.lagerort?.id ?? ""}
                   disabled={busy}
-                  onChange={(v) => quickSave({ lagerort: link(v) }, `Lagerort: ${lagerorte.find((l) => l.id === v)?.label ?? "keiner"}`)}
+                  onChange={(v) => quickSave({ lagerort: link(v) }, `Lagerort: ${lagerorte.find((l) => l.id === v)?.label ?? "keiner"}`, { lagerort: link(u.lagerort?.id) })}
                   options={lagerorte}
                   placeholder="Kein Lagerort"
                 />
@@ -579,7 +594,7 @@ function UnikatDetail({
                     id="d-galerie"
                     value={u.galerie?.id ?? ""}
                     disabled={busy}
-                    onChange={(v) => quickSave({ galerie: link(v) }, `Galerie: ${galerien.find((g) => g.id === v)?.label ?? "keine"}`)}
+                    onChange={(v) => quickSave({ galerie: link(v) }, `Galerie: ${galerien.find((g) => g.id === v)?.label ?? "keine"}`, { galerie: link(u.galerie?.id) })}
                     options={galerien}
                     placeholder="Galerie wählen"
                   />
@@ -590,7 +605,41 @@ function UnikatDetail({
                   <Loader2 className="w-4 h-4 animate-spin" aria-hidden /> Wird gespeichert …
                 </p>
               )}
+              {undo && !busy && (
+                <div role="status" className="flex items-center justify-between gap-3 rounded-lg bg-muted p-2 pl-3">
+                  <span className="text-sm">{undo.text} gespeichert</span>
+                  <Button
+                    variant="outline"
+                    className="h-11 text-base"
+                    onClick={() => {
+                      const fields = undo.fields;
+                      setUndo(null);
+                      quickSave(fields, "Rückgängig gemacht");
+                    }}
+                  >
+                    Rückgängig
+                  </Button>
+                </div>
+              )}
             </section>
+          )}
+          {photo ? (
+            <div className="space-y-2">
+              <img src={thumb(photo, "large")} alt={u.name} className="w-full max-h-56 object-contain rounded-xl bg-muted" />
+              {u.fotos.length > 1 && (
+                <div className="flex gap-2 overflow-x-auto">
+                  {u.fotos.map((a, i) => (
+                    <button key={a.id ?? a.url} type="button" aria-label={`Foto ${i + 1} zeigen`} onClick={() => setPhotoIndex(i)} className={`shrink-0 rounded-md overflow-hidden border-2 ${i === photoIndex ? "border-primary" : "border-transparent"}`}>
+                      <img src={thumb(a, "small")} alt="" className="w-16 h-16 object-cover" />
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="h-24 rounded-xl bg-muted flex items-center justify-center gap-2 text-muted-foreground">
+              <ImageOff className="w-5 h-5" aria-hidden /> Noch kein Foto
+            </div>
           )}
 
           {!editing ? (
@@ -628,6 +677,7 @@ function UnikatDetail({
                   </Button>
                 )}
                 <p className="text-sm text-muted-foreground">Löschen ist nicht vorgesehen. Verkaufte Stücke bitte auf „verkauft“ setzen.</p>
+                <DoneButton />
               </div>
             </>
           ) : (
@@ -711,19 +761,19 @@ function UnikatDetail({
 
 function EditionRow({ e, busy, canEdit, onAdjust, onOpen }: { e: Edition; busy: boolean; canEdit: boolean; onAdjust: (delta: number) => void; onOpen: () => void }) {
   return (
-    <div className="flex items-center gap-3 rounded-xl border bg-card p-3 min-w-0">
+    <div className="flex flex-col sm:flex-row sm:items-center gap-3 rounded-xl border bg-card p-3 min-w-0">
       <button type="button" onClick={onOpen} className="flex items-center gap-3 min-w-0 flex-1 text-left">
         <Thumb fotos={e.foto} size="small" className="w-14 h-14 shrink-0 rounded-lg" />
         <div className="min-w-0 space-y-1">
-          <p className="font-semibold text-base leading-snug break-words">{e.modell}</p>
+          <p className="font-semibold text-base leading-snug hyphens-auto">{e.modell}</p>
           <div className="flex flex-wrap items-center gap-2">
             <Badge text={e.zustand} />
             {e.glasur && <span className="text-sm">{e.glasur}</span>}
           </div>
-          <p className="text-sm text-muted-foreground truncate">{e.lagerort?.label ?? "Kein Lagerort"}</p>
+          <p className="text-sm text-muted-foreground">{e.lagerort?.label ?? "Kein Lagerort"}</p>
         </div>
       </button>
-      <div className="flex items-center gap-1 shrink-0">
+      <div className="flex items-center gap-1 shrink-0 self-end sm:self-auto">
         {canEdit && (
           <Button variant="outline" className="h-11 w-11 p-0" aria-label={`${e.modell}: eins weniger`} disabled={busy || e.anzahl <= 0} onClick={() => onAdjust(-1)}>
             <Minus className="w-5 h-5" aria-hidden />
@@ -750,11 +800,8 @@ function EditionDetail({ e, onClose, onSave, lagerorte, canEdit }: { e: Edition;
   const value = Number(anzahl) || 0;
   return (
     <Sheet open onOpenChange={(o) => !o && onClose()}>
-      <SheetContent side="right" className="w-full sm:max-w-md overflow-y-auto">
-        <SheetHeader>
-          <SheetTitle className="text-xl">{e.modell}</SheetTitle>
-          <SheetDescription>{[e.typ, e.zustand, e.glasur].filter(Boolean).join(" · ")}</SheetDescription>
-        </SheetHeader>
+      <SheetContent side="right" className={`${SHEET_CLASS} sm:max-w-md`}>
+        <PanelHeader title={e.modell} description={[e.typ, e.zustand, e.glasur].filter(Boolean).join(" · ")} />
         <div className="px-4 pb-8 space-y-6">
           {e.foto[0] && <img src={thumb(e.foto[0], "large")} alt={e.modell} className="w-full max-h-72 object-contain rounded-xl bg-muted" />}
           <div>
@@ -790,6 +837,7 @@ function EditionDetail({ e, onClose, onSave, lagerorte, canEdit }: { e: Edition;
               {busy ? "Wird gespeichert …" : "Änderungen speichern"}
             </Button>
           )}
+          <DoneButton />
         </div>
       </SheetContent>
     </Sheet>
@@ -861,9 +909,20 @@ export default function Block() {
 
   async function adjustEdition(e: Edition, delta: number) {
     setPendingEdition(e.id);
+    const neu = Math.max(0, e.anzahl + delta);
     try {
-      await editionUpdate.mutateAsync({ recordId: e.id, fields: { anzahl: Math.max(0, e.anzahl + delta) } } as never);
+      await editionUpdate.mutateAsync({ recordId: e.id, fields: { anzahl: neu } } as never);
       await editionQuery.refetch();
+      toast.success(`${e.modell}${e.glasur ? ` · ${e.glasur}` : ""}: ${e.anzahl} → ${neu}`, {
+        duration: 6000,
+        action: {
+          label: "Rückgängig",
+          onClick: async () => {
+            await editionUpdate.mutateAsync({ recordId: e.id, fields: { anzahl: e.anzahl } } as never);
+            await editionQuery.refetch();
+          },
+        },
+      });
     } catch {
       toast.error("Anzahl konnte nicht gespeichert werden.");
     } finally {
@@ -928,7 +987,7 @@ export default function Block() {
             <Input
               type="search"
               aria-label="Suche"
-              placeholder={isEdition ? "Modell oder Glasur suchen" : "Name, Inventarnummer, Glasur … suchen"}
+              placeholder={isEdition ? "Suchen: Modell, Glasur" : "Suchen: Name, Nummer, Glasur"}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="h-12 pl-10 text-base"
@@ -971,7 +1030,7 @@ export default function Block() {
           visibleEdition.length === 0 ? (
             <p className="rounded-xl border p-6 text-base text-muted-foreground text-center">Keine Editionsware gefunden.</p>
           ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+            <div className="grid grid-cols-[repeat(auto-fill,minmax(min(100%,22rem),1fr))] gap-3" lang="de">
               {visibleEdition.map((e) => (
                 <EditionRow key={e.id} e={e} busy={pendingEdition === e.id} canEdit={editionUpdate.enabled} onAdjust={(d) => adjustEdition(e, d)} onOpen={() => setEditionId(e.id)} />
               ))}
@@ -988,7 +1047,7 @@ export default function Block() {
           </div>
         ) : (
           <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3">
+            <div className="grid grid-cols-[repeat(auto-fill,minmax(min(100%,19rem),1fr))] gap-3" lang="de">
               {visible.slice(0, limit).map((u) => (
                 <UnikatCard key={u.id} u={u} onOpen={() => setSelectedId(u.id)} />
               ))}
