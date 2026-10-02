@@ -154,7 +154,7 @@ function trimmedOuter(c) {
 }
 
 /* ---------- Späne ---------- */
-const CHIP_COUNT = 72;
+const CHIP_COUNT = 46;
 const CHIP_AGE = 14; // Schnittfortschritt in Flugzeit
 const GRAVITY = 1.5;
 const DRAG = 1.1;
@@ -164,8 +164,8 @@ const CHIPS = Array.from({ length: CHIP_COUNT }, (_, i) => {
   const o = pointAt(FINAL_OUT, indexAtArc(c));
   return {
     c, ox: o[0], oy: 2 * WENDE_Y - o[1], // kopfüber
-    size: 0.02 + rnd() * 0.03, turns: 1.1 + rnd() * 1.2,
-    vx: 0.25 + rnd() * 0.7, vy: 0.2 + rnd() * 0.75, vt: 0.35 + rnd() * 0.8, vr: 0.1 + rnd() * 0.5,
+    size: 0.04 + rnd() * 0.06, turns: 1.2 + rnd() * 1.1, w: 2.2 + rnd() * 1.4,
+    vx: 0.45 + rnd() * 0.5, vy: 0.2 + rnd() * 0.75, vt: 0.35 + rnd() * 0.8, vr: 0.1 + rnd() * 0.5,
     spin: (rnd() - 0.5) * 9, ang: rnd() * 6.28, mix: rnd(),
   };
 });
@@ -486,67 +486,93 @@ export default function init(el) {
     const dl = Math.hypot(dx, dy);
     dx /= dl; dy /= dl;
     const away = (1 - S.tool) * 1.8;
-    const x0 = X(tip[0] + dx * away), y0 = Y(tip[1] + dy * away);
-    const sx = dx, sy = -dy; // Bildschirmrichtung
-    const px = -sy, py = sx;
-    const blade = 0.5 * sc, handle = 0.62 * sc;
+    drawIron(X(tip[0] + dx * away), Y(tip[1] + dy * away), dx, -dy, sc);
+  };
 
+  // Dreheisen: Holzgriff mit dreieckiger Metallschlinge aus Bandeisen vorn
+  const drawIron = (x0, y0, sx, sy, k) => {
+    const px = -sy, py = sx;
+    const at = (a, b) => [x0 + sx * a * k + px * b * k, y0 + sy * a * k + py * b * k];
+    const blade = 0.3, half = 0.075, ferrule = 0.07, handle = 0.4;
     ctx.save();
     ctx.shadowColor = 'rgba(30,20,10,0.28)';
     ctx.shadowBlur = 8;
     ctx.shadowOffsetX = 5;
     ctx.shadowOffsetY = 8;
-    // Schaft aus Stahl
-    ctx.lineCap = 'round';
-    const steel = ctx.createLinearGradient(x0 + px * 4, y0 + py * 4, x0 - px * 4, y0 - py * 4);
-    steel.addColorStop(0, '#C9CCCB');
-    steel.addColorStop(0.5, '#8A8F8E');
-    steel.addColorStop(1, '#5B6060');
-    ctx.strokeStyle = steel;
-    ctx.lineWidth = 6;
+    // Schlinge: äußeres und inneres Dreieck, Mitte offen
+    const outer = [at(0, 0), at(blade, half), at(blade, -half)];
+    const inset = 0.022;
+    const inner = [at(inset * 2.4, 0), at(blade - inset, half - inset * 1.7), at(blade - inset, -half + inset * 1.7)];
+    const steel = ctx.createLinearGradient(...at(0, half), ...at(0, -half));
+    steel.addColorStop(0, '#D6D9D8');
+    steel.addColorStop(0.5, '#9AA0A0');
+    steel.addColorStop(1, '#5F6565');
+    ctx.fillStyle = steel;
     ctx.beginPath();
-    ctx.moveTo(x0, y0);
-    ctx.lineTo(x0 + sx * blade, y0 + sy * blade);
-    ctx.stroke();
-    // Griff aus Holz
+    [outer, inner].forEach((tri) => { tri.forEach((q, i) => ctx[i ? 'lineTo' : 'moveTo'](q[0], q[1])); ctx.closePath(); });
+    ctx.fill('evenodd');
     ctx.shadowColor = 'transparent';
-    const wood = ctx.createLinearGradient(x0 + sx * blade + px * 7, y0 + sy * blade + py * 7, x0 + sx * blade - px * 7, y0 + sy * blade - py * 7);
+    // Glanzkante der Klinge
+    ctx.strokeStyle = 'rgba(255,255,255,0.75)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(...outer[0]);
+    ctx.lineTo(...outer[1]);
+    ctx.stroke();
+    // Zwinge und Griff
+    const f0 = at(blade, 0), f1 = at(blade + ferrule, 0), h1 = at(blade + ferrule + handle, 0);
+    ctx.lineCap = 'butt';
+    ctx.strokeStyle = '#7C8282';
+    ctx.lineWidth = Math.max(5, 0.07 * k);
+    ctx.beginPath();
+    ctx.moveTo(...f0);
+    ctx.lineTo(...f1);
+    ctx.stroke();
+    const wood = ctx.createLinearGradient(...at(blade + ferrule, 0.05), ...at(blade + ferrule, -0.05));
     wood.addColorStop(0, '#9A6B42');
     wood.addColorStop(0.45, '#7A4F2E');
     wood.addColorStop(1, '#4A2F1B');
     ctx.strokeStyle = wood;
-    ctx.lineWidth = 14;
+    ctx.lineWidth = Math.max(9, 0.1 * k);
+    ctx.lineCap = 'round';
     ctx.beginPath();
-    ctx.moveTo(x0 + sx * blade, y0 + sy * blade);
-    ctx.lineTo(x0 + sx * (blade + handle), y0 + sy * (blade + handle));
+    ctx.moveTo(...f1);
+    ctx.lineTo(...h1);
     ctx.stroke();
     ctx.restore();
-    // Schlinge: kleiner Stahlring an der Spitze
-    ctx.strokeStyle = '#6E7372';
-    ctx.lineWidth = 1.6;
-    ctx.beginPath();
-    ctx.arc(x0 + sx * 3, y0 + sy * 3, 3.6, 0, 6.283);
-    ctx.stroke();
   };
 
   /* Späne */
-  const chipColor = (ch, S, a = 1) => css(mixc(mixc(rgbOf(CLAY.leather), rgbOf(CLAY.porcelain), ch.mix * 0.5), S.clay, 0.35), a);
-  const drawCurl = (x, y, size, turns, ang, col, edge) => {
+  const chipColor = (ch, S) => mixc(mixc(rgbOf(CLAY.leather), rgbOf(CLAY.porcelain), ch.mix * 0.4), S.clay, 0.35);
+  const ribbon = (x, y, len, ch, ang, flat, S, thin = 1) => {
+    const c = chipColor(ch, S);
+    drawCurl(x, y, len, ch.w * thin, ch.turns, ang, flat, css(tone(c, -0.3)), css(c), css(tone(c, 0.35), 0.9));
+  };
+  // Span: schmales Tonband, locker gewellt; flach liegend, wenn er gelandet ist
+  const drawCurl = (x, y, len, width, turns, ang, flat, col, under, edge) => {
     ctx.save();
     ctx.translate(x, y);
     ctx.rotate(ang);
+    const amp = (width * 1.7 + len * 0.08) * (1 - flat * 0.75);
     ctx.beginPath();
-    const n = 18;
+    const n = 16;
     for (let i = 0; i <= n; i++) {
-      const f = i / n, th = f * turns * 6.283, rr = size * (0.3 + f * 0.7);
-      ctx[i ? 'lineTo' : 'moveTo'](Math.cos(th) * rr, Math.sin(th) * rr * 0.8);
+      const f = i / n;
+      ctx[i ? 'lineTo' : 'moveTo']((f - 0.5) * len, amp * Math.sin(f * turns * 6.283));
     }
     ctx.lineCap = 'round';
-    ctx.strokeStyle = edge;
-    ctx.lineWidth = Math.max(2, size * 0.5) + 1.2;
+    ctx.lineJoin = 'round';
+    ctx.strokeStyle = under;
+    ctx.lineWidth = width + 0.8;
+    ctx.translate(0, 0.7);
     ctx.stroke();
+    ctx.translate(0, -0.7);
     ctx.strokeStyle = col;
-    ctx.lineWidth = Math.max(1.4, size * 0.5);
+    ctx.lineWidth = width;
+    ctx.stroke();
+    ctx.strokeStyle = edge;
+    ctx.lineWidth = Math.max(0.6, width * 0.3);
+    ctx.translate(0, -width * 0.25);
     ctx.stroke();
     ctx.restore();
   };
@@ -555,18 +581,18 @@ export default function init(el) {
   const drawChipsProfile = (S) => {
     if (S.cut == null && S.c <= 0) return;
     const { sc, ax, gy } = prof;
-    const edge = css(tone(S.clay, -0.45), 0.7);
     for (const ch of CHIPS) {
       const age = (S.c - ch.c) * CHIP_AGE;
       if (age <= 0) continue;
       const k = (1 - Math.exp(-DRAG * age)) / DRAG;
       const x = ch.ox + ch.vx * k;
       let y = ch.oy + ch.vy * age - 0.5 * GRAVITY * age * age;
-      const fl = floorAt(x) + ch.size * 0.35;
+      const fl = floorAt(x) + 0.008;
       const landed = y <= fl;
       if (landed) y = fl;
-      const ang = ch.ang + ch.spin * Math.min(age, 1.4);
-      drawCurl(ax + x * sc, gy - y * sc, ch.size * sc, ch.turns, ang, chipColor(ch, S), edge);
+      // Flach und unregelmäßig liegend: flacher Winkel, nach Landung kaum Drehung
+      const ang = landed ? (ch.ang % 0.7) - 0.35 : ch.ang + ch.spin * Math.min(age, 1.4);
+      ribbon(ax + x * sc, gy - y * sc, ch.size * sc, ch, ang, landed ? 1 : 0, S);
     }
   };
 
@@ -576,7 +602,7 @@ export default function init(el) {
     const { sc, ax, gy } = prof;
     const tip = pointAt(outerPosed, S.cut.kf);
     const f = (S.c * 36) % 1;
-    drawCurl(ax + (tip[0] + 0.03) * sc, gy - (tip[1] + 0.05) * sc, (0.012 + 0.03 * f) * sc, 0.6 + f * 1.6, S.c * 40, chipColor(CHIPS[0], S), css(tone(S.clay, -0.45), 0.7));
+    ribbon(ax + (tip[0] + 0.04) * sc, gy - (tip[1] + 0.045) * sc, (0.02 + 0.05 * f) * sc, CHIPS[0], -0.9 + f * 0.8, 0, S);
   };
 
   /* ---------- Zeichnen: Draufsicht ---------- */
@@ -743,37 +769,17 @@ export default function init(el) {
     if (S.tool > 0.01) {
       const rc = pointAt(S.cut.outer, S.cut.kf)[0] * ds;
       const away = (1 - S.tool) * ds * 1.6;
-      ctx.save();
-      ctx.shadowColor = 'rgba(20,12,6,0.4)';
-      ctx.shadowBlur = 8;
-      ctx.shadowOffsetX = 4;
-      ctx.shadowOffsetY = 7;
-      ctx.lineCap = 'round';
-      ctx.strokeStyle = '#8A8F8E';
-      ctx.lineWidth = Math.max(4, ds * 0.07);
-      ctx.beginPath();
-      ctx.moveTo(rc + away, 0);
-      ctx.lineTo(rc + away + ds * 0.55, 0);
-      ctx.stroke();
-      ctx.shadowColor = 'transparent';
-      ctx.strokeStyle = '#7A4F2E';
-      ctx.lineWidth = Math.max(8, ds * 0.14);
-      ctx.beginPath();
-      ctx.moveTo(rc + away + ds * 0.55, 0);
-      ctx.lineTo(rc + away + ds * 1.2, 0);
-      ctx.stroke();
-      ctx.restore();
+      drawIron(rc + away, 0, 1, 0, ds);
     }
 
     // Späne fliegen tangential vom Schnitt weg
     if (S.c > 0) {
-      const edge = css(tone(S.clay, -0.45), 0.7);
       for (const ch of CHIPS) {
         const age = (S.c - ch.c) * CHIP_AGE;
         if (age <= 0) continue;
         const k = (1 - Math.exp(-DRAG * age)) / DRAG;
         const x = (ch.ox + ch.vr * k) * ds, y = ch.vt * k * ds;
-        drawCurl(x, y, Math.max(1.6, ch.size * ds * 0.8), ch.turns, ch.ang + ch.spin * Math.min(age, 1.4), chipColor(ch, S), edge);
+        ribbon(x, y, ch.size * ds * 0.8, ch, ch.ang + ch.spin * Math.min(age, 1.4), age > 1.4 ? 1 : 0, S, 0.7);
       }
     }
 
