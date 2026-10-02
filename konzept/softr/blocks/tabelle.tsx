@@ -33,6 +33,7 @@ const unikatSelect = q.select({
   erfasstAm: "p4ha0",
   geaendertAm: "aGhiL",
   verkauftAm: "48BXo",
+  rueckgabe: "ENQkk",
 });
 const editionSelect = q.select({
   modell: "jxN6x",
@@ -58,6 +59,7 @@ const STATUS_STYLE: Record<string, string> = {
   reserviert: "bg-amber-100 text-amber-900 border-amber-200",
   verkauft: "bg-zinc-100 text-zinc-600 border-zinc-200",
   "in Kommission": "bg-sky-100 text-sky-800 border-sky-200",
+  ausgestellt: "bg-violet-100 text-violet-800 border-violet-200",
   Rohling: "bg-stone-100 text-stone-700 border-stone-200",
   glasiert: "bg-teal-50 text-teal-800 border-teal-200",
 };
@@ -88,6 +90,7 @@ type Row = {
   erfasstAm: string;
   geaendertAm: string;
   verkauftAm: string;
+  rueckgabe: string;
   foto: Attachment | undefined;
 };
 
@@ -110,7 +113,8 @@ type ColKey =
   | "notiz"
   | "erfasstAm"
   | "geaendertAm"
-  | "verkauftAm";
+  | "verkauftAm"
+  | "rueckgabe";
 type CellValue = string | number | boolean | string[] | null;
 type Col = { key: ColKey; label: string; type: FieldType; get: (r: Row) => CellValue; visible: boolean; align?: "right" };
 
@@ -127,12 +131,13 @@ const COLUMNS: Col[] = [
   { key: "kuenstler", label: "Künstler:in", type: "select", get: (r) => r.kuenstler || null, visible: false },
   { key: "jahr", label: "Jahr", type: "number", get: (r) => r.jahr, visible: false, align: "right" },
   { key: "masse", label: "Maße", type: "text", get: (r) => r.masse || null, visible: false },
-  { key: "galerie", label: "Galerie", type: "select", get: (r) => r.galerie || null, visible: false },
+  { key: "galerie", label: "Partner", type: "select", get: (r) => r.galerie || null, visible: false },
   { key: "website", label: "Auf Website", type: "bool", get: (r) => r.website, visible: false },
   { key: "notiz", label: "Notiz", type: "text", get: (r) => r.notiz || null, visible: false },
   { key: "erfasstAm", label: "Erfasst am", type: "date", get: (r) => r.erfasstAm.slice(0, 10) || null, visible: false },
   { key: "geaendertAm", label: "Geändert am", type: "date", get: (r) => r.geaendertAm.slice(0, 10) || null, visible: false },
   { key: "verkauftAm", label: "Verkauft am", type: "date", get: (r) => r.verkauftAm.slice(0, 10) || null, visible: false },
+  { key: "rueckgabe", label: "Rückgabe bis", type: "date", get: (r) => r.rueckgabe.slice(0, 10) || null, visible: false },
 ];
 const COL = Object.fromEntries(COLUMNS.map((c) => [c.key, c])) as Record<ColKey, Col>;
 const DEFAULT_VISIBLE = COLUMNS.filter((c) => c.visible).map((c) => c.key);
@@ -270,6 +275,7 @@ function toUnikatRow(i: RawItem): Row {
     erfasstAm: str(f.erfasstAm),
     geaendertAm: str(f.geaendertAm),
     verkauftAm: str(f.verkauftAm),
+    rueckgabe: str(f.rueckgabe),
     foto: firstAttachment(f.fotos),
   };
 }
@@ -299,6 +305,7 @@ function toEditionRow(i: RawItem): Row {
     erfasstAm: str(f.erfasstAm),
     geaendertAm: str(f.geaendertAm),
     verkauftAm: "",
+    rueckgabe: "",
     foto: firstAttachment(f.foto),
   };
 }

@@ -31,6 +31,8 @@ const unikatSelect = q.select({
   erfasstAm: "p4ha0",
   geaendertAm: "aGhiL",
   verkauftAm: "48BXo",
+  seit: "Evxm2",
+  rueckgabe: "ENQkk",
 });
 const unikatWerkstattFields = q.select({
   name: "7IBVW",
@@ -45,6 +47,8 @@ const unikatWerkstattFields = q.select({
   galerie: "NfsXv",
   notiz: "Ku4py",
   verkauftAm: "48BXo",
+  seit: "Evxm2",
+  rueckgabe: "ENQkk",
   fotos: "rqreT",
 });
 const editionSelect = q.select({
@@ -63,6 +67,8 @@ const userProperties = { role: "z0b2k" };
 const PAGE_SIZE = 100;
 const CARD_STEP = 48;
 const KOMMISSION = "in Kommission";
+const AUSGESTELLT = "ausgestellt";
+const isAusserHaus = (status: string) => status === KOMMISSION || status === AUSGESTELLT;
 const VERKAUFT = "verkauft";
 const ROHLING = "Rohling";
 const EVENT_ADMIN_EDIT = "kwm:unikat-admin-bearbeiten";
@@ -73,6 +79,7 @@ const STATUS_STYLE: Record<string, string> = {
   reserviert: "bg-amber-100 text-amber-900 border-amber-200",
   [VERKAUFT]: "bg-zinc-100 text-zinc-600 border-zinc-200",
   [KOMMISSION]: "bg-sky-100 text-sky-800 border-sky-200",
+  [AUSGESTELLT]: "bg-violet-100 text-violet-800 border-violet-200",
   [ROHLING]: "bg-stone-100 text-stone-700 border-stone-200",
   glasiert: "bg-teal-50 text-teal-800 border-teal-200",
 };
@@ -82,6 +89,7 @@ const STATUS_ACTIVE: Record<string, string> = {
   reserviert: "bg-amber-400 text-amber-950 border-amber-400",
   [VERKAUFT]: "bg-zinc-500 text-white border-zinc-500",
   [KOMMISSION]: "bg-sky-600 text-white border-sky-600",
+  [AUSGESTELLT]: "bg-violet-700 text-white border-violet-700",
 };
 const UNDO_MS = 10000;
 const SHEET_CLASS = "w-full overflow-y-auto [&>button:last-child]:hidden";
@@ -112,6 +120,8 @@ type Unikat = {
   erfasstVon: string;
   erfasstAm: string;
   verkauftAm: string;
+  seit: string;
+  rueckgabe: string;
 };
 
 type Edition = {
@@ -135,7 +145,7 @@ const TABS: { key: TabKey; label: string; match?: (u: Unikat) => boolean }[] = [
   { key: "schalen", label: "Schalen", match: (u) => u.typ === "Schale" },
   { key: "vasen", label: "Vasen", match: (u) => u.typ === "Vase" },
   { key: "teller", label: "Teller", match: (u) => u.typ === "Teller" },
-  { key: "kommission", label: "In Kommission", match: (u) => u.status === KOMMISSION },
+  { key: "kommission", label: "Außer Haus", match: (u) => isAusserHaus(u.status) },
   { key: "edition", label: "Editionsware" },
 ];
 
@@ -217,6 +227,8 @@ function toUnikat(item: RawItem): Unikat {
     erfasstVon: str(f.erfasstVon),
     erfasstAm: str(f.erfasstAm),
     verkauftAm: str(f.verkauftAm),
+    seit: str(f.seit),
+    rueckgabe: str(f.rueckgabe),
   };
 }
 
@@ -397,7 +409,7 @@ function Label({ htmlFor, children }: { htmlFor?: string; children: string }) {
 }
 
 function UnikatCard({ u, onOpen }: { u: Unikat; onOpen: () => void }) {
-  const ort = u.status === KOMMISSION && u.galerie ? u.galerie.label : u.lagerort?.label;
+  const ort = isAusserHaus(u.status) && u.galerie ? u.galerie.label : u.lagerort?.label;
   return (
     <button type="button" onClick={onOpen} className="w-full text-left flex gap-3 rounded-xl border bg-card p-3 min-w-0 hover:border-primary/50 hover:shadow-sm transition">
       <Thumb fotos={u.fotos} size="medium" className="w-20 h-20 sm:w-24 sm:h-24 shrink-0 rounded-lg" />
@@ -495,8 +507,15 @@ function UnikatDetail({
   function changeStatus(status: string) {
     if (status === u.status || busy) return;
     const fields: Record<string, unknown> = { status, verkauftAm: status === VERKAUFT ? today() : null };
-    if (status !== KOMMISSION) fields.galerie = [];
-    const before = { status: u.status, verkauftAm: u.verkauftAm ? u.verkauftAm.slice(0, 10) : null, galerie: link(u.galerie?.id) };
+    if (!isAusserHaus(status)) Object.assign(fields, { galerie: [], seit: null, rueckgabe: null });
+    else if (!isAusserHaus(u.status)) fields.seit = today();
+    const before = {
+      status: u.status,
+      verkauftAm: u.verkauftAm ? u.verkauftAm.slice(0, 10) : null,
+      galerie: link(u.galerie?.id),
+      seit: u.seit ? u.seit.slice(0, 10) : null,
+      rueckgabe: u.rueckgabe ? u.rueckgabe.slice(0, 10) : null,
+    };
     quickSave(fields, `Status: ${status}`, before);
   }
 
@@ -523,7 +542,7 @@ function UnikatDetail({
           glasur: form.glasurIds,
           masse: form.masse.trim(),
           bildnachweis: form.bildnachweis.trim(),
-          galerie: u.status === KOMMISSION ? link(form.galerieId) : [],
+          galerie: isAusserHaus(u.status) ? link(form.galerieId) : [],
           notiz: form.notiz.trim(),
           ...(fotos ? { fotos } : {}),
         },
@@ -544,7 +563,9 @@ function UnikatDetail({
     ["Jahr", u.jahr !== null ? String(u.jahr) : ""],
     ["Glasur", u.glasur.map((g) => g.label).join(", ")],
     ["Maße", u.masse],
-    ["Galerie", u.galerie?.label ?? ""],
+    ["Partner", u.galerie?.label ?? ""],
+    ["Außer Haus seit", formatDate(u.seit)],
+    ["Rückgabe bis", formatDate(u.rueckgabe)],
     ["Auf Website zeigen", u.website ? "ja" : "nein"],
     ["Bildnachweis", u.bildnachweis],
     ["Erfasst", [formatDate(u.erfasstAm), u.erfasstVon].filter(Boolean).join(", von ")],
@@ -585,19 +606,34 @@ function UnikatDetail({
                   placeholder="Kein Lagerort"
                 />
               </div>
-              {u.status === KOMMISSION && (
-                <div>
-                  <label htmlFor="d-galerie" className="block text-sm text-muted-foreground mb-2">
-                    Galerie
-                  </label>
-                  <OptionSelect
-                    id="d-galerie"
-                    value={u.galerie?.id ?? ""}
-                    disabled={busy}
-                    onChange={(v) => quickSave({ galerie: link(v) }, `Galerie: ${galerien.find((g) => g.id === v)?.label ?? "keine"}`, { galerie: link(u.galerie?.id) })}
-                    options={galerien}
-                    placeholder="Galerie wählen"
-                  />
+              {isAusserHaus(u.status) && (
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <div>
+                    <label htmlFor="d-galerie" className="block text-sm text-muted-foreground mb-2">
+                      Partner (Galerie, Museum …)
+                    </label>
+                    <OptionSelect
+                      id="d-galerie"
+                      value={u.galerie?.id ?? ""}
+                      disabled={busy}
+                      onChange={(v) => quickSave({ galerie: link(v) }, `Partner: ${galerien.find((g) => g.id === v)?.label ?? "keiner"}`, { galerie: link(u.galerie?.id) })}
+                      options={galerien}
+                      placeholder="Partner wählen"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="d-rueckgabe" className="block text-sm text-muted-foreground mb-2">
+                      Rückgabe bis
+                    </label>
+                    <Input
+                      id="d-rueckgabe"
+                      type="date"
+                      disabled={busy}
+                      value={u.rueckgabe.slice(0, 10)}
+                      onChange={(e) => quickSave({ rueckgabe: e.target.value || null }, `Rückgabe bis: ${e.target.value ? formatDate(e.target.value) : "offen"}`, { rueckgabe: u.rueckgabe ? u.rueckgabe.slice(0, 10) : null })}
+                      className="h-12 text-base"
+                    />
+                  </div>
                 </div>
               )}
               {busy && (

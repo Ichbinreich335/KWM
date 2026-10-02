@@ -55,12 +55,14 @@ const editionFields = q.select({
 });
 
 const KOMMISSION = "in Kommission";
+const AUSGESTELLT = "ausgestellt";
 const userProperties = { role: "z0b2k" };
 const STATUS_ACTIVE: Record<string, string> = {
   verfügbar: "bg-emerald-600 text-white border-emerald-600",
   reserviert: "bg-amber-400 text-amber-950 border-amber-400",
   verkauft: "bg-zinc-500 text-white border-zinc-500",
   [KOMMISSION]: "bg-sky-600 text-white border-sky-600",
+  ausgestellt: "bg-violet-700 text-white border-violet-700",
 };
 const FIELD_NAMES: Record<string, string> = {
   fotos: "Foto",
@@ -525,7 +527,7 @@ export default function Block() {
           fotos,
           bildnachweis: unikat.bildnachweis.trim(),
           lagerort: link(unikat.lagerort),
-          galerie: unikat.status === KOMMISSION ? link(unikat.galerie) : [],
+          galerie: unikat.status === KOMMISSION || unikat.status === AUSGESTELLT ? link(unikat.galerie) : [],
           preis,
           website: unikat.website,
           notiz: unikat.notiz.trim(),
@@ -663,15 +665,15 @@ export default function Block() {
                   />
                 </div>
 
-                {unikat.status === KOMMISSION && (
+                {(unikat.status === KOMMISSION || unikat.status === AUSGESTELLT) && (
                   <div>
-                    <FieldLabel htmlFor="u-galerie">Galerie</FieldLabel>
+                    <FieldLabel htmlFor="u-galerie">Partner (Galerie, Museum …)</FieldLabel>
                     <Select
                       id="u-galerie"
                       value={unikat.galerie}
                       onChange={(v) => setU("galerie", v)}
                       options={galerieOptions}
-                      placeholder="Galerie wählen"
+                      placeholder="Partner wählen"
                     />
                   </div>
                 )}
