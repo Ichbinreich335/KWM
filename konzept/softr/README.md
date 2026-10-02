@@ -5,8 +5,9 @@ Die App läuft in Softr (`celestina80104.softr.app`, Studio: App „KWM Lager“
 | Datei | Seite | Block |
 |---|---|---|
 | `blocks/erfassen.tsx` | Erfassen (`/erfassen`) | Erfassen – Formular |
-| `blocks/bestand.tsx` | Bestand (`/bestand`) | Bestand – Reiter, Tabelle, Detail |
-| `blocks/bestand-admin.tsx` | Bestand (`/bestand`) | Bestand – Admin-Bearbeitung (nur Gruppe Admin) |
+| `blocks/bestand.tsx` | Bestand (`/bestand`) | Bestand – Reiter, Tabelle, Detail (Alltagsseite: Schnellreiter, Schnell ändern) |
+| `blocks/bestand-admin.tsx` | Bestand (`/bestand`) | Bestand – Admin-Bearbeitung (nur Gruppe Admin: Preis, Website, Verkaufsdatum) |
+| `blocks/tabelle.tsx` | Tabelle (`/tabelle`) | Tabelle – alle Objekte frei filterbar |
 | `blocks/uebersicht.tsx` | Übersicht (`/uebersicht`) | Übersicht – Dashboard |
 | `blocks/start-weiterleitung.tsx` | Startseite (`/`) | Weiterleitung zur Übersicht |
 

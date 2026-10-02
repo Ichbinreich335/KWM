@@ -1,51 +1,76 @@
 # Softr-Lager-App – Bericht
 
-Stand: 02.10.2026, wird je Runde aktualisiert. Auftrag: `konzept/SOFTR-AUFTRAG.md`.
+Stand: 02.10.2026, wird je Runde aktualisiert. Auftrag: `konzept/SOFTR-AUFTRAG.md`. Quelltexte der Blöcke: `konzept/softr/` (siehe README dort).
 
-## Entscheidungen in dieser Session
-- **Preis:** Der interne Preis ist in der Lager-App für **alle** Mitarbeitenden sichtbar (Vorgabe des Admins vom 02.10.2026). Er darf nur nie auf der Website erscheinen.
-- **Bestehende App weiter genutzt** („KWM Lager“, vorher „Keramik Lagerverwaltung“, `celestina80104.softr.app`). Theme, Seitenleiste mit genau drei Menüpunkten, Login und Nutzergruppen bleiben erhalten. Eine neue App startet ohne Menü, mit englischer Login-Seite und Platzhalter-Logo, und das lässt sich per MCP nicht ändern.
-- **Neue, saubere Datenbank** „Keramik-Lager KWM“ statt Umbau der KI-Builder-Datenbank (nichts gelöscht).
-- **Alle Seiteninhalte als Vibe-Coding-Blöcke.** Fertige Softr-Blöcke (Liste, Formular, Diagramm) kann der MCP weder ändern noch ausblenden oder löschen. Vibe-Coding-Blöcke lassen sich komplett per MCP schreiben, mit Daten verbinden und mit Rechten versehen.
+## Kurzfassung
+Die App „KWM Lager“ hat jetzt vier Bereiche: **Erfassen**, **Bestand** (Alltag), **Tabelle** (alles sehen, frei filtern) und **Übersicht** (Dashboard). Alle Inhalte sind per Softr-MCP gebaute Vibe-Coding-Blöcke auf einer neuen, sauberen Datenbank. Die Funktionen sind mit Playwright als Admin getestet (Desktop 1440 px, Mobil 390 px). Offen sind vor allem Klick-Schritte des Admins (alte Blöcke löschen, Menüpunkt „Tabelle“) und ein echter Werkstatt-Login, der erst nach der Veröffentlichung möglich ist.
+
+## Entscheidungen
+- **Preis:** für **alle** Mitarbeitenden in der App sichtbar (Vorgabe Admin 02.10.2026), nie auf der Website.
+- **Bestehende App weiter genutzt** („KWM Lager“, vorher „Keramik Lagerverwaltung“, `celestina80104.softr.app`): Theme, Seitenleiste, Login und Nutzergruppen bleiben. Eine neue App startet ohne Menü, mit englischer Login-Seite und Platzhalter-Logo. Das lässt sich per MCP nicht ändern.
+- **Neue Datenbank** „Keramik-Lager KWM“ statt Umbau der KI-Builder-Datenbank (nichts gelöscht).
+- **Trennung Alltag und Recherche** (Wunsch Admin): Bestand = einfache Schnellreiter mit Karten. Tabelle = alle Objekte mit freien Filtern. Leitfrage: „Versteht eine neue Mitarbeiterin das in 10 Minuten, und findet sie die volle Funktion, wenn sie sie sucht?“
+- **Rechte:** Die Werkstatt erfasst und ändert alle beschreibenden Felder (Name, Typ, Glasur, Maße, Künstler:in, Jahr, Bildnachweis, Status, Lagerort, Galerie, Notiz, Fotos, Anzahl). **Nur der Admin** ändert Preis, „Auf Website zeigen“ und das Verkaufsdatum (eigener Block, serverseitig auf die Gruppe Admin beschränkt). Löschen ist für niemanden vorgesehen, außer gespeicherten Tabellen-Ansichten.
+- **Neue Typen, Glasuren, Künstler:innen** legt die Werkstatt direkt in der Erfassen-Maske an („+ Neu“, Dublettenprüfung ohne Groß-/Kleinschreibung). Lagerorte, Galerien und Modelle pflegt der Admin in Softr Databases.
 
 ## Datenbank „Keramik-Lager KWM“
 | Tabelle | Zweck | Wichtige Felder |
 |---|---|---|
-| Unikate | Einzelstücke | Name, **Inventarnummer** (Formel `U-JJJJ-NNN` aus Autonummer + Erfassungsjahr), Typ, Status, Künstler:in →, Jahr, Glasur → (mehrere), Maße, Fotos, Bildnachweis, Lagerort →, Galerie →, Preis intern, Auf Website zeigen, Notiz, Erfasst von/am, Geändert am, Verkauft am |
+| Unikate | Einzelstücke | Name, **Inventarnummer** (Formel `U-JJJJ-NNN`), Typ, Status, Künstler:in →, Jahr, Glasur → (mehrere), Maße, Fotos, Bildnachweis, Lagerort →, Galerie →, Preis intern, Auf Website zeigen, Notiz, Erfasst von/am, Geändert am, Verkauft am |
 | Editionsbestand | eine Zeile pro Modell + Glasur + Zustand | Bezeichnung, Modell →, Typ (aus Modell), Glasur →, Zustand, Anzahl, Lagerort →, Foto, Notiz, Erfasst am, Zuletzt geändert |
 | Lagerorte | Stammdaten | Name, Bereich (Schauraum, Lager, Extern) |
-| Künstler:innen | Stammdaten | Name |
+| Künstler:innen · Glasuren | Stammdaten | Name |
 | Galerien | Stammdaten | Name, Ort, Kontakt, Zusammenarbeit, Notiz |
-| Glasuren | Stammdaten | Name |
 | Modelle | Stammdaten Editionsware | Name, Typ, Maße, Foto |
+| Ansichten | gespeicherte Filter der Tabelle | Name, Definition, Erstellt von/am |
 
-Daten: 12 Unikate und 10 Zeilen Editionsbestand aus `konzept/test-import/*.csv`. 8 Unikate haben Beispielfotos aus der KI-Builder-Datenbank, 4 sind bewusst ohne Foto (Prüfung des leeren Zustands).
+Daten: 12 Unikate und 10 Zeilen Editionsbestand aus `konzept/test-import/*.csv`.
 
 ## Stand der Kriterien
 | Kriterium | Stand |
 |---|---|
-| Datenbank nach Datenstruktur (Stammdaten, Verknüpfungen, Auswahlfelder) | erledigt |
-| Inventarnummer `U-JJJJ-NNN` automatisch | erledigt |
-| Erfassen (Maske) | erledigt: Umschalter Unikat/Editionsware, Pflicht nur Foto/Name/Typ/Status, Tipp-Chips, Galerie nur bei „in Kommission“, Erfolgsmeldung mit Inventarnummer, „Nächstes Stück erfassen“. Vorhandene Editions-Kombination wird erkannt und hochgezählt. Getestet: Erfassung mit Foto (U-2026-013), Fehlermeldungen. Screens `softr-01…04-*` |
-| Bestand: Reiter + freie Tabelle + Detail + CSV | erledigt: Reiter Alle · Verfügbar · Schalen · Vasen · Teller · In Kommission · Editionsware · Alle Stücke (Tabelle). Tabelle mit Filtern auf **jedes** Attribut (Typ, Status, Künstler:in, Glasur, Lagerort, Galerie, Auf Website, Jahr von–bis, Preis von–bis), kombinierbar, Suche, Sortierung per Spaltenkopf. **Ansichten speichern** (Tabelle „Ansichten“, für alle sichtbar). Detail als Seitenpanel mit Fotos und Bearbeiten (Status, Lagerort, Galerie, Notiz, Foto). Editionsware mit +1/−1 direkt in der Liste. CSV-Export der angezeigten Liste (Excel-tauglich). Getestet: Zähler je Reiter, Kombi-Filter, Sortierung, CSV, Ansicht speichern/laden, ±1, Status speichern. Screens `softr-10…18-*` |
-| Admin bearbeitet alle Felder | erledigt: eigener Block „Bestand – Admin-Bearbeitung“, nur für Gruppe Admin sichtbar, Speichern serverseitig nur für Admin freigegeben |
-| Übersicht als echtes Dashboard | offen |
-| Prüfung als Werkstatt und Admin (Playwright) | offen |
+| Datenbank nach Datenstruktur | erledigt |
+| Inventarnummer automatisch | erledigt (U-2026-001 … 014) |
+| **Erfassen** | erledigt: Umschalter Unikat/Editionsware, Pflicht nur Foto, Name, Typ, Status. Tipp-Chips, Galerie nur bei „in Kommission“, „+ Neu“ für Typ/Glasur/Künstler:in, Erfolgsmeldung mit Inventarnummer, „Nächstes Stück erfassen“. Vorhandene Editions-Kombination wird hochgezählt statt doppelt angelegt. Screens `softr-01…05-*` |
+| **Bestand** (Alltag) | erledigt: Schnellreiter mit Zählern (Alle · Verfügbar · Schalen · Vasen · Teller · In Kommission · Editionsware), Suche, Sortierung, Karten mit Foto, Status-Farbe, Preis, Lagerort. Detail-Panel mit **„Schnell ändern“** (Status und Lagerort, sofort gespeichert) und „Alle Angaben bearbeiten“. Editionsware mit ±1 in der Liste. CSV-Export. Screens `softr-10…18-*` |
+| **Tabelle** (alles, frei filtern) | erledigt: Unikate und Editionsware in einer Tabelle. Filterzeilen „Feld · Bedingung · Wert“ auf **jedes** Attribut, verknüpft mit UND oder ODER. Spalten ein-/ausblenden, Sortierung per Spaltenkopf, Suche, Summen (Anzahl, Warenwert), **gespeicherte Ansichten für alle**, CSV-Export, Detail zum Nachschlagen. Screens `softr-40…43-*` |
+| **Übersicht** (Dashboard) | erledigt: 6 Kennzahl-Kacheln (antippbar), Unikate nach Typ und Status, Editionsware je Modell, Nachschub (< 5), Kommission je Galerie, zuletzt erfasst/geändert. Farben mit dataviz-Validator geprüft. Zahlen stimmen mit Bestand und Tabelle überein. Screens `softr-20-*` |
+| Startseite | leitet auf die Übersicht weiter |
+| Prüfung als **Admin** | erledigt (Playwright, Desktop + Mobil, keine Konsolenfehler, kein horizontales Scrollen) |
+| Prüfung als **Werkstatt** | **teilweise**: Testnutzer „Werkstatt Test“ (`verwaltung.kwm+werkstatt@proton.me`, Gruppe Werkstatt) ist angelegt. Das Umschalten „Preview as“ greift in der automatisierten Vorschau nicht (die App bleibt beim Admin). Ein echter Login-Test braucht die veröffentlichte App, siehe Blocker. Die Rechte sind serverseitig gesetzt (Admin-Block und Admin-Aktion nur Gruppe Admin). |
+| UI-Review (Opus-Agent mit Refero) | läuft |
 
-## Nicht per MCP möglich (Klick-Anleitung für den Admin)
-1. **Farben der Auswahlfelder** in der Datenbank (Status grün/gelb/grau/blau): Softr vergibt Farben beim Anlegen selbst. In der App zeichnen die Blöcke die Status-Farben selbst, deshalb betrifft das nur die Tabellenansicht in Softr Databases.
-2. **Mehrere Fotos pro Unikat:** Feld „Fotos“ in Unikate → Feld bearbeiten → mehrere Dateien erlauben. Per MCP nicht einstellbar.
-3. **Alte Blöcke des KI-Builders löschen** (Seiten Erfassen, Bestand, Übersicht, Home): Studio → Seite → Block → Löschen. Liste folgt.
-
-## Testdaten aus Playwright (darf der Admin löschen)
-- Unikat „Test-Schale „Playwright““ (U-2026-013), Status im Test auf „reserviert“ gesetzt
-- Ansicht „Seladon-Stücke verfügbar ab 2026“ (Tabelle Ansichten), darf als Beispiel bleiben
-
-## Erkenntnisse zu Softr (für die Entscheidung)
-- **Freie Filter und gespeicherte Ansichten** sind mit fertigen Softr-Blöcken nur begrenzt möglich, mit einem Vibe-Coding-Block aber vollständig: beliebig kombinierbar, gespeicherte Ansichten für alle Mitarbeitenden.
-- **Rechte:** Softr unterscheidet Bearbeiten-Rechte pro Block und Tabelle. Für „Werkstatt ändert nur Status/Lagerort/Notiz, Admin alles“ braucht es zwei Blöcke. Das ist gelöst und serverseitig erzwungen.
-- **Jede Code-Änderung setzt die Aktionsrechte zurück** (Softr-Verhalten). Nach jedem Update werden sie per MCP neu gesetzt. Wer später im Studio per KI-Chat ändert, muss das wissen.
-- **Vorschau-Links frieren den Stand ein.** Nach Änderungen braucht es einen neuen Link.
+## Was der Admin tun muss (per MCP nicht möglich)
+1. **Alte Blöcke des KI-Builders löschen** (Studio → Seite → Block anklicken → Löschen). Die neuen Blöcke heißen „Erfassen – Formular“, „Bestand – Reiter, Tabelle, Detail“, „Bestand – Admin-Bearbeitung“, „Tabelle – alle Objekte frei filterbar“, „Übersicht – Dashboard“, „Startseite – Weiterleitung zur Übersicht“. Diese und die Kopfzeile/Navigation bleiben.
+   - **Erfassen:** „Conditional Form“
+   - **Bestand:** „Tab container“ mit allen Tabs, alle „Horizontal card“-Blöcke, „Table“
+   - **Übersicht:** beide „Column container“ mit allen „Chart“-Blöcken, „List“
+   - **Home:** „Soft Card“, „Column container“, „Tab container“, alle „Chart“, „List“, „Table“
+   - Seiten **„Unikat Details“** und **„Edition Details“** ganz löschen (werden nicht mehr gebraucht)
+2. **Menüpunkt „Tabelle“** in die Seitenleiste aufnehmen: Studio → Navigation → Menüpunkt hinzufügen → Seite „Tabelle“ (`/tabelle`), am besten zwischen Bestand und Übersicht. Bis dahin ist die Seite über „Alles als Tabelle“ im Bestand erreichbar.
+3. **Mehrere Fotos pro Unikat:** Softr Databases → Unikate → Feld „Fotos“ → mehrere Dateien erlauben. Die Blöcke unterstützen mehrere Fotos bereits.
+4. **Farben der Auswahlfelder** in Softr Databases (nur Datenbankansicht, die App zeichnet die Farben selbst): Status grün/gelb/grau/blau.
+5. **Echte Werkstatt-Zugänge:** zwei Mitarbeitende anlegen (Studio → Users) und im Users-Feld „Role“ auf „Werkstatt“ setzen. Die englischen Platzhalter-Nutzer des KI-Builders (Isabella White, Jack Clark, William Lopez, Luna Harris, Oliver Jackson, Sophia Brown) entfernen.
+6. **Login-Seite** auf Deutsch prüfen (fertiger Softr-Block, per MCP nicht änderbar).
 
 ## Blocker (Kosten, Löschen, Live-Schaltung)
-- **Aufräumen (Löschen):** alte Datenbank „Keramik Lagerverwaltung“ (KI-Builder) und die leere Test-App „Test (leer) – kann gelöscht werden“. Lösche ich nicht selbst.
+- **Veröffentlichen (Live-Schaltung):** Die App ist nicht veröffentlicht. Erst danach sind ein echter Login als Werkstatt-Nutzer und der Test am iPhone (HEIC-Fotos) möglich. Das entscheidest du.
+- **Löschen:** alte Datenbank „Keramik Lagerverwaltung“, leere Test-App „Test (leer) – kann gelöscht werden“, alte Blöcke und Seiten (siehe oben), Platzhalter-Nutzer.
+
+## Offene Fragen
+- **Umschalter „Unikat / Editionsware“** oben in der Erfassen-Maske: sinnvoll oder lieber zwei getrennte Wege? Am Test-Abend mit der Werkstatt klären.
+- **HEIC vom iPhone:** Das Foto-Feld nimmt `image/*` an, iOS wandelt beim Hochladen normalerweise in JPEG um. Prüfen nach der Veröffentlichung.
+- Aus `UEBERGABE.md` weiterhin offen: Dateispeicher im Basic-Tarif, 2FA für das Admin-Konto, Export inklusive Fotos, Workflow-URL-Aufruf, geteilte Logins laut AGB.
+
+## Testdaten aus Playwright (darf der Admin löschen)
+- Unikat „Test-Schale „Playwright““ (U-2026-013)
+- Unikat „Test-Krug „Playwright““ (U-2026-014) mit dem neu angelegten Typ „Krug“
+- Ansicht „Seladon-Stücke verfügbar ab 2026“ (darf als Beispiel bleiben)
+
+## Erkenntnisse zu Softr (für die Entscheidung Softr oder Baserow)
+- **Freie, kombinierbare Filter und gespeicherte Ansichten:** Mit fertigen Softr-Blöcken nur begrenzt möglich, mit Vibe-Coding-Blöcken vollständig, auch geräteübergreifend für alle.
+- **Rechte:** Softr vergibt Bearbeiten-Rechte pro Block und Tabelle, nicht pro Feld. Unterschiedliche Rechte brauchen getrennte Blöcke. Das ist gelöst und serverseitig erzwungen.
+- **Jede Code-Änderung setzt die Aktionsrechte zurück.** Nach jedem Update setze ich sie per MCP neu. Wer später im Studio per KI-Chat ändert, muss das wissen.
+- **Fertige Softr-Blöcke** (Formular, Liste, Navigation, Login) sind per MCP weder änder- noch löschbar. Deshalb fallen Klick-Schritte für den Admin an.
+- **Vorschau-Links** frieren den Stand ein. Nach Änderungen braucht es einen neuen Link.
+- Wermutstropfen: Die App hängt jetzt an eigenem Code in Vibe-Coding-Blöcken. Der Code liegt versioniert in diesem Repo, aber Änderungen brauchen jemanden, der React lesen kann (oder Claude per MCP).
