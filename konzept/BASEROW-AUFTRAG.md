@@ -2,7 +2,7 @@
 
 **Zuerst lesen:** `CLAUDE.md`, `konzept/UEBERGABE.md` (Abschnitt 0) und `konzept/SOFTR-AUFTRAG.md` (Anforderungen, Datenstruktur, Nachbesserungen). Für Baserow gelten dieselben Anforderungen.
 **Modell:** Für diesen Prototyp reicht ein mittleres Modell.
-**Referenz:** Der lokal gebaute Baserow-Prototyp v2, siehe `konzept/vergleich/baserow-v2-*.png` und `BASEROW-V2-BERICHT.md`. Die Aufbau-Skripte liegen in `konzept/baserow-demo/skripte/`.
+**Referenz:** Der lokal gebaute Baserow-Prototyp v2, siehe `konzept/vergleich/baserow-v2-*.png` und `BASEROW-V2-BERICHT.md`. Aufbau per REST-API, Beispiele in `konzept/baserow-demo/skripte/` (`setup.py`, `views.py`).
 
 **Prüfung:** Loop aus `CLAUDE.md` (Abschnitt „Selbstprüfung im Loop“). Playwright meldet sich als App-Nutzer der Werkstatt an (Zugang in `.env` als `BASEROW_APP_TEST_EMAIL` / `BASEROW_APP_TEST_PASSWORD`; den Nutzer legt die Session selbst an).
 

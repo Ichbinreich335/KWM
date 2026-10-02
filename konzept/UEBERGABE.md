@@ -260,4 +260,4 @@ Masken für die Werkstatt: „Neues Stück erfassen“ (mit Kamera), „Brand bu
 - `konzept/wireframes/index.html`: Low-Fidelity-Wireframe mit 7 Screens (Lager-App und Website-Verwaltung)
 - `konzept/recherche-backend.md`: Rechercheergebnisse in kompakter Form
 - `konzept/vergleich/`: Screenshots Directus und Baserow (in Arbeit)
-- `.agents/skills`, `.claude/skills`, `agent/skills`: installierte Matt-Pocock-Skills (u. a. `grilling`, `prototype`, `research`)
+- `.agents/skills`: installierte Skills (Matt Pocock, Cloudflare, Sanity), `.claude/skills` verlinkt darauf. Stand in `skills-lock.json`

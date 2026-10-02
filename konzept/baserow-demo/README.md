@@ -3,7 +3,7 @@
 Export des Demo-Workspace aus Baserow 2.4.0, lokal erstellt. Er enthält die Tabellen Unikate, Modelle, Glasuren, Lagerorte, Buchungen und Aufträge mit Testdaten und Fotos, außerdem die Ansichten (Galerie „Werkschau“, Formulare) und die Anwendung „Werkstatt“ aus dem Application Builder.
 
 - `kwm-baserow-workspace-export.zip`: Workspace-Export, enthält Daten und Fotos
-- `skripte/`: Python-Skripte, mit denen die Demo per REST-API aufgebaut wurde, als Referenz. Das Passwort `KwmDemo2026!` ist nur ein lokales Demo-Passwort.
+- `skripte/`: Python-Skripte für Tabellen, Testdaten und Ansichten per REST-API, als Referenz. Der App Builder wurde danach von Hand ergänzt. Das Passwort `KwmDemo2026!` ist nur ein lokales Demo-Passwort.
 
 ## Lokal ansehen (Docker)
 
