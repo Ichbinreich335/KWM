@@ -26,7 +26,7 @@ Daten: 12 Unikate und 10 Zeilen Editionsbestand aus `konzept/test-import/*.csv`.
 |---|---|
 | Datenbank nach Datenstruktur (Stammdaten, Verknüpfungen, Auswahlfelder) | erledigt |
 | Inventarnummer `U-JJJJ-NNN` automatisch | erledigt |
-| Erfassen (Maske) | in Arbeit |
+| Erfassen (Maske) | erledigt: Umschalter Unikat/Editionsware, Pflicht nur Foto/Name/Typ/Status, Tipp-Chips, Galerie nur bei „in Kommission“, Erfolgsmeldung mit Inventarnummer, „Nächstes Stück erfassen“. Vorhandene Editions-Kombination wird erkannt und hochgezählt. Getestet: Erfassung mit Foto (U-2026-013), Fehlermeldungen. Screens `softr-01…04-*` |
 | Bestand: Reiter + freie Tabelle + Detail + CSV | offen |
 | Übersicht als echtes Dashboard | offen |
 | Prüfung als Werkstatt und Admin (Playwright) | offen |
@@ -35,6 +35,9 @@ Daten: 12 Unikate und 10 Zeilen Editionsbestand aus `konzept/test-import/*.csv`.
 1. **Farben der Auswahlfelder** in der Datenbank (Status grün/gelb/grau/blau): Softr vergibt Farben beim Anlegen selbst. In der App zeichnen die Blöcke die Status-Farben selbst, deshalb betrifft das nur die Tabellenansicht in Softr Databases.
 2. **Mehrere Fotos pro Unikat:** Feld „Fotos“ in Unikate → Feld bearbeiten → mehrere Dateien erlauben. Per MCP nicht einstellbar.
 3. **Alte Blöcke des KI-Builders löschen** (Seiten Erfassen, Bestand, Übersicht, Home): Studio → Seite → Block → Löschen. Liste folgt.
+
+## Testdaten aus Playwright (darf der Admin löschen)
+- Unikat „Test-Schale „Playwright““ (U-2026-013)
 
 ## Blocker (Kosten, Löschen, Live-Schaltung)
 - **Aufräumen (Löschen):** alte Datenbank „Keramik Lagerverwaltung“ (KI-Builder) und die leere Test-App „Test (leer) – kann gelöscht werden“. Lösche ich nicht selbst.
