@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { datasource, q, useRecordCreate, useRecordDelete, useRecords } from "@/lib/datasource";
 import { useCurrentUser } from "@/lib/user";
 import { Button } from "@/components/ui/button";
@@ -7,7 +7,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Sheet, SheetClose, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { ArrowDown, ArrowUp, Bookmark, Columns3, Download, ImageOff, Loader2, Plus, Search, SlidersHorizontal, Trash2, X } from "lucide-react";
+import { ArrowDown, ArrowUp, Bookmark, ChevronLeft, ChevronRight, Columns3, Download, ImageOff, Loader2, Plus, Search, SlidersHorizontal, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
 
 const ds = datasource.define({ unikate: "unikate", edition: "edition", ansichten: "ansichten" });
@@ -51,6 +51,7 @@ const ansichtSelect = q.select({ name: "8s5KL", definition: "rWGS9", von: "uPraE
 
 const PAGE_SIZE = 100;
 const VIEW_VERSION = 2;
+const SCROLL_STEP = 320;
 const UNIKAT = "Unikat";
 const EDITION = "Editionsware";
 
@@ -119,7 +120,7 @@ type CellValue = string | number | boolean | string[] | null;
 type Col = { key: ColKey; label: string; type: FieldType; get: (r: Row) => CellValue; visible: boolean; align?: "right" };
 
 const COLUMNS: Col[] = [
-  { key: "art", label: "Art", type: "select", get: (r) => r.art, visible: true },
+  { key: "art", label: "Art", type: "select", get: (r) => r.art, visible: false },
   { key: "inv", label: "Inv.-Nr.", type: "text", get: (r) => r.inv || null, visible: true },
   { key: "name", label: "Name / Modell", type: "text", get: (r) => r.name, visible: true },
   { key: "typ", label: "Typ", type: "select", get: (r) => r.typ || null, visible: true },
@@ -702,6 +703,14 @@ export default function Block() {
   }, [rows, search, activeConditions, conj, sort]);
 
   const shown = COLUMNS.filter((c) => columns.includes(c.key));
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [scrollState, setScrollState] = useState({ left: false, right: false });
+  const updateScroll = () => {
+    const el = scrollRef.current;
+    if (el) setScrollState({ left: el.scrollLeft > 0, right: el.scrollLeft + el.clientWidth < el.scrollWidth - 1 });
+  };
+  useEffect(updateScroll, [visibleRows, columns]);
+  const scrollBy = (dx: number) => scrollRef.current?.scrollBy({ left: dx, behavior: "smooth" });
   const summeAnzahl = visibleRows.reduce((n, r) => n + r.anzahl, 0);
   const summePreis = visibleRows.reduce((n, r) => n + (r.preis ?? 0), 0);
   const loading = unikateQuery.status === "pending" || editionQuery.status === "pending";
@@ -776,8 +785,8 @@ export default function Block() {
   }
 
   return (
-    <div className="container pt-6 pb-28 sm:pb-8">
-      <div className="content space-y-4">
+    <div className="w-full px-4 sm:px-6 pt-6 pb-28 sm:pb-8">
+      <div className="w-full space-y-4">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
             <h1 className="text-2xl font-semibold">Tabelle</h1>
@@ -886,7 +895,19 @@ export default function Block() {
             <Loader2 className="w-5 h-5 animate-spin" aria-hidden /> Tabelle wird geladen …
           </div>
         ) : (
-          <div className="rounded-xl border overflow-auto max-h-[70vh]">
+          <div className="space-y-2">
+            {(scrollState.left || scrollState.right) && (
+              <div className="flex items-center justify-end gap-2">
+                <span className="text-sm text-muted-foreground mr-auto">Weitere Spalten: seitlich wischen oder Pfeile nutzen.</span>
+                <Button variant="outline" className="h-11 w-11 p-0" aria-label="Spalten links zeigen" disabled={!scrollState.left} onClick={() => scrollBy(-SCROLL_STEP)}>
+                  <ChevronLeft className="w-5 h-5" aria-hidden />
+                </Button>
+                <Button variant="outline" className="h-11 w-11 p-0" aria-label="Spalten rechts zeigen" disabled={!scrollState.right} onClick={() => scrollBy(SCROLL_STEP)}>
+                  <ChevronRight className="w-5 h-5" aria-hidden />
+                </Button>
+              </div>
+            )}
+          <div ref={scrollRef} onScroll={updateScroll} className="rounded-xl border overflow-auto max-h-[70vh] [scrollbar-width:auto] [scrollbar-color:#a1a1aa_#f4f4f5] [&::-webkit-scrollbar]:h-3 [&::-webkit-scrollbar]:w-3 [&::-webkit-scrollbar-track]:bg-zinc-100 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-400">
             <table className="w-full text-sm">
               <thead className="bg-muted text-muted-foreground sticky top-0 z-10">
                 <tr>
@@ -946,7 +967,7 @@ export default function Block() {
                 )}
               </tbody>
               {visibleRows.length > 0 && (
-                <tfoot className="bg-muted/60 sticky bottom-0">
+                <tfoot className="bg-muted sticky bottom-0 shadow-[0_-1px_0_0_rgba(0,0,0,0.08)]">
                   <tr className="border-t font-medium">
                     <td className="px-2.5 py-2" />
                     {shown.map((c, i) => (
@@ -958,6 +979,7 @@ export default function Block() {
                 </tfoot>
               )}
             </table>
+          </div>
           </div>
         )}
         <p className="text-sm text-muted-foreground">
