@@ -55,6 +55,24 @@ const editionFields = q.select({
 });
 
 const KOMMISSION = "in Kommission";
+const userProperties = { role: "z0b2k" };
+const STATUS_ACTIVE: Record<string, string> = {
+  verfügbar: "bg-emerald-600 text-white border-emerald-600",
+  reserviert: "bg-amber-400 text-amber-950 border-amber-400",
+  verkauft: "bg-zinc-500 text-white border-zinc-500",
+  [KOMMISSION]: "bg-sky-600 text-white border-sky-600",
+};
+const FIELD_NAMES: Record<string, string> = {
+  fotos: "Foto",
+  name: "Name",
+  typ: "Typ",
+  status: "Status",
+  preis: "Preis",
+  modell: "Modell",
+  zustand: "Zustand",
+  glasur: "Glasur",
+  anzahl: "Anzahl",
+};
 const ROHLING = "Rohling";
 const MAX_EDITION_ROWS = 100;
 
@@ -138,7 +156,7 @@ function Hint({ children }: { children: string }) {
 function ErrorText({ children }: { children?: string }) {
   if (!children) return null;
   return (
-    <p role="alert" className="text-sm text-destructive mt-1.5">
+    <p role="alert" data-error="true" className="text-sm text-destructive mt-1.5">
       {children}
     </p>
   );
@@ -149,11 +167,13 @@ function Chips({
   value,
   onChange,
   name,
+  activeClasses,
 }: {
   options: Option[];
   value: string;
   onChange: (v: string) => void;
   name: string;
+  activeClasses?: Record<string, string>;
 }) {
   return (
     <div role="radiogroup" aria-label={name} className="flex flex-wrap gap-2">
@@ -166,10 +186,11 @@ function Chips({
             role="radio"
             aria-checked={active}
             onClick={() => onChange(o.label)}
-            className={`min-h-11 px-4 rounded-full border text-base transition-colors ${
-              active ? "bg-primary text-primary-foreground border-primary" : "bg-background hover:bg-muted border-input"
+            className={`inline-flex items-center gap-1.5 min-h-11 px-4 rounded-full border text-base transition-colors ${
+              active ? activeClasses?.[o.label] ?? "bg-primary text-primary-foreground border-primary" : "bg-background hover:bg-muted border-input"
             }`}
           >
+            {active && <Check className="w-4 h-4" aria-hidden />}
             {o.label}
           </button>
         );
@@ -358,7 +379,10 @@ function SuccessCard({ saved, onNext }: { saved: Saved; onNext: () => void }) {
 }
 
 export default function Block() {
-  const user = useCurrentUser();
+  const user = useCurrentUser({ properties: userProperties });
+  const roleValue = (user?.properties as { role?: unknown } | undefined)?.role;
+  const isAdmin = (Array.isArray(roleValue) ? roleValue : [roleValue]).some((r) => (r as { label?: string } | undefined)?.label === "Admin");
+  const formRef = useRef<HTMLFormElement>(null);
   const [art, setArt] = useState<Art>("unikat");
   const [unikat, setUnikat] = useState<UnikatForm>(emptyUnikat);
   const [edition, setEdition] = useState<EditionForm>(emptyEdition);
@@ -479,7 +503,10 @@ export default function Block() {
     const e = validate();
     setErrors(e);
     if (Object.keys(e).length > 0) {
-      toast.error("Bitte die markierten Felder prüfen.");
+      requestAnimationFrame(() => {
+        const first = formRef.current?.querySelector('[data-error="true"]');
+        (first?.parentElement ?? first)?.scrollIntoView({ behavior: "smooth", block: "center" });
+      });
       return;
     }
     setBusy(true);
@@ -553,7 +580,7 @@ export default function Block() {
         {saved ? (
           <SuccessCard saved={saved} onNext={reset} />
         ) : (
-          <form onSubmit={submit} noValidate className="space-y-6">
+          <form ref={formRef} onSubmit={submit} noValidate className="space-y-6">
             <div role="tablist" aria-label="Art des Stücks" className="grid grid-cols-2 gap-1 p-1 rounded-xl bg-muted">
               {(
                 [
@@ -620,8 +647,20 @@ export default function Block() {
                     options={statusOptions}
                     value={unikat.status}
                     onChange={(v) => setU("status", v)}
+                    activeClasses={STATUS_ACTIVE}
                   />
                   <ErrorText>{errors.status}</ErrorText>
+                </div>
+
+                <div>
+                  <FieldLabel htmlFor="u-lagerort">Lagerort</FieldLabel>
+                  <Select
+                    id="u-lagerort"
+                    value={unikat.lagerort}
+                    onChange={(v) => setU("lagerort", v)}
+                    options={lagerortOptions}
+                    placeholder="Bitte wählen"
+                  />
                 </div>
 
                 {unikat.status === KOMMISSION && (
@@ -703,17 +742,18 @@ export default function Block() {
                     />
                   </div>
                   <div>
-                    <FieldLabel htmlFor="u-lagerort">Lagerort</FieldLabel>
-                    <Select
-                      id="u-lagerort"
-                      value={unikat.lagerort}
-                      onChange={(v) => setU("lagerort", v)}
-                      options={lagerortOptions}
-                      placeholder="Bitte wählen"
+                    <FieldLabel htmlFor="u-bildnachweis">Bildnachweis</FieldLabel>
+                    <Input
+                      id="u-bildnachweis"
+                      value={unikat.bildnachweis}
+                      onChange={(e) => setU("bildnachweis", e.target.value)}
+                      placeholder="z. B. Foto: Name der Fotografin"
+                      className="h-12 text-base"
                     />
                   </div>
                 </div>
 
+                {isAdmin && (
                 <div className="grid sm:grid-cols-2 gap-6">
                   <div>
                     <FieldLabel htmlFor="u-preis">Preis intern (€)</FieldLabel>
@@ -729,27 +769,15 @@ export default function Block() {
                     <Hint>Nur intern, erscheint nie auf der Website.</Hint>
                     <ErrorText>{errors.preis}</ErrorText>
                   </div>
-                  <div>
-                    <FieldLabel htmlFor="u-bildnachweis">Bildnachweis</FieldLabel>
-                    <Input
-                      id="u-bildnachweis"
-                      value={unikat.bildnachweis}
-                      onChange={(e) => setU("bildnachweis", e.target.value)}
-                      placeholder="z. B. Foto: Name der Fotografin"
-                      className="h-12 text-base"
-                    />
-                  </div>
+                  <label htmlFor="u-website" className="flex items-center justify-between gap-4 rounded-lg border p-4 min-h-12 cursor-pointer self-start sm:mt-8">
+                    <span>
+                      <span className="block text-base font-medium">Auf Website zeigen</span>
+                      <span className="block text-sm text-muted-foreground">Nur für die spätere Website-Anbindung.</span>
+                    </span>
+                    <Switch id="u-website" className="scale-125 data-[state=unchecked]:bg-zinc-300" checked={unikat.website} onCheckedChange={(v) => setU("website", v)} />
+                  </label>
                 </div>
-
-                <div className="flex items-center justify-between gap-4 rounded-lg border p-4">
-                  <div>
-                    <label htmlFor="u-website" className="text-base font-medium">
-                      Auf Website zeigen
-                    </label>
-                    <Hint>Nur für die spätere Anbindung an die Website.</Hint>
-                  </div>
-                  <Switch id="u-website" checked={unikat.website} onCheckedChange={(v) => setU("website", v)} />
-                </div>
+                )}
 
                 <div>
                   <FieldLabel htmlFor="u-notiz">Notiz</FieldLabel>
@@ -880,6 +908,11 @@ export default function Block() {
               </>
             )}
 
+            {Object.keys(errors).length > 0 && (
+              <p role="alert" className="text-base text-destructive">
+                Bitte noch ausfüllen: {Object.keys(errors).map((k) => FIELD_NAMES[k] ?? k).join(", ")}
+              </p>
+            )}
             {canCreate ? (
               <Button type="submit" size="lg" className="w-full h-14 text-lg" disabled={busy}>
                 {busy ? (

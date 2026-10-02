@@ -1,0 +1,24 @@
+import { chromium, openApp } from './lib.mjs';
+const OUT = new URL('../../vergleich', import.meta.url).pathname;
+const browser = await chromium.launch();
+const { ctx, page, errs, go } = await openApp(browser, { width: 390, height: 844 });
+await go('/erfassen');
+const e = page.locator('#vibe-coding1');
+await e.getByText('Neues Stück erfassen').waitFor({ timeout: 40000 });
+const save = e.getByRole('button', { name: 'Speichern' });
+await save.evaluate((el) => el.scrollIntoView({ block: 'center' }));
+await save.click();
+await page.waitForTimeout(1500);
+console.log('Zusammenfassung:', await e.getByText(/^Bitte noch ausfüllen/).innerText());
+const box = await e.getByText('Bitte mindestens ein Foto hinzufügen.').boundingBox();
+console.log('Foto-Fehler im Bild (y):', Math.round(box?.y ?? -1), '| Viewport 844');
+await page.screenshot({ path: `${OUT}/softr-02-erfassen-pflichtfelder-m.png` });
+console.log('Status-Chip aktiv:', await e.getByRole('radio', { name: /verfügbar/ }).getAttribute('class'));
+console.log('Preis sichtbar (Admin):', await e.locator('#u-preis').count(), '| Lagerort vor Künstler:', await page.evaluate(() => {
+  const r = document.querySelector('#vibe-coding1 [data-role=vibe-block-root]').shadowRoot;
+  const l = r.querySelector('#u-lagerort'), k = r.querySelector('#u-kuenstler');
+  return !!(l && k && (l.compareDocumentPosition(k) & Node.DOCUMENT_POSITION_FOLLOWING));
+}));
+console.log('errors', errs);
+await ctx.close();
+await browser.close();
