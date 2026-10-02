@@ -13,6 +13,8 @@ Die App „KWM Lager“ hat jetzt vier Bereiche: **Erfassen**, **Bestand** (Allt
 - **Rechte:** Die Werkstatt erfasst und ändert alle beschreibenden Felder (Name, Typ, Glasur, Maße, Künstler:in, Jahr, Bildnachweis, Status, Lagerort, Galerie, Notiz, Fotos, Anzahl). **Nur der Admin** ändert Preis, „Auf Website zeigen“ und das Verkaufsdatum (eigener Block, serverseitig auf die Gruppe Admin beschränkt). Löschen ist für niemanden vorgesehen, außer gespeicherten Tabellen-Ansichten.
 - **Neue Typen, Glasuren, Künstler:innen** legt die Werkstatt direkt in der Erfassen-Maske an („+ Neu“, Dublettenprüfung ohne Groß-/Kleinschreibung). Lagerorte, Galerien und Modelle pflegt der Admin in Softr Databases.
 
+- **Richtungswechsel (02.10.2026, Admin):** Wir nutzen möglichst Softrs fertige Blöcke statt Vibe-Code. Grund: einheitliche Optik, weniger eigene Logik und damit weniger Fehler. Regeln wie „ausgestellt → Lagerort Außer Haus“ laufen als **Softr-Workflows** auf der Datenbank (4 Workflows aktiv, live getestet). Objektseite und Tabelle werden zuerst als fertige Blöcke zur Probe gebaut (`konzept/softr/STUDIO-ANLEITUNG.md`), danach wird verglichen.
+
 ## Datenbank „Keramik-Lager KWM“
 | Tabelle | Zweck | Wichtige Felder |
 |---|---|---|
@@ -52,6 +54,8 @@ Daten: 12 Unikate und 10 Zeilen Editionsbestand aus `konzept/test-import/*.csv`.
 4. **Farben der Auswahlfelder** in Softr Databases (nur Datenbankansicht, die App zeichnet die Farben selbst): Status grün/gelb/grau/blau.
 5. **Echte Werkstatt-Zugänge:** zwei Mitarbeitende anlegen (Studio → Users) und im Users-Feld „Role“ auf „Werkstatt“ setzen. Die englischen Platzhalter-Nutzer des KI-Builders (Isabella White, Jack Clark, William Lopez, Luna Harris, Oliver Jackson, Sophia Brown) entfernen.
 6. **Login-Seite** auf Deutsch prüfen (fertiger Softr-Block, per MCP nicht änderbar).
+
+7. **Probeseiten „Stück“ und „Alle Stücke“ zusammenklicken** nach `konzept/softr/STUDIO-ANLEITUNG.md` (ca. 30 Minuten), dazu der Menüpunkt „Tabelle“ auf `/alle-stuecke`.
 
 ## Blocker (Kosten, Löschen, Live-Schaltung)
 - **Veröffentlichen (Live-Schaltung):** Die App ist nicht veröffentlicht. Erst danach sind ein echter Login als Werkstatt-Nutzer und der Test am iPhone (HEIC-Fotos) möglich. Das entscheidest du.

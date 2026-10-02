@@ -23,6 +23,18 @@ Für die nächste Session. Zuerst `CLAUDE.md`, `konzept/SOFTR-AUFTRAG.md` und `k
 | `/uebersicht` | `16450fdc-1469-49fb-8785-acac62a5c953` | `uebersicht.tsx` | `c62602bd-dd73-44d6-9625-b59aec539939` | unikate, edition | keine |
 | `/` (Home) | `089c7891-ebdd-44cf-b346-8d14a1a9a983` | `start-weiterleitung.tsx` | `9753e657-6e52-489f-9279-d9695beb5b1a` | keine | keine |
 
+## Richtungswechsel 02.10.2026: fertige Softr-Blöcke zuerst
+Entscheidung des Admins: Wir nutzen möglichst Softrs fertige Blöcke (Table, Item Details, Form, Chart). Grund: einheitliche Optik und weniger eigene Logik. Vibe-Code nur, wo Softr etwas nicht kann. Fertige Blöcke lassen sich per MCP nicht anlegen, der Admin klickt sie mit `STUDIO-ANLEITUNG.md` zusammen. Danach prüfe ich mit Playwright.
+- Probeseiten (leer, per MCP angelegt): **Stück** `/stueck` `57958266-8b78-4ea5-83c4-6d9f94e20d7a`, **Alle Stücke (Softr-Tabelle)** `/alle-stuecke` `69071c68-7879-40b4-a69a-4f01cc20e228`
+- **Regeln laufen als Softr-Workflows** (aktiv, live getestet). Sie greifen bei jeder Änderung, egal aus welchem Block:
+  - „Außer Haus setzt Lagerort“ `20a289ce-90f7-4016-a0c4-c20eeb88c51d`
+  - „Außer Haus setzt Datum“ `8270e5f1-ea35-4505-b801-99986a5586c1` (Zeitzone UTC)
+  - „Zurück im Haus leert Außer-Haus-Felder“ `f4f069d9-b121-4108-9aa3-ffbe083664b9`
+  - „Verkauft setzt Verkaufsdatum“ `3f241140-002f-4ebf-a1e9-7cd636c7fcb9` (Zeitzone UTC)
+- Workflow-Wissen: Filter im Trigger als `{"operator":"AND","conditions":[{"leftSide":"<Feld-ID>","operator":"IS_ONE_OF","rightSide":[…]}]}`, Datum heute als `{dateTime:::TODAY}`. Die Zeitzone des Workflows muss **UTC** sein (bei Europe/Berlin wird der Vortag gespeichert). Nach einer Änderung der Konfiguration den Workflow erneut veröffentlichen, sonst gilt die alte Einstellung. Das Testen eines Triggers liest einen echten Datensatz, das Testen eines Update-Schritts mit `workflow_test_node` schreibt echt, mit `workflow_test` nur als Probe.
+- Die Status-/Lagerort-Kopplung im Vibe-Code (`bestand.tsx`, `erfassen.tsx`) ist damit doppelt vorhanden, aber widerspruchsfrei. Sie fällt weg, sobald die Blöcke ersetzt sind.
+- Prüfbericht mit 27 Ungereimtheiten: `konzept/vergleich/SOFTR-KONSISTENZ.md`. Erledigt: Befund 1 (Status/Lagerort), 2 (Partner überschrieben), 3 (Folgefelder beim Erfassen, jetzt per Workflow), 12 teilweise (Datum per Workflow).
+
 ## Arbeitsweise (zwingend)
 1. Vor Code-Änderungen `vibe_coding_block_get_docs` aufrufen.
 2. Erst die Datei hier ändern, dann per MCP hochladen: klein per `vibe_coding_block_update_code_search_replace`, groß per `update_code`. Danach die zurückgegebene `sourceSha256` mit `shasum -a 256 <datei>` vergleichen.
