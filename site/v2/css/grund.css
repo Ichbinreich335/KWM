@@ -1,0 +1,39 @@
+/* Grundton-Umschalter: nur im Entwurf, schwebt unten links über allen Flächen */
+.grund {
+  position: fixed;
+  left: var(--m);
+  bottom: 16px;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 4px 4px 4px 14px;
+  background: var(--ground);
+  color: var(--ink);
+  border: 1px solid var(--ink);
+  font-family: var(--f-sans);
+  font-size: 13px;
+}
+.grund__label { color: var(--ink-2); margin-right: 8px; }
+.grund__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 12px;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+.grund__btn[aria-pressed="true"] { background: var(--ink); color: var(--ground); }
+.grund__chip { width: 14px; height: 14px; border-radius: 50%; border: 1px solid currentColor; }
+.grund__btn[data-grund="creme"] .grund__chip { background: #F3F1EC; }
+.grund__btn[data-grund="porzellan"] .grund__chip { background: #F0F0EC; }
+.grund__btn[data-grund="galerie"] .grund__chip { background: #F8F7F4; }
+@media (max-width: 520px) {
+  .grund { left: 8px; right: 8px; bottom: 8px; justify-content: space-between; }
+  .grund__label { display: none; }
+  .grund__btn { flex: 1; justify-content: center; }
+}
