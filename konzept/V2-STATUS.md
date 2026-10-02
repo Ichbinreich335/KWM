@@ -44,3 +44,23 @@ Start: `npm run dev`, dann öffnen: V1 http://localhost:4391/ und V2 http://loca
 ## Für den Admin
 - Fotos aus der Fotoecke bitte einheitlich: gleicher Hintergrund, Licht von links, Format 4:5, mindestens 2.400 px lange Kante, Ansichten vorne, innen, Glasur-Detail und Fuß. Galeriefotos bleiben für Geschichten und große Bilder.
 - Termine brauchen später Start- und Enddatum in Sanity, damit beendete Termine automatisch aus der Startseite verschwinden.
+
+## Stand 02.10.2026 abends: neue Startseite (maximale Version)
+- **Startseite neu** (`src/v2/index.html`):
+  - Reihenfolge: Einstieg „Wort und Bild“ (hell) → „Jetzt zu sehen“ (Bühne mit großem Datum und Termin-Tabelle, Anker) → Lede mit „Zwei Linien“ → Young-Jae Lee (Zitat bleibt auf dem Porträt stehen) → Meisterstücke (4-Spalten-Raster aus Bild, Name, Jahr) → Ausstellungsorte (Anker) → Manufaktur mit Farbskala → Feuer (Text bleibt auf dem Foto stehen) → Chronik (Fläche) → Besuch → Footer.
+  - Die alte Startseite liegt als `start-vorher.html` daneben.
+- **Entwurf-Panel** (unten links):
+  - Startseite neu/vorher
+  - Grundton
+  - Überschriften Caslon/Jost
+  - Bauhaus-Raster
+  - Einstieg Wort und Bild / Foto
+  - Jetzt zu sehen als Bühne oder Kacheln
+  - Orte an/aus
+- **Werkstatt-Seite:** neues Kapitel „Wie die Glasur ihre Farbe bekommt“ mit „Ein Feuer, zwei Farben“.
+- **Konzepte:** `DESIGN.md` (verbindlich), `konzept/REDESIGN-V3.md` (Opus: Diagnose, 12 Referenzen, Stilprofil, Bildplan), `konzept/INSPIRATION-RHYTHMUS.md`, `konzept/INSPIRATION-2.md`. Der V3-Entwurf liegt unter `site/v3-entwurf/`.
+- **Offen:**
+  - **Inhalt:** Holzofen oder Gasofen (Start- und Werkstattseite widersprechen sich). 1986 oder 1987. Anker `#f-greve` auf `aktuelles.html` ergänzen.
+  - **Bilder:** Fotos der Orte, Fotos aus der Fotoecke.
+  - **Panel:** Varianten aufräumen, sobald entschieden ist.
+  - **Datenschutz:** Hinweis für den Admin zu `wp-content/uploads/2023/12/image.png` auf der Live-Seite.
