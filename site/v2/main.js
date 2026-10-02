@@ -401,6 +401,8 @@ import { random, pickGlaze as pickFrom } from './js/keramik.js';
     layout();
     let rz;
     window.addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(layout, 150); }, { passive: true });
+    // Wird der Kosmos über das Entwurf-Panel eingeblendet, fehlt ihm noch die Größe
+    document.addEventListener('kwm:varianten', () => { if (!S) layout(); });
     new IntersectionObserver(([e]) => {
       if (e.isIntersecting) start(); else running = false;
     }, { threshold: 0.08 }).observe(stage);

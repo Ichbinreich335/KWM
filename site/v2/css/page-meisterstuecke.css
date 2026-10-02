@@ -35,9 +35,9 @@
 .catalog__item--band .catalog__frame img { aspect-ratio: 16 / 7; }
 
 /* Kummen auf Tonfläche */
-.chapter--clay { margin-top: var(--section); padding-bottom: var(--section); }
-.chapter--clay .chapter__head { border-top-color: var(--clay-ink); }
-.chapter--clay .catalog__frame { background: var(--clay-deep); }
+.chapter--flaeche { margin-top: var(--section); padding-bottom: var(--section); }
+.chapter--flaeche .chapter__head { border-top-color: var(--ink); }
+.chapter--flaeche .catalog__frame { background: var(--ground-3); }
 
 /* Spindelvasen: ruhige Dreierreihe */
 .spindle { margin-top: clamp(96px, 12vw, 180px); padding-bottom: 36px; row-gap: 16px; align-items: baseline; border-top: 0; }

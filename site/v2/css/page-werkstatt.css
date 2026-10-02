@@ -19,8 +19,8 @@
 
 /* Chronik auf Tonfläche */
 .chronik { padding-block: var(--section); margin-top: var(--section); }
-.chronik .chapter__head { border-top-color: var(--clay-ink); }
-.chronik .datelist { border-top-color: var(--clay-ink); }
+.chronik .chapter__head { border-top-color: var(--ink); }
+.chronik .datelist { border-top-color: var(--ink); }
 .chronik .datelist__text { max-width: 70ch; }
 .chronik__strip { grid-column: 1 / -1; max-width: 900px; margin-bottom: clamp(40px, 5vw, 64px); }
 .chronik__strip img { width: 100%; aspect-ratio: 900 / 140; object-fit: cover; }

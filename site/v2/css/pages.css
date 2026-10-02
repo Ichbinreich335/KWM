@@ -114,7 +114,7 @@
 .not-found__links .link-arrow { font-family: var(--f-text); font-size: inherit; }
 
 /* Flächen in Tonfarbe */
-.on-clay { background: var(--clay); color: var(--clay-ink); --ink-2: #5B4632; --hair: rgba(46, 35, 25, 0.2); --cover: var(--clay); }
+.on-flaeche { background: var(--ground-2); color: var(--ink); --cover: var(--ground-2); }
 
 @media (max-width: 900px) {
   .page-hero__title, .page-hero__lede { grid-column: 1 / -1; }

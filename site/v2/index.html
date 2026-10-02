@@ -13,7 +13,7 @@
 <link rel="stylesheet" href="css/pages.css">
 
 <link rel="stylesheet" href="css/signaturen.css">
-<script>document.documentElement.classList.add('js');try{if(!sessionStorage.getItem('kwm-logo')){sessionStorage.setItem('kwm-logo','1');document.documentElement.classList.add('logo-draw')}}catch(e){document.documentElement.classList.add('logo-draw')}try{const g=new URLSearchParams(location.search).get('grund')||localStorage.getItem('kwm-grund');if(g)document.documentElement.dataset.grund=g}catch(e){}</script>
+<script>document.documentElement.classList.add('js');try{if(!sessionStorage.getItem('kwm-logo')){sessionStorage.setItem('kwm-logo','1');document.documentElement.classList.add('logo-draw')}}catch(e){document.documentElement.classList.add('logo-draw')}try{const q=new URLSearchParams(location.search),s=JSON.parse(localStorage.getItem('kwm-entwurf')||'{}'),d=document.documentElement.dataset;d.grund=q.get('grund')||s.grund||'galerie';d.hero=q.get('hero')||s.hero||'anker'}catch(e){}</script>
 </head>
 <body class="page-home">
 
@@ -62,7 +62,7 @@
       <img src="../img/kwm/kummerschalen.webp" width="937" height="1040" alt="Viele flache Schalen von Young-Jae Lee auf einem Steinboden, seladonblau, schwarz gesprenkelt und rotbraun glasiert" fetchpriority="high" data-parallax>
       <figcaption class="hero__credit">Kummerschalen · Foto: Christopher Clem Franken</figcaption>
     </figure>
-    <div class="hero__profile" data-sig="profil" hidden></div>
+    <div class="hero__profile" data-sig="profil" data-variant="profil:an" hidden></div>
     <div class="hero__text">
       <h1 class="hero__title" id="hero-title" data-reveal="words">Immer sind es Schalen, und doch ist keine wie die andere.</h1>
       <p class="hero__source" data-reveal="fade">Thomas Wagner über die Schalen von Young-Jae Lee</p>
@@ -225,7 +225,7 @@
   </section>
 
   <!-- Drehen und Abdrehen: scrollgebundene Werkzeichnung (js/sig-drehen.js) -->
-  <section class="throw" data-sig="drehen" hidden aria-label="Drehen und Abdrehen in drei Schritten">
+  <section class="throw" data-sig="drehen" data-variant="werk:drehen" hidden aria-label="Drehen und Abdrehen in drei Schritten">
     <div class="throw__sticky">
       <div class="throw__text">
         <ol class="throw__steps">
@@ -251,6 +251,9 @@
     </div>
   </section>
 
+  <!-- Orte: Ausstellungsorte im Bildraster (js/sig-orte.js) -->
+  <section class="orte" id="orte" data-sig="orte" data-variant="werk:orte" aria-labelledby="orte-title"></section>
+
   <!-- Meditation -->
   <section class="statement grid" aria-label="Zitat">
     <figure class="statement__media" data-reveal="img">
@@ -263,7 +266,7 @@
   </section>
 
   <!-- Kosmos -->
-  <section class="cosmos" id="kosmos" aria-labelledby="cosmos-title">
+  <section class="cosmos" id="kosmos" data-variant="kosmos:klassisch" hidden aria-labelledby="cosmos-title">
     <div class="cosmos__head grid">
       <h2 class="h2 cosmos__title" id="cosmos-title" data-reveal="words">Ein Ring aus Teilchen um eine leere Mitte.</h2>
       <div class="cosmos__text">
@@ -287,6 +290,9 @@
     </div>
   </section>
 
+  <!-- Ausstellungs-Bühne: laufende Ausstellungen als Anordnung der Schalen (js/sig-buehne.js) -->
+  <section class="buehne" id="buehne" data-sig="buehne" data-variant="kosmos:buehne" aria-labelledby="buehne-title"></section>
+
   <!-- Feuer -->
   <section class="fire" aria-labelledby="fire-title">
     <div class="fire__head grid">
@@ -301,7 +307,8 @@
         <img src="../img/kwm/seladon-schalen.webp" width="900" height="600" loading="lazy" alt="Flache Schalen mit blaugrüner Glasur, die sich in der Mitte sammelt">
         <figcaption>Schalen von Young-Jae Lee · Foto: Christopher Clem Franken</figcaption>
       </figure>
-      <dl class="atmos">
+      <div class="feuer-farben" data-sig="feuer" data-variant="feuer:zwei-farben"></div>
+      <dl class="atmos" data-variant="feuer:liste" hidden>
         <div class="atmos__item" data-reveal="fade">
           <dt><span class="swatch" style="--c: var(--glaze-iron-ox)"></span>Eisenoxid, oxidierend</dt>
           <dd>färbt gelb bis braun – sauerstoffreiche Ofenatmosphäre.</dd>
@@ -453,7 +460,7 @@
 
 <script type="module" src="main.js"></script>
 <script type="module" src="js/signaturen.js"></script>
-<script type="module" src="js/grund.js"></script>
+<script type="module" src="js/entwurf.js"></script>
 </body>
 </html>
 

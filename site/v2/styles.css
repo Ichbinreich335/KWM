@@ -1,20 +1,22 @@
 /* KWM 1924 — Ausstellungskatalog im Rhythmus eines Kunstmagazins */
 
 :root {
+  /* Grund und Schrift: neutral, ohne Braunstich (siehe DESIGN.md) */
   --ground: #F8F7F4;
-  --ground-2: #ECEAE4;
-  --ink: #1B1815;
-  --ink-2: #5A554D;
-  --hair: rgba(27, 24, 21, 0.16);
-  --clay: #D9C6AB;
-  --clay-deep: #B89A76;
-  --clay-ink: #2E2319;
-  --coal: #121210;
-  --on-coal: #ECEAE3;
-  --on-coal-2: #A9A79F;
-  --jade: #2F5444;
-  --jade-soft: #BCC7B3;
-
+  --ground-2: #EDECE8;
+  --ground-3: #E2E1DC;
+  --ink: #161616;
+  --ink-2: #5C5B57;
+  --hair: rgba(22, 22, 22, 0.14);
+  /* Anker: dunkle Abschnitte */
+  --coal: #121212;
+  --coal-2: #1D1D1C;
+  --on-coal: #F2F1EE;
+  --on-coal-2: #A3A29D;
+  /* Einziger Akzent: Seladon, nur für aktiven Zustand, Fokus, Auswahl */
+  --accent: #4E7D6A;
+  --accent-on-coal: #8DB5A3;
+  /* Glasurfarben als Inhalt (Feuer-Abschnitt), nie als UI-Farbe */
   --glaze-iron-ox: #A8773A;
   --glaze-iron-red: #7E9C86;
   --glaze-copper-g: #4F7D62;
@@ -36,8 +38,8 @@
 }
 
 /* Grundton-Varianten für den Farbtest (Entwurf): Galerie ist der Ausgangswert */
-:root[data-grund="porzellan"] { --ground: #F0F0EC; --ground-2: #E3E3DD; }
-:root[data-grund="creme"] { --ground: #F3F1EC; --ground-2: #E8E5DE; }
+:root[data-grund="porzellan"] { --ground: #F0F0EC; --ground-2: #E4E4DF; --ground-3: #D9D9D3; }
+:root[data-grund="creme"] { --ground: #F3F1EC; --ground-2: #E8E5DE; --ground-3: #DDD8CE; --ink: #1B1815; --ink-2: #5A554D; }
 
 *, *::before, *::after { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; scroll-padding-top: var(--head); }
@@ -61,7 +63,7 @@ ol, ul { margin: 0; padding: 0; list-style: none; }
 dl, dd { margin: 0; }
 h1, h2, h3 { margin: 0; font-weight: 400; }
 a { color: inherit; text-decoration-thickness: 1px; text-underline-offset: 0.28em; }
-::selection { background: var(--jade); color: var(--on-coal); }
+::selection { background: var(--accent); color: var(--on-coal); }
 :focus-visible { outline: 2px solid currentColor; outline-offset: 4px; }
 html { scrollbar-color: var(--ink) var(--ground); scrollbar-width: thin; }
 
@@ -169,7 +171,7 @@ body::after {
 .nav__list { display: flex; gap: clamp(18px, 2.2vw, 34px); }
 .nav__list a { font-size: 14.5px; text-decoration: none; padding-block: 6px; background: linear-gradient(currentColor, currentColor) 0 100% / 0% 1px no-repeat; transition: background-size 0.45s var(--ease); }
 .nav__list a:hover { background-size: 100% 1px; }
-.nav__list a[aria-current="page"] { background-image: linear-gradient(var(--jade), var(--jade)); background-size: 100% 2px; }
+.nav__list a[aria-current="page"] { background-image: linear-gradient(var(--accent), var(--accent)); background-size: 100% 2px; }
 .nav__desc, .nav__contact { display: none; }
 .lang { display: flex; gap: 6px; font-size: 13px; letter-spacing: 0.04em; }
 .lang a { text-decoration: none; color: var(--ink-2); }
@@ -284,6 +286,10 @@ body::after {
 .lines__item:hover, .lines__item:focus-visible { background: var(--ink); color: var(--ground); }
 .lines__item:hover .lines__what, .lines__item:focus-visible .lines__what { color: var(--on-coal-2); }
 .lines__item:hover .lines__name::after { transform: translateX(8px); }
+
+/* Einstieg als dunkler Anker (Variante „hero:anker“, Standard) */
+:root[data-hero="anker"] .hero { background: var(--coal); color: var(--on-coal); --ink-2: var(--on-coal-2); --cover: var(--coal); }
+:root[data-hero="anker"] .hero ::selection { background: var(--on-coal); color: var(--coal); }
 
 /* Aktuell als dunkler Anker direkt nach dem Einstieg */
 .now--dark { background: var(--coal); color: var(--on-coal); padding-block: clamp(64px, 8vw, 120px); --ink-2: var(--on-coal-2); --hair: rgba(236, 234, 227, 0.22); --cover: var(--coal); }
@@ -652,7 +658,7 @@ body::after {
   .nav__list a, .nav__list a[aria-current="page"] { display: block; padding: 13px 0 12px; background: none; }
   .nav__name { display: block; font-family: var(--f-display); font-size: clamp(1.9rem, 8.4vw, 2.3rem); line-height: 1.15; }
   .nav__desc { display: block; margin-top: 2px; font-size: 14px; line-height: 1.4; color: var(--ink-2); }
-  .nav__list a[aria-current="page"] .nav__name { color: var(--jade); }
+  .nav__list a[aria-current="page"] .nav__name { color: var(--accent); }
   .nav__contact { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 2px 12px; padding-top: 28px; }
   .nav__hours, .nav__mail { grid-column: 1 / -1; }
   .nav__phone { display: flex; align-items: center; min-height: 44px; font-family: var(--f-display); font-size: 1.75rem; text-decoration: none; }

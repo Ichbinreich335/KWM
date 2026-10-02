@@ -13,7 +13,7 @@
 <link rel="stylesheet" href="css/pages.css">
 <link rel="stylesheet" href="css/page-aktuelles.css">
 <link rel="stylesheet" href="css/signaturen.css">
-<script>document.documentElement.classList.add('js');try{if(!sessionStorage.getItem('kwm-logo')){sessionStorage.setItem('kwm-logo','1');document.documentElement.classList.add('logo-draw')}}catch(e){document.documentElement.classList.add('logo-draw')}try{const g=new URLSearchParams(location.search).get('grund')||localStorage.getItem('kwm-grund');if(g)document.documentElement.dataset.grund=g}catch(e){}</script>
+<script>document.documentElement.classList.add('js');try{if(!sessionStorage.getItem('kwm-logo')){sessionStorage.setItem('kwm-logo','1');document.documentElement.classList.add('logo-draw')}}catch(e){document.documentElement.classList.add('logo-draw')}try{const q=new URLSearchParams(location.search),s=JSON.parse(localStorage.getItem('kwm-entwurf')||'{}'),d=document.documentElement.dataset;d.grund=q.get('grund')||s.grund||'galerie';d.hero=q.get('hero')||s.hero||'anker'}catch(e){}</script>
 </head>
 <body class="page-aktuelles">
 
@@ -104,7 +104,7 @@
     </article>
 
     <!-- Pop-up in der Werkstatt -->
-    <div class="feature-band on-clay">
+    <div class="feature-band on-flaeche">
       <article class="feature feature--flip grid" aria-labelledby="f-popup">
         <figure class="feature__media" data-reveal="img">
           <img src="../img/kwm/regal.webp" width="954" height="905" alt="Regal voller ungebrannter Becher, Schalen, Teller und Kannen in der Werkstatt" loading="lazy">
@@ -356,7 +356,7 @@
 
 <script type="module" src="main.js"></script>
 <script type="module" src="js/signaturen.js"></script>
-<script type="module" src="js/grund.js"></script>
+<script type="module" src="js/entwurf.js"></script>
 </body>
 </html>
 

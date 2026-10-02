@@ -40,7 +40,7 @@
 .set__frame { overflow: hidden; background: var(--ground-2); }
 .set__frame img { width: 100%; aspect-ratio: 3 / 2; object-fit: cover; transition: transform 1.2s var(--ease); }
 .set:hover .set__frame img { transform: scale(1.035); }
-.set__frame--contain, .chapter--clay .set__frame--contain { background: #232220; aspect-ratio: 3 / 2; display: flex; align-items: center; justify-content: center; }
+.set__frame--contain, .chapter--flaeche .set__frame--contain { background: #232220; aspect-ratio: 3 / 2; display: flex; align-items: center; justify-content: center; }
 .set__frame--contain img { width: auto; height: 100%; max-width: 100%; aspect-ratio: auto; object-fit: contain; }
 .set__sub { font-family: var(--f-text); font-size: 17px; margin: 14px 0 0; }
 .set--text .set__sub { margin-top: 0; }
@@ -52,11 +52,11 @@
 .set__list li.is-retired > span:first-child { color: var(--ink-2); }
 .ware__note { font-size: 14px; color: var(--ink-2); max-width: 36ch; margin: 0; align-self: end; }
 
-.chapter--clay { margin-top: var(--section); padding-bottom: var(--section); }
-.chapter--clay .chapter__head { border-top-color: var(--clay-ink); }
-.chapter--clay .ware { border-top-color: var(--hair); }
-.chapter--clay .set__frame { background: var(--clay-deep); }
-.chapter--clay .set__list { border-top-color: var(--clay-ink); }
+.chapter--flaeche { margin-top: var(--section); padding-bottom: var(--section); }
+.chapter--flaeche .chapter__head { border-top-color: var(--ink); }
+.chapter--flaeche .ware { border-top-color: var(--hair); }
+.chapter--flaeche .set__frame { background: var(--ground-3); }
+.chapter--flaeche .set__list { border-top-color: var(--ink); }
 
 /* Glasurbühne */
 .glaze { align-items: stretch; row-gap: 40px; }

@@ -13,7 +13,7 @@
 <link rel="stylesheet" href="css/pages.css">
 <link rel="stylesheet" href="css/page-besuch.css">
 <link rel="stylesheet" href="css/signaturen.css">
-<script>document.documentElement.classList.add('js');try{if(!sessionStorage.getItem('kwm-logo')){sessionStorage.setItem('kwm-logo','1');document.documentElement.classList.add('logo-draw')}}catch(e){document.documentElement.classList.add('logo-draw')}try{const g=new URLSearchParams(location.search).get('grund')||localStorage.getItem('kwm-grund');if(g)document.documentElement.dataset.grund=g}catch(e){}</script>
+<script>document.documentElement.classList.add('js');try{if(!sessionStorage.getItem('kwm-logo')){sessionStorage.setItem('kwm-logo','1');document.documentElement.classList.add('logo-draw')}}catch(e){document.documentElement.classList.add('logo-draw')}try{const q=new URLSearchParams(location.search),s=JSON.parse(localStorage.getItem('kwm-entwurf')||'{}'),d=document.documentElement.dataset;d.grund=q.get('grund')||s.grund||'galerie';d.hero=q.get('hero')||s.hero||'anker'}catch(e){}</script>
 </head>
 <body class="page-besuch">
 
@@ -85,7 +85,7 @@
   </section>
 
   <!-- Anfahrt -->
-  <section class="routes-band on-clay" aria-labelledby="routes-title">
+  <section class="routes-band on-flaeche" aria-labelledby="routes-title">
     <div class="chapter__head grid">
       <h2 class="h2" id="routes-title" data-reveal="words">So erreichen Sie uns.</h2>
       <p class="chapter__intro" data-reveal="fade">Die Werkstatt liegt auf dem Zechengelände. Nach der Einfahrt links abbiegen, nach etwa 100 Metern auf der linken Seite.</p>
@@ -228,7 +228,7 @@
 
 <script type="module" src="main.js"></script>
 <script type="module" src="js/signaturen.js"></script>
-<script type="module" src="js/grund.js"></script>
+<script type="module" src="js/entwurf.js"></script>
 </body>
 </html>
 
