@@ -30,3 +30,13 @@
 - Am Handy und Tablet ein Stück mit Foto erfassen, auch mit dem iPhone-Format HEIC.
 - Im Bestand filtern, ein Stück auf „reserviert“ setzen, einen CSV-Export ziehen.
 - Mit einem Werkstatt-Zugang prüfen: Ist der Preis unsichtbar? Ist das Login einfach?
+
+## Kurzfassung für den Softr AI Co-Builder (zum Ausprobieren, direkt in Softr einfügen)
+> Baue eine interne Lager-App für eine Keramik-Manufaktur (Deutsch, schlicht und hell, gut am Handy bedienbar).
+> **Daten:** Tabelle *Unikate* mit den Feldern Inventarnummer, Name, Typ (Auswahl: Teller, Schale, Becher, Vase, Karaffe, Obertopf), Künstler:in, Jahr, Glasur, Maße, Fotos (mehrere Bilder), Status (Auswahl: verfügbar, reserviert, verkauft, in Kommission), Lagerort (Auswahl), Preis intern (Zahl, €), Auf Website (Ja/Nein). Tabelle *Editionsbestand* mit den Feldern Modell, Typ, Glasur, Zustand (Rohling oder glasiert), Anzahl, Lagerort, Notiz.
+> **Nutzergruppen:** Admin (sieht und bearbeitet alles) und Werkstatt (sieht den Preis intern nicht).
+> **Genau 3 Menüpunkte:**
+> 1. **Erfassen:** ein einfaches Formular wie ein normales Webformular. Großes Foto-Feld (am Handy Kamera oder Galerie), Pflichtfelder Name, Typ, Status und Foto.
+> 2. **Bestand:** saubere Liste oder Tabelle mit Vorschaubild. Oben Reiter bzw. Filter: Alle, Verfügbar, Schalen, Vasen, In Kommission, Edition. Dazu eine Suche, eine Detailseite mit Bearbeiten (Status, Lagerort, Anzahl) und ein CSV-Export.
+> 3. **Übersicht:** Kennzahlen (Anzahl verfügbar, reserviert, in Kommission, Rohlinge gesamt, glasierte Editionsware gesamt) und die 10 zuletzt erfassten Stücke.
+> **Login:** per E-Mail. Die App ist nur für angemeldete Nutzer erreichbar.
