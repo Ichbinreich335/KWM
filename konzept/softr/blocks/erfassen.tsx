@@ -20,7 +20,9 @@ import { Switch } from "@/components/ui/switch";
 import { Camera, Check, Loader2, Minus, Plus, X } from "lucide-react";
 import { toast } from "sonner";
 
-const ds = datasource.define({ unikate: "unikate", edition: "edition" });
+const ds = datasource.define({ unikate: "unikate", edition: "edition", glasuren: "glasuren", kuenstler: "kuenstler" });
+const glasurNeu = q.select({ name: "OuhBi" });
+const kuenstlerNeu = q.select({ name: "vqD0c" });
 
 const unikatFields = q.select({
   name: "7IBVW",
@@ -206,6 +208,46 @@ function Select({
   );
 }
 
+function AddNew({ label, placeholder, existing, onAdd }: { label: string; placeholder: string; existing: Option[]; onAdd: (name: string) => Promise<boolean> | boolean }) {
+  const [open, setOpen] = useState(false);
+  const [value, setValue] = useState("");
+  const [busy, setBusy] = useState(false);
+  const name = value.trim();
+  const duplicate = existing.find((o) => o.label.toLowerCase() === name.toLowerCase());
+  if (!open) {
+    return (
+      <button type="button" onClick={() => setOpen(true)} className="min-h-11 px-4 rounded-full border border-dashed border-input text-base text-muted-foreground hover:bg-muted">
+        + {label}
+      </button>
+    );
+  }
+  return (
+    <div className="flex flex-wrap items-center gap-2 w-full">
+      <Input autoFocus value={value} onChange={(e) => setValue(e.target.value)} placeholder={placeholder} aria-label={label} className="h-11 text-base flex-1 min-w-48" />
+      <Button
+        type="button"
+        className="h-11 text-base"
+        disabled={!name || !!duplicate || busy}
+        onClick={async () => {
+          setBusy(true);
+          const ok = await onAdd(name);
+          setBusy(false);
+          if (ok) {
+            setValue("");
+            setOpen(false);
+          }
+        }}
+      >
+        Übernehmen
+      </Button>
+      <Button type="button" variant="ghost" className="h-11 text-base" onClick={() => { setValue(""); setOpen(false); }}>
+        Abbrechen
+      </Button>
+      {duplicate && <p className="w-full text-sm text-muted-foreground">„{duplicate.label}“ gibt es schon. Bitte oben auswählen.</p>}
+    </div>
+  );
+}
+
 function PhotoPicker({
   files,
   onChange,
@@ -346,6 +388,44 @@ export default function Block() {
   const lagerortOptions = toOptions(lagerortQuery.data as LinkedPages);
   const galerieOptions = toOptions(galerieQuery.data as LinkedPages);
   const modellOptions = toOptions(modellQuery.data as LinkedPages);
+  const [extraTypen, setExtraTypen] = useState<Option[]>([]);
+  const typChoices = [...typOptions, ...extraTypen.filter((t) => !typOptions.some((o) => o.label === t.label))];
+  const createGlasur = useRecordCreate({ from: ds.glasuren, fields: glasurNeu });
+  const createKuenstler = useRecordCreate({ from: ds.kuenstler, fields: kuenstlerNeu });
+
+  function addTyp(name: string): boolean {
+    setExtraTypen((t) => [...t, { id: `neu-${name}`, label: name }]);
+    setUnikat((s) => ({ ...s, typ: name }));
+    return true;
+  }
+
+  async function addGlasur(name: string, target: Art): Promise<boolean> {
+    try {
+      const created = await createGlasur.mutateAsync({ name } as never);
+      const id = (created as { id: string }).id;
+      await glasurQuery.refetch();
+      if (target === "unikat") setUnikat((s) => ({ ...s, glasur: [...s.glasur, id] }));
+      else setEdition((s) => ({ ...s, glasur: id }));
+      toast.success(`Glasur „${name}“ angelegt.`);
+      return true;
+    } catch {
+      toast.error("Glasur konnte nicht angelegt werden.");
+      return false;
+    }
+  }
+
+  async function addKuenstler(name: string): Promise<boolean> {
+    try {
+      const created = await createKuenstler.mutateAsync({ name } as never);
+      await kuenstlerQuery.refetch();
+      setUnikat((s) => ({ ...s, kuenstler: (created as { id: string }).id }));
+      toast.success(`„${name}“ angelegt.`);
+      return true;
+    } catch {
+      toast.error("Konnte nicht angelegt werden.");
+      return false;
+    }
+  }
 
   const { data: editionData, refetch: refetchEdition } = useRecords({
     from: ds.edition,
@@ -526,7 +606,10 @@ export default function Block() {
 
                 <div>
                   <FieldLabel required>Typ</FieldLabel>
-                  <Chips name="Typ" options={typOptions} value={unikat.typ} onChange={(v) => setU("typ", v)} />
+                  <Chips name="Typ" options={typChoices} value={unikat.typ} onChange={(v) => setU("typ", v)} />
+                  <div className="mt-2">
+                    <AddNew label="Neuer Typ" placeholder="z. B. Krug" existing={typChoices} onAdd={addTyp} />
+                  </div>
                   <ErrorText>{errors.typ}</ErrorText>
                 </div>
 
@@ -564,6 +647,9 @@ export default function Block() {
                       options={kuenstlerOptions}
                       placeholder="Bitte wählen"
                     />
+                    <div className="mt-2">
+                      <AddNew label="Neue:r Künstler:in" placeholder="Vor- und Nachname" existing={kuenstlerOptions} onAdd={addKuenstler} />
+                    </div>
                   </div>
                   <div>
                     <FieldLabel htmlFor="u-jahr">Jahr</FieldLabel>
@@ -599,7 +685,10 @@ export default function Block() {
                       );
                     })}
                   </div>
-                  <Hint>Mehrere möglich. Neue Glasuren legt der Admin an.</Hint>
+                  <div className="mt-2">
+                    <AddNew label="Neue Glasur" placeholder="Name der Glasur" existing={glasurOptions} onAdd={(n) => addGlasur(n, "unikat")} />
+                  </div>
+                  <Hint>Mehrere möglich. Fehlt eine Glasur, mit „+ Neue Glasur“ anlegen.</Hint>
                 </div>
 
                 <div className="grid sm:grid-cols-2 gap-6">
@@ -713,6 +802,9 @@ export default function Block() {
                       options={glasurOptions}
                       placeholder="Glasur wählen"
                     />
+                    <div className="mt-2">
+                      <AddNew label="Neue Glasur" placeholder="Name der Glasur" existing={glasurOptions} onAdd={(n) => addGlasur(n, "edition")} />
+                    </div>
                     <ErrorText>{errors.glasur}</ErrorText>
                   </div>
                 )}
