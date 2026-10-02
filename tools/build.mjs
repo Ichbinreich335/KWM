@@ -24,10 +24,31 @@ function render(template, dir) {
   });
 }
 
+// Namen mit Bindestrich dürfen nicht am Bindestrich umbrechen (DESIGN.md, Typografie).
+// Nur Fließtext wird umhüllt, nie Attribute, <title> oder Skripte.
+function protectNames(html) {
+  let skip = false;
+  return html
+    .split(/(<[^>]*>)/)
+    .map((part) => {
+      if (part.startsWith('<')) {
+        if (/^<(title|script|style)\b/i.test(part)) skip = true;
+        else if (/^<\/(title|script|style)\b/i.test(part)) skip = false;
+        return part;
+      }
+      return skip ? part : part.replace(/Young-Jae/g, '<span class="nobr">Young-Jae</span>');
+    })
+    .join('');
+}
+
 function build() {
   for (const { from, to } of versions) {
     const pages = readdirSync(from).filter((f) => f.endsWith('.html'));
-    for (const page of pages) writeFileSync(join(to, page), render(readFileSync(join(from, page), 'utf8'), from));
+    const isV2 = to.endsWith('v2');
+    for (const page of pages) {
+      const html = render(readFileSync(join(from, page), 'utf8'), from);
+      writeFileSync(join(to, page), isV2 ? protectNames(html) : html);
+    }
     console.log(`gebaut ${to.slice(root.length + 1)}/: ${pages.join(', ')}`);
   }
 }

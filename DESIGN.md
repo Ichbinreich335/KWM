@@ -39,7 +39,9 @@ Stand: 02.10.2026. Verbindlich für alle Seiten und Elemente in `src/v2/` und `s
 | Rolle | Größe | Schrift |
 |---|---|---|
 | Seitenname (riesig) | `clamp(3.4rem, 12.4vw, 13rem)`, Zeilenhöhe 0.9 | Display |
-| Seitentitel H1 | `clamp(2.6rem, 4.7vw, 5.4rem)` | Display |
+| Seitentitel H1 (Einstieg Startseite) | `clamp(2.6rem, 4.7vw, 5.4rem)` | Display |
+| Seitentitel Unterseite (`.page-hero__title`) | `clamp(3rem, 7vw, 7rem)`, Zeilenhöhe 0.95 | Display |
+| Zitat groß (`--fs-statement`) | `clamp(2rem, 3.6vw, 3.6rem)`, Zeilenhöhe 1.06 | Display |
 | Abschnitt H2 (`.h2`) | `clamp(2.3rem, 4.6vw, 4.6rem)`, Zeilenhöhe 1.02 | Display |
 | Kachel-/Eintragstitel | `clamp(1.4rem, 2vw, 1.9rem)` | Display |
 | Lede | `clamp(1.65rem, 2.9vw, 2.75rem)` | Text |
@@ -56,7 +58,7 @@ Stand: 02.10.2026. Verbindlich für alle Seiten und Elemente in `src/v2/` und `s
 ## 4. Raster und Abstand
 - **Raster:** 12 Spalten (`.grid`), Seitenrand `--m` = `clamp(16px, 2.8vw, 44px)`, Spaltenabstand `--g` = `clamp(12px, 1.6vw, 24px)`.
 - **Abschnittsabstand:** `--section` = `clamp(80px, 10vw, 168px)` oben und unten. Abschnitte wählen keine eigenen Abstände, Ausnahmen gelten nur für Vollbild-Signaturen.
-- **Kopf zu Inhalt:** `clamp(32px, 4vw, 56px)`.
+- **Kopf zu Inhalt:** `--head-gap` = `clamp(32px, 4vw, 56px)`. Gilt für Abschnittsköpfe und für den Seitenkopf zum Bild.
 - **Bildformate:** Kachel 4:3, Werk 3:2, Porträt 4:5, Panorama frei. In einer Reihe immer dasselbe Format.
 
 ## 5. Abschnittstypen und Rhythmus
@@ -65,10 +67,12 @@ Stand: 02.10.2026. Verbindlich für alle Seiten und Elemente in `src/v2/` und `s
 |---|---|---|
 | Hell | `--ground` | Standard |
 | Fläche | `--ground-2` (`.on-flaeche`) | ruhige Zwischenstation: Chronik, Bühnenboden |
-| Anker | `--coal` (Schrift `--on-coal`) | Einstieg (Variante), Aktuell, Orte, Feuer, Footer |
+| Anker | `--coal` (Schrift `--on-coal`) | Einstieg (Variante), Seitenkopf der Unterseiten, Aktuell, Orte, Feuer, Footer |
 
 - **Rhythmus:** nie zwei Anker direkt hintereinander. Ungefähr alle zwei bis drei Bildschirme ein Anker, damit die helle Seite Halt hat.
 - **Anker setzen lokal** `--ink-2: var(--on-coal-2)`, `--hair: rgba(236,234,227,.22)`, `--cover: var(--coal)` und eigene `::selection`.
+
+**Unterseiten (Reihenfolge):** Seitenkopf (Anker, Bild randlos am Fuß) → Einleitung oder Unternavigation (hell) → Kapitel (hell, ein Kapitel als Fläche) → Abschlussband mit Anfrage (Fläche, nie Anker, weil der Footer folgt) → Footer (Anker).
 
 **Startseite (Reihenfolge):** Einstieg (Anker) → Lede mit „Zwei Linien“ (hell) → Aktuell (Anker) → Young-Jae Lee (hell) → Werkschau (hell) → Orte (Anker) → Meditation (hell) → Ausstellungs-Bühne (Fläche) → Feuer (Anker) → Manufaktur mit Farbskala (hell) → Chronik (Fläche) → Besuch (hell) → Footer (Anker).
 
@@ -78,6 +82,10 @@ Stand: 02.10.2026. Verbindlich für alle Seiten und Elemente in `src/v2/` und `s
 - H2 in Spalte 1–8, Begleittext oder Link in Spalte 9–12.
 - Unten bündig (`align-items: end`), danach der Abstand Kopf zu Inhalt.
 - Optional eine Linie in `currentColor` darunter (z. B. `.now__head`).
+
+### Seitenkopf (`.page-hero`)
+- Anker: Titel in Spalte 1–8, Lede in Spalte 9–12, unten bündig. Darunter optional ein randloses Bild (Höhe `--hero-img` = `min(72vh, 760px)`, Streifenformat `--strip`), Bildunterschrift auf dem Anker in `--ink-2`.
+- Abstand oben `--head` + `clamp(48px, 6vw, 96px)`, ohne Bild unten `0,6 × --section`, mit Bild unten bündig mit dem Bild plus Bildunterschrift.
 
 ### Link mit Pfeil (`.link-arrow`)
 - 15 px, Unterstrich 1 px, Pfeil als Maske `--arrow`.
@@ -115,7 +123,7 @@ Liste mit Spaltenlabel und Haarlinien. Ganz unten der Anfrage-Link „Zu diesem 
 - Nachweis über einem Foto nur auf einer Fläche im Grundton, nie als weiße Schrift direkt auf dem Bild.
 
 ### Navigation
-- **Desktop:** einzeilig. Aktiv: 2 px Linie in `--accent`. Hover: 1 px Linie, die sich aufzieht.
+- **Desktop:** einzeilig, Link 44 px hoch (Padding 11 px, Linie 8 px über dem Rand). Aktiv: 2 px Linie in `--accent`. Hover: 1 px Linie, die sich aufzieht.
 - **Mobil:** Vollbild-Liste in Display-Schrift mit einer Zeile Beschreibung pro Punkt. Darunter der Kontaktblock: Telefon, Zeiten, E-Mail, DE/EN.
 
 ### Unternavigation (`.subnav`)

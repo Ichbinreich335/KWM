@@ -1,9 +1,7 @@
 /* Werkstatt: Seiten-spezifische Kompositionen */
 
-/* Panorama-Band unter dem Seitenkopf */
-.panorama { margin-top: clamp(40px, 6vw, 80px); }
-.panorama img { width: 100%; height: auto; aspect-ratio: 2560 / 398; object-fit: cover; min-height: 180px; object-position: 30% 50%; }
-.panorama figcaption { padding-inline: var(--m); }
+/* Panorama-Band im Seitenkopf */
+.page-hero__media--strip img { object-position: 30% 50%; }
 
 /* Arbeitsweise: Regal links, Text rechts, Fakten */
 .method { row-gap: 56px; align-items: start; }
@@ -14,7 +12,7 @@
 .method__rule { font-family: var(--f-display); font-size: clamp(1.7rem, 2.6vw, 2.5rem); line-height: 1.12; letter-spacing: -0.01em; text-wrap: balance; margin-bottom: 32px; }
 .method__text p { max-width: 46ch; }
 .method__facts { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--g); border-top: 1px solid var(--ink); padding-top: 22px; margin-top: 24px; }
-.method__facts dt { font-size: 12.5px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-2); margin-bottom: 8px; }
+.method__facts dt { font-size: 12.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-2); margin-bottom: 8px; }
 .method__facts dd { font-family: var(--f-text); font-size: 18px; line-height: 1.4; }
 
 /* Chronik auf Tonfläche */
@@ -42,7 +40,7 @@
 .place__text p { font-family: var(--f-text); font-size: 18px; line-height: 1.55; max-width: 48ch; }
 .place__info { grid-column: 8 / -1; border-top: 1px solid var(--ink); }
 .place__info > div { padding: 16px 0; border-bottom: 1px solid var(--hair); }
-.place__info dt { font-size: 12.5px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-2); margin-bottom: 4px; }
+.place__info dt { font-size: 12.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-2); margin-bottom: 4px; }
 .place__info dd { font-size: 16px; line-height: 1.5; }
 .place__info a { text-decoration: none; }
 .place__info a:hover { text-decoration: underline; }
@@ -51,6 +49,6 @@
   .method__media, .method__text, .place__text, .place__info { grid-column: 1 / -1; }
   .method__media { margin-inline: calc(var(--m) * -1); }
   .method__facts { grid-template-columns: 1fr 1fr; row-gap: 24px; }
-  .panorama img { min-height: 150px; object-position: 22% 50%; }
+  .page-hero__media--strip img { min-height: 150px; object-position: 22% 50%; }
   .team-strip { margin-inline: 0; max-width: none; }
 }

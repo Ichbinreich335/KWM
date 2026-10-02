@@ -1,46 +1,25 @@
 /* Aktuelles: große Ausstellungs-Features, Jahresarchiv, Veröffentlichungen */
 
-.news-intro { padding-top: 24px; }
-#ausstellungen > .feature:first-child { padding-top: clamp(48px, 6vw, 88px); }
 #veroeffentlichungen { padding-bottom: var(--section); }
-.news-intro p { grid-column: 1 / 8; margin: 0; font-size: 15px; color: var(--ink-2); }
 
-/* Feature: Bild randlos auf einer Seite, Text versetzt auf der anderen */
-.feature { padding-top: clamp(96px, 12vw, 180px); align-items: start; row-gap: 32px; }
+/* Feature: Bild randlos links, Text rechts. Alle Einträge gleich, 4:3 wie die Kacheln. */
+.feature { padding-top: var(--section); align-items: start; row-gap: 32px; }
 .feature__media { grid-column: 1 / 8; margin-left: calc(var(--m) * -1); }
-.feature__media img { width: 100%; height: min(86vh, 860px); object-fit: cover; }
+.feature__media img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
 .feature__media figcaption { padding-left: var(--m); }
-.feature__text { grid-column: 9 / 13; padding-top: clamp(24px, 10vh, 120px); }
-.feature--flip .feature__media { grid-column: 6 / -1; grid-row: 1; margin-left: 0; margin-right: calc(var(--m) * -1); }
-.feature--flip .feature__media figcaption { padding-left: 0; padding-right: var(--m); }
-.feature--flip .feature__text { grid-column: 1 / 5; grid-row: 1; }
-.feature--wide .feature__media { grid-column: 1 / -1; margin-inline: calc(var(--m) * -1); }
-.feature--wide .feature__media img { height: min(72vh, 760px); }
-.feature--wide .feature__media figcaption { padding-inline: var(--m); }
-.feature--wide .feature__text { grid-column: 1 / -1; padding-top: 8px; display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--g); row-gap: 20px; align-items: start; }
-.feature--wide .feature__date { grid-column: 1 / 4; }
-.feature--wide .feature__title { grid-column: 4 / 10; }
-.feature--wide .feature__body { grid-column: 10 / 13; }
+.feature__text { grid-column: 9 / 13; padding-top: clamp(24px, 6vw, 80px); }
 
-.feature__date {
-  display: block;
-  font-family: var(--f-text);
-  font-size: clamp(1.1rem, 1.4vw, 1.3rem);
-  line-height: 1.35;
-  margin-bottom: 20px;
-  font-variant-numeric: lining-nums;
-}
+.feature__date { display: block; font-size: 13.5px; line-height: 1.45; color: var(--ink-2); margin-bottom: 14px; font-variant-numeric: tabular-nums; }
 .feature__title { margin-bottom: 28px; }
 .feature__place { font-size: 16px; margin-bottom: 20px; }
 .feature__place strong { font-weight: 500; display: block; }
 .feature__facts { border-top: 1px solid var(--ink); margin: 28px 0; }
 .feature__facts > div { display: grid; grid-template-columns: 8.5em 1fr; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--hair); font-size: 15px; }
-.feature__facts dt { color: var(--ink-2); font-size: 13px; letter-spacing: 0.04em; padding-top: 2px; }
+.feature__facts dt { color: var(--ink-2); font-size: 13px; padding-top: 2px; }
 .feature__lead { font-family: var(--f-text); font-size: 18px; line-height: 1.5; }
 
 /* Pop-up in der Werkstatt auf Tonfläche */
-.feature-band { margin-top: clamp(96px, 12vw, 180px); padding-bottom: clamp(80px, 10vw, 150px); }
-.feature-band .feature { padding-top: clamp(72px, 9vw, 130px); }
+.feature-band { margin-top: var(--section); padding-bottom: var(--section); }
 
 /* Jahresarchiv zum Aufklappen */
 .years { padding-inline: var(--m); }
@@ -96,13 +75,9 @@
 }
 
 @media (max-width: 900px) {
-  .news-intro p { grid-column: 1 / -1; }
-  .feature__media, .feature--flip .feature__media { grid-column: 1 / -1; grid-row: 1; margin-inline: calc(var(--m) * -1); }
-  .feature__media figcaption, .feature--flip .feature__media figcaption { padding-inline: var(--m); }
-  .feature__media img { height: 62svh; }
-  .feature--wide .feature__media img { height: auto; aspect-ratio: 4 / 3; }
-  .feature__text, .feature--flip .feature__text { grid-column: 1 / -1; grid-row: 2; padding-top: 8px; }
-  .feature--wide .feature__date, .feature--wide .feature__title, .feature--wide .feature__body { grid-column: 1 / -1; }
+  .feature__media { grid-column: 1 / -1; margin-inline: calc(var(--m) * -1); }
+  .feature__media figcaption { padding-inline: var(--m); }
+  .feature__text { grid-column: 1 / -1; padding-top: 8px; }
   .year__num { grid-column: 1 / 5; }
   .year__teaser { grid-column: 5 / 12; }
   .year__list ul, .year__list .link-arrow { grid-column: 1 / -1; }

@@ -1,14 +1,14 @@
 /* Young-Jae Lee: Seiten-spezifische Kompositionen */
 
-.yjl-hero .page-hero__media img { height: min(86vh, 900px); object-position: 30% 40%; }
+.yjl-hero .page-hero__media img { object-position: 30% 40%; }
 
 /* Haltung: großes Zitat, dann Bild und Text versetzt */
 .stance { padding-top: var(--section); row-gap: clamp(56px, 8vw, 120px); align-items: start; }
 .stance__quote { grid-column: 1 / 11; margin: 0; }
 .stance__quote p {
   font-family: var(--f-display);
-  font-size: clamp(2rem, 4.4vw, 4.4rem);
-  line-height: 1.05;
+  font-size: var(--fs-statement);
+  line-height: 1.06;
   letter-spacing: -0.02em;
   text-wrap: balance;
   margin-bottom: 22px;

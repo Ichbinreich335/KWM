@@ -1,29 +1,25 @@
 /* Meisterstücke */
 
-.ms-intro { padding-block: var(--section); row-gap: 40px; align-items: start; }
+.ms-intro { padding-block: var(--section) 0; row-gap: 40px; align-items: start; }
 .ms-intro__statement {
   grid-column: 1 / 8;
   margin: 0;
   font-family: var(--f-display);
-  font-size: clamp(2rem, 3.8vw, 3.8rem);
-  line-height: 1.05;
+  font-size: var(--fs-statement);
+  line-height: 1.06;
   letter-spacing: -0.015em;
   text-wrap: balance;
 }
 .ms-intro__text { grid-column: 9 / 13; padding-top: 10px; }
 .ms-intro__text p { max-width: 44ch; }
 
-/* Versatz im Katalog: das asymmetrische Magazin-Raster */
-.push { margin-top: clamp(64px, 16vh, 200px); }
-.push-s { margin-top: clamp(32px, 7vh, 96px); }
-
 .catalog__ask { padding-block: 12px; margin-block: -7px -12px; font-size: 13px; color: var(--ink-2); text-underline-offset: 0.28em; }
 .catalog__ask:hover { color: var(--ink); }
 
-.catalog__quote { margin: 0; align-self: center; padding-block: clamp(24px, 4vw, 56px); }
+.catalog__quote { margin: 0; align-self: center; }
 .catalog__quote p {
   font-family: var(--f-display);
-  font-size: clamp(1.9rem, 3.2vw, 3.2rem);
+  font-size: var(--fs-statement);
   line-height: 1.06;
   letter-spacing: -0.015em;
   text-wrap: balance;
@@ -35,12 +31,10 @@
 .catalog__item--band .catalog__frame img { aspect-ratio: 16 / 7; }
 
 /* Kummen auf Tonfläche */
-.chapter--flaeche { margin-top: var(--section); padding-bottom: var(--section); }
-.chapter--flaeche .chapter__head { border-top-color: var(--ink); }
 .chapter--flaeche .catalog__frame { background: var(--ground-3); }
 
 /* Spindelvasen: ruhige Dreierreihe */
-.spindle { margin-top: clamp(96px, 12vw, 180px); padding-bottom: 36px; row-gap: 16px; align-items: baseline; border-top: 0; }
+.spindle { margin-top: var(--section); padding-bottom: 36px; row-gap: 16px; align-items: baseline; border-top: 0; }
 .spindle__title { grid-column: 1 / 7; font-family: var(--f-display); font-size: clamp(1.8rem, 2.8vw, 2.8rem); line-height: 1.05; }
 .spindle__text { grid-column: 8 / 13; margin: 0; color: var(--ink-2); max-width: 46ch; }
 .catalog--spindle { padding-top: 28px; border-top: 1px solid var(--hair); margin-inline: var(--m); padding-inline: 0; }
@@ -57,7 +51,6 @@
 @media (max-width: 900px) {
   .ms-intro__statement, .ms-intro__text { grid-column: 1 / -1; }
   .catalog > * { grid-column: 1 / -1 !important; }
-  .push, .push-s { margin-top: 0; }
   .catalog__item--band .catalog__frame img { aspect-ratio: 4 / 3; }
   .spindle__title, .spindle__text { grid-column: 1 / -1; }
   .steps__media { grid-column: 1 / -1; position: static; }

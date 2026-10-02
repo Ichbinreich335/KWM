@@ -1,13 +1,26 @@
 /* Bausteine der Unterseiten. Tokens, Raster, Typografie und Motion kommen aus styles.css. */
 
-/* Seitenkopf: großer Titel, Lede, randloses Bild */
-.page-hero { padding-top: calc(var(--head) + clamp(56px, 8vw, 120px)); row-gap: 40px; align-items: end; }
+/* Seitenkopf: dunkler Anker mit Titel links, Lede rechts und randlosem Bild am Fuß */
+.page-hero {
+  --hero-img: min(72vh, 760px);
+  --ink-2: var(--on-coal-2);
+  --hair: rgba(236, 234, 227, 0.22);
+  --cover: var(--coal);
+  background: var(--coal);
+  color: var(--on-coal);
+  padding-top: calc(var(--head) + clamp(48px, 6vw, 96px));
+  padding-bottom: calc(var(--section) * 0.6);
+  row-gap: var(--head-gap);
+  align-items: end;
+}
+.page-hero:has(.page-hero__media) { padding-bottom: 0; }
+.page-hero ::selection { background: var(--on-coal); color: var(--coal); }
 .page-hero__title {
   grid-column: 1 / 9;
   font-family: var(--f-display);
-  font-size: clamp(3.2rem, 9vw, 8.5rem);
-  line-height: 0.92;
-  letter-spacing: -0.035em;
+  font-size: clamp(3rem, 7vw, 7rem);
+  line-height: 0.95;
+  letter-spacing: -0.03em;
   text-wrap: balance;
 }
 .page-hero__lede {
@@ -18,9 +31,10 @@
   margin: 0;
   text-wrap: pretty;
 }
-.page-hero__media { grid-column: 1 / -1; margin-inline: calc(var(--m) * -1); margin-top: clamp(24px, 4vw, 56px); }
-.page-hero__media img { width: 100%; height: min(78vh, 820px); object-fit: cover; }
-.page-hero__media figcaption { padding-inline: var(--m); }
+.page-hero__media { grid-column: 1 / -1; margin-inline: calc(var(--m) * -1); }
+.page-hero__media img { width: 100%; height: var(--hero-img); object-fit: cover; }
+.page-hero__media--strip img { height: auto; aspect-ratio: 2560 / 398; min-height: 180px; }
+.page-hero__media figcaption { padding: 0 var(--m) 20px; }
 
 /* Sprungmarken innerhalb einer Seite */
 .subnav {
@@ -52,7 +66,7 @@
 /* Kapitel: Überschrift links, Text rechts, Linie oben */
 .chapter { padding-block: var(--section) 0; }
 .chapter:last-of-type, .chapter:has(+ .cta-band) { padding-bottom: var(--section); }
-.chapter__head { border-top: 1px solid var(--ink); margin-inline: var(--m); padding-inline: 0; padding-top: 24px; row-gap: 24px; align-items: start; margin-bottom: clamp(40px, 6vw, 80px); }
+.chapter__head { border-top: 1px solid var(--ink); margin-inline: var(--m); padding-inline: 0; padding-top: 24px; row-gap: 24px; align-items: end; margin-bottom: var(--head-gap); }
 .chapter__head .h2 { grid-column: 1 / 8; }
 .chapter__intro { grid-column: 9 / 13; margin: 0; color: var(--ink-2); max-width: 44ch; }
 
@@ -64,7 +78,9 @@
   padding-inline: var(--m);
 }
 .catalog__item { grid-column: span 4; }
-.catalog__item--wide { grid-column: span 8; }
+.catalog__item--wide { grid-column: 3 / span 8; }
+.catalog__item--band { grid-column: 1 / -1; }
+.catalog__quote { grid-column: span 6; }
 .catalog__item--half { grid-column: span 6; }
 .catalog__frame { overflow: hidden; background: var(--ground-2); }
 .catalog__frame img { width: 100%; aspect-ratio: 3 / 2; object-fit: cover; transition: transform 1.2s var(--ease); }
@@ -91,7 +107,7 @@
 .people { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 56px var(--g); padding-inline: var(--m); }
 .person { grid-column: span 4; border-top: 1px solid var(--ink); padding-top: 18px; }
 .person__name { font-family: var(--f-display); font-size: clamp(1.6rem, 2.2vw, 2.2rem); line-height: 1.05; margin-bottom: 6px; }
-.person__role { font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-2); margin-bottom: 16px; }
+.person__role { font-size: 12.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-2); margin-bottom: 16px; }
 .person p { font-size: 15px; margin-bottom: 6px; }
 
 /* Glasurproben */
@@ -100,27 +116,26 @@
 .swatch-card:hover img { transform: scale(1.06) rotate(-8deg); }
 .swatch-card figcaption { font-size: 14px; color: var(--ink); text-align: center; margin-top: 12px; }
 
-/* Abschlussband mit Anfrage */
-.cta-band { background: var(--coal); color: var(--on-coal); padding-block: clamp(80px, 10vw, 160px); row-gap: 32px; align-items: end; }
-.cta-band .h2 { grid-column: 1 / 8; }
-.cta-band__text { grid-column: 9 / 13; color: var(--on-coal-2); margin: 0 0 24px; }
+/* Abschlussband mit Anfrage: Fläche, damit es nicht an den Anker des Footers stößt */
+.cta-band { background: var(--ground-2); padding-block: var(--section); row-gap: 32px; align-items: end; --cover: var(--ground-2); }
+.cta-band .h2 { grid-column: 1 / 9; }
+.cta-band__text { grid-column: 9 / 13; color: var(--ink-2); margin: 0 0 24px; }
 .cta-band__actions { grid-column: 9 / 13; display: flex; flex-wrap: wrap; gap: 18px 28px; align-items: center; }
-.cta-band .button { background: var(--on-coal); color: var(--coal); border-color: var(--on-coal); }
-.cta-band .button:hover { background: transparent; color: var(--on-coal); }
 
 /* Fehlerseite: Wege zurück in Fließtextgröße */
 .not-found { min-height: 70vh; align-content: center; }
 .not-found__links { margin-top: 20px; }
 .not-found__links .link-arrow { font-family: var(--f-text); font-size: inherit; }
 
-/* Flächen in Tonfarbe */
+/* Fläche: ruhiger Zwischenabschnitt, Kapitel mit eigenem Abstand nach oben und unten */
 .on-flaeche { background: var(--ground-2); color: var(--ink); --cover: var(--ground-2); }
+.chapter--flaeche { margin-top: var(--section); padding-bottom: var(--section); }
 
 @media (max-width: 900px) {
   .page-hero__title, .page-hero__lede { grid-column: 1 / -1; }
-  .page-hero__media img { height: 56svh; }
+  .page-hero { --hero-img: 56svh; }
   .chapter__head .h2, .chapter__intro { grid-column: 1 / -1; }
-  .catalog__item, .catalog__item--wide, .catalog__item--half { grid-column: 1 / -1; }
+  .catalog__item, .catalog__item--wide, .catalog__item--half, .catalog__quote { grid-column: 1 / -1; }
   .prose, .prose--narrow { grid-column: 1 / -1; }
   .datelist__year { grid-column: 1 / 4; }
   .datelist__text { grid-column: 4 / -1; }
@@ -130,6 +145,6 @@
 }
 @media (min-width: 901px) and (max-width: 1200px) {
   .catalog__item { grid-column: span 6; }
-  .catalog__item--wide { grid-column: 1 / -1; }
+  .catalog__item--wide, .catalog__item--band { grid-column: 1 / -1; }
   .person { grid-column: span 6; }
 }
