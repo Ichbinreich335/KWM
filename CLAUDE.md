@@ -12,6 +12,7 @@ Website und Lager-App der Keramischen Werkstatt Margaretenhöhe. Aktuelle Entsch
 - Ist ein MCP nicht erreichbar (z. B. Netzwerksperre in Cloud-Sessions), das melden und die offizielle Doku-Seite nennen. Nicht raten.
 
 ## Arbeitsweise
+- Prototyp-Phase: Umkehrbare Schritte selbst erledigen, über MCP, CLI oder API statt Klickanleitungen. Nachfragen nur bei Kosten, Löschen oder Live-Schaltung.
 - Klein und überprüfbar: ein Thema pro Branch oder PR, mit Vorschau-Deploy auf Cloudflare, bevor etwas live geht.
 - Website bleibt **statisch** (Astro, kein SSR). Inhalte kommen aus Sanity, der Neubau läuft über den Cloudflare Deploy Hook.
 - Kein Eigenbau für das Lager, solange Softr oder Baserow die Anforderungen erfüllen.

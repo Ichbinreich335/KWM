@@ -1,5 +1,12 @@
 # Auftrag für eine lokale Claude-Code-Session: Lager-App in Softr per MCP bauen
 
+**Prototyp-Phase: bauen und testen statt erst lange recherchieren.** Der Agent setzt so viel wie möglich selbst um. Er nutzt dafür:
+1. den **Softr-MCP** (`softr` in `.mcp.json`) als Hauptwerkzeug,
+2. die **Softr-API**, falls dem MCP etwas fehlt. Der API-Key gehört nur in `.env` als `SOFTR_API_KEY`, nie ins Repo,
+3. eine **Softr-CLI**, aber nur, falls Softr offiziell eine anbietet. Das prüft der Agent kurz in der Softr-Doku per MCP.
+
+Was weder MCP noch API können, schreibt der Agent auf und gibt es dem Admin als kurze Klick-Anleitung.
+
 ## Voraussetzungen (macht der Admin)
 1. Ein kostenloses Konto bei softr.io anlegen.
 2. Im Repo-Ordner `claude` starten. Der Softr-MCP ist in `.mcp.json` eingetragen (`https://mcp.softr.io/mcp`). Danach `/mcp` aufrufen, `softr` wählen und sich per OAuth anmelden.
@@ -130,7 +137,8 @@ Der KI-Builder hat ein Grundgerüst angelegt: 3 Menüpunkte, Kacheln mit Foto, K
   - Filter auf **jedes** Attribut: Typ, Status, Lagerort, Künstler:in, Glasur, Jahr (Bereich), Galerie, Auf Website.
   - **Mehrere Filter kombinierbar**, dazu Suche und Sortierung nach Spalten.
 - **Detailseite** zum Bearbeiten und **CSV-Export** der gefilterten Liste.
-- **Prüfen (Softr-Doku per MCP):**
-  - Können Endnutzer im Table-Block beliebig viele Filter kombinieren?
-  - Lassen sich Filter bzw. Ansichten speichern?
-  - Falls nicht: alle Attribute als Filter freischalten und die häufigsten Kombinationen als Reiter vorgeben.
+- **Direkt bauen und dann testen:** Den Bestand mit allen Attributen als Filter umsetzen. Danach als Nutzer der Gruppe Werkstatt (Vorschau-Modus) ausprobieren:
+  - Lassen sich mehrere Filter kombinieren?
+  - Lassen sich Ansichten speichern?
+- **Ergebnis als Kurzbericht festhalten** (funktioniert / funktioniert nicht).
+- **Was nicht geht,** über vorgegebene Reiter abfangen.

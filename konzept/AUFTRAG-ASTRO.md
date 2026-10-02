@@ -7,6 +7,16 @@
 
 Ist ein MCP nicht erreichbar, z. B. in Cloud-Sessions ohne Netzwerkfreigabe: das melden, die offizielle Doku nennen und nicht raten.
 
+## Werkzeug-Setup (Prototyp-Phase: der Agent macht so viel wie möglich selbst)
+- **Cloudflare:** `npx wrangler login` (lokal). Danach erledigt der Agent Deploy, Vorschau, Workers Builds, Deploy Hook und Secrets per Wrangler oder MCP selbst.
+- **Sanity:**
+  - Anmelden: `npx sanity@latest login`.
+  - Projekt anlegen (Studio im Ordner `studio/`): `npm create sanity@latest`.
+  - MCP einrichten: `npx sanity@latest mcp configure`.
+  - Danach legt der Agent Schema, Dataset, CORS, Webhook und Studio-Deploy per CLI oder MCP selbst an.
+- **Tokens nur in `.env` / `.dev.vars` bzw. als Wrangler-Secret** (beide sind in `.gitignore`).
+- Freigegebene Befehle stehen in `.claude/settings.json` (npm, npx astro, sanity, wrangler und die MCP-Server).
+
 ## Ausgangslage
 - Statischer Prototyp: 7 Seiten in `src/*.html`, Partials in `src/partials/` (head, header, footer), zusammengesetzt von `tools/build.mjs` nach `site/`.
 - Assets in `site/`: `styles.css`, `main.js` (Animationen), `img/`, `css/`, `_headers`, `robots.txt`, `404.html`.
