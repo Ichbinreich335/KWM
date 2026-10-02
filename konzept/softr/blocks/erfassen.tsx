@@ -56,6 +56,7 @@ const editionFields = q.select({
 
 const KOMMISSION = "in Kommission";
 const AUSGESTELLT = "ausgestellt";
+const AUSSER_HAUS_ORT = "Außer Haus";
 const userProperties = { role: "z0b2k" };
 const STATUS_ACTIVE: Record<string, string> = {
   verfügbar: "bg-emerald-600 text-white border-emerald-600",
@@ -664,7 +665,12 @@ export default function Block() {
                     name="Status"
                     options={statusOptions}
                     value={unikat.status}
-                    onChange={(v) => setU("status", v)}
+                    onChange={(v) => {
+                      setU("status", v);
+                      const ort = lagerortOptions.find((l) => l.label === AUSSER_HAUS_ORT)?.id;
+                      if ((v === KOMMISSION || v === AUSGESTELLT) && ort) setU("lagerort", ort);
+                      else if (unikat.lagerort === ort) setU("lagerort", "");
+                    }}
                     activeClasses={STATUS_ACTIVE}
                   />
                   <ErrorText>{errors.status}</ErrorText>

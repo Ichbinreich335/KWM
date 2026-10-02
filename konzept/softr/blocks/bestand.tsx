@@ -68,6 +68,7 @@ const PAGE_SIZE = 100;
 const CARD_STEP = 48;
 const KOMMISSION = "in Kommission";
 const AUSGESTELLT = "ausgestellt";
+const AUSSER_HAUS_ORT = "Außer Haus";
 const isAusserHaus = (status: string) => status === KOMMISSION || status === AUSGESTELLT;
 const VERKAUFT = "verkauft";
 const ROHLING = "Rohling";
@@ -507,10 +508,17 @@ function UnikatDetail({
   function changeStatus(status: string) {
     if (status === u.status || busy) return;
     const fields: Record<string, unknown> = { status, verkauftAm: status === VERKAUFT ? today() : null };
-    if (!isAusserHaus(status)) Object.assign(fields, { galerie: [], seit: null, rueckgabe: null });
-    else if (!isAusserHaus(u.status)) fields.seit = today();
+    const ausserHausOrt = lagerorte.find((l) => l.label === AUSSER_HAUS_ORT)?.id;
+    if (!isAusserHaus(status)) {
+      Object.assign(fields, { galerie: [], seit: null, rueckgabe: null });
+      if (isAusserHaus(u.status)) fields.lagerort = [];
+    } else if (!isAusserHaus(u.status)) {
+      fields.seit = today();
+      if (ausserHausOrt) fields.lagerort = [ausserHausOrt];
+    }
     const before = {
       status: u.status,
+      lagerort: link(u.lagerort?.id),
       verkauftAm: u.verkauftAm ? u.verkauftAm.slice(0, 10) : null,
       galerie: link(u.galerie?.id),
       seit: u.seit ? u.seit.slice(0, 10) : null,
@@ -605,6 +613,7 @@ function UnikatDetail({
                   options={lagerorte}
                   placeholder="Kein Lagerort"
                 />
+                {!u.lagerort && !isAusserHaus(u.status) && u.status !== VERKAUFT && <p className="text-sm text-amber-800 mt-1.5">Bitte Lagerort wählen.</p>}
               </div>
               {isAusserHaus(u.status) && (
                 <div className="grid sm:grid-cols-2 gap-4">
