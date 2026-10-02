@@ -40,6 +40,7 @@ const RESERVIERT = "reserviert";
 const KOMMISSION = "in Kommission";
 const AUSGESTELLT = "ausgestellt";
 const SOON_DAYS = 14;
+const AUFGABEN_MAX = 4;
 const DAY_MS = 86400000;
 const VERKAUFT = "verkauft";
 const ROHLING = "Rohling";
@@ -341,6 +342,16 @@ export default function Block() {
     });
   }, [editionen]);
 
+  const aufgaben = useMemo(() => {
+    const imHaus = (u: Unikat) => u.status !== VERKAUFT && u.status !== KOMMISSION && u.status !== AUSGESTELLT;
+    return [
+      { titel: "Ohne Foto", items: unikate.filter((u) => !u.foto && u.status !== VERKAUFT) },
+      { titel: "Ohne Lagerort", items: unikate.filter((u) => imHaus(u) && !u.lagerort) },
+      { titel: "Verkauft ohne Datum", items: unikate.filter((u) => u.status === VERKAUFT && !u.verkauftAm) },
+      { titel: "Rückgabe überfällig", items: unikate.filter((u) => fristStatus(u.rueckgabe) === "ueberfaellig") },
+    ].filter((a) => a.items.length > 0);
+  }, [unikate]);
+
   const knapp = editionen.filter((e) => e.anzahl < LOW_STOCK).sort((a, b) => a.anzahl - b.anzahl);
 
   const partnerQuery = useRecords({ from: ds.partner, select: partnerSelect, count: PAGE_SIZE });
@@ -494,6 +505,30 @@ export default function Block() {
                 </div>
               )}
             </section>
+
+            {aufgaben.length > 0 && (
+              <Section title="Zu erledigen" description="Angaben, die noch fehlen. Antippen öffnet das Stück im Bestand.">
+                <div className="grid grid-cols-[repeat(auto-fill,minmax(min(100%,16rem),1fr))] gap-3" lang="de">
+                  {aufgaben.map((a) => (
+                    <div key={a.titel} className="rounded-lg border p-3 min-w-0">
+                      <p className="font-semibold">
+                        {a.titel} <span className="text-muted-foreground font-normal tabular-nums">· {a.items.length}</span>
+                      </p>
+                      <ul className="mt-1">
+                        {a.items.slice(0, AUFGABEN_MAX).map((u) => (
+                          <li key={u.id}>
+                            <a href={`/bestand?id=${u.id}`} className="block min-h-11 py-2 hyphens-auto hover:underline">
+                              {u.name || "Ohne Namen"} <span className="text-sm text-muted-foreground">{u.inv}</span>
+                            </a>
+                          </li>
+                        ))}
+                      </ul>
+                      {a.items.length > AUFGABEN_MAX && <p className="text-sm text-muted-foreground">und {a.items.length - AUFGABEN_MAX} weitere</p>}
+                    </div>
+                  ))}
+                </div>
+              </Section>
+            )}
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               <Section title="Unikate im Bestand nach Typ" description="Ohne verkaufte Stücke">

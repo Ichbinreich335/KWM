@@ -469,9 +469,25 @@ export default function Block() {
     : undefined;
   const existingCount = Number((existingRow?.fields as { anzahl?: number } | undefined)?.anzahl ?? 0);
 
-  const setU = <K extends keyof UnikatForm>(key: K, value: UnikatForm[K]) => setUnikat((s) => ({ ...s, [key]: value }));
-  const setE = <K extends keyof EditionForm>(key: K, value: EditionForm[K]) =>
+  const clearError = (key: string) =>
+    setErrors((e) => {
+      if (!(key in e)) return e;
+      const rest = { ...e };
+      delete rest[key];
+      return rest;
+    });
+  const setU = <K extends keyof UnikatForm>(key: K, value: UnikatForm[K]) => {
+    setUnikat((s) => ({ ...s, [key]: value }));
+    clearError(key);
+  };
+  const setE = <K extends keyof EditionForm>(key: K, value: EditionForm[K]) => {
     setEdition((s) => ({ ...s, [key]: value }));
+    clearError(key);
+  };
+  const changeFiles = (next: File[]) => {
+    setFiles(next);
+    clearError("fotos");
+  };
 
   const canCreate = art === "unikat" ? createUnikat.enabled : createEdition.enabled;
 
@@ -598,7 +614,7 @@ export default function Block() {
                   onClick={() => {
                     setArt(key);
                     setErrors({});
-                    setFiles([]);
+                    setFiles((f) => (key === "edition" ? f.slice(0, 1) : f));
                   }}
                   className={`h-12 rounded-lg text-base font-medium ${
                     art === key ? "bg-background shadow-sm" : "text-muted-foreground"
@@ -615,7 +631,7 @@ export default function Block() {
                   <FieldLabel htmlFor="foto-input" required>
                     Fotos
                   </FieldLabel>
-                  <PhotoPicker files={files} onChange={setFiles} multiple error={errors.fotos} />
+                  <PhotoPicker files={files} onChange={changeFiles} multiple error={errors.fotos} />
                 </div>
 
                 <div>
@@ -893,7 +909,7 @@ export default function Block() {
                     </div>
                     <div>
                       <FieldLabel htmlFor="foto-input">Foto</FieldLabel>
-                      <PhotoPicker files={files} onChange={setFiles} multiple={false} />
+                      <PhotoPicker files={files} onChange={changeFiles} multiple={false} />
                     </div>
                     <div>
                       <FieldLabel htmlFor="e-notiz">Notiz</FieldLabel>
