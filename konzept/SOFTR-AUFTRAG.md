@@ -7,7 +7,7 @@
 
 Was weder MCP noch API können, schreibt der Agent auf und gibt es dem Admin als kurze Klick-Anleitung.
 
-**Prüfung:** Loop aus `CLAUDE.md` (Abschnitt „Selbstprüfung im Loop“). Playwright öffnet die veröffentlichte App-URL und meldet sich als Werkstatt-Nutzer an. Den Testnutzer legt die Session selbst an, der Zugang steht nur in `.env` als `SOFTR_TEST_EMAIL` / `SOFTR_TEST_PASSWORD`. Geprüft wird auch mit einem Admin-Login, ob der Preis nur dort erscheint. Screens nach `konzept/vergleich/softr-*.png`, Bericht nach `konzept/vergleich/SOFTR-BERICHT.md`.
+**Prüfung:** Loop aus `CLAUDE.md` (Abschnitt „Selbstprüfung im Loop“). Playwright öffnet die veröffentlichte App-URL und meldet sich als Werkstatt-Nutzer an. Den Testnutzer legt die Session selbst an, der Zugang steht nur in `.env` als `SOFTR_TEST_EMAIL` / `SOFTR_TEST_PASSWORD`. Geprüft wird auch mit einem Admin-Login. **Entscheidung des Admins (02.10.2026): Der Preis ist in der Lager-App für alle Mitarbeitenden sichtbar. Er darf nur nie auf der Website erscheinen.** Screens nach `konzept/vergleich/softr-*.png`, Bericht nach `konzept/vergleich/SOFTR-BERICHT.md`.
 
 ## Voraussetzungen (macht der Admin)
 1. Ein kostenloses Konto bei softr.io anlegen.
@@ -31,14 +31,14 @@ Was weder MCP noch API können, schreibt der Agent auf und gibt es dem Admin als
 >    - **Erfassen:** schlichtes, robustes Formular („wie ein normales Webformular“). Kamera bzw. Foto-Upload vom Handy, Pflichtfelder, große Eingabefelder.
 >    - **Bestand:** saubere Tabelle oder Liste mit Vorschaubild, Reiter bzw. Filter „Alle · Verfügbar · Schalen · Vasen · In Kommission · Edition“, Suche, Detailansicht mit Bearbeiten (Status, Lagerort, Anzahl), CSV-Export.
 >    - **Übersicht:** Kennzahlen (verfügbar, reserviert, in Kommission, Rohlinge, glasierte Editionsware) und die zuletzt erfassten Stücke.
-> 3. Die Werkstatt sieht nur diese App. Der **interne Preis** ist nur für die Gruppe Admin sichtbar. Login per E-Mail und Passwort bzw. Magic Link, 2 Werkstatt-Zugänge.
+> 3. Die Werkstatt sieht nur diese App. Der **interne Preis** ist für alle Mitarbeitenden in der App sichtbar, aber nie auf der Website. Login per E-Mail und Passwort bzw. Magic Link, 2 Werkstatt-Zugänge.
 > 4. Optik: hell, ruhig, ohne Schnickschnack, deutsche Bezeichnungen.
 > Arbeite ohne Rückfragen bis zu einer nutzbaren ersten Version. Liste am Ende auf, was du nicht per MCP konfigurieren konntest.
 
 ## Test (Admin, ca. 30 Min.)
 - Am Handy und Tablet ein Stück mit Foto erfassen, auch mit dem iPhone-Format HEIC.
 - Im Bestand filtern, ein Stück auf „reserviert“ setzen, einen CSV-Export ziehen.
-- Mit einem Werkstatt-Zugang prüfen: Ist der Preis unsichtbar? Ist das Login einfach?
+- Mit einem Werkstatt-Zugang prüfen: Ist das Login einfach? Sieht die Werkstatt den Preis (gewollt)?
 
 ## Prompt für den Softr AI Co-Builder (zum Ausprobieren, direkt in Softr einfügen)
 
@@ -79,7 +79,7 @@ Was weder MCP noch API können, schreibt der Agent auf und gibt es dem Admin als
 > - **Admin:** sieht und bearbeitet alles, inklusive Preis intern, und verwaltet Nutzer.
 > - **Werkstatt:**
 >   - erfasst neue Stücke und bearbeitet Status, Lagerort, Galerie, Anzahl, Fotos und Notiz
->   - sieht den **Preis intern nicht**
+>   - sieht den **Preis intern** (geändert am 02.10.2026, siehe oben)
 >   - darf nichts löschen. Statt zu löschen, setzt sie den Status „verkauft“.
 >
 > Die App ist **nur nach Login** erreichbar (E-Mail und Passwort oder Magic Link). Kein öffentlicher Bereich.
@@ -117,7 +117,7 @@ Der KI-Builder hat ein Grundgerüst angelegt: 3 Menüpunkte, Kacheln mit Foto, K
   - Zu viele Pflichtfelder. Pflicht sind nur Foto, Name, Typ und Status.
   - Die Checkbox „Please check this box“ braucht die Beschriftung „Auf Website zeigen“ und darf keine Pflicht sein.
   - Maße als einzeiliges Feld.
-  - Preis intern ist für die Werkstatt ausgeblendet.
+  - ~~Preis intern ist für die Werkstatt ausgeblendet.~~ Aufgehoben am 02.10.2026: Der Preis ist für alle Mitarbeitenden sichtbar, nur nicht auf der Website.
 - **Englische Texte** auf Deutsch umstellen (Search, Ask AI, Upload). „Ask AI“ für die Werkstatt ausblenden.
 - **Status-Farben** wie vorgegeben: verfügbar = grün, reserviert = gelb, verkauft = grau, in Kommission = blau.
 - **Lagerorte und Beispieldaten** an unsere Liste angleichen, mit deutschen Keramik-Namen statt „Modern Line T1“.

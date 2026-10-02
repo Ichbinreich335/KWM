@@ -51,7 +51,7 @@ Kennzeichnung in diesem Abschnitt: [V] = heute (02.10.2026) vom externen Prüfer
 ### Testkriterien (Test-Abend: 20 echte Stücke, echtes Werkstatt-Gerät)
 - Eine Mitarbeiterin oder ein Mitarbeiter erfasst ein Stück mit Foto **ohne Hilfe in < 2 Min.**
 - Sie oder er findet ein bestimmtes Stück in der Übersicht **in < 30 Sek.**
-- Der CSV-Export funktioniert, und der **Preis ist für die Werkstatt unsichtbar**.
+- Der CSV-Export funktioniert. Der Preis ist in der Lager-App für alle Mitarbeitenden sichtbar (Entscheidung 02.10.2026), erscheint aber **nie auf der Website**.
 - Claude baut die App **per MCP**, ohne dass der Admin klicken muss (Auftrag: `konzept/SOFTR-AUFTRAG.md`).
 
 ### Entscheidungsregel
