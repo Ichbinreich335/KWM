@@ -1,31 +1,71 @@
 # Übergabe: Website und Lager-App für die Keramische Werkstatt Margaretenhöhe (KWM)
 
-Stand: 02.10.2026, **v2 nach unabhängigem Review**. Abschnitt 0 enthält die aktuellen Empfehlungen und hat Vorrang vor älteren Aussagen weiter unten.
+Stand: 02.10.2026, **v3 nach externer Prüfung**. Abschnitt 0 ist maßgeblich und hat Vorrang vor älteren Aussagen weiter unten.
 
-## 0. Aktueller Stand (v2)
+## 0. Aktueller Stand (v3, nach externer Prüfung) – Entscheidung: Softr-Test, Baserow Reserve
 
-- **Website:** Astro statisch. Neubau über einen **Cloudflare Deploy Hook** (für Workers verfügbar seit 01.04.2026 [V laut Review]). Schlägt der Neubau fehl, bleibt die alte Version online. Die ganze Seite wird neu gebaut, nicht nur „Aktuelles“. Das ist einfacher und braucht weder SSR noch nachladendes JavaScript.
-- **Website-Editor: Sanity Free.**
-  - Laut Nutzungsbedingungen für „internal business purposes“ nutzbar. Bis 20 Logins, 100 GB Assets, Visual Editing [V laut Review].
-  - **KI-Zugriff über den offiziellen gehosteten Sanity-MCP-Server**: Entwürfe anlegen und ändern, veröffentlichen, Bilder hochladen, Schema ändern [V laut Review]. Ablauf: Admin gibt Claude Dokumente und Bilder, Claude legt einen Entwurf an, Admin prüft und veröffentlicht, Webhook löst den Neubau aus. Selbst pflegen geht weiterhin über das Studio.
-  - Offen [U]: Ist der MCP-Server im Free-Tarif voll nutzbar? Gehen Bild-Uploads auch lokal und nicht nur per URL?
-  - **Storyblok Starter ist herabgestuft.** Laut Preisseite gilt der Tarif nur für „testing and personal projects“. Der Versionsverlauf reicht 1 Tag zurück, und laut AGB §15.4 kann Storyblok den Free-Tarif jederzeit beenden [V laut Review].
-- **Lager-App:**
-  - **Baserow Cloud** (Server in Deutschland, verwaltet, MIT-Software). Free: 3.000 Zeilen und 2 GB pro Workspace, Galerie, Formular und Application Builder sind enthalten. Premium kostet 10 $ pro Nutzer [V laut Review]. Ausweg: Dieselbe Software lässt sich mit denselben Daten selbst hosten.
-  - **Softr Basic** (Berlin, AWS EU) für 19 $ pauschal: 1 Builder, 5+5 App-Nutzer, 50.000 Datensätze, automatische Backups. Wirkt am stärksten wie eine eigene App. Nachteile: proprietär, **2FA für den Builder erst im Business-Tarif** [V laut Review].
-  - Entscheidung zwischen beiden über einen **Praxistest des Admins**. CSV-Vorlagen liegen in `konzept/test-import/`.
-- **Directus ist gestrichen.** Gründe:
-  - 2026 gab es bisher 34 GitHub-Sicherheitswarnungen, darunter im August eine kritische WebSocket-Lücke. Damit gilt derselbe Maßstab wie bei Payload.
-  - Die lokale Demo lief noch auf v11. In Produktion wäre es v12 mit Lizenzschlüssel und harter Grenze von 3 Plätzen.
-  - Die Preise ändern sich erneut [V laut Review].
-- **Ninox:** Die Preisangabe war veraltet. Aktuell 25 € pro Nutzer im Team-Tarif, also raus.
-- **Buchungsjournal ist nicht mehr nötig.** Vorerst reicht der Bestand als Zahl pro Modell, Glasur und Zustand. Buchungen sind höchstens später ein nice to have. Damit spielen auch die Zeilenlimits keine Rolle.
-- **Offen [U]:** Sind geteilte Logins (2 Werkstatt-Zugänge für 4 Personen) laut AGB von Baserow und Softr erlaubt?
-- **Live-Vorschau** der lokalen Demos ist nicht möglich: Ein öffentlicher Tunnel aus der Cloud-Umgebung wurde blockiert. Die Screenshots liegen in `konzept/vergleich/`.
+**Noch nicht final.** Endgültig entschieden wird nach dem Test-Abend anhand der Kriterien unten.
+Kennzeichnung in diesem Abschnitt: [V] = heute (02.10.2026) vom externen Prüfer an der Herstellerseite geprüft, [U] = offen.
 
---- Dieses Dokument richtet sich an eine KI oder einen Entwickler, der übernimmt. Es fasst Anforderungen, getroffene Entscheidungen, Optionen und offene Punkte zusammen.
+### Entscheidungen
+1. **Website:** Astro statisch. Neubau per **Cloudflare Deploy Hook** (Workers Builds, verfügbar seit 01.04.2026) [V]. Kein SSR und kein Teil-Neubau nur für „Aktuelles“.
+2. **Website-CMS: Sanity Free**, nicht Storyblok.
+   - **Storyblok Starter:** laut Preisseite „for testing and personal projects“, Versionsverlauf 1 Tag, Gratis-Tarif laut AGB §15.4 jederzeit kündbar [V].
+   - **Sanity Free:** gewerblich nutzbar („internal business purposes“), 20 Logins, 100 GB Assets, 2 Webhooks, Content Agent inklusive [V].
+   - **KI-Zugriff:** offizieller Sanity-MCP (`mcp.sanity.io`) zum Anlegen von Entwürfen, Hochladen von Bildern und Veröffentlichen [V]. Ablauf: KI legt den Entwurf an → Admin prüft im Studio → Veröffentlichen → Webhook → Neubau.
+3. **Lager:** kein Eigenbau, kein Selbst-Hosting.
+   - **Reihenfolge:** (1) **Softr testen**, (2) **Baserow Cloud Free** als Reserve für 0 €, (3) Eigenbau auf Cloudflare nur, wenn beides scheitert.
+   - **Begründung:** Der Admin baut einmal, die Werkstatt bedient nur. Kein eigener Code und kein Feinschliff durch uns.
+4. **Directus gestrichen:** 2026 gab es 34 Sicherheitswarnungen, davon 1 kritische im August [V]. Der Test lief auf v11 (EOL seit 04/2026). Im Betrieb wäre es v12 mit Lizenzschlüssel für 3 Plätze [V].
+5. **Buchungsjournal und Aufträge vorerst raus.** Bestand ist eine Zahl pro Modell, Glasur und Zustand (siehe `konzept/test-import/`).
 
-Kennzeichnung: **[V]** = an einer Primärquelle geprüft, **[S]** = nur Sekundärquelle oder Suchtreffer, **[U]** = unverifiziert. Fast alle Preise sind [S] und müssen vor einer Entscheidung auf der Herstellerseite gegengeprüft werden. Die Herstellerseiten waren für den Abruf gesperrt.
+### Geprüfte Fakten
+**Softr** [V]
+- **Basic:** 19 $/Monat bei Jahreszahlung, 25 $ bei monatlicher Zahlung. Enthalten: 1 Builder, „5 + 5“ App-Nutzer, 50.000 Datensätze, automatische Backups.
+  - *Hinweis:* Mehrere Vergleichsseiten nennen 49 $. Softr hat die Tarife am 05.08.2026 umgestellt. Die Angabe des Prüfers stammt von der Herstellerseite und gilt.
+- Daten in der AWS-EU-Region, Firma in Berlin.
+- MCP (`https://mcp.softr.io/mcp`) „included on every plan, including Free“, verbraucht keine AI-Credits.
+- 2FA laut Tarifliste erst im Business-Tarif (329 $).
+
+**Baserow Cloud Free** [V]
+- 3.000 Zeilen, 2 GB, Server in Deutschland.
+- Ansichten Grid, Formular und Galerie, dazu Dashboards, 2FA, CSV-Export, Snapshots, Zeilenverlauf 14 Tage.
+- Rollen und Rechte pro Ansicht und Feld erst ab Advanced (18 $ pro Nutzer). Werkstatt-Konten könnten also Ansichten und Felder verändern.
+- App Builder: bis 500 App-Nutzer gratis (alle Tarife), aber das Datei-Upload-Element erst ab Advanced.
+- Ein Webhook „Conditional row update“ kann den Cloudflare Deploy Hook auslösen.
+- MIT-Lizenz: Ausweg über Selbst-Hosting. Firma in Amsterdam, 5 Mio. € Startkapital 2022, Fallstudie mit der Charité.
+
+**Fotos**
+- Die Fotobox exportiert ca. 2.000 px bzw. ~1 MB JPEG. Eine eigene Verkleinerungs-Kette wird nicht gebaut.
+- *Rechnung prüfen:* 2 GB / 1 MB sind rechnerisch ca. 2.000 Bilder. Die Angabe „400 Bilder“ gilt eher für ~5 MB pro Bild.
+
+### Offene Fragen vor bzw. beim Softr-Test [U]
+1. Speichergrenze für Dateien und Fotos im Basic-Tarif (steht nicht auf der Preisseite).
+2. Bedeutung von „5 + 5“ App-Nutzern (vermutlich intern + extern).
+3. Gibt es 2FA für das Builder-/Admin-Konto im Basic-Tarif? Für den Admin ist das Pflicht.
+4. Ist der Export vollständig, also Daten **und** Fotos? Das ist der Ausweg, falls Softr wegfällt.
+5. Kann ein Softr-Workflow eine URL aufrufen? Nötig für den Website-Neubau beim „Ausstellen“.
+6. Sind geteilte Werkstatt-Logins laut AGB erlaubt?
+7. Funktioniert der Kamera-Upload vom iPhone (HEIC)?
+
+### Testkriterien (Test-Abend: 20 echte Stücke, echtes Werkstatt-Gerät)
+- Eine Mitarbeiterin oder ein Mitarbeiter erfasst ein Stück mit Foto **ohne Hilfe in < 2 Min.**
+- Sie oder er findet ein bestimmtes Stück in der Übersicht **in < 30 Sek.**
+- Der CSV-Export funktioniert, und der **Preis ist für die Werkstatt unsichtbar**.
+- Claude baut die App **per MCP**, ohne dass der Admin klicken muss (Auftrag: `konzept/SOFTR-AUFTRAG.md`).
+
+### Entscheidungsregel
+- Kriterien erfüllt und offene Fragen 1 und 3 geklärt → **Softr final**.
+- Sonst → **Baserow Cloud Free**:
+  - Erfassung über die Formular-Ansicht.
+  - Die Werkstatt arbeitet in vorgefertigten Ansichten.
+  - Das Risiko, dass jemand Ansichten oder Felder verstellt, fangen Snapshots ab.
+- Erst wenn beides scheitert → Eigenbau auf Cloudflare (D1, R2, Access).
+
+### Sonstiges
+- Die MCP-Server stehen in `.mcp.json` (Astro, Cloudflare, Sanity, Softr). In dieser Cloud-Umgebung blockiert das Netzwerk sie. Lokal oder nach einer Freigabe der Domains funktionieren sie.
+- Eine Live-Vorschau der lokalen Demos ist nicht möglich. Die Screenshots liegen in `konzept/vergleich/`, der Baserow-Export in `konzept/baserow-demo/`.
+- Die Abschnitte 1–10 unten sind ältere Stände. Wo sie Abschnitt 0 widersprechen, gilt Abschnitt 0.
 
 ---
 

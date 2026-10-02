@@ -4,7 +4,7 @@
 1. Ein kostenloses Konto bei softr.io anlegen.
 2. Im Repo-Ordner `claude` starten. Der Softr-MCP ist in `.mcp.json` eingetragen (`https://mcp.softr.io/mcp`). Danach `/mcp` aufrufen, `softr` wählen und sich per OAuth anmelden.
    Alternativ manuell: `claude mcp add --transport http softr https://mcp.softr.io/mcp`
-3. **Vor dem Bau prüfen:** die aktuellen Preise auf softr.io/pricing. Seit dem 05.08.2026 gelten neue Tarife, und die Quellen widersprechen sich (Basic 19 $ oder 49 $). Wichtig sind „Team-/interne Nutzer“, Dateispeicher, 2FA und Backups.
+3. **Preis laut externer Prüfung [V]:** Basic kostet 19 $/Monat bei Jahreszahlung, 25 $ monatlich (1 Builder, „5 + 5“ App-Nutzer, 50.000 Datensätze, Backups). **Beim Test klären:** Dateispeicher im Basic-Tarif, 2FA für das Admin-Konto, ob der Export auch die Fotos enthält, ob Workflows eine URL aufrufen können (Website-Neubau), ob geteilte Logins laut AGB erlaubt sind und ob HEIC-Fotos vom iPhone funktionieren.
 
 ## Auftrag an Claude (so einfügen)
 > Lies `konzept/UEBERGABE.md` (Abschnitt 0) und `konzept/test-import/*.csv`. Baue mit dem Softr-MCP:
