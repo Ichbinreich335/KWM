@@ -5,7 +5,7 @@ const SHIFT_MAX = 24;
 
 export default function init(el) {
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  const fig = el.querySelector('.komposition__fig--l');
+  const fig = el.querySelector('.komposition__fig--big');
   if (!fig) return;
 
   let ticking = false;

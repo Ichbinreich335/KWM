@@ -4,7 +4,7 @@
 <main id="inhalt">
 
   <!-- Einstieg: Zitat links, Kummerschalen rechts (hell) -->
-  <section class="hero grid" id="top" aria-labelledby="hero-title">
+  <section class="hero grid" id="top" data-variant="einstieg:foto" aria-labelledby="hero-title">
     <figure class="hero__media" data-reveal="img">
       <img src="../img/kwm/kummerschalen.webp" width="937" height="1040" alt="Viele flache Schalen von Young-Jae Lee auf einem Steinboden, seladonblau, schwarz gesprenkelt und rotbraun glasiert" fetchpriority="high" data-parallax>
       <figcaption class="hero__credit">Kummerschalen · Foto: Christopher Clem Franken</figcaption>
@@ -36,22 +36,129 @@
         <a class="link-arrow" href="manufaktur.html">Manufakturprogramm</a>
       </p>
     </div>
-    <figure class="komposition__fig komposition__fig--l">
-      <img src="../img/kwm/einstieg/teeschale-640.webp" srcset="../img/kwm/einstieg/teeschale-640.webp 640w, ../img/kwm/einstieg/teeschale-1000.webp 1000w" sizes="(max-width: 900px) 62vw, 31vw" width="640" height="640" alt="Hohe Teeschale von Young-Jae Lee, rotbraun mit hellen Glasurschlieren und feinen schwarzen Sprenkeln" fetchpriority="high" decoding="async">
+    <figure class="komposition__fig komposition__fig--big">
+      <img src="../img/kwm/kummerschalen.webp" width="937" height="1040" alt="Viele flache Schalen von Young-Jae Lee auf einem Steinboden, seladonblau, schwarz gesprenkelt und rotbraun glasiert" fetchpriority="high" decoding="async">
     </figure>
-    <figure class="komposition__fig komposition__fig--m">
-      <img src="../img/kwm/einstieg/vase-rosa-296.webp" width="296" height="370" alt="Spindelvase von Young-Jae Lee, oben rosa, unten blassgrün glasiert" decoding="async">
+    <figure class="komposition__fig komposition__fig--a">
+      <img src="../img/kwm/schale_spitz_gross.webp" width="600" height="400" alt="Türkisfarbene Schale von Young-Jae Lee auf hohem Fuß" decoding="async">
     </figure>
-    <figure class="komposition__fig komposition__fig--s1">
-      <img src="../img/kwm/einstieg/kumme-tuerkis-460.webp" width="460" height="460" alt="Türkisblaue Kumme von Young-Jae Lee mit feinem Craquelé" decoding="async">
-    </figure>
-    <figure class="komposition__fig komposition__fig--s2">
-      <img src="../img/kwm/einstieg/vase-weiss-400.webp" width="400" height="400" alt="Weiße Spindelvase von Young-Jae Lee mit abgesetztem Rand" decoding="async">
+    <figure class="komposition__fig komposition__fig--b">
+      <img src="../img/kwm/schale_spitz_xl_1.webp" width="600" height="400" alt="Flache Schale von Young-Jae Lee, innen hellblau, außen rostrot glasiert" decoding="async">
     </figure>
   </section>
 
   <!-- Aktuell: laufende und kommende Ausstellungen mit Flyer und Angaben, aufklappbar ohne Unterseite -->
-  <section class="aktuell" id="aktuelles" data-sig="aktuell" aria-labelledby="aktuell-title"></section>
+  <section class="aktuell" id="aktuelles" data-sig="aktuell" aria-labelledby="aktuell-title">
+    <div class="aktuell__head grid">
+      <h2 class="h2" id="aktuell-title" data-reveal="words">Aktuell</h2>
+      <a class="link-arrow aktuell__all" href="aktuelles.html">Alle Ausstellungen und Termine</a>
+    </div>
+
+    <ol class="aktuell__list">
+      <li class="aktuell__item aktuell__item--main" data-start="2026-04-23" data-end="2026-10-25">
+        <figure class="aktuell__media">
+          <img src="../img/kwm/aktuell/mok-1400.webp" srcset="../img/kwm/aktuell/mok-960.webp 960w, ../img/kwm/aktuell/mok-1400.webp 1400w, ../img/kwm/aktuell/mok-2000.webp 2000w" sizes="(min-width: 900px) 64vw, 100vw" width="1400" height="652" alt="Vier Schalen von Young-Jae Lee: ochsenblutrot, weiß mit blauem Tupfen, rosé und hellbraun" loading="lazy" decoding="async">
+          <figcaption>Schalen von Young-Jae Lee</figcaption>
+        </figure>
+        <div class="aktuell__body">
+          <p class="aktuell__status" data-status>Läuft · bis 25. Oktober</p>
+          <h3 class="aktuell__title">„99 Schalen – ein Kosmos“</h3>
+          <p class="aktuell__place">Museum für Ostasiatische Kunst (MOK), Köln</p>
+          <button class="aktuell__more" type="button" aria-expanded="false" aria-controls="aktuell-mok" data-more>
+            <span class="aktuell__more-label" data-label>Mehr zur Ausstellung</span>
+          </button>
+          <div class="aktuell__panel" id="aktuell-mok" role="region" aria-label="Details zu „99 Schalen – ein Kosmos“">
+            <div class="aktuell__panel-in">
+              <dl class="aktuell__facts">
+                <div><dt>Zeitraum</dt><dd>23. April bis 25. Oktober 2026</dd></div>
+                <div><dt>Adresse</dt><dd>Universitätsstraße 100<br>50674 Köln</dd></div>
+              </dl>
+              <a class="link-arrow" href="https://museum-fuer-ostasiatische-kunst.de/99-Schalen-ein-Kosmos">Zur Ausstellung im MOK</a>
+            </div>
+          </div>
+        </div>
+      </li>
+
+      <li class="aktuell__item" data-start="2026-08-16" data-end="2026-10-31">
+        <figure class="aktuell__media">
+          <img src="../img/kwm/aktuell/wesel-640.webp" srcset="../img/kwm/aktuell/wesel-640.webp 640w, ../img/kwm/aktuell/wesel-937.webp 937w" sizes="(min-width: 900px) 31vw, 100vw" width="640" height="480" alt="Viele flache Schalen von Young-Jae Lee in Seladon, Schwarz und Rotbraun, auf dem Boden ausgelegt" loading="lazy" decoding="async">
+          <figcaption>Foto: Christopher Clem Franken, © Kunst-Station Sankt Peter, Köln</figcaption>
+        </figure>
+        <div class="aktuell__body">
+          <p class="aktuell__status" data-status>Läuft · bis 31. Oktober</p>
+          <h3 class="aktuell__title">„Kummerschalen“</h3>
+          <p class="aktuell__place">Willibrordi-Dom, Wesel</p>
+          <button class="aktuell__more" type="button" aria-expanded="false" aria-controls="aktuell-wesel" data-more>
+            <span class="aktuell__more-label" data-label>Mehr zur Ausstellung</span>
+          </button>
+          <div class="aktuell__panel" id="aktuell-wesel" role="region" aria-label="Details zu „Kummerschalen“">
+            <div class="aktuell__panel-in">
+              <p class="aktuell__text">Der Niederrheinische Kunstverein zeigt in Kooperation mit der Evangelischen Kirchengemeinde Wesel handgefertigte Schalen der international renommierten Keramikerin Young-Jae Lee.</p>
+              <dl class="aktuell__facts">
+                <div><dt>Zeitraum</dt><dd>16. August bis 31. Oktober 2026</dd></div>
+                <div><dt>Eröffnung</dt><dd>Sonntag, 16. August 2026, 11 Uhr Gottesdienst zur Ausstellung, 12.15 Uhr Eröffnung der Ausstellung.</dd></div>
+                <div><dt>Öffnungszeiten</dt><dd>Di–So 14.30–17.00 Uhr<br>Mi und Sa 10–12 Uhr</dd></div>
+                <div><dt>Adresse</dt><dd>Großer Markt<br>46483 Wesel</dd></div>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </li>
+
+      <li class="aktuell__item" data-start="2026-10-03" data-end="2026-12-12">
+        <figure class="aktuell__media">
+          <img src="../img/kwm/aktuell/greve-533.webp" width="533" height="400" alt="Türkisfarbene Kumme von Young-Jae Lee mit feinem Craquelé" loading="lazy" decoding="async">
+          <figcaption>Kumme von Young-Jae Lee</figcaption>
+        </figure>
+        <div class="aktuell__body">
+          <p class="aktuell__status" data-status>Ab 3. Oktober</p>
+          <h3 class="aktuell__title">„Kathleen Jacobs / Young&#8209;Jae Lee“</h3>
+          <p class="aktuell__place">Galerie Karsten Greve, St. Moritz, Schweiz</p>
+          <button class="aktuell__more" type="button" aria-expanded="false" aria-controls="aktuell-greve" data-more>
+            <span class="aktuell__more-label" data-label>Mehr zur Ausstellung</span>
+          </button>
+          <div class="aktuell__panel" id="aktuell-greve" role="region" aria-label="Details zu „Kathleen Jacobs / Young-Jae Lee“">
+            <div class="aktuell__panel-in">
+              <p class="aktuell__text">Malerei von Kathleen Jacobs (Öl auf Leinen) und Keramik von Young&#8209;Jae Lee.</p>
+              <dl class="aktuell__facts">
+                <div><dt>Zeitraum</dt><dd>3. Oktober bis 12. Dezember 2026</dd></div>
+              </dl>
+              <a class="link-arrow" href="https://galerie-karsten-greve.com/">Galerie Karsten Greve</a>
+            </div>
+          </div>
+        </div>
+      </li>
+
+      <li class="aktuell__item" data-start="2026-11-06" data-end="2026-11-08">
+        <figure class="aktuell__media">
+          <img src="../img/kwm/aktuell/popup-640.webp" srcset="../img/kwm/aktuell/popup-640.webp 640w, ../img/kwm/aktuell/popup-954.webp 954w" sizes="(min-width: 900px) 31vw, 100vw" width="640" height="480" alt="Regal voller ungebrannter Becher, Schalen, Teller und Kannen in der Werkstatt" loading="lazy" decoding="async">
+          <figcaption>In der Werkstatt · Foto: Haydar Koyupinar</figcaption>
+        </figure>
+        <div class="aktuell__body">
+          <p class="aktuell__status" data-status>Ab 6. November</p>
+          <h3 class="aktuell__title">Mode, Taschen, Keramik &amp; Licht im Dialog</h3>
+          <p class="aktuell__place">Pop-up-Store Vol. 2 in der Werkstatt, Zeche Zollverein</p>
+          <button class="aktuell__more" type="button" aria-expanded="false" aria-controls="aktuell-popup" data-more>
+            <span class="aktuell__more-label" data-label>Mehr zur Ausstellung</span>
+          </button>
+          <div class="aktuell__panel" id="aktuell-popup" role="region" aria-label="Details zu Mode, Taschen, Keramik und Licht im Dialog">
+            <div class="aktuell__panel-in">
+              <p class="aktuell__text">Pop-up-Store in den Räumen der Keramischen Werkstatt Margaretenhöhe.</p>
+              <dl class="aktuell__facts">
+                <div><dt>Zeitraum</dt><dd>6. bis 8. November 2026</dd></div>
+                <div><dt>Geöffnet</dt><dd>Fr und Sa 11–18 Uhr<br>So 11–16 Uhr</dd></div>
+                <div><dt>In Kooperation mit</dt><dd>Burggraf Burggraf (Taschen)<br>Joachim Kern (Mode)<br>Christiane Kuntz (Mode)<br>Dietrich Pampus (Vintage Leuchten)</dd></div>
+                <div><dt>Adresse</dt><dd>Bullmannaue 19<br>45327 Essen, Gelände der Zeche Zollverein</dd></div>
+              </dl>
+              <a class="link-arrow" href="besuch.html">Anfahrt zur Werkstatt</a>
+            </div>
+          </div>
+        </div>
+      </li>
+    </ol>
+
+    <p class="aktuell__note" data-until="2026-10-05">Am Samstag, 3. Oktober 2026 bleibt die Werkstatt geschlossen. Ab Montag, 5. Oktober sind wir wieder wie gewohnt für Sie da.</p>
+  </section>
 
   <!-- Lede -->
   <section class="lede grid" aria-label="Über die Werkstatt">
@@ -102,8 +209,8 @@
       <li><span class="journey__year">1978</span><span class="journey__place">Sandhausen</span><span class="journey__what">eigene Werkstatt bei Heidelberg</span></li>
       <li><span class="journey__year">1987</span><span class="journey__place">Essen</span><span class="journey__what">Leitung der Keramischen Werkstatt Margaretenhöhe</span></li>
       <li><span class="journey__year">2016</span><span class="journey__place">Breslau</span><span class="journey__what">Ehrendoktorwürde der Eugeniusz-Geppert-Akademie</span></li>
+      <li class="journey__more"><a class="link-arrow" href="young-jae-lee.html#sammlungen">Werke in Sammlungen</a></li>
     </ol>
-    <p class="journey__more grid"><a class="link-arrow" href="young-jae-lee.html#sammlungen">Werke in Sammlungen</a></p>
   </section>
 
   <!-- Meisterstücke -->
@@ -142,78 +249,91 @@
         <h3 class="orte__name">Köln</h3>
         <p class="orte__meta"><span>2018–2026</span><span>7 Ausstellungen</span></p>
         <ul class="orte__houses" aria-label="Häuser in Köln"><li>Museum für Ostasiatische Kunst</li><li>Galerie Karsten Greve</li><li>Kunst-Station Sankt Peter</li><li>Galerie Udo Adam-Pasquale</li></ul>
+        <ol class="orte__shows" aria-label="Ausstellungen in Köln" hidden><li><span class="orte__y">2026</span><span class="orte__h">Museum für Ostasiatische Kunst</span><span class="orte__t">„99 Schalen – ein Kosmos“</span></li><li><span class="orte__y">2024</span><span class="orte__h">Museum für Ostasiatische Kunst</span><span class="orte__t">„50 Jahre – 50 Schätze“</span></li><li><span class="orte__y">2023</span><span class="orte__h">Galerie Udo Adam-Pasquale, Köln-Sülz</span></li><li><span class="orte__y">2022</span><span class="orte__h">Kunst-Station Sankt Peter</span><span class="orte__t">„SIEBEN MAL SIEBEN“</span></li><li><span class="orte__y">2020</span><span class="orte__h">Galerie Karsten Greve</span><span class="orte__t">„Spinatschalen“</span></li><li><span class="orte__y">2020</span><span class="orte__h">Galerie Karsten Greve</span><span class="orte__t">Buchpräsentation „Das Grün in den Schalen“</span></li><li><span class="orte__y">2018</span><span class="orte__h">Galerie Karsten Greve</span><span class="orte__t">„Arbeiten in Keramik“</span></li></ol>
       </li>
       <li class="orte__tile orte__tile--xl">
         <img class="orte__img" src="../img/kwm/regal.webp" width="954" height="905" loading="lazy" alt="">
         <h3 class="orte__name">München</h3>
         <p class="orte__meta"><span>2016–2026</span><span>6 Ausstellungen</span></p>
         <ul class="orte__houses" aria-label="Häuser in München"><li>Galerie Jahn und Jahn</li><li>Galerie Handwerk</li><li>Bayerischer Kunstgewerbeverein</li></ul>
+        <ol class="orte__shows" aria-label="Ausstellungen in München" hidden><li><span class="orte__y">2026</span><span class="orte__h">Galerie Jahn und Jahn</span><span class="orte__t">„Young-Jae Lee“</span></li><li><span class="orte__y">2025</span><span class="orte__h">Galerie Jahn und Jahn</span><span class="orte__t">„Young-Jae Lee: Keramik“</span></li><li><span class="orte__y">2024</span><span class="orte__h">Bayerischer Kunstgewerbeverein</span></li><li><span class="orte__y">2022</span><span class="orte__h">Galerie Jahn und Jahn</span><span class="orte__t">„Young-Jae LEE – Spindelvasen und Spinatschalen“</span></li><li><span class="orte__y">2020</span><span class="orte__h">Galerie Handwerk</span><span class="orte__t">„es grünt“</span></li><li><span class="orte__y">2016</span><span class="orte__h">Galerie Jahn</span><span class="orte__t">„Augenblicke“</span></li></ol>
       </li>
       <li class="orte__tile orte__tile--m">
         <img class="orte__img" src="../img/kwm/seladon-schalen.webp" width="900" height="600" loading="lazy" alt="">
         <h3 class="orte__name">Tokio</h3>
         <p class="orte__meta"><span>2016–2025</span><span>6 Ausstellungen</span></p>
         <ul class="orte__houses" aria-label="Häuser in Tokio"><li>Gallery Tohkyo</li><li>LIVING MOTIF</li></ul>
+        <ol class="orte__shows" aria-label="Ausstellungen in Tokio" hidden><li><span class="orte__y">2025</span><span class="orte__h">Gallery Tohkyo</span><span class="orte__t">„Lee Young-Jae“</span></li><li><span class="orte__y">2023</span><span class="orte__h">Gallery Tohkyo</span></li><li><span class="orte__y">2021</span><span class="orte__h">Gallery Tohkyo</span></li><li><span class="orte__y">2019</span><span class="orte__h">Gallery Tohkyo</span></li><li><span class="orte__y">2017</span><span class="orte__h">Gallery Tohkyo</span></li><li><span class="orte__y">2016</span><span class="orte__h">LIVING MOTIF</span><span class="orte__t">„Gefäße der Keramischen Werkstatt“</span></li></ol>
       </li>
       <li class="orte__tile orte__tile--m">
         <img class="orte__img" src="../img/kwm/kummerschalen.webp" width="937" height="1040" loading="lazy" alt="">
         <h3 class="orte__name">Essen</h3>
         <p class="orte__meta"><span>2019–2025</span><span>4 Ausstellungen</span></p>
         <ul class="orte__houses" aria-label="Häuser in Essen"><li>Museum Folkwang</li><li>Kokerei Zollverein</li><li>Kunsthaus Essen</li></ul>
+        <ol class="orte__shows" aria-label="Ausstellungen in Essen" hidden><li><span class="orte__y">2025</span><span class="orte__h">Festival in Essen</span><span class="orte__t">„OPEN House“ – Future Heritage. Das Erbe von Morgen</span></li><li><span class="orte__y">2022</span><span class="orte__h">Kunsthaus Essen</span><span class="orte__t">„HOME! 3/5 Identitäten“</span></li><li><span class="orte__y">2019</span><span class="orte__h">Mischanlage Kokerei Zollverein</span><span class="orte__t">„MATERIAL ZU FORM – Körper zu Körper“</span></li><li><span class="orte__y">2019</span><span class="orte__h">Museum Folkwang</span><span class="orte__t">„Young-Jae Lee“</span></li></ol>
       </li>
       <li class="orte__tile orte__tile--m">
         <img class="orte__img" src="../img/kwm/teeschale.webp" width="1200" height="1200" loading="lazy" alt="">
         <h3 class="orte__name">Korea</h3>
-        <p class="orte__meta"><span>2017–2019</span><span>3 Ausstellungen</span></p>
+        <p class="orte__meta"><span>2017–2019</span><span>2 Ausstellungen</span></p>
         <ul class="orte__houses" aria-label="Häuser in Korea"><li>Gwangju Museum of Art</li><li>Ha Jung-woong Museum of Art</li><li>Shinsegae Gallery</li></ul>
+        <ol class="orte__shows" aria-label="Ausstellungen in Korea" hidden><li><span class="orte__y">2019</span><span class="orte__h">Gwangju Museum of Art und Ha Jung-woong Museum of Art</span><span class="orte__t">„Emptying, Filling and Emptying“</span></li><li><span class="orte__y">2017</span><span class="orte__h">Shinsegae Gallery in Daegu, Gwangju, Incheon und Busan</span></li></ol>
       </li>
       <li class="orte__tile orte__tile--s">
         <img class="orte__img" src="../img/kwm/kugelvase.webp" width="600" height="400" loading="lazy" alt="">
         <h3 class="orte__name">Boston</h3>
         <p class="orte__meta"><span>2016–2022</span><span>3 Ausstellungen</span></p>
         <ul class="orte__houses" aria-label="Häuser in Boston"><li>Pucker Gallery</li></ul>
+        <ol class="orte__shows" aria-label="Ausstellungen in Boston" hidden><li><span class="orte__y">2022</span><span class="orte__h">Pucker Gallery</span><span class="orte__t">„Hope / Hoffnung – Works by Young-Jae Lee“</span></li><li><span class="orte__y">2019</span><span class="orte__h">Pucker Gallery</span><span class="orte__t">„Fine Choices 2019 Featuring Young-Jae Lee“</span></li><li><span class="orte__y">2016</span><span class="orte__h">Pucker Gallery</span><span class="orte__t">„WITNESS TO AN ANCIENT TRUTH“</span></li></ol>
       </li>
       <li class="orte__tile orte__tile--s">
         <img class="orte__img" src="../img/kwm/schalen.webp" width="600" height="400" loading="lazy" alt="">
         <h3 class="orte__name">Krakau und Breslau</h3>
         <p class="orte__meta"><span>2016</span><span>3 Ausstellungen</span></p>
         <ul class="orte__houses" aria-label="Häuser in Krakau und Breslau"><li>Manggha Museum</li><li>Architekturmuseum Breslau</li><li>Galeria NEON</li></ul>
+        <ol class="orte__shows" aria-label="Ausstellungen in Krakau und Breslau" hidden><li><span class="orte__y">2016</span><span class="orte__h">Manggha Museum, Krakau</span><span class="orte__t">„Young-Jae Lee Schalen“</span></li><li><span class="orte__y">2016</span><span class="orte__h">Architekturmuseum Breslau</span><span class="orte__t">„Young-Jae Lee – Gefäße“</span></li><li><span class="orte__y">2016</span><span class="orte__h">Galeria NEON, Breslau</span><span class="orte__t">„Keramische Werkstatt Margaretenhöhe – Young-Jae Lee“</span></li></ol>
       </li>
       <li class="orte__tile orte__tile--s">
         <img class="orte__img" src="../img/kwm/schale_gross.webp" width="600" height="400" loading="lazy" alt="">
         <h3 class="orte__name">Chemnitz</h3>
         <p class="orte__meta"><span>2024–2025</span><span>2 Ausstellungen</span></p>
         <ul class="orte__houses" aria-label="Häuser in Chemnitz"><li>Stadtkirche St. Jakobi</li></ul>
+        <ol class="orte__shows" aria-label="Ausstellungen in Chemnitz" hidden><li><span class="orte__y">2025</span><span class="orte__h">Stadtkirche St. Jakobi</span><span class="orte__t">„Young-Jae Lee: Vasen“</span></li><li><span class="orte__y">2024</span><span class="orte__h">Stadtkirche St. Jakobi</span><span class="orte__t">„Young-Jae Lee: SCHALEN“</span></li></ol>
       </li>
       <li class="orte__tile orte__tile--s">
         <img class="orte__img" src="../img/kwm/schalen2.webp" width="600" height="400" loading="lazy" alt="">
         <h3 class="orte__name">Bonn</h3>
         <p class="orte__meta"><span>2019–2020</span><span>2 Ausstellungen</span></p>
         <ul class="orte__houses" aria-label="Häuser in Bonn"><li>Galerie Gisela Clement</li><li>ENTERVENTIONALE</li></ul>
+        <ol class="orte__shows" aria-label="Ausstellungen in Bonn" hidden><li><span class="orte__y">2020</span><span class="orte__h">ENTERVENTIONALE, Ausstellungsparcours</span><span class="orte__t">„ENTERVENTIONALE #2020“</span></li><li><span class="orte__y">2019</span><span class="orte__h">Galerie Gisela Clement</span><span class="orte__t">„Schönheit !?“</span></li></ol>
       </li>
       <li class="orte__tile orte__tile--s">
         <img class="orte__img" src="../img/kwm/spindelvase1.webp" width="600" height="400" loading="lazy" alt="">
         <h3 class="orte__name">New York</h3>
         <p class="orte__meta"><span>2024</span><span>1 Ausstellung</span></p>
         <ul class="orte__houses" aria-label="Häuser in New York"><li>David Nolan Gallery</li></ul>
+        <ol class="orte__shows" aria-label="Ausstellungen in New York" hidden><li><span class="orte__y">2024</span><span class="orte__h">David Nolan Gallery</span><span class="orte__t">„Young-Jae Lee – Forms from the Earth“</span></li></ol>
       </li>
       <li class="orte__tile orte__tile--s">
         <img class="orte__img" src="../img/kwm/kannen.webp" width="600" height="400" loading="lazy" alt="">
         <h3 class="orte__name">Düsseldorf</h3>
         <p class="orte__meta"><span>2024</span><span>1 Ausstellung</span></p>
         <ul class="orte__houses" aria-label="Häuser in Düsseldorf"><li>Hetjens-Museum</li></ul>
+        <ol class="orte__shows" aria-label="Ausstellungen in Düsseldorf" hidden><li><span class="orte__y">2024</span><span class="orte__h">Hetjens-Museum</span><span class="orte__t">„100 Jahre Keramische Werkstatt Margaretenhöhe – Young-Jae Lee im Hetjens“</span></li></ol>
       </li>
       <li class="orte__tile orte__tile--s">
         <img class="orte__img" src="../img/kwm/schale2.webp" width="600" height="400" loading="lazy" alt="">
         <h3 class="orte__name">Wien</h3>
         <p class="orte__meta"><span>2016</span><span>1 Ausstellung</span></p>
         <ul class="orte__houses" aria-label="Häuser in Wien"><li>MAK – Museum für angewandte Kunst</li></ul>
+        <ol class="orte__shows" aria-label="Ausstellungen in Wien" hidden><li><span class="orte__y">2016</span><span class="orte__h">MAK – Österreichisches Museum für angewandte Kunst</span><span class="orte__t">„NICHT SCHÖN“</span></li></ol>
       </li>
       <li class="orte__tile orte__tile--s">
         <img class="orte__img" src="../img/kwm/schalen3.webp" width="600" height="400" loading="lazy" alt="">
         <h3 class="orte__name">Zürich</h3>
         <p class="orte__meta"><span>2023</span><span>1 Ausstellung</span></p>
         <ul class="orte__houses" aria-label="Häuser in Zürich"><li>Raum 49</li></ul>
+        <ol class="orte__shows" aria-label="Ausstellungen in Zürich" hidden><li><span class="orte__y">2023</span><span class="orte__h">Raum 49</span></li></ol>
       </li>
     </ul>
     <p class="orte__note">Städte und Zahlen nach der Ausstellungsliste 2016 bis 2026.</p>
@@ -232,9 +352,9 @@
 
   <!-- Kosmos -->
   <section class="cosmos" id="kosmos" aria-labelledby="cosmos-title">
-    <div class="cosmos__head grid">
-      <h2 class="h2 cosmos__title" id="cosmos-title" data-reveal="words">Ein Ring aus Teilchen um eine leere Mitte.</h2>
-      <div class="cosmos__text">
+    <div class="sec-head grid">
+      <h2 class="h2" id="cosmos-title" data-reveal="words">Ein Ring aus Teilchen um eine leere Mitte.</h2>
+      <div class="sec-head__aside cosmos__text">
         <p data-reveal="fade">„Schalen über Schalen, einfach auf den Boden gestellt. Ein Meer aus Schalen, ein Feld aus Kelchen, ein Ring aus Teilchen um eine leere Mitte, eine kleine Milchstraße voll schimmernder Gefäße.“</p>
         <p class="cosmos__source" data-reveal="fade">Thomas Wagner, »Die aufgehobene Zeit?«</p>
       </div>
@@ -316,16 +436,22 @@
         <a class="link-arrow" href="werkstatt.html">Werkstatt, Team und Chronik</a>
       </div>
     </div>
-    <ol class="chronicle__list grid" aria-label="Chronik der Werkstatt">
-      <li><span class="chronicle__year">1924</span><p>Margarete Krupp realisiert die Siedlung Margaretenhöhe in Essen. Hermann Kätelhön initiiert eine Keramikwerkstatt auf dem Gelände, Leiter wird Will Lammert.</p></li>
-      <li><span class="chronicle__year">1927</span><p>Johannes Leßmann, Schüler des Bauhaus-Keramikers Otto Lindig, stellt auf Serienkeramik um – und verschafft der Bauhaus-Idee im Ruhrgebiet Breitenwirkung.</p></li>
-      <li><span class="chronicle__year">1933</span><p>Umzug in ein Gebäude der Zeche Zollverein.</p></li>
-      <li><span class="chronicle__year">1944</span><p>Walburga Külz, ebenfalls Schülerin Otto Lindigs, übernimmt die Leitung.</p></li>
-      <li><span class="chronicle__year">1953</span><p>Helmut Gniesmer stellt das Programm vorwiegend auf Baukeramik um.</p></li>
-      <li><span class="chronicle__year">1986</span><p>Young-Jae Lee und Hildegard Eggemann übernehmen die Leitung und nehmen das Manufakturprogramm wieder auf.</p></li>
-      <li><span class="chronicle__year">1987</span><p>Umzug in das Baulager der Zeche Zollverein, heute Weltkulturerbe.</p></li>
-      <li><span class="chronicle__year">2006</span><p>Young-Jae Lee übernimmt die Werkstatt von der RAG Aktiengesellschaft und führt sie als Geschäftsführerin.</p></li>
-    </ol>
+    <div class="chronicle__body grid">
+      <div class="chronicle__intro">
+        <p class="chronicle__lede" data-reveal="fade">Von der Siedlungswerkstatt in Essen zur Manufaktur auf Zollverein: acht Stationen in 82 Jahren.</p>
+        <p class="chronicle__span" data-reveal="fade">1924 bis 2006</p>
+      </div>
+      <ol class="chronicle__list" aria-label="Chronik der Werkstatt">
+      <li><span class="chronicle__year">1924</span><div class="chronicle__what"><h3 class="chronicle__title">Siedlungswerkstatt</h3><p>Margarete Krupp realisiert die Siedlung Margaretenhöhe in Essen. Hermann Kätelhön initiiert eine Keramikwerkstatt auf dem Gelände, Leiter wird Will Lammert.</p></div></li>
+      <li><span class="chronicle__year">1927</span><div class="chronicle__what"><h3 class="chronicle__title">Bauhaus im Ruhrgebiet</h3><p>Johannes Leßmann, Schüler des Bauhaus-Keramikers Otto Lindig, stellt auf Serienkeramik um – und verschafft der Bauhaus-Idee im Ruhrgebiet Breitenwirkung.</p></div></li>
+      <li><span class="chronicle__year">1933</span><div class="chronicle__what"><h3 class="chronicle__title">Auf Zollverein</h3><p>Umzug in ein Gebäude der Zeche Zollverein.</p></div></li>
+      <li><span class="chronicle__year">1944</span><div class="chronicle__what"><h3 class="chronicle__title">Neue Leitung</h3><p>Walburga Külz, ebenfalls Schülerin Otto Lindigs, übernimmt die Leitung.</p></div></li>
+      <li><span class="chronicle__year">1953</span><div class="chronicle__what"><h3 class="chronicle__title">Baukeramik</h3><p>Helmut Gniesmer stellt das Programm vorwiegend auf Baukeramik um.</p></div></li>
+      <li><span class="chronicle__year">1986</span><div class="chronicle__what"><h3 class="chronicle__title">Zurück zum Gefäß</h3><p>Young-Jae Lee und Hildegard Eggemann übernehmen die Leitung und nehmen das Manufakturprogramm wieder auf.</p></div></li>
+      <li><span class="chronicle__year">1987</span><div class="chronicle__what"><h3 class="chronicle__title">Das Baulager</h3><p>Umzug in das Baulager der Zeche Zollverein, heute Weltkulturerbe.</p></div></li>
+      <li><span class="chronicle__year">2006</span><div class="chronicle__what"><h3 class="chronicle__title">In eigener Verantwortung</h3><p>Young-Jae Lee übernimmt die Werkstatt von der RAG Aktiengesellschaft und führt sie als Geschäftsführerin.</p></div></li>
+      </ol>
+    </div>
   </section>
 
   <!-- Besuch -->
