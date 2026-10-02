@@ -381,14 +381,14 @@ export default function Block() {
           <>
             <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3">
               <Tile label="Unikate verfügbar" value={zahl.format(stats.verfuegbar)} sub={`Wert ${euro.format(stats.verfuegbarWert)}`} href="/bestand?tab=verfuegbar" />
-              <Tile label="Reserviert" value={zahl.format(stats.reserviert)} href="/bestand?tab=tabelle&status=reserviert" />
+              <Tile label="Reserviert" value={zahl.format(stats.reserviert)} href="/tabelle?status=reserviert" />
               <Tile
                 label="In Kommission"
                 value={zahl.format(stats.kommission)}
                 sub={stats.galerien === 1 ? "bei 1 Galerie" : `bei ${stats.galerien} Galerien`}
                 href="/bestand?tab=kommission"
               />
-              <Tile label={`Verkauft ${jahr}`} value={zahl.format(stats.verkauftJahr)} sub={`Umsatz ${euro.format(stats.umsatzJahr)}`} href="/bestand?tab=tabelle&status=verkauft" />
+              <Tile label={`Verkauft ${jahr}`} value={zahl.format(stats.verkauftJahr)} sub={`Umsatz ${euro.format(stats.umsatzJahr)}`} href="/tabelle?status=verkauft" />
               <Tile label="Rohlinge gesamt" value={zahl.format(stats.rohlinge)} sub="Editionsware, unglasiert" href="/bestand?tab=edition" />
               <Tile label="Glasierte Editionsware" value={zahl.format(stats.glasiert)} sub="Stück auf Lager" href="/bestand?tab=edition" />
             </div>

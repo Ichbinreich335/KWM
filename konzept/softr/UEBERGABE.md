@@ -54,10 +54,10 @@ Für die nächste Session. Zuerst `CLAUDE.md`, `konzept/SOFTR-AUFTRAG.md` und `k
 - Das Badge „Made with Softr“ lässt sich laut Admin auch im ca. 20-€-Tarif nicht vollständig entfernen. Es stört die Bedienung nicht, wirkt aber weniger professionell. Für die Entscheidung Softr oder Baserow notiert. Die Bewertung macht eine andere Session.
 
 ## Offen (in dieser Reihenfolge)
-0. **UI-Review abarbeiten:** `konzept/vergleich/SOFTR-UI-REVIEW.md` (10 × P1, 18 × P2, 10 × P3; Noten Erfassen 2, Bestand 3, Tabelle 3, Übersicht 3). Zuerst die P1-Punkte, u. a. falsche Kachel-Links in der Übersicht, unsichtbare Fehler im Erfassen am Handy, Rückgängig nach Sofort-Änderungen, englisches „Close“ im Panel, Status-Farben der aktiven Chips.
+0. **UI-Review abarbeiten:** `konzept/vergleich/SOFTR-UI-REVIEW.md` (10 × P1, 18 × P2, 10 × P3; Noten Erfassen 2, Bestand 3, Tabelle 3, Übersicht 3). Zuerst die P1-Punkte, u. a. unsichtbare Fehler im Erfassen am Handy, Rückgängig nach Sofort-Änderungen, englisches „Close“ im Panel, Status-Farben der aktiven Chips.
 1. **„Außer Haus“ umsetzen** (siehe Abschnitt oben). Höchste Priorität nach dem UI-Review.
 1. **UI-Review einarbeiten:** Ein Opus-Agent mit Refero-MCP hat die vier Seiten bewertet. Leitfrage: „In 10 Minuten verständlich, volle Funktion bei Bedarf.“ Ergebnis: `konzept/vergleich/SOFTR-UI-REVIEW.md`, falls der Agent vor Session-Ende fertig wurde. Sonst den Review neu ausführen (Opus, Refero, Playwright Desktop/Mobil/Tablet, nichts speichern, nur bewerten).
-2. **Übersicht:** Kacheln „Reserviert“ und „Verkauft“ auf `/tabelle?status=…` umstellen (zeigen noch auf `/bestand?tab=tabelle…`, das es nicht mehr gibt). Pro Bereich einen kurzen Satz „Was sehe ich hier?“ ergänzen (Wunsch Admin).
+2. **Übersicht:** (Kachel-Links auf `/tabelle?status=…` am 02.10. behoben.) Pro Bereich einen kurzen Satz „Was sehe ich hier?“ ergänzen (Wunsch Admin).
 3. **Tabelle am Handy:** scrollt seitlich (vertretbar, aber prüfen: weniger Standardspalten auf Mobil).
 4. **Werkstatt-Test:** „Preview as“ wirkt in der automatisierten Vorschau nicht. Nach der Veröffentlichung echter Login als Werkstatt. Bis dahin hat der Admin das manuell in Studio geprüft (noch offen).
 5. Offene Frage für den Test-Abend: Umschalter „Unikat / Editionsware“ oben in der Erfassen-Maske beibehalten?
