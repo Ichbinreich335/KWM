@@ -19,3 +19,11 @@ Website und Lager-App der Keramischen Werkstatt Margaretenhöhe. Aktuelle Entsch
 - Interne Preise und Lagerorte dürfen nie im Website-Build landen. Dort nur freigegebene Felder abfragen.
 - Offene Designfragen mit dem Skill `grilling` klären. Für UI-Ideen den Skill `prototype` nutzen.
 - Sprache für Nutzertexte und Commits: Deutsch.
+
+## Codequalität (Ziel: produktionsreif, nicht „vibe-coded“)
+- Astro + TypeScript (strict). Klare Struktur: `layouts/`, `components/`, `pages/`, Inhalte aus Sanity.
+- Keine toten Dateien, keine auskommentierten Blöcke, keine Debug-Reste, keine Magic Numbers im Markup. CSS über bestehende Variablen.
+- Vor jedem Merge muss `npm run check` grün sein: Format, Lint, `astro check` und Build. CI prüft dasselbe.
+- Kleine, beschreibend benannte Commits. README aktuell halten (Start, Deploy, wo liegt was).
+- Vor dem Merge den Skill `code-review` ausführen. Bei Server-Code (Formular-Worker) zusätzlich `security-review`.
+- Architektur, Umbauten und Reviews mit dem stärksten verfügbaren Modell. Einfache Recherche darf delegiert werden.
