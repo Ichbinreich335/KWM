@@ -8,15 +8,20 @@ const GOLDEN = Math.PI * (3 - Math.sqrt(5));
 const SPRING = 55; // Steifigkeit der Feder, 1/s²
 const DAMPING = 11.5; // leicht unterdämpft: ein kaum sichtbares Nachfedern
 const PLAN_FADE = 0.9; // Sekunden für das Überblenden der Grundrisse
-const WALL = 'rgba(22, 22, 22, 0.34)';
-const FINE = 'rgba(22, 22, 22, 0.17)';
-const TABLE = 'rgba(255, 255, 255, 0.4)';
+const GALLERY_CAP = 0.07; // größter Schalenradius in der Galerie, Anteil der kürzeren Bühnenseite
+const SOON_DAYS = 30; // ab so vielen Tagen vor dem Ende steht „Nur noch bis …“
+const DAY = 86400000;
+// Linien des Grundrisses: dunkle Tusche auf hellem Grund, helle Linien auf dem Anker
+const PALETTES = {
+  light: { wall: 'rgba(22, 22, 22, 0.34)', fine: 'rgba(22, 22, 22, 0.17)', table: 'rgba(255, 255, 255, 0.4)', shelf: 'rgba(22, 22, 22, 0.07)', shadow: 'rgba(52, 38, 24, 0.30)', lift: 'rgba(52, 38, 24, 0.5)' },
+  dark: { wall: 'rgba(242, 241, 238, 0.34)', fine: 'rgba(242, 241, 238, 0.16)', table: 'rgba(242, 241, 238, 0.05)', shelf: 'rgba(242, 241, 238, 0.08)', shadow: 'rgba(0, 0, 0, 0.6)', lift: 'rgba(0, 0, 0, 0.65)' },
+};
 
 const smooth = (dt, rate) => 1 - Math.exp(-dt * rate);
 
 // ---------- Aufstellungen: je Raum Plätze (Mittelpunkte), Schalenradius und Grundriss ----------
 
-const ringLayout = (W, H) => {
+const ringLayout = (W, H, pal) => {
   const R = (Math.min(W, H) / 2) * 0.9;
   const ri = R * 0.44, ro = R * 0.96;
   const d = Math.sqrt((Math.PI * (ro * ro - ri * ri)) / N);
@@ -54,18 +59,18 @@ const ringLayout = (W, H) => {
   const draw = (c) => {
     const m = Math.min(W, H) * 0.02;
     const gap = Math.min(W, H) * 0.1;
-    c.strokeStyle = WALL;
+    c.strokeStyle = pal.wall;
     c.beginPath();
     c.moveTo(W / 2 - gap, H - m); c.lineTo(m, H - m); c.lineTo(m, m); c.lineTo(W - m, m); c.lineTo(W - m, H - m); c.lineTo(W / 2 + gap, H - m);
     c.stroke();
-    c.strokeStyle = FINE;
+    c.strokeStyle = pal.fine;
     [ri, ro + unit * 0.4].forEach((r) => { c.beginPath(); c.arc(W / 2, H / 2, r, 0, Math.PI * 2); c.stroke(); });
   };
   return { unit, slots, draw };
 };
 
 // Langhaus mit Mittelschiff, zwei Seitenschiffen, Pfeilerreihen und Apsis. Die lange Achse folgt der längeren Seite.
-const naveLayout = (W, H) => {
+const naveLayout = (W, H, pal) => {
   const landscape = W >= H;
   const A = landscape ? W : H, B = landscape ? H : W;
   const to = (a, v) => (landscape ? { x: a, y: B / 2 + v } : { x: B / 2 + v, y: a });
@@ -84,7 +89,7 @@ const naveLayout = (W, H) => {
   const draw = (c) => {
     const p = (a, v) => { const q = to(a, v); return [q.x, q.y]; };
     const gap = half * 0.14;
-    c.strokeStyle = WALL;
+    c.strokeStyle = pal.wall;
     c.beginPath();
     c.moveTo(...p(a0, -gap)); c.lineTo(...p(a0, -half)); c.lineTo(...p(a1, -half));
     c.moveTo(...p(a0, gap)); c.lineTo(...p(a0, half)); c.lineTo(...p(a1, half));
@@ -95,13 +100,13 @@ const naveLayout = (W, H) => {
     }
     c.stroke();
     // Arkaden zwischen Mittel- und Seitenschiffen, Pfeiler im Abstand von zwei Jochen
-    c.strokeStyle = FINE;
+    c.strokeStyle = pal.fine;
     c.beginPath();
     [-1, 1].forEach((side) => { c.moveTo(...p(a0, side * half * 0.5)); c.lineTo(...p(a1, side * half * 0.5)); });
     c.stroke();
     const pw = half * 0.035;
-    c.fillStyle = TABLE;
-    c.strokeStyle = WALL;
+    c.fillStyle = pal.table;
+    c.strokeStyle = pal.wall;
     for (let k = 0; k <= cols; k += 2) {
       [-1, 1].forEach((side) => {
         const [x, y] = p(a0 + spA * k, side * half * 0.5);
@@ -113,7 +118,7 @@ const naveLayout = (W, H) => {
 };
 
 // Werkstattraum: Regalboden an der Wand und Tische, auf denen die Schalen in Gruppen stehen
-const popupLayout = (W, H) => {
+const popupLayout = (W, H, pal) => {
   const portrait = H > W;
   const rects = portrait
     ? [[0.07, 0.06, 0.86, 0.07, 'shelf'], [0.07, 0.2, 0.86, 0.17], [0.07, 0.45, 0.38, 0.2], [0.55, 0.45, 0.38, 0.2], [0.2, 0.74, 0.6, 0.17]]
@@ -134,32 +139,148 @@ const popupLayout = (W, H) => {
   const draw = (c) => {
     const m = Math.min(W, H) * 0.02;
     const gap = Math.min(W, H) * 0.1;
-    c.strokeStyle = WALL;
+    c.strokeStyle = pal.wall;
     c.beginPath();
     c.moveTo(W / 2 - gap, H - m); c.lineTo(m, H - m); c.lineTo(m, m); c.lineTo(W - m, m); c.lineTo(W - m, H - m); c.lineTo(W / 2 + gap, H - m);
     c.stroke();
     abs.forEach((r) => {
       c.beginPath();
       c.rect(r.x, r.y, r.w, r.h);
-      if (r.kind === 'shelf') { c.fillStyle = 'rgba(22, 22, 22, 0.07)'; c.fill(); c.strokeStyle = WALL; } else { c.fillStyle = TABLE; c.fill(); c.strokeStyle = FINE; }
+      if (r.kind === 'shelf') { c.fillStyle = 'rgba(22, 22, 22, 0.07)'; c.fill(); c.strokeStyle = pal.wall; } else { c.fillStyle = pal.table; c.fill(); c.strokeStyle = pal.fine; }
       c.stroke();
     });
   };
   return { unit: sp * 0.38, slots, draw };
 };
 
-const LAYOUTS = { mok: ringLayout, wesel: naveLayout, popup: popupLayout };
+
+// Galerie: zwei Räume mit Durchgang, in jedem Raum stehen wenige Schalen einzeln auf Sockeln
+const galerieLayout = (W, H, pal) => {
+  const portrait = H > W;
+  const m = Math.min(W, H) * 0.04;
+  const wall = Math.min(W, H) * 0.02;
+  const rooms = portrait
+    ? [[wall, wall, W - 2 * wall, (H - 2 * wall) / 2], [wall, H / 2, W - 2 * wall, (H - 2 * wall) / 2]]
+    : [[wall, wall, (W - 2 * wall) / 2, H - 2 * wall], [W / 2, wall, (W - 2 * wall) / 2, H - 2 * wall]];
+  const cols = portrait ? 3 : 2, rows = portrait ? 2 : 3;
+  const slots = [];
+  let cell = Infinity;
+  const plinths = [];
+  rooms.forEach(([x, y, w, h]) => {
+    const iw = w - 2 * m, ih = h - 2 * m;
+    cell = Math.min(cell, iw / cols, ih / rows);
+  });
+  const side = cell * 0.68;
+  rooms.forEach(([x, y, w, h]) => {
+    for (let j = 0; j < rows; j++) {
+      for (let i = 0; i < cols; i++) {
+        const px = x + w / 2 + (i - (cols - 1) / 2) * cell, py = y + h / 2 + (j - (rows - 1) / 2) * cell;
+        slots.push({ x: px, y: py });
+        plinths.push([px - side / 2, py - side / 2]);
+      }
+    }
+  });
+  const door = Math.min(W, H) * 0.16;
+
+  const draw = (c) => {
+    c.strokeStyle = pal.wall;
+    c.beginPath();
+    c.rect(wall, wall, W - 2 * wall, H - 2 * wall);
+    // Trennwand mit Durchgang in der Mitte
+    if (portrait) {
+      c.moveTo(wall, H / 2); c.lineTo(W / 2 - door / 2, H / 2);
+      c.moveTo(W / 2 + door / 2, H / 2); c.lineTo(W - wall, H / 2);
+    } else {
+      c.moveTo(W / 2, wall); c.lineTo(W / 2, H / 2 - door / 2);
+      c.moveTo(W / 2, H / 2 + door / 2); c.lineTo(W / 2, H - wall);
+    }
+    c.stroke();
+    c.fillStyle = pal.table;
+    c.strokeStyle = pal.fine;
+    plinths.forEach(([x, y]) => { c.beginPath(); c.rect(x, y, side, side); c.fill(); c.stroke(); });
+  };
+  return { unit: Math.min(side * 0.4, Math.min(W, H) * GALLERY_CAP), slots, draw };
+};
+
+const LAYOUTS = { mok: ringLayout, wesel: naveLayout, greve: galerieLayout, popup: popupLayout };
+
+// ---------- Status aus den Daten ----------
+
+const MONTHS = ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];
+const day = (iso) => new Date(`${iso}T00:00:00`);
+const dayLabel = (d) => `${d.getDate()}. ${MONTHS[d.getMonth()]}`;
+
+// Gibt Zustand, Kurzform für die Tabelle und die Statuszeile über dem großen Datum zurück
+const statusOf = (start, end, now = new Date()) => {
+  const s = day(start), e = day(end);
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  if (today < s) return { state: 'soon', cell: 'Demnächst', line: `Demnächst · ab ${dayLabel(s)}` };
+  if (today > e) return { state: 'past', cell: 'Beendet', line: 'Beendet' };
+  if ((e - today) / DAY < SOON_DAYS) return { state: 'live', cell: `Nur noch bis ${dayLabel(e)}`, line: `Läuft · nur noch bis ${dayLabel(e)}` };
+  return { state: 'live', cell: 'Läuft', line: `Läuft · bis ${dayLabel(e)}` };
+};
+
+// Zeilen der Termin-Tabelle werden zu Reitern: Link wird Schaltfläche, Status wird aus dem Datum berechnet
+function buildRows(list, shows) {
+  const rows = [...list.querySelectorAll('.buehne__row')];
+  list.setAttribute('role', 'tablist');
+  list.setAttribute('aria-orientation', 'vertical');
+  return shows.map((s) => {
+    const row = rows.find((r) => r.dataset.show === s.dataset.show);
+    const link = row.querySelector('.buehne__link');
+    const tab = document.createElement('button');
+    tab.type = 'button';
+    tab.className = 'buehne__link';
+    tab.id = `buehne-tab-${s.dataset.show}`;
+    tab.setAttribute('role', 'tab');
+    tab.setAttribute('aria-controls', s.id);
+    tab.append(...link.childNodes);
+    link.replaceWith(tab);
+    row.setAttribute('role', 'presentation');
+    const st = statusOf(row.dataset.start, row.dataset.end);
+    const cell = tab.querySelector('.buehne__c-status');
+    cell.textContent = st.cell;
+    cell.dataset.state = st.state;
+    s.querySelector('.buehne__status').textContent = st.line;
+    s.setAttribute('role', 'tabpanel');
+    s.setAttribute('aria-labelledby', tab.id);
+    return tab;
+  });
+}
+
+function buildTabs(container, shows) {
+  return shows.map((s) => {
+    const tab = document.createElement('button');
+    tab.type = 'button';
+    tab.className = 'buehne__tab';
+    tab.id = `buehne-tab-${s.dataset.show}`;
+    tab.setAttribute('role', 'tab');
+    tab.setAttribute('aria-controls', s.id);
+    ['date', 'name', 'ort'].forEach((k) => {
+      const span = document.createElement('span');
+      span.className = `buehne__${k}`;
+      span.textContent = s.querySelector(`.buehne__${k}`).textContent;
+      tab.append(span);
+    });
+    s.setAttribute('role', 'tabpanel');
+    s.setAttribute('aria-labelledby', tab.id);
+    container.append(tab);
+    return tab;
+  });
+}
 
 // ---------- Initialisierung ----------
 
 export default function init(el) {
   const shows = [...el.querySelectorAll('.buehne__show')];
   const tabsEl = el.querySelector('.buehne__tabs');
+  const rowsEl = el.querySelector('.buehne__rows');
   const stage = el.querySelector('.buehne__stage');
   const floor = el.querySelector('.buehne__floor');
   const readout = el.querySelector('.buehne__readout');
-  if (!shows.length || !tabsEl || !stage || !floor) return;
+  if (!shows.length || !(tabsEl || rowsEl) || !stage || !floor) return;
   const reduced = reducedMotion();
+  const pal = el.classList.contains('buehne--anker') ? PALETTES.dark : PALETTES.light;
 
   const planCv = document.createElement('canvas');
   planCv.className = 'buehne__plan';
@@ -189,8 +310,8 @@ export default function init(el) {
   shadow.width = shadow.height = 64;
   const sc2 = shadow.getContext('2d');
   const sg = sc2.createRadialGradient(32, 32, 0, 32, 32, 32);
-  sg.addColorStop(0, 'rgba(52, 38, 24, 0.5)');
-  sg.addColorStop(1, 'rgba(52, 38, 24, 0)');
+  sg.addColorStop(0, pal.lift);
+  sg.addColorStop(1, pal.lift.replace(/[\d.]+\)$/, '0)'));
   sc2.fillStyle = sg;
   sc2.fillRect(0, 0, 64, 64);
 
@@ -246,10 +367,10 @@ export default function init(el) {
     W = rect.width; H = rect.height;
     dpr = Math.min(window.devicePixelRatio || 1, 2);
     [cv, planCv].forEach((c) => { c.width = Math.round(W * dpr); c.height = Math.round(H * dpr); });
-    layouts = Object.fromEntries(Object.entries(LAYOUTS).map(([k, f]) => [k, f(W, H)]));
+    layouts = Object.fromEntries(shows.map((x) => [x.dataset.show, LAYOUTS[x.dataset.show](W, H, pal)]));
     U = Math.max(...Object.values(layouts).map((l) => l.unit));
     bowls.forEach((b) => {
-      ({ sprite: b.sprite, half: b.spriteHalf } = renderBowlSprite({ ...b, r: U * b.size }, dpr));
+      ({ sprite: b.sprite, half: b.spriteHalf } = renderBowlSprite({ ...b, r: U * b.size }, dpr, pal.shadow));
     });
     if (!built) {
       built = true;
@@ -378,24 +499,8 @@ export default function init(el) {
   cv.addEventListener('pointerleave', () => { pointer = null; hovered = -1; showReadout(); wake(); });
 
   // ---------- Auswahl ----------
-  const tabs = shows.map((s) => {
-    const tab = document.createElement('button');
-    tab.type = 'button';
-    tab.className = 'buehne__tab';
-    tab.id = `buehne-tab-${s.dataset.show}`;
-    tab.setAttribute('role', 'tab');
-    tab.setAttribute('aria-controls', s.id);
-    [['buehne__date', '.buehne__date'], ['buehne__name', '.buehne__name'], ['buehne__ort', '.buehne__ort']].forEach(([cls, sel]) => {
-      const span = document.createElement('span');
-      span.className = cls;
-      span.textContent = s.querySelector(sel).textContent;
-      tab.append(span);
-    });
-    s.setAttribute('role', 'tabpanel');
-    s.setAttribute('aria-labelledby', tab.id);
-    tabsEl.append(tab);
-    return tab;
-  });
+  // Tabelle (Anker): jede Zeile ist eine Auswahl. Ältere Einbindung (Fläche): Reiter aus den Angaben der Ausstellungen.
+  const tabs = rowsEl ? buildRows(rowsEl, shows) : buildTabs(tabsEl, shows);
 
   const select = (key, { focus = false, animate = true } = {}) => {
     const changed = key !== current;
@@ -430,7 +535,7 @@ export default function init(el) {
     });
   });
 
-  tabsEl.hidden = false;
+  if (tabsEl) tabsEl.hidden = false;
   stage.hidden = false;
   el.classList.add('is-enhanced');
   select(current, { animate: false });

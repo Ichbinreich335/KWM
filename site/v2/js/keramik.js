@@ -52,7 +52,8 @@ const shapePath = (c, r, wob) => {
 
 // Rendert eine Schale von oben als Sprite (Licht links oben, weicher Schatten).
 // b: { r (CSS-Pixel), glaze, wob, rings, speckles }. Gibt die Leinwand und ihre halbe Kantenlänge in CSS-Pixeln zurück.
-export const renderBowlSprite = (b, dpr) => {
+// shadow: Schattenfarbe, auf dunklem Boden schwarz und kräftiger als das warme Braun auf hellem Grund.
+export const renderBowlSprite = (b, dpr, shadow = 'rgba(52, 38, 24, 0.30)') => {
   const r = b.r * dpr;
   const pad = r * 0.9;
   const size = Math.ceil(r * 2 + pad * 2);
@@ -64,7 +65,7 @@ export const renderBowlSprite = (b, dpr) => {
 
   // Schatten auf dem Boden, Licht von links oben
   c.save();
-  c.shadowColor = 'rgba(52, 38, 24, 0.30)';
+  c.shadowColor = shadow;
   c.shadowBlur = r * 0.45;
   c.shadowOffsetX = r * 0.14;
   c.shadowOffsetY = r * 0.22;
