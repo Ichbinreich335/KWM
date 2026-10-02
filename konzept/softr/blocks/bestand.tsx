@@ -437,7 +437,6 @@ type EditForm = {
   glasurIds: string[];
   masse: string;
   bildnachweis: string;
-  galerieId: string;
   notiz: string;
 };
 
@@ -472,7 +471,6 @@ function UnikatDetail({
     glasurIds: u.glasur.map((g) => g.id),
     masse: u.masse,
     bildnachweis: u.bildnachweis,
-    galerieId: u.galerie?.id ?? "",
     notiz: u.notiz,
   };
   const [editing, setEditing] = useState(false);
@@ -550,7 +548,6 @@ function UnikatDetail({
           glasur: form.glasurIds,
           masse: form.masse.trim(),
           bildnachweis: form.bildnachweis.trim(),
-          galerie: isAusserHaus(u.status) ? link(form.galerieId) : [],
           notiz: form.notiz.trim(),
           ...(fotos ? { fotos } : {}),
         },
