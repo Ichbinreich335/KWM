@@ -302,11 +302,6 @@ body::after {
 .sec-head__aside .link-arrow { margin: 0; color: var(--ink); }
 .sec-head__aside p + .link-arrow { margin-top: 8px; }
 
-/* Einstieg als dunkler Anker (Variante „hero:anker“, Standard) */
-:root[data-hero="anker"] .hero { background: var(--coal); color: var(--on-coal); --ink-2: var(--on-coal-2); --hair: rgba(236, 234, 227, 0.22); --cover: var(--coal); }
-:root[data-hero="anker"] .hero__credit { background: var(--coal); color: var(--on-coal-2); }
-:root[data-hero="anker"] .hero ::selection { background: var(--on-coal); color: var(--coal); }
-
 /* Aktuell als dunkler Anker direkt nach dem Einstieg */
 .now--dark { background: var(--coal); color: var(--on-coal); padding-block: var(--section); --ink-2: var(--on-coal-2); --hair: rgba(236, 234, 227, 0.22); --cover: var(--coal); }
 .now--dark ::selection { background: var(--on-coal); color: var(--coal); }
