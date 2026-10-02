@@ -125,9 +125,9 @@ const COLUMNS: Col[] = [
   { key: "typ", label: "Typ", type: "select", get: (r) => r.typ || null, visible: true },
   { key: "status", label: "Status / Zustand", type: "select", get: (r) => r.status || null, visible: true },
   { key: "anzahl", label: "Anzahl", type: "number", get: (r) => r.anzahl, visible: true, align: "right" },
+  { key: "preis", label: "Preis intern", type: "number", get: (r) => r.preis, visible: true, align: "right" },
   { key: "glasur", label: "Glasur", type: "multi", get: (r) => r.glasur, visible: true },
   { key: "lagerort", label: "Lagerort", type: "select", get: (r) => r.lagerort || null, visible: true },
-  { key: "preis", label: "Preis intern", type: "number", get: (r) => r.preis, visible: true, align: "right" },
   { key: "kuenstler", label: "Künstler:in", type: "select", get: (r) => r.kuenstler || null, visible: false },
   { key: "jahr", label: "Jahr", type: "number", get: (r) => r.jahr, visible: false, align: "right" },
   { key: "masse", label: "Maße", type: "text", get: (r) => r.masse || null, visible: false },
@@ -183,12 +183,12 @@ const OPS: Record<FieldType, { op: Op; label: string }[]> = {
     { op: "notEmpty", label: "ist nicht leer" },
   ],
   number: [
-    { op: "eq", label: "=" },
-    { op: "neq", label: "≠" },
-    { op: "gt", label: ">" },
-    { op: "gte", label: "≥" },
-    { op: "lt", label: "<" },
-    { op: "lte", label: "≤" },
+    { op: "eq", label: "ist gleich" },
+    { op: "neq", label: "ist nicht" },
+    { op: "gt", label: "größer als" },
+    { op: "gte", label: "mindestens" },
+    { op: "lt", label: "kleiner als" },
+    { op: "lte", label: "höchstens" },
     { op: "empty", label: "ist leer" },
     { op: "notEmpty", label: "ist nicht leer" },
   ],
@@ -510,7 +510,7 @@ function ConditionRow({
     <div className="flex flex-wrap items-center gap-2">
       <div className="w-20 shrink-0">
         {index === 0 ? (
-          <span className="text-base text-muted-foreground">Wo</span>
+          <span className="text-base text-muted-foreground">Wenn</span>
         ) : index === 1 ? (
           <select aria-label="Verknüpfung" value={conj} onChange={(e) => onConj(e.target.value as Conj)} className={`${selectClass} w-20`}>
             <option value="und">und</option>
@@ -611,8 +611,9 @@ function Detail({ r, onClose }: { r: Row; onClose: () => void }) {
   );
 }
 
-function SaveViewDialog({ open, onOpenChange, onSave }: { open: boolean; onOpenChange: (o: boolean) => void; onSave: (name: string) => Promise<void> }) {
+function SaveViewDialog({ open, onOpenChange, onSave, taken }: { open: boolean; onOpenChange: (o: boolean) => void; onSave: (name: string) => Promise<void>; taken: string[] }) {
   const [name, setName] = useState("");
+  const duplicate = taken.some((t) => t.toLowerCase() === name.trim().toLowerCase());
   const [busy, setBusy] = useState(false);
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -625,10 +626,15 @@ function SaveViewDialog({ open, onOpenChange, onSave }: { open: boolean; onOpenC
         </label>
         <Input id="view-name" value={name} onChange={(e) => setName(e.target.value)} placeholder="z. B. Seladon im Schauraum" className="h-12 text-base" />
         <p className="text-sm text-muted-foreground">Gespeichert werden Filter, Spalten, Sortierung und Suche. Alle Mitarbeitenden sehen die Ansicht.</p>
+        {duplicate && (
+          <p role="alert" className="text-sm text-destructive">
+            Diesen Namen gibt es schon. Bitte einen anderen wählen.
+          </p>
+        )}
         <DialogFooter>
           <Button
             className="h-12 text-base"
-            disabled={!name.trim() || busy}
+            disabled={!name.trim() || duplicate || busy}
             onClick={async () => {
               setBusy(true);
               await onSave(name.trim());
@@ -750,7 +756,7 @@ export default function Block() {
 
   async function removeView() {
     const view = ansichten.find((v) => v.id === viewId);
-    if (!view) return;
+    if (!view || !window.confirm(`Ansicht „${view.name}“ für alle entfernen?`)) return;
     try {
       await deleteView.mutateAsync(view.id);
       await ansichtenQuery.refetch();
@@ -958,7 +964,7 @@ export default function Block() {
           Tipp: Spaltenkopf antippen zum Sortieren. Zeile antippen für alle Angaben. Bearbeitet wird im Bestand.
         </p>
       </div>
-      <SaveViewDialog open={saveOpen} onOpenChange={setSaveOpen} onSave={saveView} />
+      <SaveViewDialog open={saveOpen} onOpenChange={setSaveOpen} onSave={saveView} taken={ansichten.map((v) => v.name)} />
       {selected && <Detail r={selected} onClose={() => setSelected(null)} />}
     </div>
   );
