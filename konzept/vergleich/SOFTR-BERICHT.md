@@ -27,7 +27,8 @@ Daten: 12 Unikate und 10 Zeilen Editionsbestand aus `konzept/test-import/*.csv`.
 | Datenbank nach Datenstruktur (Stammdaten, Verknüpfungen, Auswahlfelder) | erledigt |
 | Inventarnummer `U-JJJJ-NNN` automatisch | erledigt |
 | Erfassen (Maske) | erledigt: Umschalter Unikat/Editionsware, Pflicht nur Foto/Name/Typ/Status, Tipp-Chips, Galerie nur bei „in Kommission“, Erfolgsmeldung mit Inventarnummer, „Nächstes Stück erfassen“. Vorhandene Editions-Kombination wird erkannt und hochgezählt. Getestet: Erfassung mit Foto (U-2026-013), Fehlermeldungen. Screens `softr-01…04-*` |
-| Bestand: Reiter + freie Tabelle + Detail + CSV | offen |
+| Bestand: Reiter + freie Tabelle + Detail + CSV | erledigt: Reiter Alle · Verfügbar · Schalen · Vasen · Teller · In Kommission · Editionsware · Alle Stücke (Tabelle). Tabelle mit Filtern auf **jedes** Attribut (Typ, Status, Künstler:in, Glasur, Lagerort, Galerie, Auf Website, Jahr von–bis, Preis von–bis), kombinierbar, Suche, Sortierung per Spaltenkopf. **Ansichten speichern** (Tabelle „Ansichten“, für alle sichtbar). Detail als Seitenpanel mit Fotos und Bearbeiten (Status, Lagerort, Galerie, Notiz, Foto). Editionsware mit +1/−1 direkt in der Liste. CSV-Export der angezeigten Liste (Excel-tauglich). Getestet: Zähler je Reiter, Kombi-Filter, Sortierung, CSV, Ansicht speichern/laden, ±1, Status speichern. Screens `softr-10…18-*` |
+| Admin bearbeitet alle Felder | erledigt: eigener Block „Bestand – Admin-Bearbeitung“, nur für Gruppe Admin sichtbar, Speichern serverseitig nur für Admin freigegeben |
 | Übersicht als echtes Dashboard | offen |
 | Prüfung als Werkstatt und Admin (Playwright) | offen |
 
@@ -37,7 +38,14 @@ Daten: 12 Unikate und 10 Zeilen Editionsbestand aus `konzept/test-import/*.csv`.
 3. **Alte Blöcke des KI-Builders löschen** (Seiten Erfassen, Bestand, Übersicht, Home): Studio → Seite → Block → Löschen. Liste folgt.
 
 ## Testdaten aus Playwright (darf der Admin löschen)
-- Unikat „Test-Schale „Playwright““ (U-2026-013)
+- Unikat „Test-Schale „Playwright““ (U-2026-013), Status im Test auf „reserviert“ gesetzt
+- Ansicht „Seladon-Stücke verfügbar ab 2026“ (Tabelle Ansichten), darf als Beispiel bleiben
+
+## Erkenntnisse zu Softr (für die Entscheidung)
+- **Freie Filter und gespeicherte Ansichten** sind mit fertigen Softr-Blöcken nur begrenzt möglich, mit einem Vibe-Coding-Block aber vollständig: beliebig kombinierbar, gespeicherte Ansichten für alle Mitarbeitenden.
+- **Rechte:** Softr unterscheidet Bearbeiten-Rechte pro Block und Tabelle. Für „Werkstatt ändert nur Status/Lagerort/Notiz, Admin alles“ braucht es zwei Blöcke. Das ist gelöst und serverseitig erzwungen.
+- **Jede Code-Änderung setzt die Aktionsrechte zurück** (Softr-Verhalten). Nach jedem Update werden sie per MCP neu gesetzt. Wer später im Studio per KI-Chat ändert, muss das wissen.
+- **Vorschau-Links frieren den Stand ein.** Nach Änderungen braucht es einen neuen Link.
 
 ## Blocker (Kosten, Löschen, Live-Schaltung)
 - **Aufräumen (Löschen):** alte Datenbank „Keramik Lagerverwaltung“ (KI-Builder) und die leere Test-App „Test (leer) – kann gelöscht werden“. Lösche ich nicht selbst.

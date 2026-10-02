@@ -465,7 +465,7 @@ export default function Block() {
   }
 
   return (
-    <div className="container py-6">
+    <div className="container pt-6 pb-28 sm:pb-8">
       <div className="content max-w-2xl mx-auto">
         <h1 className="text-2xl font-semibold mb-1">Neues Stück erfassen</h1>
         <p className="text-base text-muted-foreground mb-5">Felder mit * sind Pflicht. Alles andere kann später ergänzt werden.</p>
