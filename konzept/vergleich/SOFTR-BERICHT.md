@@ -58,6 +58,7 @@ Daten: 12 Unikate und 10 Zeilen Editionsbestand aus `konzept/test-import/*.csv`.
 - **Löschen:** alte Datenbank „Keramik Lagerverwaltung“, leere Test-App „Test (leer) – kann gelöscht werden“, alte Blöcke und Seiten (siehe oben), Platzhalter-Nutzer.
 
 ## Offene Fragen
+- **Außer Haus (neu, Admin 02.10.2026):** sehen, was in Galerien, Museen und Ausstellungen ist, ggf. später „Aktuell zu sehen in …“ auf der Website. Entscheidung: als erster Bereich der Übersicht, keine fünfte Seite. Plan und Datenmodell in `konzept/softr/UEBERGABE.md`. Noch nicht umgesetzt.
 - **Umschalter „Unikat / Editionsware“** oben in der Erfassen-Maske: sinnvoll oder lieber zwei getrennte Wege? Am Test-Abend mit der Werkstatt klären.
 - **HEIC vom iPhone:** Das Foto-Feld nimmt `image/*` an, iOS wandelt beim Hochladen normalerweise in JPEG um. Prüfen nach der Veröffentlichung.
 - Aus `UEBERGABE.md` weiterhin offen: Dateispeicher im Basic-Tarif, 2FA für das Admin-Konto, Export inklusive Fotos, Workflow-URL-Aufruf, geteilte Logins laut AGB.
@@ -68,6 +69,7 @@ Daten: 12 Unikate und 10 Zeilen Editionsbestand aus `konzept/test-import/*.csv`.
 - Ansicht „Seladon-Stücke verfügbar ab 2026“ (darf als Beispiel bleiben)
 
 ## Erkenntnisse zu Softr (für die Entscheidung Softr oder Baserow)
+- **Branding:** Laut Admin lässt sich das Badge „Made with Softr“ auch im ca. 20-€-Tarif nicht vollständig entfernen. Es stört die Bedienung nicht, wirkt aber weniger professionell.
 - **Freie, kombinierbare Filter und gespeicherte Ansichten:** Mit fertigen Softr-Blöcken nur begrenzt möglich, mit Vibe-Coding-Blöcken vollständig, auch geräteübergreifend für alle.
 - **Rechte:** Softr vergibt Bearbeiten-Rechte pro Block und Tabelle, nicht pro Feld. Unterschiedliche Rechte brauchen getrennte Blöcke. Das ist gelöst und serverseitig erzwungen.
 - **Jede Code-Änderung setzt die Aktionsrechte zurück.** Nach jedem Update setze ich sie per MCP neu. Wer später im Studio per KI-Chat ändert, muss das wissen.

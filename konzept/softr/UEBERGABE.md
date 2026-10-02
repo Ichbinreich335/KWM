@@ -32,7 +32,29 @@ Für die nächste Session. Zuerst `CLAUDE.md`, `konzept/SOFTR-AUFTRAG.md` und `k
 6. Vorschau: `application_preview` liefert einen Link, der den Stand zur Zeit des Aufrufs zeigt. Nach Änderungen einen neuen holen. Der Link ist ein Zugangsschlüssel, nicht ins Repo.
 7. Playwright: Die App läuft in der Vorschau in einem iframe. Die innere URL (`…/seite?autoUser=true&t=…`) direkt öffnen. Blöcke rendern im Shadow DOM (Playwright-Locators gehen durch, `document.querySelector` nicht). Prüfskripte: `konzept/softr/pruefung/` (Aufruf siehe README dort, `PREVIEW_URL` als Umgebungsvariable).
 
+
+## Neue Anforderung „Außer Haus“ (Admin, 02.10.2026) – Entscheidung und Plan
+**Ziel:** Jederzeit sehen, welche Ware wo außer Haus ist (Galerie, Museum, Ausstellung, Leihgabe). Später eventuell auf der Website „Aktuell zu sehen in …“.
+
+**Entscheidung:** keine fünfte Seite. „Außer Haus“ wird der **erste große Bereich der Übersicht**, direkt unter den Kennzahlen. Das gibt der Übersicht einen echten Zweck und hält das Menü bei vier Punkten (Erfassen · Bestand · Tabelle · Übersicht). Die Detailsuche läuft weiter über die Tabelle.
+
+**Datenmodell (umkehrbar, ohne Löschen):**
+1. Tabelle **„Galerien“ zu „Partner“ umbenennen** und erweitern: Feld `Art` (Auswahl: Galerie, Museum, Ausstellung/Messe, Privat/Leihnehmer), `Ort`, `Kontakt` bleiben.
+2. Status-Auswahl in Unikate um **„ausgestellt“** ergänzen (Leihgabe oder Ausstellung ohne Verkaufsabsicht). „in Kommission“ bleibt für Verkauf über Galerien. Status-Farbe für „ausgestellt“ festlegen (Vorschlag: violett), mit dem dataviz-Validator prüfen.
+3. In Unikate neue Felder **„Außer Haus seit“** und **„Rückgabe bis“** (Datum). Das Feld „Galerie“ heißt dann „Partner“ und wird bei „in Kommission“ **und** „ausgestellt“ angezeigt.
+4. Optional später für die Website: Feld **„Ausstellung“** (Text, z. B. „Keramik heute, Museum X, bis 30.11.“). Freigabe wie bisher über „Auf Website zeigen“. Die Website liest nur freigegebene Felder, nie Preis oder Lagerort intern.
+
+**UI:**
+- Übersicht → Bereich „Außer Haus“: je Partner eine Karte mit Art, Ort, Anzahl Stücke, Warenwert, frühestem Rückgabedatum. Überfällige Rückgaben rot markiert, „in den nächsten 14 Tagen“ gelb. Antippen öffnet `/tabelle?partner=…`.
+- Bestand: Schnell-Status um „ausgestellt“ erweitern. Bei „in Kommission“ und „ausgestellt“ erscheint Partner + Rückgabe bis.
+- Erfassen: dasselbe Feldverhalten. Tabelle: neue Spalten und Filter.
+- Danach: Übersicht-Kacheln „Reserviert/Verkauft“ auf `/tabelle?status=…` umstellen (siehe Offen, Punkt 2) und alle Blöcke testen. Rechte neu setzen!
+
+## Beobachtung Admin zum Vergleich Softr/Baserow (nur festhalten, nicht bewerten)
+- Das Badge „Made with Softr“ lässt sich laut Admin auch im ca. 20-€-Tarif nicht vollständig entfernen. Es stört die Bedienung nicht, wirkt aber weniger professionell. Für die Entscheidung Softr oder Baserow notiert. Die Bewertung macht eine andere Session.
+
 ## Offen (in dieser Reihenfolge)
+0. **„Außer Haus“ umsetzen** (siehe Abschnitt oben). Höchste Priorität nach dem UI-Review.
 1. **UI-Review einarbeiten:** Ein Opus-Agent mit Refero-MCP hat die vier Seiten bewertet. Leitfrage: „In 10 Minuten verständlich, volle Funktion bei Bedarf.“ Ergebnis: `konzept/vergleich/SOFTR-UI-REVIEW.md`, falls der Agent vor Session-Ende fertig wurde. Sonst den Review neu ausführen (Opus, Refero, Playwright Desktop/Mobil/Tablet, nichts speichern, nur bewerten).
 2. **Übersicht:** Kacheln „Reserviert“ und „Verkauft“ auf `/tabelle?status=…` umstellen (zeigen noch auf `/bestand?tab=tabelle…`, das es nicht mehr gibt). Pro Bereich einen kurzen Satz „Was sehe ich hier?“ ergänzen (Wunsch Admin).
 3. **Tabelle am Handy:** scrollt seitlich (vertretbar, aber prüfen: weniger Standardspalten auf Mobil).
