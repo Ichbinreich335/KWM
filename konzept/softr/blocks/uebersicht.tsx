@@ -3,7 +3,7 @@ import { datasource, q, useRecords } from "@/lib/datasource";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { AlertTriangle, ImageOff, Loader2 } from "lucide-react";
 
-const ds = datasource.define({ unikate: "unikate", edition: "edition" });
+const ds = datasource.define({ unikate: "unikate", edition: "edition", partner: "partner" });
 
 const unikatSelect = q.select({
   inv: "glG6V",
@@ -17,7 +17,10 @@ const unikatSelect = q.select({
   erfasstAm: "p4ha0",
   geaendertAm: "aGhiL",
   verkauftAm: "48BXo",
+  seit: "Evxm2",
+  rueckgabe: "ENQkk",
 });
+const partnerSelect = q.select({ name: "a4yfc", art: "ZS9HU", ort: "RQRec" });
 const editionSelect = q.select({
   modell: "jxN6x",
   glasur: "pbGEk",
@@ -35,6 +38,9 @@ const LOW_STOCK = 5;
 const VERFUEGBAR = "verfügbar";
 const RESERVIERT = "reserviert";
 const KOMMISSION = "in Kommission";
+const AUSGESTELLT = "ausgestellt";
+const SOON_DAYS = 14;
+const DAY_MS = 86400000;
 const VERKAUFT = "verkauft";
 const ROHLING = "Rohling";
 const TYP_ORDER = ["Teller", "Schale", "Becher", "Vase", "Karaffe", "Obertopf"];
@@ -44,6 +50,7 @@ const STOCK_SERIES = [
   { key: VERFUEGBAR, label: "verfügbar", color: "#1baf7a" },
   { key: RESERVIERT, label: "reserviert", color: "#eda100" },
   { key: KOMMISSION, label: "in Kommission", color: "#2a78d6" },
+  { key: AUSGESTELLT, label: "ausgestellt", color: "#4a3aa7" },
 ] as const;
 const EDITION_SERIES = [
   { key: ROHLING, label: "Rohlinge", color: "#eb6834" },
@@ -63,6 +70,9 @@ type Unikat = {
   foto: Attachment | undefined;
   lagerort: string;
   galerie: string;
+  galerieId: string;
+  seit: string;
+  rueckgabe: string;
   preis: number;
   erfasstAm: string;
   geaendertAm: string;
@@ -112,6 +122,18 @@ function num(v: unknown): number {
 
 function thumb(a: Attachment): string {
   return a.thumbnails?.find((t) => t.size === "small")?.url ?? a.url;
+}
+
+function formatDate(iso: string): string {
+  const d = new Date(iso);
+  return Number.isNaN(d.getTime()) ? "" : d.toLocaleDateString("de-DE");
+}
+
+function fristStatus(iso: string): "ueberfaellig" | "bald" | "ok" | "" {
+  if (!iso) return "";
+  const heute = new Date(new Date().toISOString().slice(0, 10)).getTime();
+  const tage = (new Date(iso.slice(0, 10)).getTime() - heute) / DAY_MS;
+  return tage < 0 ? "ueberfaellig" : tage <= SOON_DAYS ? "bald" : "ok";
 }
 
 function latest(...dates: string[]): string {
@@ -242,6 +264,9 @@ export default function Block() {
           foto: firstAttachment(f.fotos),
           lagerort: firstLabel(f.lagerort),
           galerie: firstLabel(f.galerie),
+          galerieId: asOpts(f.galerie)[0]?.id ?? "",
+          seit: str(f.seit),
+          rueckgabe: str(f.rueckgabe),
           preis: num(f.preis),
           erfasstAm: str(f.erfasstAm),
           geaendertAm: str(f.geaendertAm),
@@ -273,7 +298,7 @@ export default function Block() {
   const stats = useMemo(() => {
     const by = (s: string) => unikate.filter((u) => u.status === s);
     const verfuegbar = by(VERFUEGBAR);
-    const kommission = by(KOMMISSION);
+    const kommission = unikate.filter((u) => u.status === KOMMISSION || u.status === AUSGESTELLT);
     const verkauftJahr = by(VERKAUFT).filter((u) => u.verkauftAm.startsWith(String(jahr)));
     const sum = (list: Unikat[]) => list.reduce((n, u) => n + u.preis, 0);
     return {
@@ -318,17 +343,34 @@ export default function Block() {
 
   const knapp = editionen.filter((e) => e.anzahl < LOW_STOCK).sort((a, b) => a.anzahl - b.anzahl);
 
-  const kommissionNachGalerie = useMemo(() => {
-    const map = new Map<string, { anzahl: number; wert: number }>();
+  const partnerQuery = useRecords({ from: ds.partner, select: partnerSelect, count: PAGE_SIZE });
+  const partnerInfo = useMemo(
+    () =>
+      new Map(
+        (partnerQuery.data?.pages.flatMap((p) => p.items) ?? []).map((i) => {
+          const f = (i as RawItem).fields;
+          return [i.id, { art: firstLabel(f.art), ort: str(f.ort) }] as const;
+        }),
+      ),
+    [partnerQuery.data],
+  );
+  const ausserHaus = useMemo(() => {
+    const groups = new Map<string, { key: string; name: string; art: string; ort: string; wert: number; items: Unikat[] }>();
     unikate
-      .filter((u) => u.status === KOMMISSION)
+      .filter((u) => u.status === KOMMISSION || u.status === AUSGESTELLT)
       .forEach((u) => {
-        const key = u.galerie || "Ohne Galerie";
-        const cur = map.get(key) ?? { anzahl: 0, wert: 0 };
-        map.set(key, { anzahl: cur.anzahl + 1, wert: cur.wert + u.preis });
+        const key = u.galerieId || "ohne";
+        const info = partnerInfo.get(u.galerieId);
+        const g = groups.get(key) ?? { key, name: u.galerie || "Ohne Partner", art: info?.art ?? "", ort: info?.ort ?? "", wert: 0, items: [] };
+        g.items.push(u);
+        g.wert += u.preis;
+        groups.set(key, g);
       });
-    return [...map.entries()].sort((a, b) => b[1].anzahl - a[1].anzahl);
-  }, [unikate]);
+    const byFrist = (a: Unikat, b: Unikat) => (a.rueckgabe || "9").localeCompare(b.rueckgabe || "9");
+    return [...groups.values()]
+      .map((g) => ({ ...g, items: [...g.items].sort(byFrist) }))
+      .sort((a, b) => byFrist(a.items[0], b.items[0]));
+  }, [unikate, partnerInfo]);
 
   const zuletzt = useMemo(() => {
     const items = [
@@ -383,10 +425,10 @@ export default function Block() {
               <Tile label="Unikate verfügbar" value={zahl.format(stats.verfuegbar)} sub={`Wert ${euro.format(stats.verfuegbarWert)}`} href="/bestand?tab=verfuegbar" />
               <Tile label="Reserviert" value={zahl.format(stats.reserviert)} href="/tabelle?status=reserviert" />
               <Tile
-                label="In Kommission"
+                label="Außer Haus"
                 value={zahl.format(stats.kommission)}
-                sub={stats.galerien === 1 ? "bei 1 Galerie" : `bei ${stats.galerien} Galerien`}
-                href="/bestand?tab=kommission"
+                sub={stats.galerien === 1 ? "bei 1 Partner" : `bei ${stats.galerien} Partnern`}
+                href="#ausser-haus"
               />
               <Tile label={`Verkauft ${jahr}`} value={zahl.format(stats.verkauftJahr)} sub={`Umsatz ${euro.format(stats.umsatzJahr)}`} href="/tabelle?status=verkauft" />
               <Tile label="Rohlinge gesamt" value={zahl.format(stats.rohlinge)} sub="Editionsware, unglasiert" href="/bestand?tab=edition" />
@@ -397,6 +439,61 @@ export default function Block() {
                 {stats.verkauftOhneDatum} verkaufte Stücke haben kein Verkaufsdatum und zählen nicht zu „Verkauft {jahr}“.
               </p>
             )}
+
+            <section id="ausser-haus" className="rounded-xl border bg-card p-4 sm:p-5 space-y-4 min-w-0" aria-labelledby="ausser-haus-titel">
+              <div>
+                <h2 id="ausser-haus-titel" className="text-lg font-semibold">
+                  Außer Haus
+                </h2>
+                <p className="text-sm text-muted-foreground">Was gerade in Galerien, Museen oder Ausstellungen ist und wann es zurückkommt.</p>
+              </div>
+              {ausserHaus.length === 0 ? (
+                <p className="text-base text-muted-foreground">Zurzeit ist nichts außer Haus.</p>
+              ) : (
+                <div className="grid grid-cols-[repeat(auto-fill,minmax(min(100%,18rem),1fr))] gap-3" lang="de">
+                  {ausserHaus.map((g) => (
+                    <div key={g.key} className="rounded-lg border p-3 space-y-2 min-w-0">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="min-w-0">
+                          <p className="font-semibold hyphens-auto">{g.name}</p>
+                          <p className="text-sm text-muted-foreground">{[g.art, g.ort].filter(Boolean).join(" · ")}</p>
+                        </div>
+                        <span className="text-sm tabular-nums shrink-0 text-right">
+                          {g.items.length} Stück
+                          <br />
+                          {euro.format(g.wert)}
+                        </span>
+                      </div>
+                      <ul className="divide-y">
+                        {g.items.map((u) => {
+                          const frist = fristStatus(u.rueckgabe);
+                          return (
+                            <li key={u.id}>
+                              <a href={`/bestand?id=${u.id}`} className="block min-h-11 py-1.5 rounded-md hover:bg-muted/40">
+                                <span className="block font-medium">{u.name}</span>
+                                <span className="flex flex-wrap items-center gap-2 mt-0.5">
+                                <span className="text-sm text-muted-foreground">{u.status}</span>
+                                {u.rueckgabe && (
+                                  <span
+                                    className={`text-sm shrink-0 rounded-full px-2 py-0.5 ${
+                                      frist === "ueberfaellig" ? "bg-red-100 text-red-800" : frist === "bald" ? "bg-amber-100 text-amber-900" : "text-muted-foreground"
+                                    }`}
+                                  >
+                                    {frist === "ueberfaellig" ? "überfällig seit " : "zurück bis "}
+                                    {formatDate(u.rueckgabe)}
+                                  </span>
+                                )}
+                                </span>
+                              </a>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </section>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               <Section title="Unikate im Bestand nach Typ" description="Ohne verkaufte Stücke">
@@ -432,30 +529,6 @@ export default function Block() {
                       </li>
                     ))}
                   </ul>
-                )}
-              </Section>
-              <Section title="In Kommission" description="Stücke und Wert je Galerie">
-                {kommissionNachGalerie.length === 0 ? (
-                  <p className="text-base text-muted-foreground">Zurzeit nichts in Kommission.</p>
-                ) : (
-                  <table className="w-full text-base">
-                    <thead className="text-sm text-muted-foreground">
-                      <tr>
-                        <th className="text-left font-medium py-1">Galerie</th>
-                        <th className="text-right font-medium py-1">Stücke</th>
-                        <th className="text-right font-medium py-1">Wert</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {kommissionNachGalerie.map(([galerie, v]) => (
-                        <tr key={galerie} className="border-t">
-                          <td className="py-2">{galerie}</td>
-                          <td className="py-2 text-right tabular-nums">{zahl.format(v.anzahl)}</td>
-                          <td className="py-2 text-right tabular-nums">{euro.format(v.wert)}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
                 )}
               </Section>
             </div>

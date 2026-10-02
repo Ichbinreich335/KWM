@@ -58,7 +58,7 @@ Daten: 12 Unikate und 10 Zeilen Editionsbestand aus `konzept/test-import/*.csv`.
 - **Löschen:** alte Datenbank „Keramik Lagerverwaltung“, leere Test-App „Test (leer) – kann gelöscht werden“, alte Blöcke und Seiten (siehe oben), Platzhalter-Nutzer.
 
 ## Offene Fragen
-- **Außer Haus (neu, Admin 02.10.2026):** sehen, was in Galerien, Museen und Ausstellungen ist, ggf. später „Aktuell zu sehen in …“ auf der Website. Entscheidung: als erster Bereich der Übersicht, keine fünfte Seite. Plan und Datenmodell in `konzept/softr/UEBERGABE.md`. Noch nicht umgesetzt.
+- **Außer Haus (Admin 02.10.2026):** Übersicht hat jetzt den Bereich „Außer Haus“ (je Partner: Art, Ort, Stücke, Wert, Rückgabefrist; überfällig rot, ≤ 14 Tage gelb) und die Kachel „Außer Haus“. Datenmodell: Tabelle „Galerien“ heißt jetzt „Partner“ (+ Feld Art: Galerie, Museum, Ausstellung/Messe, Leihnehmer privat), Status „ausgestellt“, Felder „Außer Haus seit“ und „Rückgabe bis“, Lagerort „Galerie“ heißt jetzt „Außer Haus (Galerie, Museum, Ausstellung)“. Beispiel: „Keramikmuseum am Fluss“ (fiktiv) mit der Großen Schale „Morgenlicht“. **Noch offen:** Bestand, Erfassen und Tabelle kennen „ausgestellt“, Partner und Rückgabe-Datum noch nicht vollständig. Späteres Website-Feld „Ausstellung“ ist geplant, nicht angelegt.
 - **Umschalter „Unikat / Editionsware“** oben in der Erfassen-Maske: sinnvoll oder lieber zwei getrennte Wege? Am Test-Abend mit der Werkstatt klären.
 - **HEIC vom iPhone:** Das Foto-Feld nimmt `image/*` an, iOS wandelt beim Hochladen normalerweise in JPEG um. Prüfen nach der Veröffentlichung.
 - Aus `UEBERGABE.md` weiterhin offen: Dateispeicher im Basic-Tarif, 2FA für das Admin-Konto, Export inklusive Fotos, Workflow-URL-Aufruf, geteilte Logins laut AGB.
