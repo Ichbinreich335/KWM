@@ -96,3 +96,41 @@
 > **Bewusst nicht enthalten:** kein Shop, kein Warenkorb, keine Preise nach außen, keine Buchungshistorie und keine Aufträge (eventuell später). Die Website ist ein separates System. Das Feld „Auf Website zeigen“ ist nur für eine spätere Anbindung gedacht.
 >
 > **Beispieldaten:** Lege 12 Beispiel-Unikate und 10 Zeilen Editionsbestand mit realistischen Keramik-Namen an (z. B. Mondvase „Seladon“, Schale „Tide“ flach, Becher „Salbei“ 300 ml), damit man die App sofort testen kann.
+
+## Stand nach dem ersten Test des Softr AI Co-Builders (02.10.2026) – Nachbesserungen für die MCP-Session
+Der KI-Builder hat ein Grundgerüst angelegt: 3 Menüpunkte, Kacheln mit Foto, Kennzahlen, Formular. Das reicht noch nicht. Am bestehenden Projekt **per MCP weiterarbeiten** oder es neu aufsetzen.
+
+**Fehler bzw. Abweichungen, die beheben werden müssen**
+- **Bestand:** Die Seite zeigt eine Kopie der Übersicht (Begrüßung, Kennzahlen). Gebraucht wird eine echte Bestandsliste (siehe unten).
+- **Kennzahlen widersprüchlich:** Auf „Bestand“ stehen Rohlinge und Glasiert beide auf 158, auf „Übersicht“ auf 75 bzw. 83. Die Formeln müssen nach Zustand filtern.
+- **Inventarnummer** steht als 5, 6, 7 … da. Benötigt wird das Format `U-JJJJ-NNN`, automatisch vergeben (Autonummer plus Formel).
+- **Formular:**
+  - Zu viele Pflichtfelder. Pflicht sind nur Foto, Name, Typ und Status.
+  - Die Checkbox „Please check this box“ braucht die Beschriftung „Auf Website zeigen“ und darf keine Pflicht sein.
+  - Maße als einzeiliges Feld.
+  - Preis intern ist für die Werkstatt ausgeblendet.
+- **Englische Texte** auf Deutsch umstellen (Search, Ask AI, Upload). „Ask AI“ für die Werkstatt ausblenden.
+- **Status-Farben** wie vorgegeben: verfügbar = grün, reserviert = gelb, verkauft = grau, in Kommission = blau.
+- **Lagerorte und Beispieldaten** an unsere Liste angleichen, mit deutschen Keramik-Namen statt „Modern Line T1“.
+
+**Datenstruktur (Admin pflegt die Stammdaten, damit Filterwerte einheitlich bleiben)**
+- `Unikate`, die Haupttabelle, mit Verknüpfungen auf:
+  - `Lagerorte` (Name, Bereich)
+  - `Künstler:innen` (Name)
+  - `Galerien` (Name, Ort, Kontakt)
+  - Glasur bleibt Text oder wird optional als eigene Tabelle `Glasuren` angelegt.
+- **Typ und Status** bleiben Einfachauswahl.
+- `Editionsbestand`: eine Zeile pro Modell + Glasur + Zustand.
+  - Optional eine Tabelle `Modelle` (Name, Typ, Maße, Foto), auf die der Bestand verweist.
+- **Grundsatz:** Alles, wonach gefiltert werden soll, ist ein **Auswahl- oder Verknüpfungsfeld**, kein freier Text.
+
+**Bestand = flexible Tabelle (neue Kernanforderung)**
+- **Vorgefertigte Ansichten** als Reiter: Alle · Verfügbar · Schalen · Vasen · Teller · In Kommission · Editionsware.
+- **Freie Filterung** durch die Mitarbeitenden in einer Ansicht „Alle Stücke (Tabelle)“:
+  - Filter auf **jedes** Attribut: Typ, Status, Lagerort, Künstler:in, Glasur, Jahr (Bereich), Galerie, Auf Website.
+  - **Mehrere Filter kombinierbar**, dazu Suche und Sortierung nach Spalten.
+- **Detailseite** zum Bearbeiten und **CSV-Export** der gefilterten Liste.
+- **Prüfen (Softr-Doku per MCP):**
+  - Können Endnutzer im Table-Block beliebig viele Filter kombinieren?
+  - Lassen sich Filter bzw. Ansichten speichern?
+  - Falls nicht: alle Attribute als Filter freischalten und die häufigsten Kombinationen als Reiter vorgeben.
