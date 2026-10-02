@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { Sheet, SheetClose, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ArrowDown, ArrowUp, Bookmark, Columns3, Download, ImageOff, Loader2, Plus, Search, SlidersHorizontal, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
@@ -562,10 +562,17 @@ function Detail({ r, onClose }: { r: Row; onClose: () => void }) {
   const href = r.art === UNIKAT ? `/bestand?id=${r.id}` : "/bestand?tab=edition";
   return (
     <Sheet open onOpenChange={(o) => !o && onClose()}>
-      <SheetContent side="right" className="w-full sm:max-w-lg overflow-y-auto">
-        <SheetHeader>
-          <SheetTitle className="text-xl">{r.name || "Ohne Namen"}</SheetTitle>
-          <SheetDescription>{[r.art, r.inv, r.typ].filter(Boolean).join(" · ")}</SheetDescription>
+      <SheetContent side="right" className="w-full sm:max-w-lg overflow-y-auto [&>button:last-child]:hidden">
+        <SheetHeader className="flex-row items-start justify-between gap-3 space-y-0">
+          <div className="min-w-0">
+            <SheetTitle className="text-xl break-words hyphens-auto">{r.name || "Ohne Namen"}</SheetTitle>
+            <SheetDescription>{[r.art, r.inv, r.typ].filter(Boolean).join(" · ")}</SheetDescription>
+          </div>
+          <SheetClose asChild>
+            <Button variant="ghost" className="h-11 w-11 p-0 shrink-0" aria-label="Schließen">
+              <X className="w-6 h-6" aria-hidden />
+            </Button>
+          </SheetClose>
         </SheetHeader>
         <div className="px-4 pb-8 space-y-5">
           {r.foto ? (
@@ -586,6 +593,11 @@ function Detail({ r, onClose }: { r: Row; onClose: () => void }) {
           <Button asChild className="w-full h-12 text-base">
             <a href={href}>Im Bestand bearbeiten</a>
           </Button>
+          <SheetClose asChild>
+            <Button variant="outline" className="w-full h-12 text-base">
+              Fertig
+            </Button>
+          </SheetClose>
         </div>
       </SheetContent>
     </Sheet>

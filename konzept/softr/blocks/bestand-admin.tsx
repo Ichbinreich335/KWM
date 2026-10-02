@@ -3,8 +3,8 @@ import { datasource, q, useRecord, useRecordUpdate } from "@/lib/datasource";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import { Loader2 } from "lucide-react";
+import { Sheet, SheetClose, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { Loader2, X } from "lucide-react";
 import { toast } from "sonner";
 
 const ds = datasource.define({ unikate: "unikate" });
@@ -114,10 +114,17 @@ export default function Block() {
 
   return (
     <Sheet open={!!recordId} onOpenChange={(o) => !o && setRecordId(null)}>
-      <SheetContent side="right" className="w-full sm:max-w-md overflow-y-auto">
-        <SheetHeader>
-          <SheetTitle className="text-xl">Preis und Website</SheetTitle>
-          <SheetDescription>{f ? `${str(f.name)} · ${str(f.inv)}` : "Stück wird geladen …"}</SheetDescription>
+      <SheetContent side="right" className="w-full sm:max-w-md overflow-y-auto [&>button:last-child]:hidden">
+        <SheetHeader className="flex-row items-start justify-between gap-3 space-y-0">
+          <div className="min-w-0">
+            <SheetTitle className="text-xl">Preis und Website</SheetTitle>
+            <SheetDescription>{f ? `${str(f.name)} · ${str(f.inv)}` : "Stück wird geladen …"}</SheetDescription>
+          </div>
+          <SheetClose asChild>
+            <Button variant="ghost" className="h-11 w-11 p-0 shrink-0" aria-label="Schließen">
+              <X className="w-6 h-6" aria-hidden />
+            </Button>
+          </SheetClose>
         </SheetHeader>
         {status === "error" ? (
           <p role="alert" className="px-4 text-base text-destructive">
