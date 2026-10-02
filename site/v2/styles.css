@@ -268,6 +268,8 @@ body::after {
 
 /* Lede */
 .lede { padding-block: var(--section); row-gap: var(--head-gap); }
+/* Zwei helle Abschnitte hintereinander: der Abstand zählt nur einmal */
+.lede + .artist, .artist + .works { padding-top: 0; }
 .lede__text {
   grid-column: 1 / 11;
   font-family: var(--f-text);
