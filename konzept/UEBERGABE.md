@@ -1,6 +1,29 @@
 # Übergabe: Website und Lager-App für die Keramische Werkstatt Margaretenhöhe (KWM)
 
-Stand: 02.10.2026. Dieses Dokument richtet sich an eine KI oder einen Entwickler, der übernimmt. Es fasst Anforderungen, getroffene Entscheidungen, Optionen und offene Punkte zusammen.
+Stand: 02.10.2026, **v2 nach unabhängigem Review**. Abschnitt 0 enthält die aktuellen Empfehlungen und hat Vorrang vor älteren Aussagen weiter unten.
+
+## 0. Aktueller Stand (v2)
+
+- **Website:** Astro statisch. Neubau über einen **Cloudflare Deploy Hook** (für Workers verfügbar seit 01.04.2026 [V laut Review]). Schlägt der Neubau fehl, bleibt die alte Version online. Die ganze Seite wird neu gebaut, nicht nur „Aktuelles“. Das ist einfacher und braucht weder SSR noch nachladendes JavaScript.
+- **Website-Editor: Sanity Free.**
+  - Laut Nutzungsbedingungen für „internal business purposes“ nutzbar. Bis 20 Logins, 100 GB Assets, Visual Editing [V laut Review].
+  - **KI-Zugriff über den offiziellen gehosteten Sanity-MCP-Server**: Entwürfe anlegen und ändern, veröffentlichen, Bilder hochladen, Schema ändern [V laut Review]. Ablauf: Admin gibt Claude Dokumente und Bilder, Claude legt einen Entwurf an, Admin prüft und veröffentlicht, Webhook löst den Neubau aus. Selbst pflegen geht weiterhin über das Studio.
+  - Offen [U]: Ist der MCP-Server im Free-Tarif voll nutzbar? Gehen Bild-Uploads auch lokal und nicht nur per URL?
+  - **Storyblok Starter ist herabgestuft.** Laut Preisseite gilt der Tarif nur für „testing and personal projects“. Der Versionsverlauf reicht 1 Tag zurück, und laut AGB §15.4 kann Storyblok den Free-Tarif jederzeit beenden [V laut Review].
+- **Lager-App:**
+  - **Baserow Cloud** (Server in Deutschland, verwaltet, MIT-Software). Free: 3.000 Zeilen und 2 GB pro Workspace, Galerie, Formular und Application Builder sind enthalten. Premium kostet 10 $ pro Nutzer [V laut Review]. Ausweg: Dieselbe Software lässt sich mit denselben Daten selbst hosten.
+  - **Softr Basic** (Berlin, AWS EU) für 19 $ pauschal: 1 Builder, 5+5 App-Nutzer, 50.000 Datensätze, automatische Backups. Wirkt am stärksten wie eine eigene App. Nachteile: proprietär, **2FA für den Builder erst im Business-Tarif** [V laut Review].
+  - Entscheidung zwischen beiden über einen **Praxistest des Admins**. CSV-Vorlagen liegen in `konzept/test-import/`.
+- **Directus ist gestrichen.** Gründe:
+  - 2026 gab es bisher 34 GitHub-Sicherheitswarnungen, darunter im August eine kritische WebSocket-Lücke. Damit gilt derselbe Maßstab wie bei Payload.
+  - Die lokale Demo lief noch auf v11. In Produktion wäre es v12 mit Lizenzschlüssel und harter Grenze von 3 Plätzen.
+  - Die Preise ändern sich erneut [V laut Review].
+- **Ninox:** Die Preisangabe war veraltet. Aktuell 25 € pro Nutzer im Team-Tarif, also raus.
+- **Buchungsjournal ist nicht mehr nötig.** Vorerst reicht der Bestand als Zahl pro Modell, Glasur und Zustand. Buchungen sind höchstens später ein nice to have. Damit spielen auch die Zeilenlimits keine Rolle.
+- **Offen [U]:** Sind geteilte Logins (2 Werkstatt-Zugänge für 4 Personen) laut AGB von Baserow und Softr erlaubt?
+- **Live-Vorschau** der lokalen Demos ist nicht möglich: Ein öffentlicher Tunnel aus der Cloud-Umgebung wurde blockiert. Die Screenshots liegen in `konzept/vergleich/`.
+
+--- Dieses Dokument richtet sich an eine KI oder einen Entwickler, der übernimmt. Es fasst Anforderungen, getroffene Entscheidungen, Optionen und offene Punkte zusammen.
 
 Kennzeichnung: **[V]** = an einer Primärquelle geprüft, **[S]** = nur Sekundärquelle oder Suchtreffer, **[U]** = unverifiziert. Fast alle Preise sind [S] und müssen vor einer Entscheidung auf der Herstellerseite gegengeprüft werden. Die Herstellerseiten waren für den Abruf gesperrt.
 
