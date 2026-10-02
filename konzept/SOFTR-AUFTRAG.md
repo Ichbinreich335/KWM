@@ -6,6 +6,15 @@
    Alternativ manuell: `claude mcp add --transport http softr https://mcp.softr.io/mcp`
 3. **Preis laut externer Prüfung [V]:** Basic kostet 19 $/Monat bei Jahreszahlung, 25 $ monatlich (1 Builder, „5 + 5“ App-Nutzer, 50.000 Datensätze, Backups). **Beim Test klären:** Dateispeicher im Basic-Tarif, 2FA für das Admin-Konto, ob der Export auch die Fotos enthält, ob Workflows eine URL aufrufen können (Website-Neubau), ob geteilte Logins laut AGB erlaubt sind und ob HEIC-Fotos vom iPhone funktionieren.
 
+## Was die Session vom Admin braucht
+- **Ein Softr-Konto (Free)**, das du per `/mcp` → `softr` angemeldet hast (OAuth). **Passwörter oder Tokens nie in den Chat schreiben.** Der MCP-Login reicht.
+- **Wo die Session läuft:** lokal auf deinem Rechner. In der Cloud blockiert die Netzwerkfreigabe `mcp.softr.io`, sie lässt sich aber in den Umgebungseinstellungen unter „Network access“ freigeben.
+- **Namen:** Workspace und App (Vorschlag „KWM“ / „KWM Lager“).
+- **Werkstatt-Zugänge:** 2 E-Mail-Adressen dafür (oder vorerst Platzhalter) und deine Admin-Adresse.
+- **5–10 echte Fotos** (Fotobox, Handy) für den Test, als Datei. Profi- und Galerie-Fotos ggf. mit Angabe der Fotografin oder des Fotografen.
+- **Feldwünsche, falls abweichend** von `test-import/*.csv`, z. B. zusätzliche Typen, Glasuren oder Lagerorte.
+- **Testgerät:** welches Gerät die Werkstatt nutzt (iPhone, Android oder Tablet).
+
 ## Auftrag an Claude (so einfügen)
 > Lies `konzept/UEBERGABE.md` (Abschnitt 0) und `konzept/test-import/*.csv`. Baue mit dem Softr-MCP:
 > 1. **Softr-Datenbank** „Keramik-Lager KWM“ mit den Tabellen *Unikate* und *Editionsbestand*, nach dem Aufbau der CSVs. Typ, Status, Zustand und Lagerort als Auswahlfelder mit Farben, dazu ein Datei-Feld *Fotos*. Die CSV-Daten importieren.
