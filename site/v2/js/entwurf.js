@@ -4,11 +4,7 @@
 // global: gilt auf allen Seiten; sonst nur zeigen, wenn die Seite Elemente mit diesem Schlüssel hat
 const GROUPS = [
   { key: 'grund', label: 'Grundton', global: true, options: [['galerie', 'Galerie'], ['porzellan', 'Porzellan'], ['creme', 'Creme']] },
-  { key: 'schrift', label: 'Überschriften', global: true, options: [['caslon', 'Caslon'], ['jost', 'Jost']] },
-  { key: 'raster', label: 'Bauhaus-Raster', global: true, options: [['aus', 'Aus'], ['an', 'An']] },
-  { key: 'einstieg', label: 'Einstieg', options: [['komposition', 'Wort und Bild'], ['foto', 'Foto']] },
-  { key: 'hero', label: 'Foto-Einstieg', options: [['hell', 'Hell'], ['anker', 'Dunkel']] },
-  { key: 'aktuell', label: 'Jetzt zu sehen', options: [['buehne', 'Bühne'], ['kacheln', 'Kacheln']] },
+  { key: 'einstieg', label: 'Einstieg', options: [['foto', 'Foto'], ['wortbild', 'Wort und Bild']] },
   { key: 'werk', label: 'Nach der Werkschau', options: [['orte', 'Orte'], ['drehen', 'Drehen'], ['aus', 'Nichts']] },
   { key: 'kosmos', label: 'Ausstellung', options: [['buehne', 'Bühne'], ['klassisch', 'Kosmos']] },
   { key: 'feuer', label: 'Feuer', options: [['zwei-farben', 'Zwei Farben'], ['liste', 'Liste']] },
@@ -56,7 +52,7 @@ const body = document.createElement('div');
 body.className = 'entwurf__body';
 body.id = 'entwurf-optionen';
 body.hidden = true;
-const relevant = (g) => g.global || (g.key === 'hero' ? document.querySelector('[data-variant*="einstieg:foto"], .hero') : document.querySelector(`[data-variant*="${g.key}:"]`));
+const relevant = (g) => g.global || document.querySelector(`[data-variant*="${g.key}:"]`);
 if (isHome) {
   const row = document.createElement('div');
   row.className = 'entwurf__group';

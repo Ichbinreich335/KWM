@@ -10,6 +10,7 @@ const modules = {
   feuer: () => import('./sig-feuer.js'),
   komposition: () => import('./sig-komposition.js'),
   sticky: () => import('./sig-sticky.js'),
+  aktuell: () => import('./sig-aktuell.js'),
 };
 const started = new WeakSet();
 

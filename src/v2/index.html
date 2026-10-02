@@ -2,10 +2,26 @@
 <!-- @include header -->
 
 <main id="inhalt">
-  <div class="raster" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
 
-  <!-- Einstieg: Wort-Bild-Komposition aus dem Wagner-Zitat (js/sig-komposition.js) -->
-  <section class="komposition" id="einstieg" data-sig="komposition" data-variant="einstieg:komposition" aria-labelledby="komposition-title">
+  <!-- Einstieg: Zitat links, Kummerschalen rechts (hell) -->
+  <section class="hero grid" id="top" aria-labelledby="hero-title">
+    <figure class="hero__media" data-reveal="img">
+      <img src="../img/kwm/kummerschalen.webp" width="937" height="1040" alt="Viele flache Schalen von Young-Jae Lee auf einem Steinboden, seladonblau, schwarz gesprenkelt und rotbraun glasiert" fetchpriority="high" data-parallax>
+      <figcaption class="hero__credit">Kummerschalen · Foto: Christopher Clem Franken</figcaption>
+    </figure>
+    <div class="hero__text">
+      <h1 class="hero__title" id="hero-title" data-reveal="words">Immer sind es Schalen, und doch ist keine wie die andere.</h1>
+      <p class="hero__source" data-reveal="fade">Thomas Wagner über die Schalen von Young-Jae Lee</p>
+      <p class="hero__intro" data-reveal="fade">Keramische Werkstatt Margaretenhöhe. Gedrehte Gefäße und Gebrauchsgeschirr aus Essen – seit 1924, heute auf dem Gelände der Zeche Zollverein.</p>
+      <p class="hero__actions" data-reveal="fade">
+        <a class="link-arrow" href="meisterstuecke.html">Meisterstücke ansehen</a>
+        <a class="link-arrow" href="manufaktur.html">Manufakturprogramm</a>
+      </p>
+    </div>
+  </section>
+
+  <!-- Einstieg, Variante: Wort-Bild-Komposition aus dem Wagner-Zitat (js/sig-komposition.js) -->
+  <section class="komposition" id="einstieg" data-sig="komposition" data-variant="einstieg:wortbild" hidden aria-labelledby="komposition-title">
     <h1 class="komposition__title" id="komposition-title">
       <span class="komposition__line"><span class="komposition__word">Immer</span> <span class="komposition__word">sind</span> <span class="komposition__word">es</span></span>
       <span class="komposition__line"><span class="komposition__word">Schalen,</span> <span class="komposition__word">und</span></span>
@@ -34,144 +50,8 @@
     </figure>
   </section>
 
-  <!-- Einstieg, Variante Foto: Zitat links, Kummerschalen rechts -->
-  <section class="hero grid" id="top" data-variant="einstieg:foto" hidden aria-labelledby="hero-title">
-    <figure class="hero__media" data-reveal="img">
-      <img src="../img/kwm/kummerschalen.webp" width="937" height="1040" alt="Viele flache Schalen von Young-Jae Lee auf einem Steinboden, seladonblau, schwarz gesprenkelt und rotbraun glasiert" fetchpriority="high" data-parallax>
-      <figcaption class="hero__credit">Kummerschalen · Foto: Christopher Clem Franken</figcaption>
-    </figure>
-    <div class="hero__text">
-      <h1 class="hero__title" id="hero-title" data-reveal="words">Immer sind es Schalen, und doch ist keine wie die andere.</h1>
-      <p class="hero__source" data-reveal="fade">Thomas Wagner über die Schalen von Young-Jae Lee</p>
-      <p class="hero__intro" data-reveal="fade">Keramische Werkstatt Margaretenhöhe. Gedrehte Gefäße und Gebrauchsgeschirr aus Essen – seit 1924, heute auf dem Gelände der Zeche Zollverein.</p>
-      <p class="hero__actions" data-reveal="fade">
-        <a class="link-arrow" href="meisterstuecke.html">Meisterstücke ansehen</a>
-        <a class="link-arrow" href="manufaktur.html">Manufakturprogramm</a>
-      </p>
-    </div>
-  </section>
-
-  <!-- Jetzt zu sehen: schwarzer Anker, laufende und kommende Termine als Tabelle, dazu die Bühne (js/sig-buehne.js) -->
-  <section class="buehne buehne--anker" id="buehne" data-sig="buehne" data-variant="aktuell:buehne" aria-labelledby="buehne-title">
-    <div class="buehne__head grid">
-      <h2 class="h2 buehne__title" id="buehne-title" data-reveal="words">Jetzt zu sehen</h2>
-      <a class="link-arrow buehne__all" href="aktuelles.html">Alle Ausstellungen und Termine</a>
-    </div>
-    <div class="buehne__body grid">
-      <div class="buehne__side">
-        <div class="buehne__panels">
-          <article class="buehne__show" data-show="mok" id="buehne-show-mok" data-aria="Neunundneunzig Schalen von oben gesehen, in einem Ring um eine leere Mitte, über dem Grundriss eines Museumsraums" data-readout="99 Schalen">
-            <p class="buehne__status">Läuft · nur noch bis 25. Oktober</p>
-            <p class="buehne__big">23.4.–25.10.26</p>
-            <h3 class="buehne__name">„99 Schalen – ein Kosmos“</h3>
-            <p class="buehne__ort">Museum für Ostasiatische Kunst, Köln</p>
-            <a class="link-arrow" href="aktuelles.html#f-mok">Zur Ausstellung</a>
-          </article>
-          <article class="buehne__show" data-show="wesel" id="buehne-show-wesel" data-aria="Schalen von oben gesehen, in Reihen entlang eines Kirchenschiffs, über dem Grundriss des Langhauses mit Seitenschiffen und Pfeilern" data-readout="Schalen in Reihen">
-            <p class="buehne__status">Läuft · nur noch bis 31. Oktober</p>
-            <p class="buehne__big">16.8.–31.10.26</p>
-            <h3 class="buehne__name">„Kummerschalen“</h3>
-            <p class="buehne__ort">Willibrordi-Dom, Wesel</p>
-            <a class="link-arrow" href="aktuelles.html#f-wesel">Zur Ausstellung</a>
-          </article>
-          <article class="buehne__show" data-show="greve" id="buehne-show-greve" data-aria="Schalen von oben gesehen, einzeln auf Sockeln in zwei Galerieräumen" data-readout="Schalen auf Sockeln">
-            <p class="buehne__status">Demnächst · ab 3. Oktober</p>
-            <p class="buehne__big">3.10.–12.12.26</p>
-            <h3 class="buehne__name">Kathleen Jacobs / Young&#8209;Jae Lee</h3>
-            <p class="buehne__ort">Galerie Karsten Greve, St. Moritz</p>
-            <a class="link-arrow" href="aktuelles.html">Alle Termine</a>
-          </article>
-          <article class="buehne__show" data-show="popup" id="buehne-show-popup" data-aria="Schalen von oben gesehen, in Gruppen auf Tischen und einem Regalboden, über dem Grundriss des Werkstattraums" data-readout="Schalen auf Tischen">
-            <p class="buehne__status">Demnächst · ab 6. November</p>
-            <p class="buehne__big">6.–8.11.26</p>
-            <h3 class="buehne__name">Mode, Taschen, Keramik &amp; Licht im Dialog</h3>
-            <p class="buehne__ort">Pop-up in der Werkstatt, Zeche Zollverein, Essen</p>
-            <a class="link-arrow" href="aktuelles.html#f-popup">Zur Ausstellung</a>
-          </article>
-        </div>
-      </div>
-      <div class="buehne__stage" hidden>
-        <div class="buehne__floor"></div>
-        <div class="buehne__caption">
-          <p class="buehne__readout"></p>
-          <p class="buehne__note">Schematische Darstellung, die Aufstellung vor Ort weicht ab.</p>
-        </div>
-      </div>
-    </div>
-    <div class="buehne__table grid">
-      <p class="buehne__cols" aria-hidden="true"><span>Datum</span><span>Titel</span><span>Ort</span><span>Status</span></p>
-      <ol class="buehne__rows" aria-label="Laufende und kommende Termine">
-        <li class="buehne__row" data-show="mok" data-start="2026-04-23" data-end="2026-10-25">
-          <a class="buehne__link" href="aktuelles.html#f-mok">
-            <span class="buehne__c-date">23. April – 25. Oktober 2026</span>
-            <span class="buehne__c-title">„99 Schalen – ein Kosmos“</span>
-            <span class="buehne__c-ort">Museum für Ostasiatische Kunst, Köln</span>
-            <span class="buehne__c-status" data-state="live">Nur noch bis 25. Oktober</span>
-          </a>
-        </li>
-        <li class="buehne__row" data-show="wesel" data-start="2026-08-16" data-end="2026-10-31">
-          <a class="buehne__link" href="aktuelles.html#f-wesel">
-            <span class="buehne__c-date">16. August – 31. Oktober 2026</span>
-            <span class="buehne__c-title">„Kummerschalen“</span>
-            <span class="buehne__c-ort">Willibrordi-Dom, Wesel</span>
-            <span class="buehne__c-status" data-state="live">Nur noch bis 31. Oktober</span>
-          </a>
-        </li>
-        <li class="buehne__row" data-show="greve" data-start="2026-10-03" data-end="2026-12-12">
-          <a class="buehne__link" href="aktuelles.html">
-            <span class="buehne__c-date">3. Oktober – 12. Dezember 2026</span>
-            <span class="buehne__c-title">Kathleen Jacobs / Young&#8209;Jae Lee</span>
-            <span class="buehne__c-ort">Galerie Karsten Greve, St. Moritz</span>
-            <span class="buehne__c-status" data-state="soon">Demnächst</span>
-          </a>
-        </li>
-        <li class="buehne__row" data-show="popup" data-start="2026-11-06" data-end="2026-11-08">
-          <a class="buehne__link" href="aktuelles.html#f-popup">
-            <span class="buehne__c-date">6.–8. November 2026</span>
-            <span class="buehne__c-title">Mode, Taschen, Keramik &amp; Licht im Dialog</span>
-            <span class="buehne__c-ort">Pop-up in der Werkstatt, Zeche Zollverein, Essen</span>
-            <span class="buehne__c-status" data-state="soon">Demnächst</span>
-          </a>
-        </li>
-      </ol>
-    </div>
-  </section>
-
-  <!-- Aktuell -->
-  <section class="now now--dark" id="aktuelles-kacheln" data-variant="aktuell:kacheln" hidden aria-labelledby="now-title">
-    <div class="now__head grid">
-      <h2 class="h2" id="now-title" data-reveal="words">Aktuell</h2>
-      <a class="link-arrow now__all" href="aktuelles.html">Alle Ausstellungen und Termine</a>
-    </div>
-    <div class="now__body grid">
-      <ol class="now__list">
-        <li>
-          <a class="now__item" href="aktuelles.html#kosmos">
-            <img src="../img/kwm/schalen-trio-800.webp" srcset="../img/kwm/schalen-trio-800.webp 800w, ../img/kwm/schalen-trio-1400.webp 1400w" sizes="(min-width: 900px) 31vw, 100vw" width="800" height="372" loading="lazy" alt="Vier Schalen von Young-Jae Lee: rotbraun, weiß mit blauem Tropfen, rosé und hellbraun">
-            <span class="now__date">23. April – 25. Oktober 2026</span>
-            <span class="now__title now__title--s">„99 Schalen – ein Kosmos“</span>
-            <span class="now__place">Museum für Ostasiatische Kunst, Köln</span>
-          </a>
-        </li>
-        <li>
-          <a class="now__item" href="aktuelles.html#kummerschalen">
-            <img src="../img/kwm/seladon-schalen.webp" width="900" height="600" loading="lazy" alt="Seladonfarbene Schalen von Young-Jae Lee">
-            <span class="now__date">16. August – 31. Oktober 2026</span>
-            <span class="now__title now__title--s">„Kummerschalen“</span>
-            <span class="now__place">Willibrordi-Dom, Wesel</span>
-          </a>
-        </li>
-        <li>
-          <a class="now__item" href="aktuelles.html#popup">
-            <img src="../img/kwm/regal.webp" width="954" height="905" loading="lazy" alt="Regal voller ungebrannter Gefäße in der Werkstatt">
-            <span class="now__date">6.–8. November 2026</span>
-            <span class="now__title now__title--s">Mode, Taschen, Keramik &amp; Licht im Dialog</span>
-            <span class="now__place">Pop-up in der Werkstatt, Zeche Zollverein</span>
-          </a>
-        </li>
-      </ol>
-    </div>
-  </section>
+  <!-- Aktuell: laufende und kommende Ausstellungen mit Flyer und Angaben, aufklappbar ohne Unterseite -->
+  <section class="aktuell" id="aktuelles" data-sig="aktuell" aria-labelledby="aktuell-title"></section>
 
   <!-- Lede -->
   <section class="lede grid" aria-label="Über die Werkstatt">
@@ -248,7 +128,7 @@
   </section>
 
   <!-- Orte: Ausstellungsorte im Bildraster (js/sig-orte.js) -->
-  <section class="orte" id="orte" data-sig="orte" data-variant="werk:orte" aria-labelledby="orte-title">
+  <section class="orte" id="orte" data-sig="orte" aria-labelledby="orte-title">
     <div class="orte__head grid">
       <h2 class="h2" id="orte-title" data-reveal="words">Ausstellungsorte</h2>
       <div class="orte__aside">
@@ -337,6 +217,42 @@
       </li>
     </ul>
     <p class="orte__note">Städte und Zahlen nach der Ausstellungsliste 2016 bis 2026.</p>
+  </section>
+
+  <!-- Meditation -->
+  <section class="statement grid" aria-label="Zitat">
+    <figure class="statement__media" data-reveal="img">
+      <img src="../img/01-seladon-gefaess.webp" srcset="../img/01-seladon-gefaess-800.webp 800w, ../img/01-seladon-gefaess.webp 1600w" sizes="(min-width: 900px) 42vw, 100vw" width="1600" height="1067" loading="lazy" alt="Bauchiges Gefäß mit seladongrüner bis taubenblauer Glasur">
+    </figure>
+    <blockquote class="statement__quote">
+      <p data-reveal="words">Die Herstellung jedes neuen Gefäßes gleicht einer Meditation.</p>
+    </blockquote>
+    <p class="statement__body" data-reveal="fade">Für Young-Jae Lee ist – in Anlehnung an die koreanische Tradition – nicht die ständige Neuerfindung von Formen entscheidend, sondern die vollkommene Beherrschung des vorhandenen Repertoires. Erst mit der Verinnerlichung der Formen wird die tägliche Arbeit an der Drehscheibe jenseits aller Routine zu einer Art Exerzitium. Die Persönlichkeit beginnt einzufließen, das Individuelle drückt sich im Handwerklichen aus.</p>
+  </section>
+
+  <!-- Kosmos -->
+  <section class="cosmos" id="kosmos" aria-labelledby="cosmos-title">
+    <div class="cosmos__head grid">
+      <h2 class="h2 cosmos__title" id="cosmos-title" data-reveal="words">Ein Ring aus Teilchen um eine leere Mitte.</h2>
+      <div class="cosmos__text">
+        <p data-reveal="fade">„Schalen über Schalen, einfach auf den Boden gestellt. Ein Meer aus Schalen, ein Feld aus Kelchen, ein Ring aus Teilchen um eine leere Mitte, eine kleine Milchstraße voll schimmernder Gefäße.“</p>
+        <p class="cosmos__source" data-reveal="fade">Thomas Wagner, »Die aufgehobene Zeit?«</p>
+      </div>
+    </div>
+    <div class="cosmos__floor">
+      <div class="cosmos__stage" data-cosmos>
+        <canvas class="cosmos__canvas" role="img" aria-label="Neunundneunzig Schalen von oben gesehen, in einem Ring um eine leere Mitte angeordnet, jede mit eigener Glasur"></canvas>
+        <div class="cosmos__center">
+          <p class="cosmos__count" data-cosmos-readout>99 Schalen</p>
+          <p class="cosmos__show">„99 Schalen – ein Kosmos“<br>Museum für Ostasiatische Kunst, Köln<br>bis 25. Oktober 2026</p>
+          <a class="link-arrow" href="aktuelles.html#kosmos">Zur Ausstellung</a>
+        </div>
+      </div>
+      <div class="cosmos__caption">
+        <p class="cosmos__show">„99 Schalen – ein Kosmos“<br>Museum für Ostasiatische Kunst, Köln<br>bis 25. Oktober 2026</p>
+        <a class="link-arrow" href="aktuelles.html#kosmos">Zur Ausstellung</a>
+      </div>
+    </div>
   </section>
 
   <!-- Manufaktur -->
