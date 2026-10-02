@@ -18,6 +18,11 @@
 .feature__facts dt { color: var(--ink-2); font-size: 13px; padding-top: 2px; }
 .feature__lead { font-family: var(--f-text); font-size: 18px; line-height: 1.5; }
 
+/* Gespiegelter Eintrag: Bild randlos rechts, Text links */
+.feature--mirror .feature__media { grid-column: 6 / 13; grid-row: 1; margin-left: 0; margin-right: calc(var(--m) * -1); }
+.feature--mirror .feature__media figcaption { padding-left: 0; padding-right: var(--m); }
+.feature--mirror .feature__text { grid-column: 1 / 5; grid-row: 1; }
+
 /* Pop-up in der Werkstatt auf Tonfläche */
 .feature-band { margin-top: var(--section); padding-bottom: var(--section); }
 
@@ -75,9 +80,9 @@
 }
 
 @media (max-width: 900px) {
-  .feature__media { grid-column: 1 / -1; margin-inline: calc(var(--m) * -1); }
-  .feature__media figcaption { padding-inline: var(--m); }
-  .feature__text { grid-column: 1 / -1; padding-top: 8px; }
+  .feature__media, .feature--mirror .feature__media { grid-column: 1 / -1; grid-row: auto; margin-inline: calc(var(--m) * -1); }
+  .feature__media figcaption, .feature--mirror .feature__media figcaption { padding-inline: var(--m); }
+  .feature__text, .feature--mirror .feature__text { grid-column: 1 / -1; grid-row: auto; padding-top: 8px; }
   .year__num { grid-column: 1 / 5; }
   .year__teaser { grid-column: 5 / 12; }
   .year__list ul, .year__list .link-arrow { grid-column: 1 / -1; }

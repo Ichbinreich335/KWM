@@ -70,9 +70,12 @@
 .sticky-bild--portrait .sticky-bild__quote p { font-size: clamp(1.25rem, 1.9vw, 1.85rem); }
 .sticky-bild__caption { margin: 0; padding: 10px var(--m) 0; font-size: 13px; line-height: 1.4; color: var(--ink-2); }
 .sticky-bild-wrap { margin: 0; }
+/* Feuer: kurz, Text bleibt nur einen Atemzug lang stehen */
+#feuer { --sticky-h: 118svh; }
 
 @media (max-width: 900px) {
   .sticky-bild { --sticky-h: 130svh; --sticky-text-from: 1; --sticky-text-to: -1; }
+  #feuer { --sticky-h: 115svh; }
   .sticky-bild--portrait { --sticky-h: 125svh; --sticky-text-from: 1; --sticky-text-to: -1; }
   .sticky-bild__media::after,
   .sticky-bild--portrait .sticky-bild__media::after { background: rgb(10 10 10 / 0.66); }

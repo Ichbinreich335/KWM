@@ -1,6 +1,7 @@
 /* Meisterstücke */
 
-.ms-intro { padding-block: var(--section) 0; row-gap: 40px; align-items: start; }
+.page-hero--meta { padding-bottom: var(--head-gap); }
+.ms-intro { padding-block: var(--section); row-gap: 40px; align-items: start; }
 .ms-intro__statement {
   grid-column: 1 / 8;
   margin: 0;
@@ -30,6 +31,12 @@
 .catalog__item--mood .catalog__frame img { aspect-ratio: 3 / 2; }
 .catalog__item--band .catalog__frame img { aspect-ratio: 16 / 7; }
 
+/* Einzelwerk: Meta-Spalte links (Name, Maße, Anfrage), großes Bild rechts, an derselben Oberkante */
+.catalog__item--wide { grid-column: 1 / -1; display: grid; grid-template-columns: subgrid; align-items: start; }
+.catalog__item--wide .catalog__frame { grid-column: 4 / -1; grid-row: 1; }
+.catalog__item--wide figcaption { grid-column: 1 / 4; grid-row: 1; padding-right: var(--g); }
+.catalog__item--wide .catalog__name { margin-top: 0; }
+
 /* Kummen auf Tonfläche */
 .chapter--flaeche .catalog__frame { background: var(--ground-3); }
 
@@ -51,6 +58,9 @@
 @media (max-width: 900px) {
   .ms-intro__statement, .ms-intro__text { grid-column: 1 / -1; }
   .catalog > * { grid-column: 1 / -1 !important; }
+  .catalog__item--wide { display: block; }
+  .catalog__item--wide figcaption { padding: 0; }
+  .catalog__item--wide .catalog__name { margin-top: 14px; }
   .catalog__item--band .catalog__frame img { aspect-ratio: 4 / 3; }
   .spindle__title, .spindle__text { grid-column: 1 / -1; }
   .steps__media { grid-column: 1 / -1; position: static; }

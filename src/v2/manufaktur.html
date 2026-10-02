@@ -3,13 +3,22 @@
 
 <main id="inhalt">
 
-  <section class="page-hero mf-hero grid" aria-labelledby="mf-title">
+  <section class="page-hero page-hero--flaeche mf-hero grid" aria-labelledby="mf-title">
     <h1 class="page-hero__title" id="mf-title" data-reveal="words">Manufaktur&shy;programm</h1>
     <p class="page-hero__lede" data-reveal="fade">Vom Teller bis zur Schüssel, von der Tasse bis zum Krug hin zu Salz-, Pfeffer-, Milch- und Zuckergefäßen – unsere Geschirr-Serie umfasst alle Bestandteile eines Speisegeschirrs.</p>
-    <figure class="page-hero__media" data-reveal="img">
-      <img src="../img/kwm/regal.webp" width="954" height="905" fetchpriority="high" alt="Regal voller ungebrannter Becher, Schalen, Teller und Krüge in hellem Tonbeige">
-      <figcaption>Im Regal der Werkstatt · Foto: Haydar Koyupinar</figcaption>
-    </figure>
+    <ul class="shelf" data-reveal="img">
+      <li class="shelf__item"><img src="../img/kwm/teller.webp" width="600" height="400" fetchpriority="high" alt="Teller in Dunkelgrün, Hellgrün und Rostbraun, von oben gesehen"></li>
+      <li class="shelf__item"><img src="../img/kwm/kannen.webp" width="600" height="400" fetchpriority="high" alt="Krüge in Seladon und Beige und ein dunkelgrüner Becher"></li>
+      <li class="shelf__item"><img src="../img/kwm/tassen2.webp" width="600" height="400" alt="Teebecher und Trinkbecher in Beige, Seladon und Dunkelbraun"></li>
+      <li class="shelf__item"><img src="../img/kwm/toepfe.webp" width="600" height="400" alt="Deckeldose und Deckeltöpfe in Dunkelbraun, Grau, Orange und Seladon"></li>
+    </ul>
+    <div class="plinth" aria-hidden="true"></div>
+    <ul class="shelf-caps">
+      <li>Teller</li>
+      <li>Krüge und Kannen</li>
+      <li>Becher und Tassen</li>
+      <li>Töpfe und Dosen</li>
+    </ul>
   </section>
 
   <section class="mf-intro grid" aria-label="Über das Manufakturprogramm">
@@ -24,7 +33,6 @@
     <div class="mf-intro__text">
       <p data-reveal="fade">Unter Rückbesinnung auf die formalen Grundprinzipien des Bauhauses hat Young-Jae Lee mit Hildegard Eggemann, Michael Schmandt und Claudia Neumann die charakteristische Formensprache des Manufakturprogramms entwickelt.</p>
       <p data-reveal="fade">Zunächst wurden die 25 Grundelemente eines Geschirrs entworfen: Teller, Schalen, Krüge. In monatelangen Experimenten entstand die sechstonige Farbskala, von Schattierungen des Jadegrün über ein gebrochenes Weiß bis zu Rostbraun.</p>
-      <p data-reveal="fade">Alle Stücke werden in unserer Werkstatt in Handarbeit gefertigt. Sie sind einzeln oder im Set zu erwerben.</p>
     </div>
   </section>
 
@@ -126,6 +134,18 @@
       </div>
     </div>
 
+  </section>
+
+  <!-- Zäsur: Regal der Werkstatt -->
+  <section class="zaesur on-flaeche grid" aria-label="Handarbeit in der Werkstatt">
+    <figure class="zaesur__media" data-reveal="img">
+      <img src="../img/kwm/regal.webp" width="954" height="905" loading="lazy" alt="Regal voller ungebrannter Becher, Schalen, Teller und Krüge in hellem Tonbeige">
+      <figcaption>Im Regal der Werkstatt · Foto: Haydar Koyupinar</figcaption>
+    </figure>
+    <p class="zaesur__text" data-reveal="words">Alle Stücke werden in unserer Werkstatt in Handarbeit gefertigt. Sie sind einzeln oder im Set zu erwerben.</p>
+  </section>
+
+  <section class="chapter chapter--cont" aria-label="Geschirr, Fortsetzung">
     <div class="ware grid">
       <h3 class="ware__title" data-reveal="fade">Becher und Tassen</h3>
       <div class="ware__sets">

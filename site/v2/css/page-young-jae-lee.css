@@ -2,6 +2,13 @@
 
 .yjl-hero .page-hero__media img { object-position: 30% 40%; }
 
+/* Zitat als Zäsur: ein Satz auf Fläche */
+.pullquote { margin-top: var(--section); padding-block: var(--section); }
+.pullquote__quote { grid-column: 2 / 12; margin: 0; }
+.pullquote__quote p { font-family: var(--f-display); font-size: clamp(2.4rem, 6vw, 6rem); line-height: 1; letter-spacing: -0.025em; text-wrap: balance; margin-bottom: 28px; }
+.pullquote__quote footer { font-size: 13px; color: var(--ink-2); }
+@media (max-width: 900px) { .pullquote__quote { grid-column: 1 / -1; } }
+
 /* Haltung: großes Zitat, dann Bild und Text versetzt */
 .stance { padding-top: var(--section); row-gap: clamp(56px, 8vw, 120px); align-items: start; }
 .stance__quote { grid-column: 1 / 11; margin: 0; }

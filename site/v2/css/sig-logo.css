@@ -1,4 +1,4 @@
-/* Signatur: logo. Konstruktionszeichnung im Footer */
+/* Signatur: logo. Das Logo zeichnet sich im Footer beim Scrollen selbst */
 .footer__grid { row-gap: clamp(32px, 4vw, 56px); }
 
 .footer__logo {
@@ -18,12 +18,7 @@
 .sig-main .sig-butt { stroke-linecap: butt; }
 .sig-main .sig-bevel { stroke-linecap: butt; stroke-linejoin: bevel; }
 
-/* Hilfslinien: dünn, in Grau; nur während des Aufbaus sichtbar, danach und ohne JS ausgeblendet */
-.sig-aux { stroke: var(--on-coal-2); stroke-width: var(--hw, 0.5); stroke-linecap: butt; opacity: 0; }
-.sig-dash { stroke-dasharray: 9 3 1.5 3; }
-.sig-dot { stroke-dasharray: 1 3.2; }
-.sig-tip { fill: var(--on-coal); stroke: none; opacity: 0; }
-.sig-aux, .sig-main { transition: none; }
+.sig-main { transition: none; }
 
 /* Infospalten rechts neben dem Logo, 2 × 2 */
 .footer__col { grid-column: span 3; grid-row: auto; align-self: start; }

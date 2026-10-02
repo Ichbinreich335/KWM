@@ -51,7 +51,7 @@ import { random, pickGlaze as pickFrom, renderBowlSprite } from './js/keramik.js
   }, { rootMargin: '0px 0px -10% 0px', threshold: 0.12 });
 
   const heroEls = $$('.hero [data-reveal]');
-  $$('[data-reveal], .journey').forEach((el) => { if (!heroEls.includes(el)) io.observe(el); });
+  $$('[data-reveal], .journey, .chronicle__list li').forEach((el) => { if (!heroEls.includes(el)) io.observe(el); });
   requestAnimationFrame(() => {
     $('.hero__media')?.classList.add('is-in');
     heroEls.filter((el) => !el.classList.contains('hero__media')).forEach((el, i) => {

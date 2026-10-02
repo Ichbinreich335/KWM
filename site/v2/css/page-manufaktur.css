@@ -1,7 +1,13 @@
 /* Manufakturprogramm */
 
-/* Kopf: Regalbild in der Höhe der anderen Seitenköpfe */
-.mf-hero .page-hero__media img { object-position: 50% 40%; }
+/* Zäsur: Regal der Werkstatt mit einem Satz, Fläche mitten im langen Geschirr-Kapitel */
+.zaesur { margin-top: var(--section); padding-block: var(--section); row-gap: 40px; align-items: center; }
+.zaesur__media { grid-column: 1 / 6; }
+.zaesur__media img { width: 100%; aspect-ratio: 1; object-fit: cover; }
+.zaesur__text { grid-column: 7 / 12; margin: 0; font-family: var(--f-display); font-size: var(--fs-statement); line-height: 1.06; letter-spacing: -0.015em; text-wrap: balance; }
+.chapter--cont { padding-top: calc(var(--section) * 0.5); }
+.chapter--cont > .ware:first-child { border-top: 0; }
+@media (max-width: 900px) { .zaesur__media, .zaesur__text { grid-column: 1 / -1; } }
 
 .mf-intro { padding-block: var(--section) 0; row-gap: 40px; align-items: start; }
 .mf-intro__rule { grid-column: 1 / 8; margin: 0; }

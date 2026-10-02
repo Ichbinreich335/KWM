@@ -3,27 +3,29 @@
 
 <main id="inhalt">
 
-  <section class="page-hero grid" aria-labelledby="page-title">
+  <section class="page-hero page-hero--meta grid" aria-labelledby="page-title">
     <h1 class="page-hero__title" id="page-title" data-reveal="words">Besuchen Sie die Werkstatt.</h1>
     <p class="page-hero__lede" data-reveal="fade">Wir danken Ihnen für Ihr Interesse. Wenn Sie Fragen haben oder Stücke aus unserem Programm erwerben möchten, senden wir Ihnen natürlich gerne weitere Informationen oder ein Angebot zu. Selbstverständlich können Sie unsere Werkstatt auch besuchen.</p>
-    <figure class="page-hero__media page-hero__media--strip" data-reveal="img">
-      <img src="../img/kwm/werkstatt-panorama.webp" width="2560" height="398" alt="Young-Jae Lee am Arbeitstisch vor langen Regalen mit ungebrannten Gefäßen">
-      <figcaption>In der Werkstatt</figcaption>
-    </figure>
-  </section>
-
-  <!-- Öffnungszeiten und Adresse -->
-  <section class="visit-hours grid" aria-labelledby="hours-title">
-    <h2 class="visually-hidden" id="hours-title">Öffnungszeiten und Adresse</h2>
-    <div class="visit-hours__times" data-reveal="fade">
+    <div class="visit-hours__times" data-reveal="fade" role="group" aria-label="Öffnungszeiten">
       <div class="visit-hours__row"><span class="visit-hours__day">Montag bis Freitag</span><span class="visit-hours__time">9–17 Uhr</span></div>
       <div class="visit-hours__row"><span class="visit-hours__day">Samstag</span><span class="visit-hours__time">11–15 Uhr</span></div>
       <div class="visit-hours__row"><span class="visit-hours__day">Ansonsten</span><span class="visit-hours__time visit-hours__time--small">nach Vereinbarung</span></div>
     </div>
-    <div class="visit-hours__place" data-reveal="fade">
-      <p class="visit-hours__address">Keramische Werkstatt Margaretenhöhe GmbH<br>Bullmannaue 19<br>45327 Essen</p>
-      <p class="visit-hours__note">Seit 1987 im Baulager der Zeche Zollverein, heute Weltkulturerbe.</p>
-      <p class="visit-hours__actions">
+  </section>
+
+  <!-- Adresse -->
+  <section class="visit-hours" aria-labelledby="hours-title">
+    <h2 class="visually-hidden" id="hours-title">Adresse</h2>
+    <figure class="visit-hours__media" data-reveal="img">
+      <img src="../img/kwm/werkstatt-panorama.webp" width="2560" height="398" alt="Young-Jae Lee am Arbeitstisch vor langen Regalen mit ungebrannten Gefäßen">
+      <figcaption>In der Werkstatt</figcaption>
+    </figure>
+    <div class="visit-hours__body grid">
+      <div class="visit-hours__place" data-reveal="fade">
+        <p class="visit-hours__address">Keramische Werkstatt Margaretenhöhe GmbH<br>Bullmannaue 19<br>45327 Essen</p>
+        <p class="visit-hours__note">Seit 1987 im Baulager der Zeche Zollverein, heute Weltkulturerbe.</p>
+      </div>
+      <p class="visit-hours__actions" data-reveal="fade">
         <a class="button" href="https://www.google.com/maps/search/?api=1&amp;query=Bullmannaue+19+45327+Essen">Route planen</a>
         <a class="link-arrow" href="https://www.openstreetmap.org/search?query=Bullmannaue%2019%2C%2045327%20Essen">Route in OpenStreetMap öffnen</a>
         <a class="link-arrow" href="tel:+49201305080">+49 201 30 50 80</a>
