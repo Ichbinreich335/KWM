@@ -52,3 +52,21 @@
   .page-hero__media--strip img { min-height: 150px; object-position: 22% 50%; }
   .team-strip { margin-inline: 0; max-width: none; }
 }
+
+/* Glasurfarben: "Ein Feuer, zwei Farben" auf hellem Grund (Signatur ist für den Anker gebaut, Bühne bleibt dunkel) */
+.fire-colors { row-gap: 48px; align-items: center; }
+.fire-colors__media { grid-column: 1 / 7; }
+.fire-colors__media img { width: 100%; aspect-ratio: 3 / 2; object-fit: cover; }
+.page-werkstatt .feuer-farben__list { color: var(--ink-2); }
+.page-werkstatt .feuer-farben__group { border-color: var(--ink); }
+.page-werkstatt .feuer-farben__btn { color: var(--ink); }
+.page-werkstatt .feuer-farben__btn + .feuer-farben__btn { border-left-color: var(--ink); }
+.page-werkstatt .feuer-farben__btn:hover { background: var(--ground-2); }
+.page-werkstatt .feuer-farben__btn[aria-pressed="true"] { background: var(--ink); color: var(--ground); }
+.page-werkstatt .feuer-farben__btn:focus-visible { outline-color: var(--accent); }
+.page-werkstatt .feuer-farben__why,
+.page-werkstatt .feuer-farben__note { color: var(--ink-2); }
+
+@media (max-width: 900px) {
+  .fire-colors__media { grid-column: 1 / -1; }
+}

@@ -5,7 +5,34 @@
   <div class="raster" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
 
   <!-- Einstieg: Wort-Bild-Komposition aus dem Wagner-Zitat (js/sig-komposition.js) -->
-  <section class="komposition" id="einstieg" data-sig="komposition" data-variant="einstieg:komposition" aria-labelledby="komposition-title"></section>
+  <section class="komposition" id="einstieg" data-sig="komposition" data-variant="einstieg:komposition" aria-labelledby="komposition-title">
+    <h1 class="komposition__title" id="komposition-title">
+      <span class="komposition__line"><span class="komposition__word">Immer</span> <span class="komposition__word">sind</span> <span class="komposition__word">es</span></span>
+      <span class="komposition__line"><span class="komposition__word">Schalen,</span> <span class="komposition__word">und</span></span>
+      <span class="komposition__line"><span class="komposition__word">doch</span> <span class="komposition__word">ist</span> <span class="komposition__word">keine</span></span>
+      <span class="komposition__line"><span class="komposition__word">wie</span> <span class="komposition__word">die</span> <span class="komposition__word">andere.</span></span>
+    </h1>
+    <div class="komposition__info">
+      <p class="komposition__source">Thomas Wagner über die Schalen von Young-Jae Lee</p>
+      <p class="komposition__intro">Keramische Werkstatt Margaretenhöhe. Gedrehte Gefäße und Gebrauchsgeschirr aus Essen – seit 1924, heute auf dem Gelände der Zeche Zollverein.</p>
+      <p class="komposition__actions">
+        <a class="link-arrow" href="meisterstuecke.html">Meisterstücke ansehen</a>
+        <a class="link-arrow" href="manufaktur.html">Manufakturprogramm</a>
+      </p>
+    </div>
+    <figure class="komposition__fig komposition__fig--l">
+      <img src="../img/kwm/einstieg/teeschale-640.webp" srcset="../img/kwm/einstieg/teeschale-640.webp 640w, ../img/kwm/einstieg/teeschale-1000.webp 1000w" sizes="(max-width: 900px) 62vw, 31vw" width="640" height="640" alt="Hohe Teeschale von Young-Jae Lee, rotbraun mit hellen Glasurschlieren und feinen schwarzen Sprenkeln" fetchpriority="high" decoding="async">
+    </figure>
+    <figure class="komposition__fig komposition__fig--m">
+      <img src="../img/kwm/einstieg/vase-rosa-296.webp" width="296" height="370" alt="Spindelvase von Young-Jae Lee, oben rosa, unten blassgrün glasiert" decoding="async">
+    </figure>
+    <figure class="komposition__fig komposition__fig--s1">
+      <img src="../img/kwm/einstieg/kumme-tuerkis-460.webp" width="460" height="460" alt="Türkisblaue Kumme von Young-Jae Lee mit feinem Craquelé" decoding="async">
+    </figure>
+    <figure class="komposition__fig komposition__fig--s2">
+      <img src="../img/kwm/einstieg/vase-weiss-400.webp" width="400" height="400" alt="Weiße Spindelvase von Young-Jae Lee mit abgesetztem Rand" decoding="async">
+    </figure>
+  </section>
 
   <!-- Einstieg, Variante Foto: Zitat links, Kummerschalen rechts -->
   <section class="hero grid" id="top" data-variant="einstieg:foto" hidden aria-labelledby="hero-title">
@@ -24,42 +51,41 @@
     </div>
   </section>
 
-  <!-- Ausstellungs-Bühne: laufende Ausstellungen als Anordnung der Schalen (js/sig-buehne.js) -->
-  <section class="buehne" id="buehne" data-sig="buehne" data-variant="aktuell:buehne" aria-labelledby="buehne-title">
+  <!-- Jetzt zu sehen: schwarzer Anker, laufende und kommende Termine als Tabelle, dazu die Bühne (js/sig-buehne.js) -->
+  <section class="buehne buehne--anker" id="buehne" data-sig="buehne" data-variant="aktuell:buehne" aria-labelledby="buehne-title">
     <div class="buehne__head grid">
-      <h2 class="h2 buehne__title" id="buehne-title" data-reveal="words">Dieselben Schalen, drei Ausstellungen.</h2>
-      <p class="buehne__text" data-reveal="fade">Jede Ausstellung hat ihren Raum und ihre Ordnung. Auf der Bühne stellen sich die Schalen für jede neu auf.</p>
+      <h2 class="h2 buehne__title" id="buehne-title" data-reveal="words">Jetzt zu sehen</h2>
+      <a class="link-arrow buehne__all" href="aktuelles.html">Alle Ausstellungen und Termine</a>
     </div>
     <div class="buehne__body grid">
       <div class="buehne__side">
-        <div class="buehne__tabs" role="tablist" aria-label="Laufende Ausstellungen" hidden></div>
         <div class="buehne__panels">
           <article class="buehne__show" data-show="mok" id="buehne-show-mok" data-aria="Neunundneunzig Schalen von oben gesehen, in einem Ring um eine leere Mitte, über dem Grundriss eines Museumsraums" data-readout="99 Schalen">
-            <div class="buehne__facts">
-              <p class="buehne__date">23. April – 25. Oktober 2026</p>
-              <h3 class="buehne__name">„99 Schalen – ein Kosmos“</h3>
-              <p class="buehne__ort">Museum für Ostasiatische Kunst, Köln</p>
-            </div>
-            <blockquote class="buehne__quote">
-              <p>Ein Ring aus Teilchen um eine leere Mitte.</p>
-              <footer>Thomas Wagner, »Die aufgehobene Zeit?«</footer>
-            </blockquote>
+            <p class="buehne__status">Läuft · nur noch bis 25. Oktober</p>
+            <p class="buehne__big">23.4.–25.10.26</p>
+            <h3 class="buehne__name">„99 Schalen – ein Kosmos“</h3>
+            <p class="buehne__ort">Museum für Ostasiatische Kunst, Köln</p>
             <a class="link-arrow" href="aktuelles.html#f-mok">Zur Ausstellung</a>
           </article>
           <article class="buehne__show" data-show="wesel" id="buehne-show-wesel" data-aria="Schalen von oben gesehen, in Reihen entlang eines Kirchenschiffs, über dem Grundriss des Langhauses mit Seitenschiffen und Pfeilern" data-readout="Schalen in Reihen">
-            <div class="buehne__facts">
-              <p class="buehne__date">16. August – 31. Oktober 2026</p>
-              <h3 class="buehne__name">„Kummerschalen“</h3>
-              <p class="buehne__ort">Willibrordi-Dom, Wesel</p>
-            </div>
+            <p class="buehne__status">Läuft · nur noch bis 31. Oktober</p>
+            <p class="buehne__big">16.8.–31.10.26</p>
+            <h3 class="buehne__name">„Kummerschalen“</h3>
+            <p class="buehne__ort">Willibrordi-Dom, Wesel</p>
             <a class="link-arrow" href="aktuelles.html#f-wesel">Zur Ausstellung</a>
           </article>
+          <article class="buehne__show" data-show="greve" id="buehne-show-greve" data-aria="Schalen von oben gesehen, einzeln auf Sockeln in zwei Galerieräumen" data-readout="Schalen auf Sockeln">
+            <p class="buehne__status">Demnächst · ab 3. Oktober</p>
+            <p class="buehne__big">3.10.–12.12.26</p>
+            <h3 class="buehne__name">Kathleen Jacobs / Young&#8209;Jae Lee</h3>
+            <p class="buehne__ort">Galerie Karsten Greve, St. Moritz</p>
+            <a class="link-arrow" href="aktuelles.html">Alle Termine</a>
+          </article>
           <article class="buehne__show" data-show="popup" id="buehne-show-popup" data-aria="Schalen von oben gesehen, in Gruppen auf Tischen und einem Regalboden, über dem Grundriss des Werkstattraums" data-readout="Schalen auf Tischen">
-            <div class="buehne__facts">
-              <p class="buehne__date">6.–8. November 2026</p>
-              <h3 class="buehne__name">Mode, Taschen, Keramik &amp; Licht im Dialog</h3>
-              <p class="buehne__ort">Pop-up in der Werkstatt, Zeche Zollverein, Essen</p>
-            </div>
+            <p class="buehne__status">Demnächst · ab 6. November</p>
+            <p class="buehne__big">6.–8.11.26</p>
+            <h3 class="buehne__name">Mode, Taschen, Keramik &amp; Licht im Dialog</h3>
+            <p class="buehne__ort">Pop-up in der Werkstatt, Zeche Zollverein, Essen</p>
             <a class="link-arrow" href="aktuelles.html#f-popup">Zur Ausstellung</a>
           </article>
         </div>
@@ -71,6 +97,43 @@
           <p class="buehne__note">Schematische Darstellung, die Aufstellung vor Ort weicht ab.</p>
         </div>
       </div>
+    </div>
+    <div class="buehne__table grid">
+      <p class="buehne__cols" aria-hidden="true"><span>Datum</span><span>Titel</span><span>Ort</span><span>Status</span></p>
+      <ol class="buehne__rows" aria-label="Laufende und kommende Termine">
+        <li class="buehne__row" data-show="mok" data-start="2026-04-23" data-end="2026-10-25">
+          <a class="buehne__link" href="aktuelles.html#f-mok">
+            <span class="buehne__c-date">23. April – 25. Oktober 2026</span>
+            <span class="buehne__c-title">„99 Schalen – ein Kosmos“</span>
+            <span class="buehne__c-ort">Museum für Ostasiatische Kunst, Köln</span>
+            <span class="buehne__c-status" data-state="live">Nur noch bis 25. Oktober</span>
+          </a>
+        </li>
+        <li class="buehne__row" data-show="wesel" data-start="2026-08-16" data-end="2026-10-31">
+          <a class="buehne__link" href="aktuelles.html#f-wesel">
+            <span class="buehne__c-date">16. August – 31. Oktober 2026</span>
+            <span class="buehne__c-title">„Kummerschalen“</span>
+            <span class="buehne__c-ort">Willibrordi-Dom, Wesel</span>
+            <span class="buehne__c-status" data-state="live">Nur noch bis 31. Oktober</span>
+          </a>
+        </li>
+        <li class="buehne__row" data-show="greve" data-start="2026-10-03" data-end="2026-12-12">
+          <a class="buehne__link" href="aktuelles.html">
+            <span class="buehne__c-date">3. Oktober – 12. Dezember 2026</span>
+            <span class="buehne__c-title">Kathleen Jacobs / Young&#8209;Jae Lee</span>
+            <span class="buehne__c-ort">Galerie Karsten Greve, St. Moritz</span>
+            <span class="buehne__c-status" data-state="soon">Demnächst</span>
+          </a>
+        </li>
+        <li class="buehne__row" data-show="popup" data-start="2026-11-06" data-end="2026-11-08">
+          <a class="buehne__link" href="aktuelles.html#f-popup">
+            <span class="buehne__c-date">6.–8. November 2026</span>
+            <span class="buehne__c-title">Mode, Taschen, Keramik &amp; Licht im Dialog</span>
+            <span class="buehne__c-ort">Pop-up in der Werkstatt, Zeche Zollverein, Essen</span>
+            <span class="buehne__c-status" data-state="soon">Demnächst</span>
+          </a>
+        </li>
+      </ol>
     </div>
   </section>
 
@@ -130,16 +193,20 @@
   <!-- Young-Jae Lee -->
   <section class="artist" id="young-jae-lee" aria-labelledby="artist-title">
     <h2 class="artist__name grid" id="artist-title"><span data-reveal="words">Young-Jae Lee</span></h2>
-    <div class="artist__spread grid">
-      <figure class="artist__portrait" data-reveal="img">
-        <img src="../img/kwm/portrait-yjl.webp" srcset="../img/kwm/portrait-yjl-900.webp 900w, ../img/kwm/portrait-yjl-1400.webp 1400w, ../img/kwm/portrait-yjl.webp 2000w" sizes="(min-width: 901px) 72vw, 100vw" width="2000" height="1313" loading="lazy" alt="Young-Jae Lee in der Werkstatt, vor ihr ungebrannte Schalen und Vasen, hinter ihr Regale voller Gefäße">
-        <figcaption>Young-Jae Lee in der Keramischen Werkstatt Margaretenhöhe</figcaption>
-      </figure>
-      <div class="artist__story">
-        <p class="artist__memory" data-reveal="fade">„Sie erzählte von den Zeremonien in den Tempeln, dem Ritual eines hundertfachen Niederkniens, Niederfallens vor den Buddha-Statuen. Sie erzählte von ihrer Großmutter, die sich diesen geistig-körperlichen Übungen bis ins hohe Alter unterzog. Daran habe sie sich immer wieder erinnert, während sie ihre Schalen drehte, eine nach der anderen, ohne je darüber müde zu werden.“</p>
-        <p class="artist__cite" data-reveal="fade">Barbara Catoir, »Gespannte Lebendigkeit«</p>
+    <figure class="sticky-bild-wrap">
+      <div class="sticky-bild sticky-bild--portrait" data-sig="sticky">
+        <div class="sticky-bild__media">
+          <img class="sticky-bild__img" src="../img/kwm/portrait-yjl.webp" srcset="../img/kwm/portrait-yjl-900.webp 900w, ../img/kwm/portrait-yjl-1400.webp 1400w, ../img/kwm/portrait-yjl.webp 2000w" sizes="100vw" width="2000" height="1313" loading="lazy" decoding="async" alt="Young-Jae Lee in der Werkstatt, vor ihr ungebrannte Schalen und Vasen, hinter ihr Regale voller Gefäße">
+        </div>
+        <div class="sticky-bild__pane grid">
+          <blockquote class="sticky-bild__text sticky-bild__quote">
+            <p>„Sie erzählte von den Zeremonien in den Tempeln, dem Ritual eines hundertfachen Niederkniens, Niederfallens vor den Buddha-Statuen. Sie erzählte von ihrer Großmutter, die sich diesen geistig-körperlichen Übungen bis ins hohe Alter unterzog. Daran habe sie sich immer wieder erinnert, während sie ihre Schalen drehte, eine nach der anderen, ohne je darüber müde zu werden.“</p>
+            <footer>Barbara Catoir, »Gespannte Lebendigkeit«</footer>
+          </blockquote>
+        </div>
       </div>
-    </div>
+      <figcaption class="sticky-bild__caption">Young-Jae Lee in der Keramischen Werkstatt Margaretenhöhe</figcaption>
+    </figure>
 
     <div class="artist__body grid">
       <blockquote class="artist__quote">
@@ -156,61 +223,28 @@
       <li><span class="journey__year">1987</span><span class="journey__place">Essen</span><span class="journey__what">Leitung der Keramischen Werkstatt Margaretenhöhe</span></li>
       <li><span class="journey__year">2016</span><span class="journey__place">Breslau</span><span class="journey__what">Ehrendoktorwürde der Eugeniusz-Geppert-Akademie</span></li>
     </ol>
-
-    <div class="collections grid">
-      <h3 class="h3">Werke in Sammlungen</h3>
-      <ul class="collections__list">
-        <li>Museum für Asiatische Kunst, Berlin</li>
-        <li>Museum of Fine Arts, Boston</li>
-        <li>Art Institute of Chicago</li>
-        <li>Hetjens-Museum, Düsseldorf</li>
-        <li>Museum für Angewandte Kunst, Frankfurt</li>
-        <li>Museum für Kunst und Gewerbe, Hamburg</li>
-        <li>Israel Museum, Jerusalem</li>
-        <li>Badisches Landesmuseum, Karlsruhe</li>
-        <li>Museum für Ostasiatische Kunst, Köln</li>
-        <li>Grassi Museum, Leipzig</li>
-        <li>Pinakothek der Moderne, München</li>
-        <li>Philadelphia Museum of Art</li>
-        <li>Peabody Essex Museum, Salem</li>
-        <li>MAK, Wien</li>
-      </ul>
-      <a class="link-arrow collections__more" href="young-jae-lee.html">Biografie, Texte und Ausstellungen</a>
-    </div>
+    <p class="journey__more grid"><a class="link-arrow" href="young-jae-lee.html#sammlungen">Werke in Sammlungen</a></p>
   </section>
 
   <!-- Meisterstücke -->
   <section class="works" id="meisterstuecke" aria-labelledby="works-title">
-    <div class="works__intro grid">
-      <figure class="works__hero" data-reveal="img">
-        <img src="../img/kwm/teeschale.webp" width="1200" height="1200" loading="lazy" alt="Teeschale von Young-Jae Lee, rötlich-braune Glasur mit weißer Pinselzeichnung und dunklen Sprenkeln">
-        <figcaption>Teeschale von Young-Jae Lee</figcaption>
-      </figure>
-      <div class="works__text">
-        <h2 class="h2" id="works-title" data-reveal="words">Meisterstücke</h2>
-        <p class="works__lede" data-reveal="fade">Alle Meisterstücke stammen aus der Hand Young-Jae Lees – von ihr selbst gedreht, bemalt und glasiert.</p>
-        <p data-reveal="fade">Feldspatglasuren, zum Teil mit Asche versetzt. Gebrannt im Gasofen bei etwa 1300 °C oder im Holzofen, wo sich reichere Tönungen und oft nicht zu steuernde Verfärbungen ergeben.</p>
+    <div class="sec-head grid">
+      <h2 class="h2" id="works-title" data-reveal="words">Meisterstücke</h2>
+      <div class="sec-head__aside">
+        <p data-reveal="fade">Von Young-Jae Lee selbst gedreht, bemalt und glasiert. Feldspatglasuren, gebrannt im Gas- oder Holzofen bei etwa 1300 °C.</p>
         <a class="link-arrow" href="meisterstuecke.html">Alle Meisterstücke</a>
       </div>
     </div>
-
-    <div class="rail" data-rail>
-      <ol class="rail__track" data-drag tabindex="0" aria-label="Werkschau, horizontal scrollbar">
-        <li class="rail__item"><a href="meisterstuecke.html#vasen"><img src="../img/kwm/spindelvase1-einzeln.webp" width="600" height="400" loading="lazy" alt="Weiße Spindelvase mit weiter Schulter und schmalem Fuß"><span class="rail__name">Spindelvase</span><span class="rail__spec">H 35,5 cm, D 37 cm · Petalit-Eichenasche-Feldspat-Glasur · Holzofen 1260 °C · 2006/07</span></a></li>
-        <li class="rail__item"><a href="meisterstuecke.html#kummen"><img src="../img/kwm/kumme_2.webp" width="600" height="400" loading="lazy" alt="Zwei Kummen mit blau gesprenkelter Glasur"><span class="rail__name">Kumme</span><span class="rail__spec">H 18 cm, D 14,6 cm · Petalit-Eichenasche-Glasur · Holzofen · Essen 1995</span></a></li>
-        <li class="rail__item"><a href="meisterstuecke.html#schalen"><img src="../img/kwm/schale_spitz_xl_1.webp" width="600" height="400" loading="lazy" alt="Spitze Schale mit hellblauer Innenglasur"><span class="rail__name">Schale, spitz</span><span class="rail__spec">H 10,5 cm, D 21,5 cm · Strontium-Feldspat-Glasur · 2003–2005</span></a></li>
-        <li class="rail__item"><a href="meisterstuecke.html#vasen"><img src="../img/kwm/kugelvase.webp" width="600" height="400" loading="lazy" alt="Weiße Kugelvase"><span class="rail__name">Kugelvase</span><span class="rail__spec">H 25 cm, D 32,5 cm · Barium-Feldspat-Glasur · Holzofen · Essen 1996</span></a></li>
-        <li class="rail__item"><a href="meisterstuecke.html#kummen"><img src="../img/kwm/kumme_3.webp" width="600" height="400" loading="lazy" alt="Hellblaue Bettelmönchschale"><span class="rail__name">Bettelmönchschale</span><span class="rail__spec">H 10,2 cm, D 13,6 cm · Barium-Feldspat-Glasur · Gasofen · Essen 1988</span></a></li>
-        <li class="rail__item"><a href="meisterstuecke.html#vasen"><img src="../img/kwm/zylindervasen_gross.webp" width="600" height="400" loading="lazy" alt="Drei große Zylindervasen mit Pinselbemalung"><span class="rail__name">Zylindervasen, groß</span><span class="rail__spec">H ca. 30 cm, D ca. 11,5 cm · Petalit-Eichenasche-Glasur · Holzofen · Essen 2003</span></a></li>
-        <li class="rail__item"><a href="meisterstuecke.html#schalen"><img src="../img/kwm/schale_spitz_xxl_1.webp" width="600" height="400" loading="lazy" alt="Große spitze Schale mit rosa Glasurverlauf"><span class="rail__name">Schale, spitz, XXL</span><span class="rail__spec">H 10,5 cm, D 22,5 cm · Petalit-Eichenasche-Glasur · 2003–2005</span></a></li>
-        <li class="rail__item"><a href="meisterstuecke.html#vasen"><img src="../img/kwm/spindelvase4.webp" width="600" height="400" loading="lazy" alt="Zwei Spindelvasen mit hellbraunem Glasurverlauf"><span class="rail__name">Spindelvase</span><span class="rail__spec">H 34,7 cm, D 33 cm · Magnesium-Zinn-Feldspat-Glasur · Gasofen ca. 1280 °C</span></a></li>
-        <li class="rail__item"><a href="meisterstuecke.html#schalen"><img src="../img/kwm/schale_gross.webp" width="600" height="400" loading="lazy" alt="Große flache Schale mit blaugrauer Glasur, von oben"><span class="rail__name">Große Schale</span><span class="rail__spec">H 9,5 cm, D 53,5 cm · Wollastonit-Feldspat-Glasur · Gasofen · Essen 1994</span></a></li>
-      </ol>
-      <div class="rail__foot grid">
-        <div class="chronicle__progress rail__progress" aria-hidden="true"><span data-drag-progress></span></div>
-        <p class="rail__hint" aria-hidden="true"><span class="hint--fine">Ziehen oder scrollen</span><span class="hint--touch">Wischen</span><span class="arrow"></span></p>
-      </div>
-    </div>
+    <ol class="works__grid grid">
+        <li class="piece"><a href="meisterstuecke.html#vasen"><span class="piece__media"><img src="../img/kwm/spindelvase1-einzeln.webp" width="600" height="400" loading="lazy" alt="Weiße Spindelvase mit weiter Schulter und schmalem Fuß"></span><span class="piece__head"><span class="piece__name">Spindelvase</span><span class="piece__year">2006/07</span></span><span class="piece__spec">H 35,5 cm, D 37 cm</span><span class="piece__spec">Petalit-Eichenasche-Feldspat-Glasur · Holzofen 1260 °C</span></a></li>
+        <li class="piece"><a href="meisterstuecke.html#kummen"><span class="piece__media"><img src="../img/kwm/kumme_2.webp" width="600" height="400" loading="lazy" alt="Zwei Kummen mit blau gesprenkelter Glasur"></span><span class="piece__head"><span class="piece__name">Kumme</span><span class="piece__year">1995</span></span><span class="piece__spec">H 18 cm, D 14,6 cm</span><span class="piece__spec">Petalit-Eichenasche-Glasur · Holzofen</span></a></li>
+        <li class="piece"><a href="meisterstuecke.html#schalen"><span class="piece__media"><img src="../img/kwm/schale_spitz_xl_1.webp" width="600" height="400" loading="lazy" alt="Spitze Schale mit hellblauer Innenglasur"></span><span class="piece__head"><span class="piece__name">Schale, spitz</span><span class="piece__year">2003–05</span></span><span class="piece__spec">H 10,5 cm, D 21,5 cm</span><span class="piece__spec">Strontium-Feldspat-Glasur</span></a></li>
+        <li class="piece"><a href="meisterstuecke.html#vasen"><span class="piece__media"><img src="../img/kwm/kugelvase.webp" width="600" height="400" loading="lazy" alt="Weiße Kugelvase"></span><span class="piece__head"><span class="piece__name">Kugelvase</span><span class="piece__year">1996</span></span><span class="piece__spec">H 25 cm, D 32,5 cm</span><span class="piece__spec">Barium-Feldspat-Glasur · Holzofen</span></a></li>
+        <li class="piece"><a href="meisterstuecke.html#kummen"><span class="piece__media"><img src="../img/kwm/kumme_3.webp" width="600" height="400" loading="lazy" alt="Hellblaue Bettelmönchschale"></span><span class="piece__head"><span class="piece__name">Bettelmönchschale</span><span class="piece__year">1988</span></span><span class="piece__spec">H 10,2 cm, D 13,6 cm</span><span class="piece__spec">Barium-Feldspat-Glasur · Gasofen</span></a></li>
+        <li class="piece"><a href="meisterstuecke.html#vasen"><span class="piece__media"><img src="../img/kwm/zylindervasen_gross.webp" width="600" height="400" loading="lazy" alt="Drei große Zylindervasen mit Pinselbemalung"></span><span class="piece__head"><span class="piece__name">Zylindervasen, groß</span><span class="piece__year">2003</span></span><span class="piece__spec">H ca. 30 cm, D ca. 11,5 cm</span><span class="piece__spec">Petalit-Eichenasche-Glasur · Holzofen</span></a></li>
+        <li class="piece"><a href="meisterstuecke.html#schalen"><span class="piece__media"><img src="../img/kwm/schale_spitz_xxl_1.webp" width="600" height="400" loading="lazy" alt="Große spitze Schale mit rosa Glasurverlauf"></span><span class="piece__head"><span class="piece__name">Schale, spitz, XXL</span><span class="piece__year">2003–05</span></span><span class="piece__spec">H 10,5 cm, D 22,5 cm</span><span class="piece__spec">Petalit-Eichenasche-Glasur</span></a></li>
+        <li class="piece"><a href="meisterstuecke.html#schalen"><span class="piece__media"><img src="../img/kwm/schale_gross.webp" width="600" height="400" loading="lazy" alt="Große flache Schale mit blaugrauer Glasur, von oben"></span><span class="piece__head"><span class="piece__name">Große Schale</span><span class="piece__year">1994</span></span><span class="piece__spec">H 9,5 cm, D 53,5 cm</span><span class="piece__spec">Wollastonit-Feldspat-Glasur · Gasofen</span></a></li>
+    </ol>
   </section>
 
   <!-- Orte: Ausstellungsorte im Bildraster (js/sig-orte.js) -->
@@ -307,9 +341,9 @@
 
   <!-- Manufaktur -->
   <section class="craft" id="manufaktur" aria-labelledby="craft-title">
-    <div class="craft__head grid">
-      <h2 class="h2 craft__title" id="craft-title" data-reveal="words">Keiner Mode, keinem Zeitgeist unterworfen.</h2>
-      <div class="craft__text">
+    <div class="sec-head grid">
+      <h2 class="h2" id="craft-title" data-reveal="words">Keiner Mode, keinem Zeitgeist unterworfen.</h2>
+      <div class="sec-head__aside">
         <p data-reveal="fade">Unter Rückbesinnung auf die Grundprinzipien des Bauhauses entwickelte Young-Jae Lee mit Hildegard Eggemann, Michael Schmandt und Claudia Neumann die Formensprache des Manufakturprogramms: zuerst 25 Grundelemente eines Geschirrs – Teller, Schalen, Krüge.</p>
         <p class="craft__rule" data-reveal="fade">„Jedes Stück muss gut zu drehen sein und auch zu benutzen. Alle Teile eines Geschirrs, gleich welcher Farbe, sollten miteinander kombinierbar sein.“</p>
       </div>
@@ -345,14 +379,28 @@
   </section>
 
   <!-- Feuer: Text bleibt beim Scrollen auf dem Glasurfoto stehen -->
-  <section class="sticky-bild" id="feuer" data-sig="sticky" aria-labelledby="feuer-title"></section>
+  <section class="sticky-bild" id="feuer" data-sig="sticky" aria-labelledby="feuer-title">
+    <div class="sticky-bild__media">
+      <img class="sticky-bild__img" src="../img/03-glasur-detail.webp" srcset="../img/03-glasur-detail-800.webp 800w, ../img/03-glasur-detail.webp 1600w" sizes="100vw" width="1600" height="1067" loading="lazy" decoding="async" alt="Nahaufnahme eines Schalenrands mit tintenblauer bis seladonfarbener Glasur, Nadelstichen und Eisensprenkeln">
+    </div>
+    <div class="sticky-bild__pane grid">
+      <div class="sticky-bild__text">
+        <h2 class="h2" id="feuer-title">Neun bis zehn Stunden Feuer.</h2>
+        <p class="sticky-bild__lede">Im Holzofen wird über neun bis zehn Stunden kontinuierlich bis auf 1300 °C gefeuert – für einen Brand braucht es etwa 1,5 Festmeter Holz. Die Tönung wird reicher, manche Verfärbung lässt sich nicht steuern.</p>
+        <a class="link-arrow" href="werkstatt.html#feuer">Wie die Glasur ihre Farbe bekommt</a>
+      </div>
+    </div>
+  </section>
 
   <!-- Werkstatt / Chronik -->
   <section class="chronicle" id="werkstatt" aria-labelledby="chron-title">
-    <div class="chronicle__head grid">
+    <div class="sec-head grid">
       <h2 class="h2" id="chron-title" data-reveal="words">Hundert Jahre an der Scheibe.</h2>
+      <div class="sec-head__aside">
+        <a class="link-arrow" href="werkstatt.html">Werkstatt, Team und Chronik</a>
+      </div>
     </div>
-    <ol class="chronicle__track" data-drag tabindex="0" aria-label="Chronik der Werkstatt">
+    <ol class="chronicle__list grid" aria-label="Chronik der Werkstatt">
       <li><span class="chronicle__year">1924</span><p>Margarete Krupp realisiert die Siedlung Margaretenhöhe in Essen. Hermann Kätelhön initiiert eine Keramikwerkstatt auf dem Gelände, Leiter wird Will Lammert.</p></li>
       <li><span class="chronicle__year">1927</span><p>Johannes Leßmann, Schüler des Bauhaus-Keramikers Otto Lindig, stellt auf Serienkeramik um – und verschafft der Bauhaus-Idee im Ruhrgebiet Breitenwirkung.</p></li>
       <li><span class="chronicle__year">1933</span><p>Umzug in ein Gebäude der Zeche Zollverein.</p></li>
@@ -362,22 +410,29 @@
       <li><span class="chronicle__year">1987</span><p>Umzug in das Baulager der Zeche Zollverein, heute Weltkulturerbe.</p></li>
       <li><span class="chronicle__year">2006</span><p>Young-Jae Lee übernimmt die Werkstatt von der RAG Aktiengesellschaft und führt sie als Geschäftsführerin.</p></li>
     </ol>
-    <div class="chronicle__foot grid">
-      <div class="chronicle__progress" aria-hidden="true"><span data-drag-progress></span></div>
-      <a class="link-arrow chronicle__more" href="werkstatt.html">Werkstatt, Team und Chronik</a>
-      <p class="chronicle__hint" aria-hidden="true"><span class="hint--fine">Ziehen oder scrollen</span><span class="hint--touch">Wischen</span><span class="arrow"></span></p>
-    </div>
   </section>
 
   <!-- Besuch -->
-  <section class="visit grid" id="besuch" aria-labelledby="visit-title">
-    <h2 class="h2 visit__title" id="visit-title" data-reveal="words">Die Werkstatt ist offen.</h2>
-    <div class="visit__col">
-      <p class="visit__lead">Wenn Sie Stücke aus unserem Programm erwerben möchten, senden wir Ihnen gerne weitere Informationen oder ein Angebot zu. Oder Sie kommen vorbei.</p>
+  <section class="visit" id="besuch" aria-labelledby="visit-title">
+    <div class="sec-head grid">
+      <h2 class="h2" id="visit-title" data-reveal="words">Die Werkstatt ist offen.</h2>
+      <div class="sec-head__aside">
+        <p data-reveal="fade">Wenn Sie Stücke aus unserem Programm erwerben möchten, senden wir Ihnen gerne weitere Informationen oder ein Angebot zu. Oder Sie kommen vorbei.</p>
+      </div>
+    </div>
+    <div class="visit__body grid">
+      <table class="hours">
+        <caption class="visually-hidden">Öffnungszeiten</caption>
+        <tbody>
+          <tr><th scope="row">Montag bis Freitag</th><td>9–17 Uhr</td></tr>
+          <tr><th scope="row">Samstag</th><td>11–15 Uhr</td></tr>
+          <tr><th scope="row">Sonst</th><td>nach Vereinbarung</td></tr>
+        </tbody>
+      </table>
       <p class="visit__actions">
         <a class="button" href="mailto:kontakt@kwm1924.de?subject=Anfrage">Anfrage schreiben</a>
         <a class="link-arrow" href="tel:+49201305080">+49 201 30 50 80</a>
-        <a class="link-arrow" href="besuch.html">Öffnungszeiten &amp; Anfahrt</a>
+        <a class="link-arrow" href="besuch.html">Anfahrt und Besuch</a>
       </p>
     </div>
   </section>
