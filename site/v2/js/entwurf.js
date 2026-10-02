@@ -1,14 +1,23 @@
 // Entwurf-Panel: Varianten der Seite vergleichen (Grundton, Einstieg, Elemente).
 // Elemente tragen data-variant="schlüssel:wert …" und werden passend ein- oder ausgeblendet.
 // Auswahl per URL (?werk=orte) oder Klick; gemerkt nur in diesem Browser.
+// global: gilt auf allen Seiten; sonst nur zeigen, wenn die Seite Elemente mit diesem Schlüssel hat
 const GROUPS = [
-  { key: 'grund', label: 'Grundton', options: [['galerie', 'Galerie'], ['porzellan', 'Porzellan'], ['creme', 'Creme']] },
-  { key: 'hero', label: 'Einstieg', options: [['anker', 'Dunkel'], ['hell', 'Hell']] },
+  { key: 'grund', label: 'Grundton', global: true, options: [['galerie', 'Galerie'], ['porzellan', 'Porzellan'], ['creme', 'Creme']] },
+  { key: 'schrift', label: 'Überschriften', global: true, options: [['caslon', 'Caslon'], ['jost', 'Jost']] },
+  { key: 'raster', label: 'Bauhaus-Raster', global: true, options: [['aus', 'Aus'], ['an', 'An']] },
+  { key: 'einstieg', label: 'Einstieg', options: [['komposition', 'Wort und Bild'], ['foto', 'Foto']] },
+  { key: 'hero', label: 'Foto-Einstieg', options: [['hell', 'Hell'], ['anker', 'Dunkel']] },
+  { key: 'aktuell', label: 'Jetzt zu sehen', options: [['buehne', 'Bühne'], ['kacheln', 'Kacheln']] },
   { key: 'werk', label: 'Nach der Werkschau', options: [['orte', 'Orte'], ['drehen', 'Drehen'], ['aus', 'Nichts']] },
   { key: 'kosmos', label: 'Ausstellung', options: [['buehne', 'Bühne'], ['klassisch', 'Kosmos']] },
   { key: 'feuer', label: 'Feuer', options: [['zwei-farben', 'Zwei Farben'], ['liste', 'Liste']] },
   { key: 'profil', label: 'Schale im Einstieg', options: [['aus', 'Aus'], ['an', 'An']] },
 ];
+// Startseite: neue Fassung (index.html) oder vorherige (start-vorher.html)
+const HOME = { neu: 'index.html', vorher: 'start-vorher.html' };
+const page = location.pathname.split('/').pop() || 'index.html';
+const isHome = Object.values(HOME).includes(page);
 const KEY = 'kwm-entwurf';
 const root = document.documentElement;
 
@@ -47,7 +56,24 @@ const body = document.createElement('div');
 body.className = 'entwurf__body';
 body.id = 'entwurf-optionen';
 body.hidden = true;
-GROUPS.forEach((g) => {
+const relevant = (g) => g.global || (g.key === 'hero' ? document.querySelector('[data-variant*="einstieg:foto"], .hero') : document.querySelector(`[data-variant*="${g.key}:"]`));
+if (isHome) {
+  const row = document.createElement('div');
+  row.className = 'entwurf__group';
+  row.setAttribute('role', 'group');
+  row.setAttribute('aria-label', 'Startseite');
+  row.innerHTML = '<span class="entwurf__label">Startseite</span>';
+  [['neu', 'Neu'], ['vorher', 'Vorher']].forEach(([value, name]) => {
+    const a = document.createElement('a');
+    a.className = 'entwurf__opt';
+    a.href = HOME[value] + location.search;
+    a.textContent = name;
+    a.setAttribute('aria-current', String(HOME[value] === page));
+    row.append(a);
+  });
+  body.append(row);
+}
+GROUPS.filter(relevant).forEach((g) => {
   const row = document.createElement('div');
   row.className = 'entwurf__group';
   row.setAttribute('role', 'group');

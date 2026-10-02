@@ -8,6 +8,8 @@ const modules = {
   orte: () => import('./sig-orte.js'),
   buehne: () => import('./sig-buehne.js'),
   feuer: () => import('./sig-feuer.js'),
+  komposition: () => import('./sig-komposition.js'),
+  sticky: () => import('./sig-sticky.js'),
 };
 const started = new WeakSet();
 

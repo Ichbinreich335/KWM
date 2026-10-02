@@ -297,6 +297,22 @@ body::after {
 :root[data-hero="anker"] .hero__credit { background: var(--coal); color: var(--on-coal-2); }
 :root[data-hero="anker"] .hero ::selection { background: var(--on-coal); color: var(--coal); }
 
+/* Bauhaus-Raster (Variante „raster:an“): Haarlinien an den Spaltenkanten 1, 4, 7, 10 und am rechten Rand.
+   Liegt hinter den Abschnitten; Anker und Flächen decken es ab, sichtbar bleibt es nur auf hellem Grund. */
+main { position: relative; z-index: 0; }
+.raster { display: none; }
+:root[data-raster="an"] .raster { position: absolute; inset: 0; z-index: -1; display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--g); padding-inline: var(--m); pointer-events: none; }
+:root[data-raster="an"] .raster span { grid-column: span 3; border-left: 1px solid var(--hair); }
+:root[data-raster="an"] .raster span:last-child { border-right: 1px solid var(--hair); }
+@media (max-width: 900px) {
+  :root[data-raster="an"] .raster span { grid-column: span 6; }
+  :root[data-raster="an"] .raster span:nth-child(n+3) { display: none; }
+}
+
+/* Überschriften in Jost (Variante „schrift:jost“): Futura-Linie, 1927; Caslon bleibt für Zitate */
+:root[data-schrift="jost"] { --f-display: "Jost", "Futura", system-ui, sans-serif; }
+:root[data-schrift="jost"] .h2, :root[data-schrift="jost"] .page-hero__title, :root[data-schrift="jost"] .artist__name { font-weight: 400; letter-spacing: -0.03em; }
+
 /* Aktuell als dunkler Anker direkt nach dem Einstieg */
 .now--dark { background: var(--coal); color: var(--on-coal); padding-block: var(--section); --ink-2: var(--on-coal-2); --hair: rgba(236, 234, 227, 0.22); --cover: var(--coal); }
 .now--dark ::selection { background: var(--on-coal); color: var(--coal); }

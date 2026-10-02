@@ -8,4 +8,5 @@
 .entwurf__group { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; }
 .entwurf__label { width: 100%; color: var(--ink-2); font-size: 12.5px; }
 .entwurf__opt { min-height: 44px; padding: 0 14px; border: 1px solid var(--hair); background: none; font: inherit; color: inherit; cursor: pointer; }
-.entwurf__opt[aria-pressed="true"] { background: var(--ink); color: var(--ground); border-color: var(--ink); }
+.entwurf__opt { display: inline-flex; align-items: center; text-decoration: none; }
+.entwurf__opt[aria-pressed="true"], .entwurf__opt[aria-current="true"] { background: var(--ink); color: var(--ground); border-color: var(--ink); }

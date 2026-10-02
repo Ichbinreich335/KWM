@@ -13,7 +13,7 @@
 <link rel="stylesheet" href="css/pages.css">
 <link rel="stylesheet" href="css/page-meisterstuecke.css">
 <link rel="stylesheet" href="css/signaturen.css">
-<script>document.documentElement.classList.add('js');try{if(!sessionStorage.getItem('kwm-logo')){sessionStorage.setItem('kwm-logo','1');document.documentElement.classList.add('logo-draw')}}catch(e){document.documentElement.classList.add('logo-draw')}try{const q=new URLSearchParams(location.search),s=JSON.parse(localStorage.getItem('kwm-entwurf')||'{}'),d=document.documentElement.dataset;d.grund=q.get('grund')||s.grund||'galerie';d.hero=q.get('hero')||s.hero||'anker'}catch(e){}</script>
+<script>document.documentElement.classList.add('js');try{if(!sessionStorage.getItem('kwm-logo')){sessionStorage.setItem('kwm-logo','1');document.documentElement.classList.add('logo-draw')}}catch(e){document.documentElement.classList.add('logo-draw')}try{const q=new URLSearchParams(location.search),s=JSON.parse(localStorage.getItem('kwm-entwurf')||'{}'),d=document.documentElement.dataset;d.grund=q.get('grund')||s.grund||'galerie';d.hero=q.get('hero')||s.hero||'hell';d.schrift=q.get('schrift')||s.schrift||'caslon';d.raster=q.get('raster')||s.raster||'aus'}catch(e){}</script>
 </head>
 <body class="page-meisterstuecke">
 
@@ -55,6 +55,7 @@
 
 
 <main id="inhalt">
+  <div class="raster" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
 
   <section class="page-hero grid" aria-labelledby="ms-title">
     <h1 class="page-hero__title" id="ms-title" data-reveal="words">Meisterstücke</h1>
