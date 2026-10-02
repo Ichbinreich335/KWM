@@ -1,0 +1,32 @@
+{
+  "enabledMcpjsonServers": [
+    "astro-docs",
+    "cloudflare-docs",
+    "cloudflare-bindings",
+    "cloudflare-builds",
+    "sanity",
+    "softr"
+  ],
+  "permissions": {
+    "allow": [
+      "mcp__astro-docs",
+      "mcp__cloudflare-docs",
+      "mcp__cloudflare-bindings",
+      "mcp__cloudflare-builds",
+      "mcp__sanity",
+      "mcp__softr",
+      "Bash(npm run *)",
+      "Bash(npm ci *)",
+      "Bash(npm install *)",
+      "Bash(npx astro *)",
+      "Bash(npx sanity *)",
+      "Bash(npx sanity@latest *)",
+      "Bash(npx @sanity/cli *)",
+      "Bash(npx wrangler *)"
+    ],
+    "deny": [
+      "Bash(git push --force *)",
+      "Bash(git push -f *)"
+    ]
+  }
+}
