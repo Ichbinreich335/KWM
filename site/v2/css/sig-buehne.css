@@ -1,1 +1,70 @@
-/* Signatur: buehne */
+/* Signatur: buehne (Abschnittstyp Fläche) */
+.buehne { background: var(--ground-2); padding-block: var(--section); }
+.buehne__head { row-gap: 32px; align-items: end; padding-bottom: clamp(32px, 4vw, 56px); }
+.buehne__title { grid-column: 1 / 9; }
+.buehne__text { grid-column: 9 / 13; margin: 0; color: var(--ink-2); max-width: 36ch; }
+.buehne__body { align-items: start; row-gap: 32px; }
+
+.buehne__side { grid-column: 1 / 5; }
+.buehne:not(.is-enhanced) .buehne__side { grid-column: 1 / 9; }
+.buehne__stage { grid-column: 5 / 13; }
+
+.buehne__tabs { border-bottom: 1px solid var(--hair); }
+.buehne__tab {
+  position: relative;
+  display: block;
+  width: 100%;
+  min-height: 44px;
+  padding: 20px 0 20px 22px;
+  border: 0;
+  border-top: 1px solid var(--hair);
+  background: none;
+  color: var(--ink-2);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: color 0.45s var(--ease), padding 0.45s var(--ease);
+}
+.buehne__tab::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 20px; bottom: 20px;
+  width: 2px;
+  background: var(--accent);
+  transform: scaleY(0);
+  transform-origin: top;
+  transition: transform 0.6s var(--ease);
+}
+.buehne__tab:hover { color: var(--ink); }
+.buehne__tab[aria-selected='true'] { color: var(--ink); }
+.buehne__tab[aria-selected='true']::before { transform: scaleY(1); }
+.buehne__tab:focus-visible { outline: 2px solid var(--ink); outline-offset: -2px; }
+
+.buehne__date { display: block; font-size: 13.5px; font-variant-numeric: tabular-nums; color: var(--ink-2); margin: 0 0 6px; }
+.buehne__name { display: block; font-family: var(--f-display); font-weight: 400; font-size: clamp(1.4rem, 2vw, 1.9rem); line-height: 1.15; margin: 0 0 6px; text-wrap: balance; }
+.buehne__ort { display: block; font-size: 15px; color: var(--ink-2); margin: 0; }
+
+.buehne__panels { padding-top: 24px; }
+.buehne__show[hidden] { display: none; }
+.buehne__show + .buehne__show { margin-top: 40px; }
+.buehne.is-enhanced .buehne__facts { display: none; }
+.buehne__facts .buehne__name { margin-bottom: 8px; }
+.buehne__quote { margin: 0 0 20px; }
+.buehne__quote p { font-family: var(--f-text); font-size: clamp(1.25rem, 1.7vw, 1.6rem); line-height: 1.3; margin: 0 0 8px; text-wrap: balance; }
+.buehne__quote footer { font-size: 13px; color: var(--ink-2); }
+.buehne__show .link-arrow { display: inline-block; }
+
+.buehne__floor { position: relative; aspect-ratio: 4 / 3; touch-action: pan-y; }
+.buehne__plan, .buehne__canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+.buehne__canvas { cursor: default; }
+.buehne__caption { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 4px 24px; padding-top: 14px; }
+.buehne__readout { font-family: var(--f-display); font-size: clamp(1.25rem, 1.7vw, 1.6rem); line-height: 1.2; margin: 0; min-height: 1.2em; }
+.buehne__note { font-size: 13px; color: var(--ink-2); margin: 0; }
+
+@media (max-width: 900px) {
+  .buehne__title, .buehne__text, .buehne__side, .buehne:not(.is-enhanced) .buehne__side, .buehne__stage { grid-column: 1 / -1; }
+  .buehne__floor { aspect-ratio: 4 / 5; }
+  .buehne__tab { padding-block: 14px; }
+  .buehne__tab::before { top: 14px; bottom: 14px; }
+  .buehne__panels { padding-top: 16px; }
+}
