@@ -13,7 +13,7 @@
 <link rel="stylesheet" href="css/pages.css">
 <link rel="stylesheet" href="css/page-besuch.css">
 <link rel="stylesheet" href="css/signaturen.css">
-<script>document.documentElement.classList.add('js');try{if(!sessionStorage.getItem('kwm-logo')){sessionStorage.setItem('kwm-logo','1');document.documentElement.classList.add('logo-draw')}}catch(e){document.documentElement.classList.add('logo-draw')}try{const q=new URLSearchParams(location.search),s=JSON.parse(localStorage.getItem('kwm-entwurf')||'{}'),d=document.documentElement.dataset;d.grund=q.get('grund')||s.grund||'galerie'}catch(e){}</script>
+<script>document.documentElement.classList.add('js');try{if(!sessionStorage.getItem('kwm-logo')){sessionStorage.setItem('kwm-logo','1');document.documentElement.classList.add('logo-draw')}}catch(e){document.documentElement.classList.add('logo-draw')}try{const q=new URLSearchParams(location.search),s=JSON.parse(localStorage.getItem('kwm-entwurf')||'{}'),d=document.documentElement.dataset;d.grund=q.get('grund')||s.grund||'galerie';d.klein=q.get('klein')||s.klein||'groesser'}catch(e){}</script>
 </head>
 <body class="page-besuch">
 
@@ -184,7 +184,7 @@
       <textarea id="anfrage-nachricht" name="nachricht" rows="5" required aria-describedby="anfrage-nachricht-fehler"></textarea>
       <p class="anfrage__error" id="anfrage-nachricht-fehler" hidden></p>
     </div>
-    <p class="anfrage__privacy">Ihre Angaben verwenden wir nur, um Ihre Anfrage zu beantworten. Verantwortlich ist die Keramische Werkstatt Margaretenhöhe, siehe <a href="https://kwm-1924.de/firma/impressum/">Impressum</a>.</p>
+    <p class="anfrage__privacy">Ihre Angaben verwenden wir nur, um Ihre Anfrage zu beantworten. Verantwortlich ist die Keramische Werkstatt Margaretenhöhe, siehe <a href="datenschutz.html">Datenschutz</a>.</p>
     <div class="anfrage__submit">
       <button class="button" type="submit">Anfrage senden</button>
       <p class="anfrage__summary" role="alert" hidden></p>
@@ -209,9 +209,9 @@
       <div><dt>PayPal</dt><dd>kontakt@kwm1924.de</dd></div>
     </dl>
     <p class="pay__links" data-reveal="fade">
-      <a class="link-arrow" href="https://kwm-1924.de/firma/agb/verpackung-und-transport/">Verpackung und Transport</a>
-      <a class="link-arrow" href="https://kwm-1924.de/firma/agb/">AGB</a>
-      <a class="link-arrow" href="https://kwm-1924.de/firma/impressum/">Impressum</a>
+      <a class="link-arrow" href="versand.html">Verpackung und Transport</a>
+      <a class="link-arrow" href="agb.html">AGB</a>
+      <a class="link-arrow" href="impressum.html">Impressum</a>
     </p>
   </section>
 
@@ -243,7 +243,7 @@
     </div>
     <div class="footer__col">
       <p class="footer__label">Seiten</p>
-      <p class="footer__links"><a href="aktuelles.html">Aktuelles</a><a href="besuch.html">Besuch &amp; Anfahrt</a><a href="https://kwm-1924.de/firma/impressum/">Impressum</a><a href="https://kwm-1924.de/firma/agb/">AGB</a></p>
+      <p class="footer__links"><a href="aktuelles.html">Aktuelles</a><a href="besuch.html">Besuch &amp; Anfahrt</a><a href="zahlung.html">Zahlung</a><a href="versand.html">Verpackung &amp; Transport</a><a href="agb.html">AGB</a><a href="impressum.html">Impressum</a><a href="datenschutz.html">Datenschutz</a></p>
     </div>
   </div>
   <p class="footer__mark" aria-hidden="true">Margaretenhöhe</p>

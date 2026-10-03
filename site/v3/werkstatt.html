@@ -13,7 +13,7 @@
 <link rel="stylesheet" href="css/pages.css">
 <link rel="stylesheet" href="css/page-werkstatt.css">
 <link rel="stylesheet" href="css/signaturen.css">
-<script>document.documentElement.classList.add('js');try{if(!sessionStorage.getItem('kwm-logo')){sessionStorage.setItem('kwm-logo','1');document.documentElement.classList.add('logo-draw')}}catch(e){document.documentElement.classList.add('logo-draw')}try{const q=new URLSearchParams(location.search),s=JSON.parse(localStorage.getItem('kwm-entwurf')||'{}'),d=document.documentElement.dataset;d.grund=q.get('grund')||s.grund||'galerie'}catch(e){}</script>
+<script>document.documentElement.classList.add('js');try{if(!sessionStorage.getItem('kwm-logo')){sessionStorage.setItem('kwm-logo','1');document.documentElement.classList.add('logo-draw')}}catch(e){document.documentElement.classList.add('logo-draw')}try{const q=new URLSearchParams(location.search),s=JSON.parse(localStorage.getItem('kwm-entwurf')||'{}'),d=document.documentElement.dataset;d.grund=q.get('grund')||s.grund||'galerie';d.klein=q.get('klein')||s.klein||'groesser'}catch(e){}</script>
 </head>
 <body class="page-werkstatt">
 
@@ -276,7 +276,7 @@
     </div>
     <div class="footer__col">
       <p class="footer__label">Seiten</p>
-      <p class="footer__links"><a href="aktuelles.html">Aktuelles</a><a href="besuch.html">Besuch &amp; Anfahrt</a><a href="https://kwm-1924.de/firma/impressum/">Impressum</a><a href="https://kwm-1924.de/firma/agb/">AGB</a></p>
+      <p class="footer__links"><a href="aktuelles.html">Aktuelles</a><a href="besuch.html">Besuch &amp; Anfahrt</a><a href="zahlung.html">Zahlung</a><a href="versand.html">Verpackung &amp; Transport</a><a href="agb.html">AGB</a><a href="impressum.html">Impressum</a><a href="datenschutz.html">Datenschutz</a></p>
     </div>
   </div>
   <p class="footer__mark" aria-hidden="true">Margaretenhöhe</p>

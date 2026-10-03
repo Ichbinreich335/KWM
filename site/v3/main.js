@@ -176,6 +176,14 @@ import { random, pickGlaze as pickFrom, renderBowlSprite } from './js/keramik.js
     });
   });
 
+  /* ---------- Jahresarchiv: Sprung auf #jahr-XXXX öffnet das Jahr (auch für alte Jahres-URLs) ---------- */
+  const openYear = () => {
+    const el = location.hash.startsWith('#jahr-') && document.getElementById(location.hash.slice(1));
+    if (el && el.tagName === 'DETAILS') el.open = true;
+  };
+  openYear();
+  window.addEventListener('hashchange', openYear);
+
   /* ---------- Sprungleiste der Unterseiten: aktuellen Abschnitt markieren ---------- */
   const subnav = $('.subnav');
   const subLinks = $$('.subnav a[href^="#"]');

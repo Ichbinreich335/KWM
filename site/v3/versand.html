@@ -3,19 +3,19 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Nicht gefunden · Keramische Werkstatt Margaretenhöhe</title>
-<meta name="description" content="Diese Seite gibt es nicht.">
+<title>Verpackung und Transportkosten · Keramische Werkstatt Margaretenhöhe</title>
+<meta name="description" content="Wie sich Verpackungs- und Transportkosten bei der Keramischen Werkstatt Margaretenhöhe berechnen, auch bei Lieferungen ins Ausland.">
 <link rel="icon" href="../img/kwm/logo.svg" type="image/svg+xml">
 <link rel="preload" href="fonts/libre-caslon-display-normal-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/jost-normal-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="fonts/fonts.css">
 <link rel="stylesheet" href="styles.css">
 <link rel="stylesheet" href="css/pages.css">
-
+<link rel="stylesheet" href="css/page-text.css">
 <link rel="stylesheet" href="css/signaturen.css">
 <script>document.documentElement.classList.add('js');try{if(!sessionStorage.getItem('kwm-logo')){sessionStorage.setItem('kwm-logo','1');document.documentElement.classList.add('logo-draw')}}catch(e){document.documentElement.classList.add('logo-draw')}try{const q=new URLSearchParams(location.search),s=JSON.parse(localStorage.getItem('kwm-entwurf')||'{}'),d=document.documentElement.dataset;d.grund=q.get('grund')||s.grund||'galerie';d.klein=q.get('klein')||s.klein||'groesser'}catch(e){}</script>
 </head>
-<body class="page-404">
+<body class="page-text">
 
 <a class="skip" href="#inhalt">Zum Inhalt springen</a>
 
@@ -55,18 +55,28 @@
 
 
 <main id="inhalt">
-  <section class="page-hero page-hero--name not-found grid" aria-labelledby="page-title">
-    <h1 class="page-hero__title" id="page-title">Diese Schale ist leer.</h1>
-    <div class="page-hero__lede">
-      <p>Die Seite gibt es nicht oder nicht mehr. Vielleicht führt einer dieser Wege weiter.</p>
-      <ul class="not-found__links">
-        <li><a class="link-arrow" href="index.html">Zur Startseite</a></li>
-        <li><a class="link-arrow" href="meisterstuecke.html">Meisterstücke</a></li>
-        <li><a class="link-arrow" href="manufaktur.html">Manufaktur</a></li>
-        <li><a class="link-arrow" href="besuch.html">Besuch und Anfahrt</a></li>
-      </ul>
-    </div>
+
+  <section class="page-hero page-hero--name page-hero--text grid" aria-labelledby="page-title">
+    <h1 class="page-hero__title" id="page-title" data-reveal="words">Verpackung und Transportkosten</h1>
+    <p class="page-hero__lede" data-reveal="fade">So berechnen sich Versand und Verpackung.</p>
   </section>
+
+  <div class="legal grid">
+    <aside class="legal__aside"><nav aria-label="Rechtliches und Service"><p class="legal__label">Rechtliches</p><ul><li><a href="impressum.html">Impressum</a></li><li><a href="datenschutz.html">Datenschutz</a></li><li><a href="agb.html">AGB</a></li><li><a href="versand.html" aria-current="page">Verpackung und Transport</a></li><li><a href="zahlung.html">Zahlung</a></li></ul></nav></aside>
+    <div class="legal__body">
+      <p>Die Verpackungs- und Transportkosten richten sich nach Anzahl und Gewicht der zu versendenden Pakete. Bei Auslandslieferungen kommen ggfs. Kosten für die Zollabfertigung hinzu. <br>Die Kosten für die Einfuhr werden von den Zollbehörden direkt an den Kunden erhoben.</p>
+    </div>
+  </div>
+
+    <section class="anfrage-band on-flaeche grid" aria-label="Anfrage">
+    <p class="anfrage-band__text" data-reveal="fade">Möchten Sie wissen, was der Versand eines Stücks kostet? Nennen Sie uns das Stück und Ihr Ziel.</p>
+    <div class="anfrage-band__actions" data-reveal="fade">
+      <a class="button" href="besuch.html#anfrage">Anfrage schreiben</a>
+      <a class="link-arrow" href="tel:+49201305080">+49 201 30 50 80</a>
+    </div>
+    <p class="anfrage-band__hint" data-reveal="fade"></p>
+  </section>
+
 </main>
 
 <footer class="footer">
