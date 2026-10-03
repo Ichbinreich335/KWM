@@ -64,3 +64,26 @@ Start: `npm run dev`, dann öffnen: V1 http://localhost:4391/ und V2 http://loca
   - **Bilder:** Fotos der Orte, Fotos aus der Fotoecke.
   - **Panel:** Varianten aufräumen, sobald entschieden ist.
   - **Datenschutz:** Hinweis für den Admin zu `wp-content/uploads/2023/12/image.png` auf der Live-Seite.
+
+## Stand 03.10.2026: nach Feedback 3, Schlussprüfung
+- **Umgesetzt:**
+  - Foto-Einstieg hell ist Standard („Wort und Bild“ als Variante, repariert)
+  - Aktuell als Anker mit aufklappbaren Details
+  - Zeitstrahl Young-Jae Lee zurück
+  - Einzelwerk Teeschale vor der Werkschau
+  - Orte klappen am Ort auf
+  - Meditation und Kosmos (99 Schalen) zurück
+  - Feuer kürzer
+  - Chronik als erzählender Zeitstrahl
+  - Footer-Logo ohne Gerüst
+  - Unterseiten mit vier Kopf-Typen (nur Werkstatt dunkel)
+  - Panel: Varianten Jost, Raster und dunkler Einstieg entfernt, veraltete gespeicherte Werte fallen auf den Standard zurück
+- **Schlussprüfung** (alle 8 Seiten, 1440 und 390 px):
+  - keine Konsolenfehler, keine fehlerhaften Requests, kein Überlauf, keine kaputten Bilder, keine toten internen Links
+  - Tippflächen mobil ≥ 44 px. Ausnahme Desktop: Footer-Links mit 26 px (erfüllt WCAG 2.5.8 AA mit 24 px)
+  - `orte__toggle` ist ein Messartefakt: Die Fläche liegt per `::before` über der ganzen Kachel.
+- **Zum Gegenlesen:**
+  - Chronik-Zwischentitel und Einleitungssatz
+  - Schreibweise Gallery Tohkyo/Toukyo
+  - Beschreibungssätze bei Aktuell für Greve und Pop-up
+- **Inhaltlich offen:** Holzofen oder Gasofen, 1986 oder 1987, echte Ausstellungs- und Ortsfotos, Datenschutzfund auf der Live-Seite.
