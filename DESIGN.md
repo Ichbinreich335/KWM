@@ -88,7 +88,22 @@ Stand: 02.10.2026. Verbindlich für alle Seiten und Elemente in `src/v2/` und `s
 | Besuch | Meta (mit Öffnungszeiten) | Kopf hell → Adresse mit Panorama hell → Anfahrt Fläche → Anfrage, Zahlung hell → Footer | Öffnungszeiten groß im Kopf |
 | 404 | Name | Kopf hell → Footer | |
 
-**Startseite (Reihenfolge):** Einstieg (Anker) → Lede mit „Zwei Linien“ (hell) → Aktuell (Anker) → Young-Jae Lee (hell) → Werkschau (hell) → Orte (Anker) → Meditation (hell) → Ausstellungs-Bühne (Fläche) → Feuer (Anker) → Manufaktur mit Farbskala (hell) → Chronik (Fläche) → Besuch (hell) → Footer (Anker).
+**Startseite: Reihenfolge und Zweck.** Jeder Abschnitt hat genau eine Aufgabe. Ein neuer Abschnitt braucht einen eigenen Zweck, sonst gehört er auf eine Unterseite.
+
+| # | Abschnitt | Typ | Zweck |
+|---|---|---|---|
+| 1 | Einstieg: Zitat und Kummerschalen-Foto | hell | Haltung in einem Satz und einem Bild |
+| 2 | Aktuell: Spotlight mit Details, weitere zum Aufklappen, Hinweiszeile | Anker | Was jetzt zu sehen ist und wo. Häufigster Besuchsgrund |
+| 3 | Lede und „Zwei Linien“ | hell | Wer wir sind, dazu der Abzweig zu Meisterstücke oder Manufaktur |
+| 4 | Young-Jae Lee: Name, Porträt mit Zitat, Lebensweg | hell, Bild | Die Person hinter den Stücken |
+| 5 | Meisterstücke: Einzelwerk und Auswahl | hell | Die Unikate selbst. Bilder statt Worte |
+| 6 | Ausstellungsorte | Anker | Reichweite und Anerkennung (Museen, Galerien) |
+| 7 | Haltung: Meditation und 99 Schalen | hell, dann Fläche | Wiederholung und Differenz. Warum keine wie die andere ist |
+| 8 | Manufaktur mit Farbskala | hell | Das Geschirr für den Alltag und seine Farben |
+| 9 | Feuer | Bild | Der Brand als Moment, ein kurzer Bildwechsel |
+| 10 | Chronik, hundert Jahre | Fläche | Herkunft des Hauses. Die Überschrift bleibt stehen, die Jahre ziehen vorbei |
+| 11 | Besuch und Anfrage | hell | Kommen oder schreiben: Öffnungszeiten und Formular |
+| 12 | Footer | Anker | Kontakt, Logo, Wortmarke |
 
 ## 6. Komponenten
 
