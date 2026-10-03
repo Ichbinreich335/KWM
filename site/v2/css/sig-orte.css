@@ -24,6 +24,7 @@
   position: relative;
   overflow-anchor: none;
 }
+.orte { overflow-anchor: none; }
 .orte__tile {
   position: relative;
   overflow: hidden;
@@ -31,6 +32,10 @@
   background: var(--coal-2);
   grid-column: span 3;
   min-height: clamp(200px, 17vw, 270px);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: var(--orte-pad);
 }
 .orte__tile--xl { grid-column: span 6; min-height: clamp(260px, 32vw, 500px); }
 .orte__tile--m { grid-column: span 4; min-height: clamp(220px, 22vw, 340px); }
@@ -65,11 +70,7 @@
 }
 
 .orte__name {
-  position: absolute;
-  left: var(--orte-pad);
-  right: var(--orte-pad);
-  bottom: calc(var(--orte-pad) + 44px);
-  margin: 0;
+  margin: 0 0 6px;
   font-family: var(--f-display);
   font-weight: 400;
   font-size: clamp(1.6rem, 2.4vw, 2.4rem);
@@ -79,16 +80,13 @@
 }
 .orte__tile--m .orte__name { font-size: clamp(2rem, 3.4vw, 3.4rem); }
 .orte__tile--xl .orte__name { font-size: clamp(2.4rem, 5.2vw, 5.6rem); line-height: 1; }
+.orte__tile { cursor: pointer; }
 .orte__toggle { font: inherit; color: inherit; letter-spacing: inherit; text-align: left; background: none; border: 0; padding: 0; cursor: pointer; }
-.orte__toggle::before { content: ""; position: absolute; inset: 0; }
+.orte__toggle::before { content: ""; position: absolute; inset: 0; z-index: 1; }
 .orte__toggle:focus-visible { outline: none; }
 .orte__tile:has(.orte__toggle:focus-visible) { outline: 2px solid var(--on-coal); outline-offset: -4px; }
 
 .orte__meta {
-  position: absolute;
-  left: var(--orte-pad);
-  right: var(--orte-pad);
-  bottom: var(--orte-pad);
   margin: 0;
   display: flex;
   flex-direction: column;
@@ -113,18 +111,21 @@
 .orte__shows { display: none; }
 .orte.is-ready .orte__houses { display: none; }
 
-/* Detailbereich: öffnet rechts neben der gewählten Kachel, die übrigen Kacheln rücken nach. */
-.orte__detail { background: var(--coal-2); container-type: inline-size; min-width: 0; }
-.orte__detail[hidden] { display: none; }
-.orte__detail.is-leaving { position: absolute; margin: 0; pointer-events: none; }
-@media (min-width: 900px) {
-  .orte__tile.is-active { order: -2; }
-  .orte__detail { order: -1; }
-  .orte__grid[data-open="xl"] .orte__detail { grid-column: span 6; }
-  .orte__grid[data-open="m"] .orte__detail { grid-column: span 8; }
-  .orte__grid[data-open="s"] .orte__detail { grid-column: span 9; }
+/* Detailbereich: volle Breite direkt unter der Reihe der gewählten Kachel, die Höhe öffnet über grid-template-rows. */
+.orte__detail {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-rows: 0fr;
+  margin-top: -2px;
+  background: var(--coal-2);
+  container-type: inline-size;
+  min-width: 0;
+  transition: grid-template-rows 0.5s var(--ease), margin-top 0.5s var(--ease);
 }
-.orte__detail-in { height: 100%; padding: var(--orte-pad) calc(var(--orte-pad) * 1.4) calc(var(--orte-pad) * 1.4); display: flex; flex-direction: column; gap: clamp(14px, 1.6vw, 22px); }
+.orte__detail.is-open { grid-template-rows: 1fr; margin-top: 0; }
+.orte__detail-clip { min-height: 0; overflow: hidden; }
+.orte__detail-in { position: relative; padding: var(--orte-pad) calc(var(--orte-pad) * 1.4) calc(var(--orte-pad) * 1.4); display: flex; flex-direction: column; gap: clamp(14px, 1.6vw, 22px); }
+.orte__detail-in::before { content: ""; position: absolute; top: 0; left: var(--point-x, 0); width: var(--point-w, 0); height: 2px; background: var(--accent-on-coal); }
 .orte__detail-in:focus { outline: none; }
 .orte__detail-in:focus-visible { outline: 2px solid var(--on-coal); outline-offset: -4px; }
 .orte__detail-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
@@ -175,16 +176,13 @@
   .orte__aside { margin-top: 12px; }
   .orte__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .orte__tile, .orte__tile--m, .orte__tile--xl { grid-column: span 1; min-height: 210px; }
-  .orte__tile--xl, .orte__tile:nth-child(3) { grid-column: 1 / -1; min-height: 240px; }
-  .orte__grid { grid-auto-flow: dense; }
-  .orte__tile.is-active { grid-column: 1 / -1; }
-  .orte__grid[data-open] .orte__detail { grid-column: 1 / -1; }
+  .orte__tile--xl, .orte__tile--full { grid-column: 1 / -1; min-height: 240px; }
   .orte__detail-in { padding-bottom: 20px; }
   .orte__name, .orte__tile--m .orte__name { font-size: 1.55rem; }
   .orte__tile--xl .orte__name { font-size: 2.6rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .orte__img, .orte__close { transition: none; }
+  .orte__img, .orte__close, .orte__detail { transition: none; }
   .orte__tile.is-active .orte__img { transform: none; }
 }
