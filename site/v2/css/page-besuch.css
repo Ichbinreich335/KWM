@@ -38,11 +38,9 @@
 .route__note a { color: var(--ink); }
 
 /* Anfrage */
-.inquiry { padding-top: var(--section); row-gap: 40px; align-items: end; }
-.inquiry__media { grid-column: 1 / 7; margin-left: calc(var(--m) * -1); }
-.inquiry__media img { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; }
-.inquiry__media figcaption { padding-left: var(--m); }
-.inquiry__text { grid-column: 8 / 13; padding-bottom: 12px; }
+.inquiry { padding-top: var(--section); row-gap: 40px; align-items: start; }
+.inquiry__text { grid-column: 1 / 6; padding-bottom: 12px; }
+.inquiry__form { grid-column: 7 / 13; }
 .inquiry__text .h2 { margin-bottom: 28px; }
 .inquiry__lead { font-family: var(--f-text); font-size: clamp(1.15rem, 1.5vw, 1.4rem); line-height: 1.45; margin-bottom: 20px; }
 .inquiry__text > p { max-width: 46ch; }
@@ -83,9 +81,7 @@
   .visit-hours__place, .visit-hours__actions { grid-column: 1 / -1; }
   .route { grid-column: 1 / -1; }
   .route { padding-bottom: 40px; }
-  .inquiry__media { grid-column: 1 / -1; margin-inline: calc(var(--m) * -1); }
-  .inquiry__media figcaption { padding-inline: var(--m); }
-  .inquiry__text { grid-column: 1 / -1; }
+  .inquiry__text, .inquiry__form { grid-column: 1 / -1; }
   .pay__head, .pay__list, .pay__links { grid-column: 1 / -1; }
   .pay__list > div { grid-template-columns: 1fr; gap: 4px; }
 }
