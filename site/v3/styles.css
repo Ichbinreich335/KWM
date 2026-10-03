@@ -386,16 +386,10 @@ body::after {
 .journey__year { font-size: var(--t-meta); line-height: var(--t-meta-lh); font-variant-numeric: tabular-nums; color: var(--ink-2); }
 .journey__place { font-family: var(--f-display); font-size: var(--t-h3); line-height: var(--t-h3-lh); letter-spacing: -0.01em; }
 .journey__what { font-size: var(--t-small); line-height: var(--t-small-lh); color: var(--ink-2); text-wrap: pretty; }
-.journey .journey__more { grid-column: 11 / 13; padding-right: 0; }
-.journey .journey__more::before, .journey .journey__more::after { content: none; }
-.journey__more .link-arrow { margin: 0; align-self: start; }
+.journey__all { margin-top: var(--head-gap); }
+.journey__all .link-arrow { grid-column: 1 / -1; margin: 0; justify-self: start; }
 .js .journey { --p: 0; }
 .journey-track { margin-top: var(--section); }
-/* Variante „Beim Scrollen“: Strahl hängt fest, Linie und Punkte folgen dem Scrollen */
-.journey-track.is-scrub { --hold: 35svh; --stick: 44svh; pointer-events: none; }
-.journey-track.is-scrub::after { content: ""; display: block; height: var(--hold); }
-.journey-track.is-scrub .journey-stage { position: sticky; top: var(--stick); }
-.journey-track.is-scrub .journey { width: 100%; pointer-events: auto; }
 
 .works { padding-block: var(--section); }
 .works__grid { row-gap: clamp(40px, 5vw, 72px); }
@@ -720,11 +714,11 @@ body::after {
   .artist__quote, .artist__heritage { grid-column: 1 / -1; }
   .journey::before, .journey::after { top: 0; bottom: 0; left: calc(var(--m) + var(--dot) / 2); right: auto; width: 1px; height: auto; }
   .journey::before { transform: scaleY(var(--p)); transform-origin: top; }
-  .journey li, .journey .journey__more { grid-column: 1 / -1; padding: 0 0 32px 36px; gap: 4px; }
+  .journey li { grid-column: 1 / -1; padding: 0 0 32px 36px; gap: 4px; }
   .journey li::before, .journey li::after { top: 4px; }
   .journey li::before { transform: none; }
   .journey li::after { translate: none; }
-  .journey .journey__more { padding-bottom: 0; }
+  .journey li:last-child { padding-bottom: 0; }
 
   .piece { grid-column: span 6; }
   .hours, .visit__actions { grid-column: 1 / -1; }

@@ -96,20 +96,16 @@ import { random, pickGlaze as pickFrom, renderBowlSprite } from './js/keramik.js
     }
   }
 
-  /* ---------- Lebensweg: Standard zeichnet sich einmal beim Sichtbarwerden, Variante „scrollen“ folgt dem Scrollen ---------- */
+  /* ---------- Lebensweg: Standard folgt dem Scrollen, Variante „zeichnen“ zeichnet sich einmal beim Sichtbarwerden ---------- */
   const track = $('[data-journey-track]');
   if (track && !reduced) {
     const line = $('.journey', track);
-    const stage = $('.journey-stage', track);
-    const stops = $$('li:not(.journey__more)', line);
+    const stops = $$('li', line);
     const DRAW_MS = 1600;
     const DRAW_EASE = [0.45, 0, 0.2, 1]; // ruhiger Anlauf, damit die Punkte hörbar nacheinander kommen
     const SEEN = 0.3; // Anteil des Strahls im Bild, ab dem er sich zeichnet
-    const FILL = 0.8; // Scroll-Variante: Anteil der Haltestrecke, in dem sich die Linie füllt; der Rest ist Pause
-    const ENTER_AT = 0.85; // Scroll-Variante: Füllung beginnt, sobald der Strahl so tief im Bild steht
-    const STICK_AT = 0.44; // Scroll-Variante: Strahl klebt bei 44 % der Bildschirmhöhe, das Zitat bleibt darüber im Bild
-    const STICK_MIN = 72; // nie unter die Kopfzeile
-    const STICK_GAP = 24; // Mindestabstand zur Unterkante, falls die Stage hoch ist (Mobil)
+    const END_AT = 0.35; // Scroll-Variante: Linie ist voll, wenn der Strahl so weit oben im Bild steht (Anteil der Bildhöhe)
+    const END_MOBILE = 0.7; // mobil senkrecht: voll, sobald das Ende des Strahls hier steht
     const clamp01 = (v) => Math.min(1, Math.max(0, v));
 
     // Kubische Bézierkurve wie in CSS (cubic-bezier), per Bisektion gelöst
@@ -174,24 +170,17 @@ import { random, pickGlaze as pickFrom, renderBowlSprite } from './js/keramik.js
       },
       scrollen() {
         let queued = 0;
-        const place = () => {
-          measure();
-          const fit = window.innerHeight - stage.offsetHeight - STICK_GAP;
-          const top = Math.max(STICK_MIN, Math.min(window.innerHeight * STICK_AT, fit));
-          track.style.setProperty('--stick', `${Math.round(top)}px`);
-          return top;
-        };
-        let stick = place();
+        let vertical = measure();
         const update = () => {
           queued = 0;
-          const room = track.offsetHeight - stage.offsetHeight;
-          const from = window.innerHeight * ENTER_AT;
-          setProgress(clamp01((from - track.getBoundingClientRect().top) / (from - stick + room * FILL)));
+          const { top, height } = line.getBoundingClientRect();
+          const vh = window.innerHeight;
+          // Beginn, sobald der Strahl unten ins Bild kommt; voll bei 35 % von oben (mobil: wenn sein Ende bei 70 % steht)
+          const span = vertical ? vh * (1 - END_MOBILE) + height : vh * (1 - END_AT);
+          setProgress(clamp01((vh - top) / span));
         };
         const request = () => { if (!queued) queued = requestAnimationFrame(update); };
-        const relayout = () => { stick = place(); request(); };
-        track.classList.add('is-scrub');
-        stick = place();
+        const relayout = () => { vertical = measure(); request(); };
         update();
         window.addEventListener('scroll', request, { passive: true });
         window.addEventListener('resize', relayout, { passive: true });
@@ -199,8 +188,6 @@ import { random, pickGlaze as pickFrom, renderBowlSprite } from './js/keramik.js
           cancelAnimationFrame(queued);
           window.removeEventListener('scroll', request);
           window.removeEventListener('resize', relayout);
-          track.classList.remove('is-scrub');
-          track.style.removeProperty('--stick');
         };
       },
     };
@@ -208,7 +195,7 @@ import { random, pickGlaze as pickFrom, renderBowlSprite } from './js/keramik.js
     let mode = '';
     let stop = () => {};
     const select = () => {
-      const next = document.documentElement.dataset.lebensweg === 'scrollen' ? 'scrollen' : 'zeichnen';
+      const next = document.documentElement.dataset.lebensweg === 'zeichnen' ? 'zeichnen' : 'scrollen';
       if (next === mode) return;
       stop();
       mode = next;
