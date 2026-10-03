@@ -54,7 +54,12 @@ export async function api(methode, pfad, body, { erlaubtFehler = false } = {}) {
     if (r.status !== 409 || !text.includes(SPERRE) || versuch === MAX_VERSUCHE) break;
     await new Promise((weiter) => setTimeout(weiter, WARTEZEIT_MS * versuch));
   }
-  const daten = text ? JSON.parse(text) : null;
+  let daten = null;
+  try {
+    daten = text ? JSON.parse(text) : null;
+  } catch {
+    daten = { roh: text.slice(0, 200) };
+  }
   if (!r.ok) {
     if (erlaubtFehler) return { fehler: r.status, daten };
     throw new Error(`${methode} ${pfad} → ${r.status}: ${text.slice(0, 800)}`);
