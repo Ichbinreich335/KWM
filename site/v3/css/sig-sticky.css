@@ -1,4 +1,4 @@
-/* Signatur: sticky – Text bleibt beim Scrollen auf dem Foto stehen (Porträt); beim Feuer ebenfalls (Variante: wandert).
+/* Signatur: sticky – Text bleibt beim Scrollen oben im Foto stehen, bis das Bild durch ist (Porträt und Feuer; Feuer-Variante: wandert).
    Abschnitt ist höher als der Bildschirm, die Textebene klebt oben (100svh) und zieht am Ende mit dem Abschnitt weiter.
    Das Foto läuft normal mit; js/sig-sticky.js verschiebt es nur minimal gegenläufig (Parallax, ≤ 5 %). */
 .sticky-bild {
@@ -58,14 +58,13 @@
 
 /* Porträt: Text rechts, Foto läuft links weiter; Bildunterschrift auf dem Papier darunter */
 .sticky-bild--portrait {
-  --sticky-h: 130svh;
+  --sticky-h: 165svh;
   --sticky-text-from: 8;
   --sticky-text-to: 13;
 }
 .sticky-bild--portrait .sticky-bild__img { object-position: 55% 50%; }
-/* Der Text wandert beim Durchscrollen von etwa 20 % auf 70 % der Bildhöhe (js/sig-sticky.js); ohne JS steht er oben bei 20 % */
-.sticky-bild--portrait .sticky-bild__pane { position: absolute; inset: 20% 0 auto; height: auto; align-content: start; }
-.sticky-bild--portrait .sticky-bild__text { transform: translate3d(0, var(--text-y, 0px), 0); will-change: transform; }
+/* Wie beim Feuer: Der Text steht oben im Bild fest (sticky), das Bild läuft darunter durch, am Ende zieht er mit */
+.sticky-bild--portrait .sticky-bild__pane { align-content: start; padding-top: calc(var(--head) + var(--head-gap)); box-sizing: border-box; }
 .sticky-bild--portrait .sticky-bild__media::after {
   background: linear-gradient(270deg, rgb(10 10 10 / 0.78) 0%, rgb(10 10 10 / 0.6) 45%, rgb(10 10 10 / 0.12) 100%);
 }
@@ -74,7 +73,7 @@
 /* Feuer, Standard „haftend“: Der Text steht oben links im Bild fest (sticky), bis das Bild durch ist, und zieht dann mit.
    Haltestrecke = Abschnittshöhe minus Bildschirmhöhe. */
 .sticky-bild--feuer {
-  --sticky-h: 150svh;
+  --sticky-h: 175svh;
   --sticky-text-to: 8;
 }
 .sticky-bild--feuer .sticky-bild__pane { align-content: start; padding-top: calc(var(--head) + var(--head-gap)); box-sizing: border-box; }
@@ -106,12 +105,12 @@
 
 @media (max-width: 900px) {
   .sticky-bild { --sticky-h: 130svh; --sticky-text-from: 1; --sticky-text-to: -1; }
-  .sticky-bild--feuer { --sticky-h: 140svh; --sticky-text-to: -1; }
+  .sticky-bild--feuer { --sticky-h: 160svh; --sticky-text-to: -1; }
   .sticky-bild--feuer .sticky-bild__media::after { background: rgb(10 10 10 / 0.66); }
   [data-feuertext="wandernd"] .sticky-bild--feuer { --sticky-h: 78svh; }
   [data-feuertext="wandernd"] .sticky-bild--feuer .sticky-bild__pane { padding-bottom: var(--feuer-pad); }
   [data-feuertext="wandernd"] .sticky-bild--feuer .sticky-bild__media::after { background: rgb(10 10 10 / 0.66); }
-  .sticky-bild--portrait { --sticky-h: 125svh; --sticky-text-from: 1; --sticky-text-to: -1; }
+  .sticky-bild--portrait { --sticky-h: 150svh; --sticky-text-from: 1; --sticky-text-to: -1; }
   .sticky-bild__media::after,
   .sticky-bild--portrait .sticky-bild__media::after { background: rgb(10 10 10 / 0.66); }
   .sticky-bild__pane { align-content: end; padding-bottom: clamp(48px, 12svh, 96px); }
