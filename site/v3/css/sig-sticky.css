@@ -58,13 +58,15 @@
 
 /* Porträt: Text rechts, Foto läuft links weiter; Bildunterschrift auf dem Papier darunter */
 .sticky-bild--portrait {
-  --sticky-h: 165svh;
-  --sticky-text-from: 8;
+  --sticky-h: 140svh;
+  --sticky-text-from: 7;
   --sticky-text-to: 13;
 }
 .sticky-bild--portrait .sticky-bild__img { object-position: 55% 50%; }
 /* Wie beim Feuer: Der Text steht oben im Bild fest (sticky), das Bild läuft darunter durch, am Ende zieht er mit */
-.sticky-bild--portrait .sticky-bild__pane { align-content: start; padding-top: calc(var(--head) + var(--head-gap)); box-sizing: border-box; }
+/* Höhe nur so hoch wie der Text: er haftet, bis er unten am Bild angekommen ist */
+.sticky-bild--portrait .sticky-bild__pane { align-content: start; height: auto; padding-block: calc(var(--head) + var(--head-gap)) var(--head-gap); box-sizing: border-box; }
+.sticky-bild--portrait .sticky-bild__quote p { font-size: var(--t-lede); line-height: var(--t-lede-lh); }
 .sticky-bild--portrait .sticky-bild__media::after {
   background: linear-gradient(270deg, rgb(10 10 10 / 0.78) 0%, rgb(10 10 10 / 0.6) 45%, rgb(10 10 10 / 0.12) 100%);
 }
@@ -73,7 +75,7 @@
 /* Feuer, Standard „haftend“: Der Text steht oben links im Bild fest (sticky), bis das Bild durch ist, und zieht dann mit.
    Haltestrecke = Abschnittshöhe minus Bildschirmhöhe. */
 .sticky-bild--feuer {
-  --sticky-h: 175svh;
+  --sticky-h: 160svh;
   --sticky-text-to: 8;
 }
 .sticky-bild--feuer .sticky-bild__pane { align-content: start; padding-top: calc(var(--head) + var(--head-gap)); box-sizing: border-box; }
@@ -105,17 +107,17 @@
 
 @media (max-width: 900px) {
   .sticky-bild { --sticky-h: 130svh; --sticky-text-from: 1; --sticky-text-to: -1; }
-  .sticky-bild--feuer { --sticky-h: 160svh; --sticky-text-to: -1; }
+  .sticky-bild--feuer { --sticky-h: 150svh; --sticky-text-to: -1; }
   .sticky-bild--feuer .sticky-bild__media::after { background: rgb(10 10 10 / 0.66); }
   [data-feuertext="wandernd"] .sticky-bild--feuer { --sticky-h: 78svh; }
   [data-feuertext="wandernd"] .sticky-bild--feuer .sticky-bild__pane { padding-bottom: var(--feuer-pad); }
   [data-feuertext="wandernd"] .sticky-bild--feuer .sticky-bild__media::after { background: rgb(10 10 10 / 0.66); }
-  .sticky-bild--portrait { --sticky-h: 150svh; --sticky-text-from: 1; --sticky-text-to: -1; }
+  .sticky-bild--portrait { --sticky-h: 135svh; --sticky-text-from: 1; --sticky-text-to: -1; }
   .sticky-bild__media::after,
   .sticky-bild--portrait .sticky-bild__media::after { background: rgb(10 10 10 / 0.66); }
   .sticky-bild__pane { align-content: end; padding-bottom: clamp(48px, 12svh, 96px); }
   .sticky-bild--feuer .sticky-bild__pane { align-content: start; padding-bottom: 0; }
-  .sticky-bild--portrait .sticky-bild__pane { align-content: start; padding-bottom: 0; }
+  .sticky-bild--portrait .sticky-bild__pane { align-content: start; padding-bottom: var(--head-gap); }
   .sticky-bild--portrait .sticky-bild__img { object-position: 22% 50%; }
 }
 

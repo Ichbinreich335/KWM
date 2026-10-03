@@ -24,7 +24,7 @@ Bitte zu jedem Punkt eine kurze Antwort oder die Datei. Was nicht geklärt ist, 
 |---|---|---|
 | 1 | Seit wann prägt bzw. leitet Young-Jae Lee die Werkstatt: **1986 oder 1987**? Die Seite nennt beides, einmal als Beginn der Mitarbeit, einmal als Leitung. | Startseite (Lede), Chronik, Biografie |
 | 2 | Brand: Startseite „Holzofen, 9–10 Stunden, 1300 °C, 1,5 Festmeter Holz“, Manufaktur „Gasofen, reduzierende Atmosphäre“. Welche Stücke kommen aus welchem Ofen? | Feuer, Manufaktur |
-| 3 | Name der Galerie in Tokio: Gallery Tohkyo, Toukyo oder Tokyo? | Ausstellungsorte |
+| 3 | Name der Galerie in Tokio: geklärt, „Gallery Tokyo“ | Ausstellungsorte |
 | 4 | „99 Schalen – ein Kosmos“, MOK Köln: Eröffnung, Öffnungszeiten, ein bis zwei Sätze zur Ausstellung | Startseite „Aktuell“ (Spotlight) |
 | 5 | „Kathleen Jacobs / Young-Jae Lee“, Galerie Karsten Greve, St. Moritz: ein Satz zur Ausstellung, Eröffnung | Aktuell |
 | 6 | Pop-up 6.–8. November: Partner, Programm, ein Satz | Aktuell |
