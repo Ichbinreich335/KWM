@@ -1,4 +1,4 @@
-# Übergabe Softr-Lager-App (Stand 02.10.2026, Session-Ende)
+# Übergabe Softr-Lager-App (Stand 03.10.2026)
 
 Für die nächste Session. Zuerst `CLAUDE.md`, `konzept/SOFTR-AUFTRAG.md` und `konzept/vergleich/SOFTR-BERICHT.md` lesen. Der Bericht enthält Stand, Admin-Schritte und Blocker.
 
@@ -18,10 +18,19 @@ Für die nächste Session. Zuerst `CLAUDE.md`, `konzept/SOFTR-AUFTRAG.md` und `k
 |---|---|---|---|---|---|
 | `/erfassen` | `8cba05b9-7689-4bdf-a275-d6988ecdb8eb` | `erfassen.tsx` | `c2222c6c-2726-4590-9804-eef9c6d44ddb` | unikate, edition, glasuren, kuenstler | alle ADD → LOGGED_IN_USERS |
 | `/bestand` | `131c6c30-67d8-4939-87b8-b79f9bbe9bf6` | `bestand.tsx` | `cab355a2-0a7f-47a2-863a-41d2bbf7cae5` | unikate, edition | UPDATE → LOGGED_IN_USERS (Standard) |
-| `/bestand` | dito | `bestand-admin.tsx` | `ebff8c25-217d-417f-98cb-bc2f660e3b78` | unikate | Block-Sichtbarkeit und UPDATE → nur Gruppe Admin |
+| `/bestand` | dito | `bestand-admin.tsx` | `ebff8c25-217d-417f-98cb-bc2f660e3b78` | unikate | **außer Betrieb** seit 03.10. (alle dürfen alles ändern), kann gelöscht werden |
 | `/tabelle` | `1c5c5fed-5ec8-40df-8b13-4ae96ced2fdd` | `tabelle.tsx` | `ad8e12f4-0372-492b-a713-87334990aa90` | unikate, edition, ansichten | ADD ansichten → LOGGED_IN_USERS |
-| `/uebersicht` | `16450fdc-1469-49fb-8785-acac62a5c953` | `uebersicht.tsx` | `c62602bd-dd73-44d6-9625-b59aec539939` | unikate, edition | keine |
+| `/uebersicht` | `16450fdc-1469-49fb-8785-acac62a5c953` | `uebersicht.tsx` | `c62602bd-dd73-44d6-9625-b59aec539939` | unikate, edition, partner | keine |
+| `/stammdaten` | `c8a4fadb-196f-4712-b649-816e0f1ebd5e` | `stammdaten.tsx` | `451b0d69-677c-4f15-9f15-87cae9021028` | kuenstler, glasuren, modelle, partner, lagerorte, unikate, edition | alle ADD → LOGGED_IN_USERS |
 | `/` (Home) | `089c7891-ebdd-44cf-b346-8d14a1a9a983` | `start-weiterleitung.tsx` | `9753e657-6e52-489f-9279-d9695beb5b1a` | keine | keine |
+
+## Stand 03.10.2026 (gilt vor den Abschnitten darunter)
+- **Rechte:** Die Werkstatt darf **alle** Daten ändern, auch Preis, „Auf Website zeigen“ und Verkaufsdatum (Vorgabe Admin 03.10.). Eigene Nutzergruppen werden damit nicht mehr gebraucht. Alle Aktionen stehen auf „angemeldete Nutzer“.
+- **Logins:** genau zwei, „KWM“ (Admin) und eines für die Werkstatt. Die Liste der Künstler:innen bleibt davon unabhängig (Stammdaten).
+- **Vibe-Code bleibt, aber einheitlich:** Alle Blöcke bauen auf `src/shared/` auf (siehe `README.md`). Die Probeseiten mit fertigen Softr-Blöcken (`/stueck`, `/alle-stuecke`) werden nicht weiterverfolgt und können gelöscht werden, sobald der Admin zustimmt.
+- **Neue Seite Stammdaten** (`/stammdaten`): Künstler:innen, Glasuren, Modelle, Partner, Lagerorte anlegen und korrigieren, mit Angabe, wo sie verwendet werden. Löschen ist dort nicht vorgesehen. Der Lagerort „Außer Haus“ ist gegen Umbenennen geschützt, weil die Workflows ihn per Namen finden.
+- **Kosten:** `konzept/vergleich/KOSTEN-SOFTR-BASEROW.md`. Ohne eigene Nutzergruppen reicht wahrscheinlich Softr Free. Offen sind Dateispeicher und MCP im Free-Tarif.
+- **Für den Baserow-Nachbau:** Schema und Daten in `konzept/softr/export/`, Screenshots in `konzept/vergleich/softr-v4/`.
 
 ## Richtungswechsel 02.10.2026: fertige Softr-Blöcke zuerst
 Entscheidung des Admins: Wir nutzen möglichst Softrs fertige Blöcke (Table, Item Details, Form, Chart). Grund: einheitliche Optik und weniger eigene Logik. Vibe-Code nur, wo Softr etwas nicht kann. Fertige Blöcke lassen sich per MCP nicht anlegen, der Admin klickt sie mit `STUDIO-ANLEITUNG.md` zusammen. Danach prüfe ich mit Playwright.

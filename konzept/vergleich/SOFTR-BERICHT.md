@@ -5,6 +5,17 @@ Stand: 02.10.2026, wird je Runde aktualisiert. Auftrag: `konzept/SOFTR-AUFTRAG.m
 ## Kurzfassung
 Die App „KWM Lager“ hat jetzt vier Bereiche: **Erfassen**, **Bestand** (Alltag), **Tabelle** (alles sehen, frei filtern) und **Übersicht** (Dashboard). Alle Inhalte sind per Softr-MCP gebaute Vibe-Coding-Blöcke auf einer neuen, sauberen Datenbank. Die Funktionen sind mit Playwright als Admin getestet (Desktop 1440 px, Mobil 390 px). Offen sind vor allem Klick-Schritte des Admins (alte Blöcke löschen, Menüpunkt „Tabelle“) und ein echter Werkstatt-Login, der erst nach der Veröffentlichung möglich ist.
 
+## Stand 03.10.2026
+- **Alle Blöcke bauen auf gemeinsamen Bauteilen auf** (`konzept/softr/src/shared/`). Auswahl-Knöpfe, Felder, Fenster, Listen und Status-Farben sind überall derselbe Code.
+- **Rechte:** Die Werkstatt darf alles ändern, auch Preis, Website-Freigabe und Verkaufsdatum. Das Admin-Fenster ist außer Betrieb.
+- **Neu: Seite Stammdaten** (`/stammdaten`) für Künstler:innen, Glasuren, Modelle, Partner und Lagerorte.
+- Bestand und Tabelle sind am Handy ruhige Listen. Die Fenster sind zentrale Popups.
+- Geprüft mit Playwright (Desktop 1440, Handy 390): keine Konsolenfehler, kein seitliches Scrollen. Screens in `konzept/vergleich/softr-v4/`.
+- Was der Admin noch tun muss:
+  1. Menüpunkt „Stammdaten“ in die Navigation aufnehmen (Studio).
+  2. Löschen nach Zustimmung: Block „Bestand – Admin-Bearbeitung“, Probeseiten `/stueck` und `/alle-stuecke`, alte Diagramm-Blöcke unten in der Übersicht, sechs Platzhalter-Nutzer.
+  3. Werkstatt-Login festlegen (E-Mail) und Kostenfrage klären (`KOSTEN-SOFTR-BASEROW.md`).
+
 ## Entscheidungen
 - **Preis:** für **alle** Mitarbeitenden in der App sichtbar (Vorgabe Admin 02.10.2026), nie auf der Website.
 - **Bestehende App weiter genutzt** („KWM Lager“, vorher „Keramik Lagerverwaltung“, `celestina80104.softr.app`): Theme, Seitenleiste, Login und Nutzergruppen bleiben. Eine neue App startet ohne Menü, mit englischer Login-Seite und Platzhalter-Logo. Das lässt sich per MCP nicht ändern.

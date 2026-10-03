@@ -1,3 +1,5 @@
+> **Ersetzt durch `konzept/BASEROW-NACHBAU.md` (03.10.2026).** Diese Fassung bleibt nur zur Nachverfolgung.
+
 # Auftrag: Lager-App parallel in Baserow Cloud bauen (Vergleich zu Softr)
 
 **Zuerst lesen:** `CLAUDE.md`, `konzept/UEBERGABE.md` (Abschnitt 0) und `konzept/SOFTR-AUFTRAG.md` (Anforderungen, Datenstruktur, Nachbesserungen). Für Baserow gelten dieselben Anforderungen.
