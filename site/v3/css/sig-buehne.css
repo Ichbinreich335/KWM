@@ -1,0 +1,157 @@
+/* Signatur: buehne (Abschnittstyp Fläche) */
+.buehne { background: var(--ground-2); padding-block: var(--section); }
+.buehne__head { row-gap: 32px; align-items: end; padding-bottom: clamp(32px, 4vw, 56px); }
+.buehne__title { grid-column: 1 / 9; }
+.buehne__text { grid-column: 9 / 13; margin: 0; color: var(--ink-2); max-width: 36ch; }
+.buehne__body { align-items: start; row-gap: 32px; }
+
+.buehne__side { grid-column: 1 / 5; }
+.buehne:not(.is-enhanced) .buehne__side { grid-column: 1 / 9; }
+.buehne__stage { grid-column: 5 / 13; }
+
+.buehne__tabs { border-bottom: 1px solid var(--hair); }
+.buehne__tab {
+  position: relative;
+  display: block;
+  width: 100%;
+  min-height: 44px;
+  padding: 20px 0 20px 22px;
+  border: 0;
+  border-top: 1px solid var(--hair);
+  background: none;
+  color: var(--ink-2);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: color 0.45s var(--ease), padding 0.45s var(--ease);
+}
+.buehne__tab::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 20px; bottom: 20px;
+  width: 2px;
+  background: var(--accent);
+  transform: scaleY(0);
+  transform-origin: top;
+  transition: transform 0.6s var(--ease);
+}
+.buehne__tab:hover { color: var(--ink); }
+.buehne__tab[aria-selected='true'] { color: var(--ink); }
+.buehne__tab[aria-selected='true']::before { transform: scaleY(1); }
+.buehne__tab:focus-visible { outline: 2px solid var(--ink); outline-offset: -2px; }
+
+.buehne__date { display: block; font-size: 13.5px; font-variant-numeric: tabular-nums; color: var(--ink-2); margin: 0 0 6px; }
+.buehne__name { display: block; font-family: var(--f-display); font-weight: 400; font-size: clamp(1.4rem, 2vw, 1.9rem); line-height: 1.15; margin: 0 0 6px; text-wrap: balance; }
+.buehne__ort { display: block; font-size: 15px; color: var(--ink-2); margin: 0; }
+
+.buehne__panels { padding-top: 24px; }
+.buehne__show[hidden] { display: none; }
+.buehne__show + .buehne__show { margin-top: 40px; }
+.buehne.is-enhanced .buehne__facts { display: none; }
+.buehne__facts .buehne__name { margin-bottom: 8px; }
+.buehne__quote { margin: 0 0 20px; }
+.buehne__quote p { font-family: var(--f-text); font-size: clamp(1.25rem, 1.7vw, 1.6rem); line-height: 1.3; margin: 0 0 8px; text-wrap: balance; }
+.buehne__quote footer { font-size: 13px; color: var(--ink-2); }
+.buehne__show .link-arrow { display: inline-block; }
+
+.buehne__floor { position: relative; aspect-ratio: 4 / 3; touch-action: pan-y; }
+.buehne__plan, .buehne__canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+.buehne__canvas { cursor: default; }
+.buehne__caption { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 4px 24px; padding-top: 14px; }
+.buehne__readout { font-family: var(--f-display); font-size: clamp(1.25rem, 1.7vw, 1.6rem); line-height: 1.2; margin: 0; min-height: 1.2em; }
+.buehne__note { font-size: 13px; color: var(--ink-2); margin: 0; }
+
+@media (max-width: 900px) {
+  .buehne__title, .buehne__text, .buehne__side, .buehne:not(.is-enhanced) .buehne__side, .buehne__stage { grid-column: 1 / -1; }
+  .buehne__floor { aspect-ratio: 4 / 5; }
+  .buehne__tab { padding-block: 14px; }
+  .buehne__tab::before { top: 14px; bottom: 14px; }
+  .buehne__panels { padding-top: 16px; }
+}
+
+/* ---------- Anker: „Jetzt zu sehen“ mit Termin-Tabelle ---------- */
+.buehne--anker {
+  background: var(--coal);
+  color: var(--on-coal);
+  padding-block: var(--section);
+  --ink: var(--on-coal);
+  --ink-2: var(--on-coal-2);
+  --hair: rgba(236, 234, 227, 0.22);
+  --cover: var(--coal);
+}
+.buehne--anker ::selection { background: var(--on-coal); color: var(--coal); }
+.buehne--anker .buehne__head { padding-bottom: var(--head-gap); }
+.buehne--anker .buehne__all { grid-column: 9 / 13; justify-self: end; }
+.buehne--anker .buehne__body { align-items: center; row-gap: 40px; }
+.buehne--anker .buehne__side, .buehne--anker:not(.is-enhanced) .buehne__side { grid-column: 1 / 7; }
+.buehne--anker .buehne__stage { grid-column: 8 / 13; }
+.buehne--anker .buehne__floor { background: var(--coal-2); }
+.buehne--anker .buehne__readout { font-size: 1.15rem; }
+
+/* Alle Ausstellungen liegen im selben Feld übereinander, damit die Tabelle beim Wechsel nicht springt */
+.buehne--anker .buehne__panels { padding-top: 0; display: grid; }
+.buehne--anker .buehne__show { grid-area: 1 / 1; margin: 0; transition: opacity 0.6s var(--ease), transform 0.6s var(--ease); }
+.buehne--anker .buehne__show + .buehne__show { margin-top: 0; }
+.buehne--anker:not(.is-enhanced) .buehne__panels { display: block; }
+.buehne--anker:not(.is-enhanced) .buehne__show + .buehne__show { margin-top: 48px; }
+.buehne--anker.is-enhanced .buehne__show[hidden] { display: block; visibility: hidden; opacity: 0; transform: translateY(10px); pointer-events: none; transition: opacity 0.3s var(--ease), transform 0.3s var(--ease), visibility 0s 0.3s; }
+
+.buehne__status { margin: 0 0 clamp(12px, 1.6vw, 20px); font-size: 15px; letter-spacing: 0.02em; color: var(--accent-on-coal); }
+.buehne__big { margin: 0 0 clamp(16px, 2vw, 28px); font-family: var(--f-display); font-size: clamp(2.8rem, 6vw, 6rem); line-height: 0.95; letter-spacing: -0.03em; font-variant-numeric: lining-nums tabular-nums; white-space: nowrap; }
+.buehne--anker .buehne__name { font-size: clamp(1.4rem, 2vw, 1.9rem); margin: 0 0 6px; }
+.buehne--anker .buehne__ort { margin: 0 0 20px; color: var(--ink-2); }
+
+/* Termin-Tabelle: Datum | Titel | Ort | Status, jede Zeile wählt die Anordnung */
+.buehne__table { padding-top: var(--head-gap); row-gap: 0; }
+.buehne__cols, .buehne__link { display: grid; grid-template-columns: subgrid; grid-column: 1 / -1; column-gap: var(--g); }
+.buehne__cols { margin: 0; padding: 0 0 14px; font-size: 12.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-2); }
+.buehne__rows { grid-column: 1 / -1; display: grid; grid-template-columns: subgrid; margin: 0; padding: 0; list-style: none; }
+.buehne__row { grid-column: 1 / -1; display: grid; grid-template-columns: subgrid; position: relative; border-top: 1px solid var(--hair); }
+.buehne__row:last-child { border-bottom: 1px solid var(--hair); }
+.buehne__row::before {
+  content: '';
+  position: absolute;
+  left: 0; right: 0; top: -1px;
+  height: 2px;
+  background: var(--accent-on-coal);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.7s var(--ease);
+  pointer-events: none;
+}
+.buehne__row:has([aria-selected='true'])::before { transform: scaleX(1); }
+.buehne__link {
+  align-items: baseline;
+  min-height: 44px;
+  padding: 22px 0;
+  border: 0;
+  background: none;
+  color: var(--ink-2);
+  font: inherit;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.45s var(--ease);
+}
+.buehne__link:hover, .buehne__link[aria-selected='true'] { color: var(--on-coal); }
+.buehne__link:focus-visible { outline: 2px solid var(--on-coal); outline-offset: -2px; }
+.buehne__c-date { grid-column: 1 / 4; font-size: 15px; font-variant-numeric: tabular-nums; }
+.buehne__c-title { grid-column: 4 / 8; font-family: var(--f-display); font-size: clamp(1.15rem, 1.5vw, 1.45rem); line-height: 1.2; text-wrap: balance; }
+.buehne__c-ort { grid-column: 8 / 11; font-size: 15px; }
+.buehne__c-status { grid-column: 11 / 13; font-size: 15px; color: var(--ink-2); }
+.buehne__c-status[data-state='live'] { color: var(--accent-on-coal); }
+.buehne__cols span:nth-child(1) { grid-column: 1 / 4; }
+.buehne__cols span:nth-child(2) { grid-column: 4 / 8; }
+.buehne__cols span:nth-child(3) { grid-column: 8 / 11; }
+.buehne__cols span:nth-child(4) { grid-column: 11 / 13; }
+
+@media (max-width: 900px) {
+  .buehne--anker .buehne__all { grid-column: 1 / -1; justify-self: start; }
+  .buehne--anker .buehne__side, .buehne--anker:not(.is-enhanced) .buehne__side, .buehne--anker .buehne__stage { grid-column: 1 / -1; }
+  .buehne--anker .buehne__floor { aspect-ratio: 1 / 1; }
+  .buehne__cols { display: none; }
+  .buehne__link { grid-template-columns: 1fr; row-gap: 4px; padding: 18px 0; }
+  .buehne__c-date, .buehne__c-title, .buehne__c-ort, .buehne__c-status { grid-column: 1; }
+  .buehne__c-date, .buehne__c-status { font-size: 14px; }
+}
+.buehne--anker .buehne__show .link-arrow { display: inline-flex; }
