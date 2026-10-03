@@ -149,3 +149,30 @@ Alle in `konzept/vergleich/`, jeweils `-d` (1440 px) und `-m` (390 px), Browser-
 - `baserow-nachbau-03a` bis `03e`: Datenbank-Ansichten und Formulare. Die Galerie am Handy scrollt seitlich, das ist die Datenbank-Oberfläche
 - `baserow-nachbau-00` bis `44`: App, gleiche Nummern wie `softr-v4/`
 - `baserow-nachbau-31-dashboard-free-*.png`: Dashboard mit Kennzahl-Kacheln. Am Handy scrollt es leicht seitlich (415 px), auch das ist Datenbank-Oberfläche
+
+## 7. Zweiter Anlauf: App aus der Baserow-Vorlage (Zwischenstand, abgebrochen)
+
+Feedback des Admins zum ersten Anlauf: „Das ist ja schrecklich und nutzt 0 die Komponenten von Baserow.“ Der erste Anlauf hat die Softr-Screens 1:1 nachgestellt (Reiter über URL-Parameter, Formel-Tricks). Neue Richtung, vom Admin gewählt: die mitgelieferte Baserow-Vorlage **„Car Dealership Inventory“** als Rahmen nehmen. Ihren Aufbau und ihre Elemente behalten, nur Texte, Daten und Farben auf KWM umstellen.
+
+Stand bei Abbruch (Skript `konzept/baserow-nachbau/07-vorlage.mjs`, App „KWM Lager“ im Workspace):
+
+| Seite der Vorlage | wird zu | Stand |
+|---|---|---|
+| Kopfbild, Navigation, Fuß | KWM-Banner (`assets/kwm-banner.png`), ÜBERSICHT / BESTAND / ERFASSEN / STAMMDATEN | fertig bis auf die Punkte unten |
+| Cars (Filter und Foto-Karten) | **Bestand** | fertig, Screens `baserow-v-10-bestand-d/m.png` |
+| Car details | **Stück** | fertig, Screens `baserow-v-13-stueck-d/m.png` |
+| Login | **Anmelden** (Tabelle App-Nutzer) | umgestellt, ungetestet |
+| Car offer | Stück bearbeiten | offen |
+| Contact | Erfassen | offen |
+| Homepage | Übersicht | offen |
+| Profile | Stammdaten | offen |
+| Offer/Contact confirmation, Details sold/without offer, Add review | entfallen | offen (Seiten noch vorhanden) |
+
+Offene Punkte aus dem letzten Screen-Check:
+- 4. Knopf im Kopf: Für angemeldete Nutzer zeigt die Vorlage dort „Angemeldet als …“. Er soll zu STAMMDATEN führen, „Angemeldet als“ und „Abmelden“ sollen in die Fußspalte „Konto“.
+- Stücke ohne Foto zeigen ein kaputtes Bild. Geplant ist ein Platzhalterbild „Noch kein Foto“.
+- Kartenhöhen schwanken mit dem Seitenverhältnis der Fotos. Zu prüfen: Bildzuschnitt im Element-Stil.
+- „Lagerort“ ist bei verkauften Stücken leer. Geplant ist „–“.
+- Danach die vier offenen Seiten umstellen, die Autohaus-Datenbank „Car Dealership Inventory“ aus dem KWM-Workspace löschen und alte Vorlagenseiten entfernen.
+
+Weitere Objekte: Der Workspace „Baserow-Vorlagen (Ansicht)“ enthält beide Vorlagen unverändert zum Ansehen (Asset Management: Login `allie.ecker@example.com` / `VorlageAnsicht2026`). Die erste App heißt jetzt „KWM Lager (Softr-Nachbau)“.
