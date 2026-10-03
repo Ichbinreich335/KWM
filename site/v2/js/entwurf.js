@@ -21,7 +21,12 @@ const read = () => {
   let saved = {};
   try { saved = JSON.parse(localStorage.getItem(KEY) || '{}'); } catch { /* Speicher nicht verfügbar */ }
   const params = new URLSearchParams(location.search);
-  return Object.fromEntries(GROUPS.map((g) => [g.key, params.get(g.key) || saved[g.key] || g.options[0][0]]));
+  // Nur Werte übernehmen, die es noch gibt; alte gespeicherte Varianten fallen auf den Standard zurück
+  const valid = (g, v) => g.options.some(([value]) => value === v);
+  return Object.fromEntries(GROUPS.map((g) => {
+    const wish = [params.get(g.key), saved[g.key]].find((v) => valid(g, v));
+    return [g.key, wish || g.options[0][0]];
+  }));
 };
 const state = read();
 
