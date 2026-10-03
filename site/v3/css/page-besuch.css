@@ -26,7 +26,6 @@
 
 /* Anfahrt */
 .routes-band { margin-top: var(--section); padding-block: var(--section); }
-.routes-band .chapter__head { border-top-color: var(--ink); }
 /* Titel und Schritte liegen auf gemeinsamen Zeilen, damit die Linien trotz ungleich langer Überschriften auf einer Höhe laufen */
 .routes { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--g); padding-inline: var(--m); }
 .route { grid-column: span 3; grid-row: span 3; display: grid; grid-template-rows: subgrid; align-content: start; padding-bottom: 56px; }

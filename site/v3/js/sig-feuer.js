@@ -1,4 +1,4 @@
-// Signatur: feuer – eine Schale, vier Glasuren. Wechsel als kurzer Brand: Glühen, dann Abkühlen in die neue Glasur.
+// Signatur: feuer – eine Schale, vier Glasuren. Alle Zustände teilen exakt dieselbe Form; der Wechsel blendet nur die Glasurfarbe über und lässt die Schale kurz glühen.
 import { random, reducedMotion } from './keramik.js';
 
 // Farben aus Glasur-Realität: Honig, Seladon, Kupfergrün, Ochsenblut
@@ -33,15 +33,20 @@ const STATES = {
   },
 };
 const KEY = (metal, atmo) => `${metal}-${atmo === 'ox' ? 'ox' : 'red'}`;
-const GLOW_IN = 500;
-const GLOW_OUT = 700;
+const BLEND_MS = 1300;
+const GLOW_CHASE_MS = 260;
+const SEED = 1924;
 const ease = (t) => (t < 0.5 ? 2 * t * t : 1 - 2 * (1 - t) * (1 - t));
 
 const hexA = (hex, a) => `${hex}${Math.round(a * 255).toString(16).padStart(2, '0')}`;
 
 // Schale von oben, Licht von links oben. Alles in Einheiten des Radius R.
-function renderBowl(S, dpr, g, seed) {
-  const rand = random(seed);
+// part 'shadow': nur der Schattenwurf (für alle Zustände gleich), part 'bowl': die Schale ohne Schatten.
+// Form und Verteilung der Marmorierung hängen nur vom Seed ab, nie vom Zustand.
+function renderBowl(S, dpr, g, part) {
+  const rand = random(SEED);
+  const randSpecks = random(SEED + 1);
+  const randPins = random(SEED + 2);
   const px = Math.round(S * dpr);
   const cv = document.createElement('canvas');
   cv.width = cv.height = px;
@@ -62,16 +67,16 @@ function renderBowl(S, dpr, g, seed) {
   };
   const ri = R * 0.9;
 
-  // Schatten auf der Fläche
-  c.save();
-  c.shadowColor = 'rgba(0,0,0,0.6)';
-  c.shadowBlur = R * 0.28;
-  c.shadowOffsetX = R * 0.1;
-  c.shadowOffsetY = R * 0.16;
-  shape(R);
-  c.fillStyle = g.rim;
-  c.fill();
-  c.restore();
+  if (part === 'shadow') {
+    c.shadowColor = 'rgba(0,0,0,0.6)';
+    c.shadowBlur = R * 0.28;
+    c.shadowOffsetX = R * 0.1;
+    c.shadowOffsetY = R * 0.16;
+    shape(R);
+    c.fillStyle = '#000';
+    c.fill();
+    return { cv, R };
+  }
 
   // Rand: dünne Glasur, der Scherben scheint durch; oben links im Licht
   shape(R);
@@ -156,19 +161,19 @@ function renderBowl(S, dpr, g, seed) {
 
   // Eisenpunkte und Sprenkel
   for (let i = 0; i < g.specks; i++) {
-    const a = rand() * Math.PI * 2;
-    const d = Math.sqrt(rand()) * ri * 0.97;
-    const s = rand();
+    const a = randSpecks() * Math.PI * 2;
+    const d = Math.sqrt(randSpecks()) * ri * 0.97;
+    const s = randSpecks();
     c.globalAlpha = 0.35 + s * 0.6;
     c.fillStyle = g.speck;
     c.beginPath();
-    c.ellipse(Math.cos(a) * d, Math.sin(a) * d, R * (0.004 + s * s * 0.016), R * (0.004 + s * s * 0.012), rand() * 3, 0, Math.PI * 2);
+    c.ellipse(Math.cos(a) * d, Math.sin(a) * d, R * (0.004 + s * s * 0.016), R * (0.004 + s * s * 0.012), randSpecks() * 3, 0, Math.PI * 2);
     c.fill();
   }
   // Nadelstiche: winzige helle Punkte mit dunklem Hof
   for (let i = 0; i < g.pins; i++) {
-    const a = rand() * Math.PI * 2;
-    const d = Math.sqrt(rand()) * ri * 0.9;
+    const a = randPins() * Math.PI * 2;
+    const d = Math.sqrt(randPins()) * ri * 0.9;
     const x = Math.cos(a) * d, y = Math.sin(a) * d;
     c.globalAlpha = 0.5;
     c.fillStyle = 'rgba(0,0,0,0.5)';
@@ -215,7 +220,7 @@ function renderBowl(S, dpr, g, seed) {
 
 export default function init(el) {
   const list = el.querySelector('.feuer-farben__list');
-  const title = el.querySelector('.feuer-farben__title');
+  const intro = [...el.querySelectorAll('.feuer-farben__title, .feuer-farben__intro')];
   if (!list || el.querySelector('canvas')) return;
 
   const reduced = reducedMotion();
@@ -270,14 +275,19 @@ export default function init(el) {
   note.className = 'feuer-farben__note';
   note.textContent = 'Holzofen · 9–10 Stunden · bis 1300 °C';
 
-  el.replaceChildren(...(title ? [title] : []), stage, controls, result, note);
+  el.replaceChildren(...intro, stage, controls, result, note);
 
   let S = 0, dpr = 1, ctx = null;
   const sprites = {};
-  let current = KEY(sel.metal, sel.atmo);
-  let from = null, to = null, startAt = 0, raf = 0;
+  let shadow = null;
+  let base = KEY(sel.metal, sel.atmo);   // Schale, die gerade ganz sichtbar ist (Bild oder Schnappschuss)
+  let target = null;                      // Zielzustand eines laufenden Wechsels
+  let progress = 0, glowAmt = 0, last = 0, raf = 0;
+  const snaps = [];
+  let snapIndex = 0;
 
-  const sprite = (key) => (sprites[key] ??= renderBowl(S, dpr, STATES[key], 1924 + Object.keys(STATES).indexOf(key) * 7));
+  const bowl = (key) => (sprites[key] ??= renderBowl(S, dpr, STATES[key], 'bowl'));
+  const layerOf = (src) => (typeof src === 'string' ? bowl(src).cv : src);
 
   const text = () => {
     const st = STATES[KEY(sel.metal, sel.atmo)];
@@ -286,12 +296,12 @@ export default function init(el) {
     canvas.setAttribute('aria-label', st.label);
   };
 
-  const glow = (b, amount) => {
+  const glow = (amount) => {
     if (amount <= 0.001) return;
+    const R = shadow.R;
     ctx.save();
     ctx.globalCompositeOperation = 'lighter';
     // Wärme vom Rand her, innen bleibt die Glasur sichtbar
-    const R = b.R;
     const halo = ctx.createRadialGradient(0, 0, R * 0.3, 0, 0, R * 1.3);
     halo.addColorStop(0, 'rgba(255,110,40,0)');
     halo.addColorStop(0.55, `rgba(255,120,45,${0.14 * amount})`);
@@ -307,47 +317,65 @@ export default function init(el) {
     ctx.restore();
   };
 
-  const paint = (a, bKey, mix, glowAmount) => {
+  // Schatten, Schale, darüber die Zielschale mit wachsender Deckkraft, dann das Glühen. Die Form ist in allen Lagen identisch.
+  const paint = () => {
     ctx.clearRect(-S / 2, -S / 2, S, S);
-    const A = sprite(a);
-    ctx.drawImage(A.cv, -S / 2, -S / 2, S, S);
-    if (bKey && mix > 0) {
-      ctx.globalAlpha = mix;
-      ctx.drawImage(sprite(bKey).cv, -S / 2, -S / 2, S, S);
+    ctx.drawImage(shadow.cv, -S / 2, -S / 2, S, S);
+    ctx.drawImage(layerOf(base), -S / 2, -S / 2, S, S);
+    if (target && progress > 0) {
+      ctx.globalAlpha = ease(progress);
+      ctx.drawImage(bowl(target).cv, -S / 2, -S / 2, S, S);
       ctx.globalAlpha = 1;
     }
-    glow(A, glowAmount);
+    glow(glowAmt);
+  };
+
+  // Hält die aktuell sichtbare Mischung als eigene Schale fest, damit ein neuer Klick mitten im Wechsel ohne Sprung weiterblendet.
+  // Zwei Puffer im Wechsel, weil die neue Mischung auch aus dem vorigen Schnappschuss entstehen kann.
+  const freeze = () => {
+    snapIndex = 1 - snapIndex;
+    const cv = (snaps[snapIndex] ??= document.createElement('canvas'));
+    cv.width = cv.height = Math.round(S * dpr);
+    const c = cv.getContext('2d');
+    c.drawImage(layerOf(base), 0, 0);
+    c.globalAlpha = ease(progress);
+    c.drawImage(bowl(target).cv, 0, 0);
+    return cv;
   };
 
   const frame = (now) => {
-    const t = now - startAt;
-    if (t >= GLOW_IN + GLOW_OUT) {
-      current = to; from = to = null; raf = 0;
-      paint(current, null, 0, 0);
-      return;
+    const dt = Math.min(now - last, 64);
+    last = now;
+    if (target) progress = Math.min(1, progress + dt / BLEND_MS);
+    glowAmt += ((target && progress < 0.5 ? 1 : 0) - glowAmt) * (1 - Math.exp(-dt / GLOW_CHASE_MS));
+    paint();
+    if (target && progress >= 1) {
+      base = target; target = null; progress = 0;
+      paint();
     }
-    if (t < GLOW_IN) {
-      paint(from, null, 0, ease(t / GLOW_IN));
+    if (target || glowAmt > 0.004) {
+      raf = requestAnimationFrame(frame);
     } else {
-      const u = (t - GLOW_IN) / GLOW_OUT;
-      paint(from, to, ease(u), Math.pow(1 - u, 1.6));
+      glowAmt = 0; raf = 0;
+      paint();
     }
-    raf = requestAnimationFrame(frame);
   };
 
   const change = () => {
     text();
     const next = KEY(sel.metal, sel.atmo);
-    if (reduced || !S) {
-      current = next; from = to = null;
-      if (S) paint(current, null, 0, 0);
+    if (!S) return;
+    if (reduced) {
+      base = next; target = null; progress = 0; glowAmt = 0;
+      paint();
       return;
     }
-    if (raf) cancelAnimationFrame(raf);
-    from = to ?? current;
-    to = next;
-    startAt = performance.now();
-    raf = requestAnimationFrame(frame);
+    if (next === target) return;
+    if (target) base = freeze();
+    target = next;
+    progress = 0;
+    last = performance.now();
+    if (!raf) raf = requestAnimationFrame(frame);
   };
 
   const layout = () => {
@@ -359,12 +387,13 @@ export default function init(el) {
     ctx = canvas.getContext('2d');
     ctx.setTransform(dpr, 0, 0, dpr, (S * dpr) / 2, (S * dpr) / 2);
     Object.keys(sprites).forEach((k) => delete sprites[k]);
+    shadow = renderBowl(S, dpr, STATES['eisen-ox'], 'shadow');
     if (raf) { cancelAnimationFrame(raf); raf = 0; }
-    from = to = null;
-    current = KEY(sel.metal, sel.atmo);
-    paint(current, null, 0, 0);
+    target = null; progress = 0; glowAmt = 0;
+    base = KEY(sel.metal, sel.atmo);
+    paint();
     // die übrigen Endzustände in Leerlaufzeit vorrendern
-    Object.keys(STATES).filter((k) => k !== current).forEach((k, i) => setTimeout(() => sprite(k), 300 + i * 250));
+    Object.keys(STATES).filter((k) => k !== base).forEach((k, i) => setTimeout(() => bowl(k), 300 + i * 250));
   };
 
   text();

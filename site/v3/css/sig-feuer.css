@@ -1,6 +1,7 @@
 /* Signatur: feuer – Ein Feuer, zwei Farben */
 .feuer-farben { grid-column: 8 / 13; display: grid; gap: 28px; }
 .feuer-farben__title { font-family: var(--f-display); font-weight: 400; font-size: clamp(1.4rem, 2vw, 1.9rem); line-height: 1.15; margin: 0; }
+.feuer-farben__intro { margin: -12px 0 0; color: var(--on-coal-2); font-size: 16px; max-width: 46ch; text-wrap: pretty; }
 .feuer-farben__list { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; color: var(--on-coal-2); font-size: 15px; }
 .feuer-farben__list li { display: flex; gap: 12px; align-items: baseline; }
 .feuer-farben__list .swatch { width: 14px; height: 14px; transform: translateY(2px); }

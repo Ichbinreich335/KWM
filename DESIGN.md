@@ -67,12 +67,13 @@ Stand: 02.10.2026. Verbindlich für alle Seiten und Elemente in `src/v2/` und `s
 |---|---|---|
 | Hell | `--ground` | Standard |
 | Fläche | `--ground-2` (`.on-flaeche`) | ruhige Zwischenstation: Chronik, Bühnenboden |
-| Anker | `--coal` (Schrift `--on-coal`) | Einstieg (Variante), Seitenkopf der Werkstatt, Aktuell, Orte, Feuer, Footer |
+| Anker | `--coal` (Schrift `--on-coal`), auf Unterseiten `.on-anker` | Einstieg (Variante), Seitenkopf der Werkstatt, Aktuell, Orte, Feuer, ein Kapitel oder Zitat je Unterseite, Footer |
 
 - **Rhythmus:** nie zwei Anker direkt hintereinander. Ungefähr alle zwei bis drei Bildschirme ein Anker, damit die helle Seite Halt hat.
 - **Anker setzen lokal** `--ink-2: var(--on-coal-2)`, `--hair: rgba(236,234,227,.22)`, `--cover: var(--coal)` und eigene `::selection`.
 
-**Unterseiten (Reihenfolge):** Seitenkopf (einer der vier Kopf-Typen, siehe Seitenkopf) → Einleitung oder Unternavigation (hell, bei Bedarf Fläche) → Kapitel (hell, mindestens ein Kapitel oder eine Zäsur als Fläche) → Abschlussband mit Anfrage (Fläche, nie Anker, weil der Footer folgt) → Footer (Anker).
+**Unterseiten (Reihenfolge):** Seitenkopf (einer der vier Kopf-Typen, siehe Seitenkopf) → Einleitung oder Unternavigation (hell, bei Bedarf Fläche) → Kapitel (hell, mindestens ein Kapitel oder eine Zäsur als Fläche) → Anfrage-Leiste (Fläche, nie Anker, weil der Footer folgt) → Footer (Anker).
+- **Jede Unterseite hat genau einen Anker** (`.on-anker`: lokale Tokens `--ink`, `--ink-2`, `--hair`, `--cover`, Grund `--coal`), an einer inhaltlich passenden Stelle im Rhythmus, nicht zwingend oben. Nie zwei Anker hintereinander, nie direkt vor dem Footer. Wo der Seitenkopf selbst dunkel ist (Werkstatt), genügt dieser.
 - **Nicht jede Seite beginnt dunkel.** Höchstens eine Unterseite hat einen dunklen Kopf (Werkstatt), nie zwei in der Navigation direkt nebeneinander.
 - **Auf langen Seiten eine Zäsur** alle zwei bis drei Bildschirme: Bildband, Zitat auf Fläche oder Bild mit Satz. Zitat-Zäsur: `.pullquote` (Fläche, Display-Satz, Quelle). Bild-Zäsur: `.zaesur` (Fläche, Bild links, Satz rechts).
 - **Einzelwerk mit Meta-Spalte:** ein einzelnes Bild in einem Kapitel steht in Spalte 4–12, Name, Maße und Anfrage in Spalte 1–3 an derselben Oberkante (`.catalog__item--wide`). Nie ein zentriertes Einzelbild.
@@ -80,13 +81,13 @@ Stand: 02.10.2026. Verbindlich für alle Seiten und Elemente in `src/v2/` und `s
 
 | Seite | Kopf-Typ | Rhythmus | Charakter-Element |
 |---|---|---|---|
-| Meisterstücke | Meta | Kopf hell → Einleitung Fläche → Schalen hell → Kummen Fläche → Vasen hell → Arbeitsweise hell → Anfrage Fläche → Footer | Einzelwerke mit Werkangaben in der Meta-Spalte |
-| Manufaktur | Fläche | Kopf Fläche → Einleitung hell → Geschirr hell → Zäsur Regal Fläche → Geschirr hell → Edition Fläche → Farben hell → Anfrage Fläche → Footer | Geschirrreihe auf Sockel im Kopf |
-| Young-Jae Lee | Name | Kopf hell → Haltung hell → Erinnerung Fläche → Biografie, Texte hell → Bildband → Ausstellungen hell → Zitat Fläche → Sammlungen bis Publikationen hell → Anfrage Fläche → Footer | großer Name, Zitat „Immer sind es Schalen …“ |
+| Meisterstücke | Meta | Kopf hell → Einleitung Fläche → Schalen hell → Kummen Fläche → Vasen hell → **Arbeitsweise Anker** → Anfrage-Leiste → Footer | Einzelwerke mit Werkangaben in der Meta-Spalte |
+| Manufaktur | Fläche | Kopf Fläche → **Einleitung mit Zitat Anker** → Unternavigation → Geschirr hell → Zäsur Regal Fläche → Geschirr hell → Edition Fläche → Farben hell, Arbeitsweise hell → Anfrage-Leiste → Footer | Geschirrreihe auf Sockel im Kopf |
+| Young-Jae Lee | Name | Kopf hell → Haltung hell → Erinnerung Fläche → Biografie, Texte hell → Bildband → Ausstellungen hell → **Zitat Anker** → Sammlungen bis Publikationen hell → Anfrage-Leiste → Footer | großer Name, Zitat „Immer sind es Schalen …“ |
 | Werkstatt | Anker | Kopf dunkel → Arbeitsweise, Glasurfarben hell → Chronik Fläche → Team hell → Auszeichnungen Fläche → Zollverein hell → Anfrage Fläche → Footer | Panorama randlos |
-| Aktuelles | Name (ohne Bild) | Kopf hell → Einträge hell, Wesel gespiegelt → Pop-up Fläche → Archiv, Veröffentlichungen hell → Anfrage Fläche → Footer | gespiegelter Eintrag |
+| Aktuelles | Name (ohne Bild) | Kopf hell → Einträge hell, Wesel gespiegelt → Pop-up Fläche → **Vergangene Ausstellungen Anker** (Jahresarchiv) → Veröffentlichungen hell → Anfrage-Leiste → Footer | gespiegelter Eintrag |
 | Besuch | Meta (mit Öffnungszeiten) | Kopf hell → Adresse mit Panorama hell → Anfahrt Fläche → Anfrage, Zahlung hell → Footer | Öffnungszeiten groß im Kopf |
-| 404 | Name | Kopf hell → Footer | |
+| 404 | Name | Kopf hell → Footer (ohne Anfrage-Leiste) | |
 
 **Startseite: Reihenfolge und Zweck.** Jeder Abschnitt hat genau eine Aufgabe. Ein neuer Abschnitt braucht einen eigenen Zweck, sonst gehört er auf eine Unterseite.
 
@@ -107,10 +108,19 @@ Stand: 02.10.2026. Verbindlich für alle Seiten und Elemente in `src/v2/` und `s
 
 ## 6. Komponenten
 
-### Abschnittskopf (`.x__head.grid`)
-- H2 in Spalte 1–8, Begleittext oder Link in Spalte 9–12.
-- Unten bündig (`align-items: end`), danach der Abstand Kopf zu Inhalt.
-- Optional eine Linie in `currentColor` darunter (z. B. `.now__head`).
+### Abschnittskopf (`.sec-head` auf der Startseite, `.chapter__head` auf Unterseiten)
+Ein Muster für die ganze Website:
+- H2 in Spalte 1–8, Begleittext (16 px, `--ink-2`, max. 44ch) oder Link in Spalte 9–12.
+- Unten bündig (`align-items: end`), **Haarlinie darunter** (1 px, `currentColor`, 20 px Abstand), danach `--head-gap` zum Inhalt. Nie eine Linie über der Überschrift.
+- Folgt direkt eine Liste mit eigener oberer Linie (`.datelist`, `.texts`, `.pubs`), entfällt deren Linie, die Kopflinie genügt.
+- Mobil stehen H2 und Begleittext untereinander.
+- Auf Anker: Linie und Schrift erben über `.on-anker`.
+
+### Anfrage-Leiste (`.anfrage-band`, Partial `partials/anfrage-band.html`)
+- Ruhiger Abschluss jeder Unterseite außer Besuch (dort ist das Formular) und 404, direkt vor dem Footer. Fläche `--ground-2`, nie Anker.
+- Ein kurzer Satz in Text-Schrift (Spalte 1–7), rechts (9–12) Button „Anfrage schreiben“ → `besuch.html#anfrage` und daneben die Telefonnummer +49 201 30 50 80. Darunter optional eine Hinweiszeile (14 px, `--ink-2`), z. B. dass man ein Stück nennen kann.
+- Einbindung: `<!-- @include anfrage-band {"text": "…", "query": "?stueck=…", "hinweis": "…"} -->`. `query` füllt das Feld „Stück“ im Formular vor, `hinweis` darf Links enthalten (einfache Anführungszeichen in Attributen).
+- Das ältere `.cta-band` bleibt nur auf der Werkstatt, bis dort umgestellt ist.
 
 ### Seitenkopf (`.page-hero`)
 Vier Typen, jede Unterseite wählt einen (Modifier-Klasse). Gemeinsam: Abstand oben `--head` + `clamp(48px, 6vw, 96px)`, Zeilenabstand `--head-gap`, Lede in Text-Schrift 1,15–1,4 rem, Bildunterschrift an fester Stelle direkt unter dem Bild in `--ink-2`.

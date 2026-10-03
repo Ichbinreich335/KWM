@@ -15,14 +15,9 @@
 .method__facts dt { font-size: 12.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-2); margin-bottom: 8px; }
 .method__facts dd { font-family: var(--f-text); font-size: 18px; line-height: 1.4; }
 
-/* Chronik auf Tonfläche */
-.chronik { padding-block: var(--section); margin-top: var(--section); }
-.chronik .chapter__head { border-top-color: var(--ink); }
-.chronik .datelist { border-top-color: var(--ink); }
-.chronik .datelist__text { max-width: 70ch; }
-.chronik__strip { grid-column: 1 / -1; max-width: 900px; margin-bottom: clamp(40px, 5vw, 64px); }
-.chronik__strip img { width: 100%; aspect-ratio: 900 / 140; object-fit: cover; }
-.datelist__row--quiet .datelist__year, .datelist__row--quiet .datelist__text { color: var(--ink-2); }
+/* Chronik: Komponente .chronicle aus styles.css, hier nur Abstand zum Kapitel davor und der stille Schlusseintrag */
+.page-werkstatt .chronicle { margin-top: var(--section); }
+.chronicle__item--quiet .chronicle__year, .chronicle__item--quiet .chronicle__what { color: var(--ink-2); }
 
 /* Team */
 .team-strip { margin: 0 var(--m) clamp(40px, 5vw, 64px); max-width: 1000px; }
@@ -54,7 +49,7 @@
 }
 
 /* Glasurfarben: "Ein Feuer, zwei Farben" auf hellem Grund (Signatur ist für den Anker gebaut, Bühne bleibt dunkel) */
-.fire-colors { row-gap: 48px; align-items: center; }
+.fire-colors { row-gap: 48px; align-items: start; }
 .fire-colors__media { grid-column: 1 / 7; }
 .fire-colors__media img { width: 100%; aspect-ratio: 3 / 2; object-fit: cover; }
 .page-werkstatt .feuer-farben__list { color: var(--ink-2); }
@@ -64,6 +59,7 @@
 .page-werkstatt .feuer-farben__btn:hover { background: var(--ground-2); }
 .page-werkstatt .feuer-farben__btn[aria-pressed="true"] { background: var(--ink); color: var(--ground); }
 .page-werkstatt .feuer-farben__btn:focus-visible { outline-color: var(--accent); }
+.page-werkstatt .feuer-farben__intro,
 .page-werkstatt .feuer-farben__why,
 .page-werkstatt .feuer-farben__note { color: var(--ink-2); }
 
