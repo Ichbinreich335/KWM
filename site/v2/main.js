@@ -51,13 +51,45 @@ import { random, pickGlaze as pickFrom, renderBowlSprite } from './js/keramik.js
   }, { rootMargin: '0px 0px -10% 0px', threshold: 0.12 });
 
   const heroEls = $$('.hero [data-reveal]');
-  $$('[data-reveal], .journey, .chronicle__list li').forEach((el) => { if (!heroEls.includes(el)) io.observe(el); });
+  $$('[data-reveal], .chronicle__list li').forEach((el) => { if (!heroEls.includes(el)) io.observe(el); });
   requestAnimationFrame(() => {
     $('.hero__media')?.classList.add('is-in');
     heroEls.filter((el) => !el.classList.contains('hero__media')).forEach((el, i) => {
       setTimeout(() => el.classList.add('is-in'), 450 + i * 160);
     });
   });
+
+  /* ---------- Lebensweg: kurze Haltestrecke, Linie und Punkte füllen sich mit dem Scrollen ---------- */
+  const track = $('[data-journey-track]');
+  if (track && !reduced) {
+    const line = $('.journey', track);
+    const stops = $$('li', line);
+    const SOFT = 0.08;
+    let offsets = [];
+    const measure = () => {
+      const vertical = stops[1].offsetTop > stops[0].offsetTop + 4;
+      const size = vertical ? line.offsetHeight : line.offsetWidth;
+      offsets = stops.map((li) => (vertical ? li.offsetTop : li.offsetLeft) / size);
+    };
+    const clamp01 = (v) => Math.min(1, Math.max(0, v));
+    const update = () => {
+      const room = track.offsetHeight - window.innerHeight;
+      const p = clamp01(-track.getBoundingClientRect().top / room);
+      line.style.setProperty('--p', p.toFixed(4));
+      stops.forEach((li, i) => li.style.setProperty('--r', clamp01((p - offsets[i]) / SOFT + 0.15).toFixed(3)));
+    };
+    let queued = false;
+    const request = () => {
+      if (queued) return;
+      queued = true;
+      requestAnimationFrame(() => { queued = false; update(); });
+    };
+    track.classList.add('is-scrub');
+    measure();
+    update();
+    window.addEventListener('scroll', request, { passive: true });
+    window.addEventListener('resize', () => { measure(); request(); }, { passive: true });
+  }
 
   /* ---------- Scrollgebundene Bewegung: Einstiegsbild, Kopfzeile ---------- */
   const heroImg = $('[data-parallax]');
