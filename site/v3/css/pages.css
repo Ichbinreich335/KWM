@@ -100,7 +100,7 @@
 
 /* Kapitel: wie .sec-head der Startseite. Überschrift links (1–8), Begleittext rechts (9–12), unten bündig, Haarlinie darunter, dann --head-gap */
 .chapter { padding-block: var(--section) 0; }
-.chapter:last-of-type, .chapter:has(+ .anfrage-band), .chapter:has(+ .cta-band) { padding-bottom: var(--section); }
+.chapter:last-of-type, .chapter:has(+ .anfrage-band) { padding-bottom: var(--section); }
 .chapter__head { margin-inline: var(--m); padding: 0 0 20px; row-gap: 20px; align-items: end; border-bottom: 1px solid currentColor; margin-bottom: var(--head-gap); }
 .chapter__head .h2 { grid-column: 1 / 9; }
 .chapter__intro { grid-column: 9 / 13; margin: 0; font-size: 16px; color: var(--ink-2); max-width: 44ch; }
@@ -174,10 +174,6 @@
 .anfrage-band__hint:empty { display: none; }
 
 /* Älteres Abschlussband (Werkstatt) */
-.cta-band { background: var(--ground-2); padding-block: var(--section); row-gap: 32px; align-items: end; --cover: var(--ground-2); }
-.cta-band .h2 { grid-column: 1 / 9; }
-.cta-band__text { grid-column: 9 / 13; color: var(--ink-2); margin: 0 0 24px; }
-.cta-band__actions { grid-column: 9 / 13; display: flex; flex-wrap: wrap; gap: 18px 28px; align-items: center; }
 
 /* Fehlerseite: Wege zurück in Fließtextgröße */
 .not-found { min-height: 70vh; align-content: center; }
@@ -206,7 +202,7 @@
   .datelist__text { grid-column: 4 / -1; }
   .datelist__meta { grid-column: 4 / -1; }
   .person { grid-column: 1 / -1; }
-  .cta-band .h2, .cta-band__text, .cta-band__actions, .anfrage-band__text, .anfrage-band__actions, .anfrage-band__hint { grid-column: 1 / -1; }
+  .anfrage-band__text, .anfrage-band__actions, .anfrage-band__hint { grid-column: 1 / -1; }
 }
 @media (min-width: 901px) and (max-width: 1200px) {
   .catalog__item { grid-column: span 6; }

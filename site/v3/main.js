@@ -59,24 +59,52 @@ import { random, pickGlaze as pickFrom, renderBowlSprite } from './js/keramik.js
     });
   });
 
-  /* ---------- Lebensweg: kurze Haltestrecke, Linie und Punkte füllen sich mit dem Scrollen ---------- */
+  /* ---------- Chronik: die Striche zwischen den Jahren füllen sich strikt nacheinander, gebunden an die Lesehöhe ---------- */
+  const chronicle = $('.chronicle__list');
+  if (chronicle && !reduced) {
+    const segs = $$('li:not(:last-child)', chronicle);
+    const READ_LINE = 0.62;
+    let framed = false;
+    const paint = () => {
+      framed = false;
+      const line = innerHeight * READ_LINE;
+      const dotY = parseFloat(getComputedStyle(chronicle.firstElementChild, '::before').top) + 5.5;
+      segs.forEach((li) => {
+        const box = li.getBoundingClientRect();
+        const v = Math.min(1, Math.max(0, (line - (box.top + dotY)) / box.height));
+        li.style.setProperty('--seg', v.toFixed(3));
+      });
+    };
+    const schedule = () => { if (!framed) { framed = true; requestAnimationFrame(paint); } };
+    addEventListener('scroll', schedule, { passive: true });
+    addEventListener('resize', schedule);
+    paint();
+  }
+
+  /* ---------- Lebensweg: kurze Haltestrecke direkt unter der Kopfzeile, Linie und Punkte füllen sich mit dem Scrollen ---------- */
   const track = $('[data-journey-track]');
   if (track && !reduced) {
     const line = $('.journey', track);
+    const stage = $('.journey-stage', track);
+    let pinTop = 0;
     const stops = $$('li', line);
     const SOFT = 0.08;
+    const LEAD = 0.6;
     let offsets = [];
     const measure = () => {
       const vertical = stops[1].offsetTop > stops[0].offsetTop + 4;
       const size = vertical ? line.offsetHeight : line.offsetWidth;
       offsets = stops.map((li) => (vertical ? li.offsetTop : li.offsetLeft) / size);
+      pinTop = parseFloat(getComputedStyle(stage).top) || 0;
     };
     const clamp01 = (v) => Math.min(1, Math.max(0, v));
     const update = () => {
-      const room = track.offsetHeight - window.innerHeight;
-      const p = clamp01(-track.getBoundingClientRect().top / room);
+      // Die Füllung beginnt schon, bevor der Strahl oben ankommt (LEAD), und endet mit der Haltestrecke
+      const lead = window.innerHeight * LEAD;
+      const room = track.offsetHeight - stage.offsetHeight + lead;
+      const p = clamp01((pinTop + lead - track.getBoundingClientRect().top) / room);
       line.style.setProperty('--p', p.toFixed(4));
-      stops.forEach((li, i) => li.style.setProperty('--r', clamp01((p - offsets[i]) / SOFT + 0.15).toFixed(3)));
+      stops.forEach((li, i) => li.style.setProperty('--r', clamp01((p - offsets[i]) / SOFT + 0.5).toFixed(3)));
     };
     let queued = false;
     const request = () => {
@@ -186,11 +214,10 @@ import { random, pickGlaze as pickFrom, renderBowlSprite } from './js/keramik.js
   }
 
   /* ---------- Kosmos: 99 Schalen von oben, im Ring um eine leere Mitte ---------- */
-  const stage = $('[data-cosmos]');
-  if (stage) {
+  $$('[data-cosmos]').forEach((stage) => {
     const canvas = $('canvas', stage);
     const ctx = canvas.getContext('2d');
-    const readout = $('[data-cosmos-readout]');
+    const readout = $('[data-cosmos-readout]', stage);
     const N = 99;
     const GOLDEN = Math.PI * (3 - Math.sqrt(5));
 
@@ -335,10 +362,10 @@ import { random, pickGlaze as pickFrom, renderBowlSprite } from './js/keramik.js
     layout();
     let rz;
     window.addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(layout, 150); }, { passive: true });
-    // Wird der Kosmos über das Entwurf-Panel eingeblendet, fehlt ihm noch die Größe
+    // Wird eine Fassung über das Entwurf-Panel eingeblendet, fehlt ihr noch die Größe
     document.addEventListener('kwm:varianten', () => { if (!S) layout(); });
     new IntersectionObserver(([e]) => {
       if (e.isIntersecting) start(); else running = false;
     }, { threshold: 0.08 }).observe(stage);
-  }
+  });
 })();

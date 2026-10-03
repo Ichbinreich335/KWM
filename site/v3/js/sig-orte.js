@@ -16,6 +16,16 @@ export default function init(el) {
   let holdFrame = 0;
   let serial = 0;
 
+  const tip = el.querySelector('[data-orte-tip]');
+  if (tip) {
+    const seen = new IntersectionObserver(([entry]) => {
+      if (!entry.isIntersecting) return;
+      tip.classList.add('is-in');
+      seen.disconnect();
+    }, { threshold: 0.15 });
+    seen.observe(grid);
+  }
+
   const buttons = new Map();
   tiles.forEach((tile) => {
     const name = tile.querySelector('.orte__name');
@@ -130,6 +140,7 @@ export default function init(el) {
     const above = Boolean(previous && previous.compareDocumentPosition(tile) & Node.DOCUMENT_POSITION_FOLLOWING);
     const top = tile.getBoundingClientRect().top;
     active = tile;
+    tip?.classList.add('is-done');
     current = createPanel(tile);
     place(current, tile);
     settle(tile);

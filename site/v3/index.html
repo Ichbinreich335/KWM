@@ -275,14 +275,16 @@
         <a class="link-arrow" href="meisterstuecke.html">Alle Meisterstücke</a>
       </div>
     </div>
-    <div class="works__statement grid"><p data-reveal="words">Alle Meisterstücke stammen aus der Hand Young-Jae Lees – von ihr selbst gedreht, bemalt und glasiert.</p></div>
     <div class="works__feature grid">
       <figure class="works__single" data-reveal="img">
         <img src="../img/kwm/teeschale.webp" width="1200" height="1200" loading="lazy" sizes="(min-width: 900px) 55vw, 100vw" alt="Teeschale mit rotbraun geflammter Glasur, hellblauen Pinselzeichen und dunklen Eisensprenkeln">
       </figure>
       <div class="works__single-text">
+        <p class="works__statement" data-reveal="words">Alle Meisterstücke stammen aus der Hand Young-Jae Lees – von ihr selbst gedreht, bemalt und glasiert.</p>
+        <div class="works__single-meta">
         <p class="works__single-name" data-reveal="fade">Teeschale, ohne Titel <span>2023</span></p>
         <a class="link-arrow" href="besuch.html?stueck=Teeschale%2C%20ohne%20Titel%2C%202023#anfrage" data-reveal="fade">Zu diesem Stück anfragen</a>
+        </div>
       </div>
     </div>
     <ol class="works__grid grid">
@@ -304,6 +306,7 @@
         <a class="link-arrow" href="young-jae-lee.html#ausstellungen">Alle Ausstellungen</a>
       </div>
     </div>
+    <p class="orte__tip" data-orte-tip>Auf eine Stadt <span class="orte__tip-fine">klicken</span><span class="orte__tip-coarse">tippen</span>, um die Ausstellungen dort zu sehen.</p>
     <ul class="orte__grid">
       <li class="orte__tile orte__tile--xl">
         <img class="orte__img" src="../img/kwm/schalen-trio-1400.webp" width="1400" height="652" loading="lazy" alt="">
@@ -400,8 +403,48 @@
     <p class="orte__note">Städte und Zahlen nach der Ausstellungsliste 2016 bis 2026.</p>
   </section>
 
-  <!-- Meditation und Kosmos: ein Kapitel über Wiederholung und Differenz -->
-  <section class="rep" id="kosmos" aria-labelledby="rep-title">
+  <!-- Variante „Getrennt“ (Standard): Meditation = Haltung und Arbeitsweise -->
+  <section class="med" id="haltung-meditation" data-variant="haltung:getrennt" aria-labelledby="med-title">
+    <div class="med__grid grid">
+      <blockquote class="med__quote">
+        <p id="med-title" data-reveal="words">Die Herstellung jedes neuen Gefäßes gleicht einer Meditation.</p>
+      </blockquote>
+      <div class="med__body">
+        <p data-reveal="fade">Für Young-Jae Lee ist – in Anlehnung an die koreanische Tradition – nicht die ständige Neuerfindung von Formen entscheidend, sondern die vollkommene Beherrschung des vorhandenen Repertoires. Erst mit der Verinnerlichung der Formen wird die tägliche Arbeit an der Drehscheibe jenseits aller Routine zu einer Art Exerzitium. Die Persönlichkeit beginnt einzufließen, das Individuelle drückt sich im Handwerklichen aus.</p>
+      </div>
+      <figure class="med__media" data-reveal="img">
+        <img src="../img/01-seladon-gefaess.webp" srcset="../img/01-seladon-gefaess-800.webp 800w, ../img/01-seladon-gefaess.webp 1600w" sizes="(min-width: 900px) 40vw, 100vw" width="1600" height="1067" loading="lazy" alt="Bauchiges Gefäß mit seladongrüner bis taubenblauer Glasur">
+      </figure>
+    </div>
+  </section>
+
+  <!-- 99 Schalen: keine wie die andere, jede mit eigener Glasur -->
+  <section class="rep" id="kosmos" data-variant="haltung:getrennt" aria-labelledby="kosmos-title">
+    <div class="sec-head grid">
+      <h2 class="h2" id="kosmos-title" data-reveal="words">Ein Ring aus Teilchen um eine leere Mitte.</h2>
+      <div class="sec-head__aside cosmos__text">
+        <p data-reveal="fade">„Schalen über Schalen, einfach auf den Boden gestellt. Ein Meer aus Schalen, ein Feld aus Kelchen, ein Ring aus Teilchen um eine leere Mitte, eine kleine Milchstraße voll schimmernder Gefäße.“</p>
+        <p class="cosmos__source" data-reveal="fade">Thomas Wagner, »Die aufgehobene Zeit?«</p>
+      </div>
+    </div>
+    <div class="cosmos__floor">
+      <div class="cosmos__stage" data-cosmos>
+        <canvas class="cosmos__canvas" role="img" aria-label="Neunundneunzig Schalen von oben gesehen, in einem Ring um eine leere Mitte angeordnet, jede mit eigener Glasur"></canvas>
+        <div class="cosmos__center">
+          <p class="cosmos__count" data-cosmos-readout>99 Schalen</p>
+            <p class="cosmos__show">Zu sehen im Museum für Ostasiatische Kunst, Köln, bis 25. Oktober 2026</p>
+          <a class="link-arrow" href="aktuelles.html#kosmos">Zur Ausstellung</a>
+        </div>
+      </div>
+      <div class="cosmos__caption">
+        <p class="cosmos__show">Zu sehen im Museum für Ostasiatische Kunst, Köln, bis 25. Oktober 2026</p>
+        <a class="link-arrow" href="aktuelles.html#kosmos">Zur Ausstellung</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Variante „Zusammen“: Meditation und 99 Schalen als ein Kapitel -->
+  <section class="rep" id="kosmos-zusammen" data-variant="haltung:zusammen" hidden aria-labelledby="rep-title">
     <div class="rep__lead grid">
       <blockquote class="rep__quote">
         <p id="rep-title" data-reveal="words">Die Herstellung jedes neuen Gefäßes gleicht einer Meditation.</p>
@@ -433,6 +476,7 @@
       </div>
     </div>
   </section>
+
 
   <!-- Manufaktur -->
   <section class="craft" id="manufaktur" aria-labelledby="craft-title">
@@ -467,6 +511,9 @@
         <div><dt>Gebrauch</dt><dd>Alle Stücke sind spülmaschinenfest</dd></div>
         <div class="facts__cta"><a class="button" href="manufaktur.html">Zum Programm</a></div>
       </dl>
+      <figure class="craft__media3" data-reveal="img">
+        <img src="../img/kwm/kannen.webp" width="600" height="400" loading="lazy" sizes="(min-width: 900px) 33vw, 100vw" alt="Zwei Krüge und eine Tasse aus dem Manufakturprogramm in Hellgrün, Weiß und Dunkelgrün">
+      </figure>
     </div>
   </section>
 
@@ -492,6 +539,7 @@
         <p class="chronicle__lede" data-reveal="fade">Von der Siedlungswerkstatt in Essen zur Manufaktur auf Zollverein: neun Stationen in 82 Jahren.</p>
         <p class="chronicle__span" data-reveal="fade">1924 bis 2006</p>
         <a class="link-arrow" href="werkstatt.html">Werkstatt, Team und Chronik</a>
+        <p class="chronicle__hint" aria-hidden="true">Wischen</p>
       </div>
       <ol class="chronicle__list" aria-label="Chronik der Werkstatt">
       <li><span class="chronicle__year">1924</span><div class="chronicle__what"><h3 class="chronicle__title">Siedlungswerkstatt</h3><p>Margarete Krupp realisiert die Siedlung Margaretenhöhe in Essen. Hermann Kätelhön initiiert eine Keramikwerkstatt auf dem Gelände, Leiter wird Will Lammert.</p></div></li>

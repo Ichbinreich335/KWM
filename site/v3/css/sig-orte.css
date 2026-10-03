@@ -9,7 +9,7 @@
   --orte-pad: clamp(14px, 1.6vw, 24px);
 }
 .orte ::selection { background: var(--on-coal); color: var(--coal); }
-.orte__head { align-items: end; padding-bottom: 20px; border-bottom: 1px solid var(--on-coal); margin-inline: var(--m); padding-inline: 0; margin-bottom: clamp(32px, 4vw, 56px); }
+.orte__head { align-items: end; padding-bottom: 20px; border-bottom: 1px solid var(--on-coal); margin-inline: var(--m); padding-inline: 0; margin-bottom: 18px; }
 .orte__head .h2 { grid-column: 1 / 9; font-size: clamp(2rem, 3.4vw, 3.4rem); }
 .orte__aside { grid-column: 9 / 13; display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
 .orte__aside p { margin: 0; font-size: 15px; color: var(--on-coal-2); }
@@ -171,6 +171,12 @@
   .orte__list { columns: 2; column-gap: clamp(24px, 3vw, 48px); }
 }
 
+.orte__tip { margin: 0 var(--m) clamp(24px, 3vw, 40px); font-size: 14px; color: var(--on-coal-2); opacity: 0; transform: translateY(8px); transition: opacity 1s var(--ease), transform 1s var(--ease); }
+.orte__tip.is-in { opacity: 1; transform: none; }
+.orte__tip.is-done { opacity: 0; transform: none; }
+.orte__tip-coarse { display: none; }
+@media (pointer: coarse) { .orte__tip-fine { display: none; } .orte__tip-coarse { display: inline; } }
+@media (prefers-reduced-motion: reduce) { .orte__tip { opacity: 1; transform: none; transition: none; } }
 .orte__note { margin: 20px var(--m) 0; font-size: 13px; color: var(--on-coal-2); }
 
 @media (max-width: 899px) {

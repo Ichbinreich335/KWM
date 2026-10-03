@@ -9,6 +9,7 @@ const GROUPS = [
   { key: 'kosmos', label: 'Ausstellung', options: [['buehne', 'Bühne'], ['klassisch', 'Kosmos']] },
   { key: 'feuer', label: 'Feuer', options: [['zwei-farben', 'Zwei Farben'], ['liste', 'Liste']] },
   { key: 'farbskala', label: 'Farbskala', global: true, options: [['kachel', 'Testkachel'], ['flaeche', 'Fläche']] },
+  { key: 'haltung', label: 'Meditation und 99 Schalen', options: [['getrennt', 'Getrennt'], ['zusammen', 'Zusammen']] },
   { key: 'profil', label: 'Schale im Einstieg', options: [['aus', 'Aus'], ['an', 'An']] },
 ];
 // Startseite: neue Fassung (index.html) oder vorherige (start-vorher.html)
