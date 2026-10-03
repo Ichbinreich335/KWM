@@ -54,6 +54,14 @@ Bitte zu jedem Punkt eine kurze Antwort oder die Datei. Was nicht geklärt ist, 
 1. **Englische AGB:** Sie stammen von 2013 und widersprechen den deutschen in Skonto und Fälligkeit. Neu übersetzen lassen oder auf die deutsche Fassung verweisen?
 2. **Produktdaten widersprechen sich zwischen DE und EN:** Dessertschale flach (Ø 15 oder 13 cm), Maße von Zucker und Milch, Krug 0,75 l (Nr. 26a) fehlt in EN, „Suppentopf“ heißt in EN „Soup bowl“.
 3. **Namen:** „Burggraf Burggraf“ oder „Elena Burggraf-Reusch“? „Scheinler“ oder „Scheibler“? „Ueberle“ oder „Veberle“?
-4. **Zahlung:** Für Auslandsüberweisungen fehlt der BIC.
+4. **Zahlung:** Für Auslandsüberweisungen fehlt der BIC auf der Seite. In den Anfrage-PDFs steht SPESDE3EXXX. Bitte bestätigen.
 5. **Zitate auf Englisch:** Nur von Gisela Jahn gibt es eine veröffentlichte Fassung. Für Wagner und Catoir sind Übersetzung und Rechte zu klären.
 6. **Sprachvariante:** Wir empfehlen amerikanisches Englisch. Einverstanden?
+
+## F. Aus der Quellenrecherche (Details in `konzept/CONTENT-FUNDE.md` und `konzept/BILDPLAN.md`)
+1. **Leitung seit 1987**, so sagen es fast alle externen Quellen. Die Website nennt teils 1986. Was ist 1986 bzw. 1993 genau passiert?
+2. **Brenntemperatur:** In Galerietexten steht 1280 °C, auf der Website 1300 °C. Was stimmt?
+3. **Ausstellungen:** Jahn und Jahn 2026 lief laut Galerie vom 14.7. bis 20.8. (Website: bis 12.9.). „51 WERKE“ bei Greve Köln (Jan./Feb. 2024) fehlt im Archiv.
+4. **Auszeichnungen:** Der Künstlerinnenpreis NRW fehlt.
+5. **Essays und PDFs** liegen auf kwm-1924.de. Sie müssen beim Umzug mitkommen, und die Zustimmung der Autoren gilt bisher nur für die alte Seite.
+6. **Zeitkritisch:** Raumfotos der Ausstellungen im MOK (bis 25.10.) und in Wesel (bis 31.10.) jetzt anfragen oder selbst machen.

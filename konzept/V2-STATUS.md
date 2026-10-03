@@ -141,3 +141,9 @@ Start: `npm run dev`, dann öffnen: V1 http://localhost:4391/ und V2 http://loca
 - **Einzelwerk:** Spindelvase oder Teeschale (Original 1500 px) als Schalter. Höher aufgelöste Werkfotos gibt es auf der alten Seite nicht.
 - **Englisch:** `konzept/EN-TEXTE.md` mit Zuordnung DE zu EN, rund 57 % aus dem Altbestand, Glossar und Sanity-Empfehlung. Umsetzung erst mit Astro und Sanity.
 - **Offen beim Umzug:** Statustexte und Monatsnamen in `sig-aktuell.js` und `sig-buehne.js` sind doppelt und deutsch fest im Code. Für EN über `Intl.DateTimeFormat` lösen.
+
+## V3 Runde 4 (03.10.2026)
+- **Startseite:** Lebensweg zeichnet sich einmal (Scroll-Fassung als Schalter), Feuer kleiner mit wanderndem Text, Chronik-Punkte füllen sich animiert.
+- **Recherche:** `konzept/CONTENT-FUNDE.md` mit 27 externen Quellen, Zitaten und 16 Textvorschlägen. `konzept/BILDPLAN.md` mit 55 Bildstellen, Shotliste für den Admin und 15 Anfragen an Dritte.
+- **Lücke im Umzugsplan:** Essays und PDFs auf kwm-1924.de (`/wp-content/uploads`) müssen beim Umzug lokal übernommen werden. In `SITEMAP-V3.md` nachtragen.
+- **KI-Bilder noch aktiv:** `01-seladon-gefaess` (Meditation, Zürich-Kachel) und `03-glasur-detail` (Feuer). Vor dem Livegang ersetzen.
