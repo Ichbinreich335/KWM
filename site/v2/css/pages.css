@@ -58,7 +58,7 @@
 .page-hero--meta .page-hero__media img { height: auto; aspect-ratio: 2000 / 931; }
 .page-hero--meta .page-hero__media figcaption { padding: 10px 0 0; color: var(--ink-2); }
 .page-hero--meta .visit-hours__times { grid-column: 5 / -1; }
-.page-hero--meta { padding-bottom: 0; }
+.page-hero--meta:has(.page-hero__media) { padding-bottom: var(--head-gap); }
 .page-hero--meta:not(:has(.page-hero__media)) { padding-bottom: calc(var(--section) * 0.6); }
 
 /* Typ Fläche: --ground-2, Titel und Lede, darunter eine Reihe Produktfotos auf einem Sockel (Manufaktur) */
@@ -67,7 +67,8 @@
 .shelf__item { margin: 0; }
 .shelf__item img { width: 100%; aspect-ratio: 3 / 2; object-fit: cover; }
 .plinth { grid-column: 1 / -1; margin-inline: calc(var(--m) * -1); height: clamp(14px, 1.6vw, 24px); background: var(--ground-3); margin-top: -1px; }
-.shelf-caps { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--g); margin: 0; padding: 0 0 28px; list-style: none; font-size: 13.5px; color: var(--ink-2); }
+.shelf { margin-bottom: calc(var(--head-gap) * -1); }
+.shelf-caps { margin-top: calc(var(--head-gap) * -1); grid-column: 1 / -1; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--g); margin: 0; padding: 0 0 28px; list-style: none; font-size: 13.5px; color: var(--ink-2); }
 .shelf-caps li { padding-top: 10px; }
 
 /* Sprungmarken innerhalb einer Seite */

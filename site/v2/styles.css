@@ -284,6 +284,18 @@ body::after {
 .lede__col--a { grid-column: 7 / 10; }
 .lede__col--b { grid-column: 10 / 13; }
 
+/* Meisterstücke: ein Einzelwerk groß vor der Werkschau, Werkangaben in der Meta-Spalte */
+.works__feature { align-items: end; row-gap: var(--head-gap); padding-bottom: var(--section); }
+.works__single { grid-column: 1 / 8; background: var(--ground-2); }
+.works__single img { width: 100%; aspect-ratio: 1; object-fit: cover; mix-blend-mode: multiply; }
+.works__single-text { grid-column: 9 / 13; display: grid; gap: 20px; justify-items: start; }
+.works__lede { font-family: var(--f-text); font-size: clamp(1.25rem, 1.7vw, 1.6rem); line-height: 1.38; margin: 0; }
+.works__single-name { font-family: var(--f-display); font-size: clamp(1.4rem, 2vw, 1.9rem); margin: 0; }
+.works__single-name span { font-family: var(--f-sans); font-size: 13.5px; color: var(--ink-2); margin-left: 10px; font-variant-numeric: tabular-nums; }
+@media (max-width: 900px) {
+  .works__single, .works__single-text { grid-column: 1 / -1; }
+}
+
 /* Zwei Linien: Abzweig zu Meisterstücken und Manufaktur */
 .lines { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--g); border-top: 1px solid var(--ink); border-bottom: 1px solid var(--hair); }
 .lines__item { display: grid; align-content: start; gap: 10px; --lines-out: var(--g); --lines-in: calc(var(--g) / 2); margin-inline: calc(var(--lines-out) * -1) calc(var(--lines-in) * -1); padding: clamp(20px, 2.4vw, 32px) var(--lines-in) clamp(24px, 3vw, 40px) var(--lines-out); text-decoration: none; transition: background-color 0.6s var(--ease-soft), color 0.6s var(--ease-soft); }

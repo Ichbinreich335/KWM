@@ -1,6 +1,5 @@
 /* Meisterstücke */
 
-.page-hero--meta { padding-bottom: var(--head-gap); }
 .ms-intro { padding-block: var(--section); row-gap: 40px; align-items: start; }
 .ms-intro__statement {
   grid-column: 1 / 8;

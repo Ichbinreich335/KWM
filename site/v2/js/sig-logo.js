@@ -37,8 +37,12 @@ export default function init(svg) {
     const px = clamp(box.width * MAIN_PX_PER_WIDTH, MAIN_PX[0], MAIN_PX[1]);
     svg.style.setProperty('--sw', (px / scale).toFixed(3));
     parts.forEach((p) => { p.len = p.el.getTotalLength(); });
+  }
+
+  // Die Seite wächst beim Laden noch (Bilder, Einblendungen): Lage des Logos bei jedem Scroll neu bestimmen.
+  function place() {
     const vh = window.innerHeight;
-    start = box.top + window.scrollY - vh * START_AT;
+    start = svg.getBoundingClientRect().top + window.scrollY - vh * START_AT;
     const scrollMax = document.documentElement.scrollHeight - vh;
     end = Math.max(start + 80, Math.min(start + vh * SPAN, scrollMax - 6));
   }
@@ -68,6 +72,7 @@ export default function init(svg) {
   }
 
   function update() {
+    place();
     target = clamp((window.scrollY - start) / (end - start));
     if (current < 0) current = target;
     if (!running && visible) { running = true; requestAnimationFrame(frame); }
