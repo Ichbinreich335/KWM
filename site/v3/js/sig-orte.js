@@ -74,19 +74,10 @@ export default function init(el) {
     return row[row.length - 1];
   }
 
-  // Der Zeiger (Seladon-Strich) liegt über der Spalte der Kachel.
-  function pointTo(panel, tile) {
-    const gridBox = grid.getBoundingClientRect();
-    const box = tile.getBoundingClientRect();
-    panel.style.setProperty('--point-x', `${box.left - gridBox.left}px`);
-    panel.style.setProperty('--point-w', `${box.width}px`);
-  }
-
   function place(panel, tile) {
     panel.remove();
     const anchor = lastOfRow(tile);
     anchor.after(panel);
-    pointTo(panel, tile);
   }
 
   function retire(panel) {

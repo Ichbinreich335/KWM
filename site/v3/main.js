@@ -81,28 +81,24 @@ import { random, pickGlaze as pickFrom, renderBowlSprite } from './js/keramik.js
     paint();
   }
 
-  /* ---------- Lebensweg: kurze Haltestrecke direkt unter der Kopfzeile, Linie und Punkte füllen sich mit dem Scrollen ---------- */
+  /* ---------- Lebensweg: Haltestrecke mit mittig klebender Stage, Linie und Punkte füllen sich mit dem Scrollen ---------- */
   const track = $('[data-journey-track]');
   if (track && !reduced) {
     const line = $('.journey', track);
     const stage = $('.journey-stage', track);
-    let pinTop = 0;
     const stops = $$('li', line);
     const SOFT = 0.08;
-    const LEAD = 0.6;
+    const FILL = 0.8; // Anteil der Haltestrecke, in dem sich die Linie füllt; der Rest ist Pause
     let offsets = [];
     const measure = () => {
       const vertical = stops[1].offsetTop > stops[0].offsetTop + 4;
       const size = vertical ? line.offsetHeight : line.offsetWidth;
       offsets = stops.map((li) => (vertical ? li.offsetTop : li.offsetLeft) / size);
-      pinTop = parseFloat(getComputedStyle(stage).top) || 0;
     };
     const clamp01 = (v) => Math.min(1, Math.max(0, v));
     const update = () => {
-      // Die Füllung beginnt schon, bevor der Strahl oben ankommt (LEAD), und endet mit der Haltestrecke
-      const lead = window.innerHeight * LEAD;
-      const room = track.offsetHeight - stage.offsetHeight + lead;
-      const p = clamp01((pinTop + lead - track.getBoundingClientRect().top) / room);
+      const room = track.offsetHeight - stage.offsetHeight;
+      const p = clamp01(-track.getBoundingClientRect().top / (room * FILL));
       line.style.setProperty('--p', p.toFixed(4));
       stops.forEach((li, i) => li.style.setProperty('--r', clamp01((p - offsets[i]) / SOFT + 0.5).toFixed(3)));
     };

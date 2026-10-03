@@ -45,6 +45,9 @@ Stand: 02.10.2026. Verbindlich für alle Seiten und Elemente in `src/v2/` und `s
 | Abschnitt H2 (`.h2`) | `clamp(2.3rem, 4.6vw, 4.6rem)`, Zeilenhöhe 1.02 | Display |
 | Kachel-/Eintragstitel | `clamp(1.4rem, 2vw, 1.9rem)` | Display |
 | Lede | `clamp(1.65rem, 2.9vw, 2.75rem)` | Text |
+| Begleittext (`--fs-aside`: Abschnittskopf-Aside, Kapitel-Intro, Orte-Aside) | 16 px; ab 901 px bei „Größer“ `clamp(16px, 0.55vw + 9px, 18px)` | Jost |
+| Daten/Meta (`--fs-meta`: Jahr, Datum, Orte-Details) | 13,5 px; ab 901 px bei „Größer“ `clamp(13.5px, 0.35vw + 9px, 15px)` | Jost |
+| Bildunterschrift (`--fs-cap`) | 12,5 px; ab 901 px bei „Größer“ `clamp(12.5px, 0.3vw + 9px, 14px)` | Jost |
 | Zitat klein | `clamp(1.25rem, 1.7vw, 1.6rem)` | Text |
 | Fließtext | 17 px (mobil 16), Zeilenhöhe 1.55, max. 68ch | Jost |
 | Klein | 15 px | Jost |
@@ -54,6 +57,8 @@ Stand: 02.10.2026. Verbindlich für alle Seiten und Elemente in `src/v2/` und `s
 - **Spaltenlabel nur über Info-Spalten** (Footer, Werkangaben). **Nie als Kicker über einer Überschrift.**
 - **Umbruch:** Überschriften `text-wrap: balance`, Absätze `pretty`. Namen mit Bindestrich (Young-Jae) brechen nicht um, dafür das geschützte Zeichen `&#8209;` oder `white-space: nowrap` verwenden.
 - **Unterlängen-Maske** bei der Wort-Einblendung: `padding-bottom: 0.25em`, nie knapper.
+
+Kleine Schrift: Variante `data-klein` (Entwurf-Panel „Kleine Schrift“, Standard „Größer“, früh im Head gesetzt). Nur kleine Begleittexte wachsen auf großen Bildschirmen, mobil bleibt alles gleich. Neue kleine Texte nutzen die Tokens, keine festen px-Werte.
 
 ## 4. Raster und Abstand
 - **Raster:** 12 Spalten (`.grid`), Seitenrand `--m` = `clamp(16px, 2.8vw, 44px)`, Spaltenabstand `--g` = `clamp(12px, 1.6vw, 24px)`.
@@ -67,13 +72,13 @@ Stand: 02.10.2026. Verbindlich für alle Seiten und Elemente in `src/v2/` und `s
 |---|---|---|
 | Hell | `--ground` | Standard |
 | Fläche | `--ground-2` (`.on-flaeche`) | ruhige Zwischenstation: Chronik, Bühnenboden |
-| Anker | `--coal` (Schrift `--on-coal`), auf Unterseiten `.on-anker` | Einstieg (Variante), Seitenkopf der Werkstatt, Aktuell, Orte, Feuer, ein Kapitel oder Zitat je Unterseite, Footer |
+| Anker | `--coal` (Schrift `--on-coal`), auf Unterseiten `.on-anker` | Einstieg (Variante), Seitenkopf der Werkstatt, Aktuell, Orte, Feuer, ein Kapitel oder Abschnitt je langer Unterseite (nicht Aktuelles), Footer |
 
 - **Rhythmus:** nie zwei Anker direkt hintereinander. Ungefähr alle zwei bis drei Bildschirme ein Anker, damit die helle Seite Halt hat.
 - **Anker setzen lokal** `--ink-2: var(--on-coal-2)`, `--hair: rgba(236,234,227,.22)`, `--cover: var(--coal)` und eigene `::selection`.
 
 **Unterseiten (Reihenfolge):** Seitenkopf (einer der vier Kopf-Typen, siehe Seitenkopf) → Einleitung oder Unternavigation (hell, bei Bedarf Fläche) → Kapitel (hell, mindestens ein Kapitel oder eine Zäsur als Fläche) → Anfrage-Leiste (Fläche, nie Anker, weil der Footer folgt) → Footer (Anker).
-- **Jede Unterseite hat genau einen Anker** (`.on-anker`: lokale Tokens `--ink`, `--ink-2`, `--hair`, `--cover`, Grund `--coal`), an einer inhaltlich passenden Stelle im Rhythmus, nicht zwingend oben. Nie zwei Anker hintereinander, nie direkt vor dem Footer. Wo der Seitenkopf selbst dunkel ist (Werkstatt), genügt dieser.
+- **Anker auf Unterseiten** (`.on-anker`: lokale Tokens `--ink`, `--ink-2`, `--hair`, `--cover`, Grund `--coal`) sind kein Muss. Auf langen Seiten steht genau einer im ersten Drittel als Halt, an einer inhaltlich passenden Stelle. Nie direkt vor der Anfrage-Leiste oder dem Footer („schwarz, hell, schwarz“ wirkt unruhig), nie zwei Anker zu dicht hintereinander. Kurze Seiten (Aktuelles) kommen ohne Anker aus. Wo der Seitenkopf selbst dunkel ist (Werkstatt), genügt dieser.
 - **Nicht jede Seite beginnt dunkel.** Höchstens eine Unterseite hat einen dunklen Kopf (Werkstatt), nie zwei in der Navigation direkt nebeneinander.
 - **Auf langen Seiten eine Zäsur** alle zwei bis drei Bildschirme: Bildband, Zitat auf Fläche oder Bild mit Satz. Zitat-Zäsur: `.pullquote` (Fläche, Display-Satz, Quelle). Bild-Zäsur: `.zaesur` (Fläche, Bild links, Satz rechts).
 - **Einzelwerk mit Meta-Spalte:** ein einzelnes Bild in einem Kapitel steht in Spalte 4–12, Name, Maße und Anfrage in Spalte 1–3 an derselben Oberkante (`.catalog__item--wide`). Nie ein zentriertes Einzelbild.
@@ -81,11 +86,11 @@ Stand: 02.10.2026. Verbindlich für alle Seiten und Elemente in `src/v2/` und `s
 
 | Seite | Kopf-Typ | Rhythmus | Charakter-Element |
 |---|---|---|---|
-| Meisterstücke | Meta | Kopf hell → Einleitung Fläche → Schalen hell → Kummen Fläche → Vasen hell → **Arbeitsweise Anker** → Anfrage-Leiste → Footer | Einzelwerke mit Werkangaben in der Meta-Spalte |
+| Meisterstücke | Meta | Kopf hell → Einleitung Fläche → Schalen hell → **Arbeitsweise Anker** → Kummen Fläche → Vasen hell → Anfrage-Leiste → Footer | Einzelwerke mit Werkangaben in der Meta-Spalte |
 | Manufaktur | Fläche | Kopf Fläche → **Einleitung mit Zitat Anker** → Unternavigation → Geschirr hell → Zäsur Regal Fläche → Geschirr hell → Edition Fläche → Farben hell, Arbeitsweise hell → Anfrage-Leiste → Footer | Geschirrreihe auf Sockel im Kopf |
-| Young-Jae Lee | Name | Kopf hell → Haltung hell → Erinnerung Fläche → Biografie, Texte hell → Bildband → Ausstellungen hell → **Zitat Anker** → Sammlungen bis Publikationen hell → Anfrage-Leiste → Footer | großer Name, Zitat „Immer sind es Schalen …“ |
+| Young-Jae Lee | Name | Kopf hell → Haltung hell → **„Eine nach der anderen.“ Anker** → Biografie, Texte hell → Bildband → Ausstellungen hell → Zitat Fläche → Sammlungen bis Publikationen hell → Anfrage-Leiste → Footer | großer Name, Zitat „Immer sind es Schalen …“ |
 | Werkstatt | Anker | Kopf dunkel → Arbeitsweise, Glasurfarben hell → Chronik Fläche → Team hell → Auszeichnungen Fläche → Zollverein hell → Anfrage Fläche → Footer | Panorama randlos |
-| Aktuelles | Name (ohne Bild) | Kopf hell → Einträge hell, Wesel gespiegelt → Pop-up Fläche → **Vergangene Ausstellungen Anker** (Jahresarchiv) → Veröffentlichungen hell → Anfrage-Leiste → Footer | gespiegelter Eintrag |
+| Aktuelles | Name (ohne Bild) | Kopf hell → Einträge hell, Wesel gespiegelt → Pop-up Fläche → Vergangene Ausstellungen hell (Jahresarchiv) → Veröffentlichungen hell → Anfrage-Leiste → Footer | gespiegelter Eintrag |
 | Besuch | Meta (mit Öffnungszeiten) | Kopf hell → Adresse mit Panorama hell → Anfahrt Fläche → Anfrage, Zahlung hell → Footer | Öffnungszeiten groß im Kopf |
 | 404 | Name | Kopf hell → Footer (ohne Anfrage-Leiste) | |
 
