@@ -11,9 +11,10 @@
 <link rel="stylesheet" href="fonts/fonts.css">
 <link rel="stylesheet" href="styles.css">
 <link rel="stylesheet" href="css/pages.css">
+<link rel="stylesheet" href="css/expander.css">
 
 <link rel="stylesheet" href="css/signaturen.css">
-<script>document.documentElement.classList.add('js');try{if(!sessionStorage.getItem('kwm-logo')){sessionStorage.setItem('kwm-logo','1');document.documentElement.classList.add('logo-draw')}}catch(e){document.documentElement.classList.add('logo-draw')}try{const q=new URLSearchParams(location.search),s=JSON.parse(localStorage.getItem('kwm-entwurf')||'{}'),d=document.documentElement.dataset;d.grund=q.get('grund')||s.grund||'galerie';d.klein=q.get('klein')||s.klein||'groesser'}catch(e){}</script>
+<script>document.documentElement.classList.add('js');try{if(!sessionStorage.getItem('kwm-logo')){sessionStorage.setItem('kwm-logo','1');document.documentElement.classList.add('logo-draw')}}catch(e){document.documentElement.classList.add('logo-draw')}try{const q=new URLSearchParams(location.search),s=JSON.parse(localStorage.getItem('kwm-entwurf')||'{}'),d=document.documentElement.dataset;d.grund=q.get('grund')||s.grund||'galerie'}catch(e){}</script>
 </head>
 <body class="page-home">
 
@@ -276,12 +277,19 @@
       </div>
     </div>
     <div class="works__feature grid">
-      <figure class="works__single" data-reveal="img">
-        <img src="../img/kwm/teeschale.webp" width="1200" height="1200" loading="lazy" sizes="(min-width: 900px) 55vw, 100vw" alt="Teeschale mit rotbraun geflammter Glasur, hellblauen Pinselzeichen und dunklen Eisensprenkeln">
+      <figure class="works__single" data-reveal="img" data-variant="einzelwerk:spindelvase">
+        <img src="../img/kwm/werke/spindelvase-einzeln-1200.webp" width="1200" height="1200" loading="lazy" sizes="(min-width: 900px) 55vw, 100vw" alt="Weiße Spindelvase mit weiter Schulter und schmalem Fuß auf hellem Grund">
+      </figure>
+      <figure class="works__single" data-reveal="img" data-variant="einzelwerk:teeschale" hidden>
+        <img src="../img/kwm/werke/teeschale-original-1400.webp" width="1400" height="1400" loading="lazy" sizes="(min-width: 900px) 55vw, 100vw" alt="Teeschale mit rotbraun geflammter Glasur, hellblauen Pinselzeichen und dunklen Eisensprenkeln">
       </figure>
       <div class="works__single-text">
         <p class="works__statement" data-reveal="words">Alle Meisterstücke stammen aus der Hand Young-Jae Lees – von ihr selbst gedreht, bemalt und glasiert.</p>
-        <div class="works__single-meta">
+        <div class="works__single-meta" data-variant="einzelwerk:spindelvase">
+        <p class="works__single-name" data-reveal="fade">Spindelvase <span>2006/07</span></p>
+        <a class="link-arrow" href="besuch.html?stueck=Spindelvase%20%28H%2035%2C5%20cm%2C%20D%2037%20cm%20%C2%B7%20Petalit-Eichenasche-Feldspat-Glasur%20%C2%B7%20Holzofen%201260%20%C2%B0C%20%C2%B7%20Reduktion%29#anfrage" data-reveal="fade">Zu diesem Stück anfragen</a>
+        </div>
+        <div class="works__single-meta" data-variant="einzelwerk:teeschale" hidden>
         <p class="works__single-name" data-reveal="fade">Teeschale, ohne Titel <span>2023</span></p>
         <a class="link-arrow" href="besuch.html?stueck=Teeschale%2C%20ohne%20Titel%2C%202023#anfrage" data-reveal="fade">Zu diesem Stück anfragen</a>
         </div>
@@ -670,6 +678,7 @@
 
 <script type="module" src="main.js"></script>
 <script type="module" src="js/signaturen.js"></script>
+<script type="module" src="js/expander.js"></script>
 <script type="module" src="js/entwurf.js"></script>
 </body>
 </html>

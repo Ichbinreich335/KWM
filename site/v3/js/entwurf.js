@@ -4,13 +4,13 @@
 // global: gilt auf allen Seiten; sonst nur zeigen, wenn die Seite Elemente mit diesem Schlüssel hat
 const GROUPS = [
   { key: 'grund', label: 'Grundton', global: true, options: [['galerie', 'Galerie'], ['porzellan', 'Porzellan'], ['creme', 'Creme']] },
+  { key: 'einzelwerk', label: 'Einzelwerk Meisterstücke', options: [['spindelvase', 'Spindelvase'], ['teeschale', 'Teeschale']] },
   { key: 'einstieg', label: 'Einstieg', options: [['foto', 'Foto'], ['wortbild', 'Wort und Bild']] },
   { key: 'werk', label: 'Nach der Werkschau', options: [['orte', 'Orte'], ['drehen', 'Drehen'], ['aus', 'Nichts']] },
   { key: 'kosmos', label: 'Ausstellung', options: [['buehne', 'Bühne'], ['klassisch', 'Kosmos']] },
   { key: 'feuer', label: 'Feuer', options: [['zwei-farben', 'Zwei Farben'], ['liste', 'Liste']] },
   { key: 'farbskala', label: 'Farbskala', global: true, options: [['kachel', 'Testkachel'], ['flaeche', 'Fläche']] },
   { key: 'haltung', label: 'Meditation und 99 Schalen', options: [['getrennt', 'Getrennt'], ['zusammen', 'Zusammen']] },
-  { key: 'klein', label: 'Kleine Schrift', global: true, options: [['groesser', 'Größer'], ['normal', 'Normal']] },
   { key: 'profil', label: 'Schale im Einstieg', options: [['aus', 'Aus'], ['an', 'An']] },
 ];
 // Startseite: neue Fassung (index.html) oder vorherige (start-vorher.html)
