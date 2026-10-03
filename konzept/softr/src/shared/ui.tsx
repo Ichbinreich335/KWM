@@ -1,7 +1,9 @@
 // Gemeinsame Bauteile. Jede Auswahl, jedes Feld, jedes Fenster sieht in allen Blöcken gleich aus.
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { DialogClose, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { AlertTriangle, Check, ChevronRight, ImageOff, Loader2, X } from "lucide-react";
+import { AlertTriangle, Camera, Check, ChevronRight, ImageOff, Loader2, Plus, X } from "lucide-react";
 import { STATUS_BADGE } from "../shared/konstanten";
 import { type Attachment, type Opt, type ThumbSize, thumb } from "../shared/daten";
 
@@ -245,5 +247,121 @@ export function DoneButton() {
         Fertig
       </Button>
     </DialogClose>
+  );
+}
+
+// „+ Neu anlegen“ mit Dublettenprüfung ohne Groß-/Kleinschreibung.
+export function AddNew({ label, placeholder, existing, onAdd }: { label: string; placeholder: string; existing: Opt[]; onAdd: (name: string) => Promise<boolean> | boolean }) {
+  const [open, setOpen] = useState(false);
+  const [value, setValue] = useState("");
+  const [busy, setBusy] = useState(false);
+  const name = value.trim();
+  const duplicate = existing.find((o) => o.label.toLowerCase() === name.toLowerCase());
+  if (!open) {
+    return (
+      <button type="button" onClick={() => setOpen(true)} className="min-h-11 px-4 rounded-full border border-dashed border-input text-base text-muted-foreground hover:bg-muted">
+        + {label}
+      </button>
+    );
+  }
+  return (
+    <div className="flex flex-wrap items-center gap-2 w-full">
+      <Input autoFocus value={value} onChange={(e) => setValue(e.target.value)} placeholder={placeholder} aria-label={label} className="h-11 text-base flex-1 min-w-48" />
+      <Button
+        type="button"
+        className="h-11 text-base"
+        disabled={!name || !!duplicate || busy}
+        onClick={async () => {
+          setBusy(true);
+          const ok = await onAdd(name);
+          setBusy(false);
+          if (ok) {
+            setValue("");
+            setOpen(false);
+          }
+        }}
+      >
+        Übernehmen
+      </Button>
+      <Button type="button" variant="ghost" className="h-11 text-base" onClick={() => { setValue(""); setOpen(false); }}>
+        Abbrechen
+      </Button>
+      {duplicate && <p className="w-full text-sm text-muted-foreground">„{duplicate.label}“ gibt es schon. Bitte oben auswählen.</p>}
+    </div>
+  );
+}
+
+// Foto aufnehmen oder auswählen, mit Vorschau und Entfernen.
+export function PhotoPicker({
+  files,
+  onChange,
+  multiple,
+  error,
+}: {
+  files: File[];
+  onChange: (f: File[]) => void;
+  multiple: boolean;
+  error?: string;
+}) {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const previews = useMemo(() => files.map((f) => URL.createObjectURL(f)), [files]);
+  useEffect(() => () => previews.forEach((u) => URL.revokeObjectURL(u)), [previews]);
+
+  return (
+    <div>
+      <input
+        ref={inputRef}
+        id="foto-input"
+        type="file"
+        accept="image/*"
+        multiple={multiple}
+        className="sr-only"
+        onChange={(e) => {
+          const picked = Array.from(e.target.files ?? []);
+          onChange(multiple ? [...files, ...picked] : picked.slice(0, 1));
+          e.target.value = "";
+        }}
+      />
+      {files.length === 0 ? (
+        <button
+          type="button"
+          onClick={() => inputRef.current?.click()}
+          className={`w-full h-40 rounded-xl border-2 border-dashed flex flex-col items-center justify-center gap-2 text-base hover:bg-muted ${
+            error ? "border-destructive" : "border-input"
+          }`}
+        >
+          <Camera className="w-8 h-8 text-muted-foreground" aria-hidden />
+          <span className="font-medium">Foto aufnehmen oder auswählen</span>
+          <span className="text-sm text-muted-foreground">Am Handy öffnet sich Kamera oder Galerie</span>
+        </button>
+      ) : (
+        <div className="grid grid-cols-3 gap-3">
+          {previews.map((src, i) => (
+            <div key={src} className="relative aspect-square rounded-lg overflow-hidden border">
+              <img src={src} alt={`Foto ${i + 1}`} className="w-full h-full object-cover" />
+              <button
+                type="button"
+                aria-label={`Foto ${i + 1} entfernen`}
+                onClick={() => onChange(files.filter((_, j) => j !== i))}
+                className="absolute top-1 right-1 w-11 h-11 rounded-full bg-background/90 flex items-center justify-center"
+              >
+                <X className="w-5 h-5" aria-hidden />
+              </button>
+            </div>
+          ))}
+          {multiple && (
+            <button
+              type="button"
+              onClick={() => inputRef.current?.click()}
+              className="aspect-square rounded-lg border-2 border-dashed border-input flex flex-col items-center justify-center gap-1 text-sm hover:bg-muted"
+            >
+              <Plus className="w-6 h-6" aria-hidden />
+              Weiteres Foto
+            </button>
+          )}
+        </div>
+      )}
+      <ErrorText>{error}</ErrorText>
+    </div>
   );
 }

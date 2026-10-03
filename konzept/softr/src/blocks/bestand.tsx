@@ -1,413 +1,52 @@
-// Generiert von konzept/softr/build.mjs aus src/blocks/bestand.tsx und src/shared/. Nicht von Hand ändern.
-import { useEffect, useMemo, useRef, useState } from "react";
-import { datasource, q, useFieldOptions, useLinkedRecords, useRecords, useRecordUpdate, useUpload } from "@/lib/datasource";
+import { useEffect, useMemo, useState } from "react";
+import { datasource, q, useFieldOptions, useLinkedRecords, useRecordUpdate, useRecords, useUpload } from "@/lib/datasource";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { AlertTriangle, ArrowRight, Camera, Check, ChevronRight, Download, ImageOff, Loader2, Minus, Pencil, Plus, Search, Table2, X } from "lucide-react";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { ArrowRight, Check, Download, ImageOff, Loader2, Minus, Pencil, Plus, Search, Table2 } from "lucide-react";
 import { toast } from "sonner";
-
-const PAGE_SIZE = 100;
-const VERFUEGBAR = "verfügbar";
-const RESERVIERT = "reserviert";
-const VERKAUFT = "verkauft";
-const KOMMISSION = "in Kommission";
-const AUSGESTELLT = "ausgestellt";
-const ROHLING = "Rohling";
-const GLASIERT = "glasiert";
-const AUSSER_HAUS_ORT = "Außer Haus";
-const isAusserHaus = (status: string) => status === KOMMISSION || status === AUSGESTELLT;
-
-// Ruhige Variante für Badges in Listen und Tabellen.
-const STATUS_BADGE: Record<string, string> = {
-  [VERFUEGBAR]: "bg-emerald-100 text-emerald-800 border-emerald-200",
-  [RESERVIERT]: "bg-amber-100 text-amber-900 border-amber-200",
-  [VERKAUFT]: "bg-zinc-100 text-zinc-600 border-zinc-200",
-  [KOMMISSION]: "bg-sky-100 text-sky-800 border-sky-200",
-  [AUSGESTELLT]: "bg-violet-100 text-violet-800 border-violet-200",
-  [ROHLING]: "bg-stone-100 text-stone-700 border-stone-200",
-  [GLASIERT]: "bg-teal-50 text-teal-800 border-teal-200",
-};
-
-// Kräftige Variante für den gewählten Auswahl-Knopf.
-const STATUS_ACTIVE: Record<string, string> = {
-  [VERFUEGBAR]: "bg-emerald-600 text-white border-emerald-600",
-  [RESERVIERT]: "bg-amber-400 text-amber-950 border-amber-400",
-  [VERKAUFT]: "bg-zinc-500 text-white border-zinc-500",
-  [KOMMISSION]: "bg-sky-600 text-white border-sky-600",
-  [AUSGESTELLT]: "bg-violet-700 text-white border-violet-700",
-};
-
-type Opt = { id: string; label: string };
-type Attachment = { id?: string; url: string; filename?: string; thumbnails?: { url: string; size: string }[] };
-type RawItem = { id: string; fields: Record<string, unknown> };
-type LinkedPages = { pages: { items: { id: string; title: string }[] }[] } | undefined;
-type ThumbSize = "small" | "medium" | "large";
-const euro = new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR", maximumFractionDigits: 0 });
-const zahl = new Intl.NumberFormat("de-DE");
-
-function asOpts(v: unknown): Opt[] {
-  if (!v) return [];
-  if (Array.isArray(v)) return v.flatMap(asOpts);
-  if (typeof v === "object" && "id" in (v as object)) {
-    const o = v as { id: string; label?: string; title?: string };
-    return [{ id: o.id, label: o.label ?? o.title ?? "" }];
-  }
-  return [];
-}
-
-function asAttachments(v: unknown): Attachment[] {
-  if (!v) return [];
-  return (Array.isArray(v) ? v : [v]).filter((a): a is Attachment => !!a && typeof a === "object" && "url" in a);
-}
-
-function thumb(a: Attachment, size: ThumbSize): string {
-  return a.thumbnails?.find((t) => t.size === size)?.url ?? a.url;
-}
-
-function str(v: unknown): string {
-  return typeof v === "string" ? v : typeof v === "number" ? String(v) : "";
-}
-
-function num(v: unknown): number | null {
-  return typeof v === "number" && Number.isFinite(v) ? v : null;
-}
-
-function toOptions(data: LinkedPages): Opt[] {
-  return (data?.pages.flatMap((p) => p.items) ?? []).map((o) => ({ id: o.id, label: o.title }));
-}
-
-function link(id: string | undefined): string[] {
-  return id ? [id] : [];
-}
-
-// Heutiges Datum in Ortszeit als JJJJ-MM-TT (nicht UTC, sonst springt das Datum nachts).
-function today(): string {
-  const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-}
-
-function formatDate(iso: string): string {
-  if (!iso) return "";
-  const d = new Date(iso.length === 10 ? `${iso}T00:00:00` : iso);
-  return Number.isNaN(d.getTime()) ? "" : d.toLocaleDateString("de-DE");
-}
-
-// Deutsche Zahleneingabe: „1.200“ = 1200, „12,50“ = 12.5.
-function parseNumber(s: string): number | null {
-  if (!s.trim()) return null;
-  const n = Number(s.trim().replace(/\./g, "").replace(",", "."));
-  return Number.isFinite(n) ? n : null;
-}
-
-function csvCell(v: string): string {
-  return /[";\n\r]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v;
-}
-
-function downloadCsv(filename: string, header: string[], rows: string[][]) {
-  const csv = "﻿" + [header, ...rows].map((r) => r.map(csvCell).join(";")).join("\r\n");
-  const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  URL.revokeObjectURL(url);
-}
-
-function useAllPages(query: { hasNextPage?: boolean; isFetchingNextPage?: boolean; fetchNextPage: () => unknown }) {
-  const { hasNextPage, isFetchingNextPage, fetchNextPage } = query;
-  useEffect(() => {
-    if (hasNextPage && !isFetchingNextPage) fetchNextPage();
-  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
-}
-
-const DIALOG_CLASS = "w-[calc(100vw-2rem)] max-h-[90vh] overflow-y-auto [&>button:last-child]:hidden";
-const INPUT_CLASS = "w-full h-12 rounded-md border border-input bg-background px-3 text-base";
-const CHIP_BASE = "inline-flex items-center justify-center gap-1.5 min-h-11 px-4 rounded-full border text-base whitespace-nowrap transition-colors disabled:opacity-60";
-const CHIP_IDLE = "bg-background hover:bg-muted border-input";
-const CHIP_ACTIVE = "bg-primary text-primary-foreground border-primary";
-
-// Ein einzelner Auswahl-Knopf. Grundlage für alle Auswahlen, Reiter und Filter.
-function Chip({
-  active,
-  onClick,
-  children,
-  disabled,
-  activeClass,
-  role,
-}: {
-  active: boolean;
-  onClick: () => void;
-  children: React.ReactNode;
-  disabled?: boolean;
-  activeClass?: string;
-  role?: "radio" | "tab";
-}) {
-  const state = role ? (role === "tab" ? { "aria-selected": active } : { "aria-checked": active }) : { "aria-pressed": active };
-  return (
-    <button type="button" role={role} {...state} disabled={disabled} onClick={onClick} className={`${CHIP_BASE} ${active ? activeClass ?? CHIP_ACTIVE : CHIP_IDLE}`}>
-      {active && <Check className="w-4 h-4" aria-hidden />}
-      {children}
-    </button>
-  );
-}
-
-// Einfachauswahl als Knopfreihe, z. B. Status, Typ, Zustand. Wert ist das Label.
-function ChoiceChips({
-  label,
-  options,
-  value,
-  onChange,
-  activeClasses,
-  disabled,
-}: {
-  label: string;
-  options: Opt[];
-  value: string;
-  onChange: (label: string) => void;
-  activeClasses?: Record<string, string>;
-  disabled?: boolean;
-}) {
-  return (
-    <div role="radiogroup" aria-label={label} className="flex flex-wrap gap-2">
-      {options.map((o) => (
-        <Chip key={o.id} role="radio" active={value === o.label} activeClass={activeClasses?.[o.label]} disabled={disabled} onClick={() => onChange(o.label)}>
-          {o.label}
-        </Chip>
-      ))}
-    </div>
-  );
-}
-
-// Reiter als Knopfreihe, am Handy seitlich wischbar.
-function TabChips<K extends string>({ label, tabs, value, onChange }: { label: string; tabs: { key: K; label: string; count?: number }[]; value: K; onChange: (key: K) => void }) {
-  return (
-    <div role="tablist" aria-label={label} className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1">
-      {tabs.map((t) => (
-        <Chip key={t.key} role="tab" active={value === t.key} onClick={() => onChange(t.key)}>
-          {t.label}
-          {t.count !== undefined && <span className={value === t.key ? "opacity-80" : "text-muted-foreground"}>{t.count}</span>}
-        </Chip>
-      ))}
-    </div>
-  );
-}
-
-function StatusBadge({ text }: { text: string }) {
-  if (!text) return null;
-  return (
-    <span className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-sm font-medium whitespace-nowrap ${STATUS_BADGE[text] ?? "bg-muted text-foreground border-border"}`}>
-      {text}
-    </span>
-  );
-}
-
-function FieldLabel({ htmlFor, children, required }: { htmlFor?: string; children: string; required?: boolean }) {
-  return (
-    <label htmlFor={htmlFor} className="block text-base font-medium mb-2">
-      {children}
-      {required && <span className="text-destructive"> *</span>}
-    </label>
-  );
-}
-
-function ErrorText({ children }: { children?: string }) {
-  if (!children) return null;
-  return (
-    <p role="alert" data-error="true" className="text-sm text-destructive mt-1.5">
-      {children}
-    </p>
-  );
-}
-
-// Auswahlliste für verknüpfte Datensätze. Wert ist die Datensatz-ID.
-function OptionSelect({ id, value, onChange, options, placeholder, disabled }: { id: string; value: string; onChange: (id: string) => void; options: Opt[]; placeholder: string; disabled?: boolean }) {
-  return (
-    <select id={id} value={value} disabled={disabled} onChange={(e) => onChange(e.target.value)} className={INPUT_CLASS}>
-      <option value="">{placeholder}</option>
-      {options.map((o) => (
-        <option key={o.id} value={o.id}>
-          {o.label}
-        </option>
-      ))}
-    </select>
-  );
-}
-
-function Thumb({ fotos, size = "small", className = "w-12 h-12 rounded-md" }: { fotos: Attachment[]; size?: ThumbSize; className?: string }) {
-  const first = fotos[0];
-  if (!first) {
-    return (
-      <span className={`${className} shrink-0 bg-muted flex items-center justify-center text-muted-foreground`} aria-label="Kein Foto">
-        <ImageOff className="w-5 h-5" aria-hidden />
-      </span>
-    );
-  }
-  return <img src={thumb(first, size)} alt="" loading="lazy" className={`${className} shrink-0 object-cover`} />;
-}
-
-function PageHeader({ title, description, actions }: { title: string; description?: string; actions?: React.ReactNode }) {
-  return (
-    <div className="flex flex-wrap items-start justify-between gap-3">
-      <div className="min-w-0">
-        <h1 className="text-2xl font-semibold">{title}</h1>
-        {description && <p className="text-base text-muted-foreground">{description}</p>}
-      </div>
-      {actions && <div className="flex flex-wrap gap-2">{actions}</div>}
-    </div>
-  );
-}
-
-// Eine anklickbare Zeile mit Bild, Titel, Unterzeile und rechter Spalte. Für alle Listen.
-function ListRow({ fotos, title, sub, meta, onClick, href }: { fotos?: Attachment[]; title: string; sub?: React.ReactNode; meta?: React.ReactNode; onClick?: () => void; href?: string }) {
-  const inner = (
-    <>
-      {fotos && <Thumb fotos={fotos} />}
-      <span className="flex-1 min-w-0">
-        <span className="block font-medium hyphens-auto">{title}</span>
-        {sub && <span className="block text-sm text-muted-foreground">{sub}</span>}
-      </span>
-      {meta && <span className="text-right shrink-0">{meta}</span>}
-      <ChevronRight className="w-5 h-5 text-muted-foreground shrink-0" aria-hidden />
-    </>
-  );
-  const cls = "w-full text-left flex items-center gap-3 min-h-14 py-2 px-1 rounded-md hover:bg-muted/40";
-  return href ? (
-    <a href={href} className={cls}>
-      {inner}
-    </a>
-  ) : (
-    <button type="button" onClick={onClick} className={cls}>
-      {inner}
-    </button>
-  );
-}
-
-function LoadingState({ text }: { text: string }) {
-  return (
-    <div className="flex items-center gap-2 text-base text-muted-foreground py-10 justify-center">
-      <Loader2 className="w-5 h-5 animate-spin" aria-hidden /> {text}
-    </div>
-  );
-}
-
-function ErrorState({ text }: { text: string }) {
-  return (
-    <div role="alert" className="flex items-center gap-2 rounded-xl border border-destructive/40 bg-destructive/5 p-6 text-base">
-      <AlertTriangle className="w-5 h-5 text-destructive shrink-0" aria-hidden /> {text}
-    </div>
-  );
-}
-
-function EmptyState({ text }: { text: string }) {
-  return <p className="rounded-lg border border-dashed px-4 py-6 text-center text-base text-muted-foreground">{text}</p>;
-}
-
-// Kopf jedes Fensters: Titel, Unterzeile, großer Schließen-Knopf.
-function PanelHeader({ title, description }: { title: string; description: string }) {
-  return (
-    <DialogHeader className="flex-row items-start justify-between gap-3 space-y-0 text-left">
-      <div className="min-w-0">
-        <DialogTitle className="text-xl break-words hyphens-auto">{title}</DialogTitle>
-        <DialogDescription>{description}</DialogDescription>
-      </div>
-      <DialogClose asChild>
-        <Button variant="ghost" className="h-11 w-11 p-0 shrink-0" aria-label="Schließen">
-          <X className="w-6 h-6" aria-hidden />
-        </Button>
-      </DialogClose>
-    </DialogHeader>
-  );
-}
-
-function DoneButton() {
-  return (
-    <DialogClose asChild>
-      <Button variant="outline" className="w-full h-12 text-base">
-        Fertig
-      </Button>
-    </DialogClose>
-  );
-}
-
-// Foto aufnehmen oder auswählen, mit Vorschau und Entfernen.
-function PhotoPicker({
-  files,
-  onChange,
-  multiple,
-  error,
-}: {
-  files: File[];
-  onChange: (f: File[]) => void;
-  multiple: boolean;
-  error?: string;
-}) {
-  const inputRef = useRef<HTMLInputElement>(null);
-  const previews = useMemo(() => files.map((f) => URL.createObjectURL(f)), [files]);
-  useEffect(() => () => previews.forEach((u) => URL.revokeObjectURL(u)), [previews]);
-
-  return (
-    <div>
-      <input
-        ref={inputRef}
-        id="foto-input"
-        type="file"
-        accept="image/*"
-        multiple={multiple}
-        className="sr-only"
-        onChange={(e) => {
-          const picked = Array.from(e.target.files ?? []);
-          onChange(multiple ? [...files, ...picked] : picked.slice(0, 1));
-          e.target.value = "";
-        }}
-      />
-      {files.length === 0 ? (
-        <button
-          type="button"
-          onClick={() => inputRef.current?.click()}
-          className={`w-full h-40 rounded-xl border-2 border-dashed flex flex-col items-center justify-center gap-2 text-base hover:bg-muted ${
-            error ? "border-destructive" : "border-input"
-          }`}
-        >
-          <Camera className="w-8 h-8 text-muted-foreground" aria-hidden />
-          <span className="font-medium">Foto aufnehmen oder auswählen</span>
-          <span className="text-sm text-muted-foreground">Am Handy öffnet sich Kamera oder Galerie</span>
-        </button>
-      ) : (
-        <div className="grid grid-cols-3 gap-3">
-          {previews.map((src, i) => (
-            <div key={src} className="relative aspect-square rounded-lg overflow-hidden border">
-              <img src={src} alt={`Foto ${i + 1}`} className="w-full h-full object-cover" />
-              <button
-                type="button"
-                aria-label={`Foto ${i + 1} entfernen`}
-                onClick={() => onChange(files.filter((_, j) => j !== i))}
-                className="absolute top-1 right-1 w-11 h-11 rounded-full bg-background/90 flex items-center justify-center"
-              >
-                <X className="w-5 h-5" aria-hidden />
-              </button>
-            </div>
-          ))}
-          {multiple && (
-            <button
-              type="button"
-              onClick={() => inputRef.current?.click()}
-              className="aspect-square rounded-lg border-2 border-dashed border-input flex flex-col items-center justify-center gap-1 text-sm hover:bg-muted"
-            >
-              <Plus className="w-6 h-6" aria-hidden />
-              Weiteres Foto
-            </button>
-          )}
-        </div>
-      )}
-      <ErrorText>{error}</ErrorText>
-    </div>
-  );
-}
+import { AUSSER_HAUS_ORT, GLASIERT, PAGE_SIZE, RESERVIERT, ROHLING, STATUS_ACTIVE, VERFUEGBAR, VERKAUFT, isAusserHaus } from "../shared/konstanten";
+import {
+  type Attachment,
+  type LinkedPages,
+  type Opt,
+  type RawItem,
+  asAttachments,
+  asOpts,
+  downloadCsv,
+  euro,
+  formatDate,
+  link,
+  num,
+  parseNumber,
+  str,
+  thumb,
+  toOptions,
+  today,
+  useAllPages,
+  zahl,
+} from "../shared/daten";
+import {
+  Chip,
+  ChoiceChips,
+  DIALOG_CLASS,
+  DoneButton,
+  EmptyState,
+  ErrorState,
+  ErrorText,
+  FieldLabel,
+  INPUT_CLASS,
+  ListRow,
+  LoadingState,
+  OptionSelect,
+  PageHeader,
+  PanelHeader,
+  PhotoPicker,
+  StatusBadge,
+  TabChips,
+} from "../shared/ui";
 
 const ds = datasource.define({ unikate: "unikate", edition: "edition" });
 

@@ -217,10 +217,10 @@ export default function Block() {
   );
   const partnerInfo = useMemo(
     () =>
-      new Map(
+      new Map<string, { art: string; ort: string }>(
         (partnerQuery.data?.pages.flatMap((p) => p.items) ?? []).map((i) => {
           const f = (i as RawItem).fields;
-          return [i.id, { art: firstLabel(f.art), ort: str(f.ort) }] as const;
+          return [i.id, { art: firstLabel(f.art), ort: str(f.ort) }];
         }),
       ),
     [partnerQuery.data],
