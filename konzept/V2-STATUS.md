@@ -87,3 +87,31 @@ Start: `npm run dev`, dann öffnen: V1 http://localhost:4391/ und V2 http://loca
   - Schreibweise Gallery Tohkyo/Toukyo
   - Beschreibungssätze bei Aktuell für Greve und Pop-up
 - **Inhaltlich offen:** Holzofen oder Gasofen, 1986 oder 1987, echte Ausstellungs- und Ortsfotos, Datenschutzfund auf der Live-Seite.
+
+## Stand 03.10.2026 abends: Feedback 4 umgesetzt (Abschlussrunde dieses Chats)
+- **Aktuell:**
+  - Das Spotlight (`data-spotlight`) zeigt seine Details offen, die anderen klappen auf.
+  - Hinweiszeile unter dem Kopf (`data-start`/`data-end`).
+  - Bild-Hover (Zoom 1,035).
+- **Linien-Box** liegt exakt in den Haarlinien.
+- **Meisterstücke:** Statement groß, Einzelwerk Teeschale, 6 ausgewählte Werke.
+- **Orte:** Die ganze Kachel ist klickbar, das Detail klappt unter der Reihe auf, ohne Umsortieren.
+- **Lebensweg:** hält beim Scrollen kurz an (sticky, scrollgebunden).
+- **Chronik:** Der Kopf bleibt links stehen, 1968 (Ruhrkohle) ergänzt.
+- **Meditation und 99 Schalen:** ein gemeinsames Kapitel „Dieselbe Form, immer wieder.“
+- **Manufaktur:** Fakten größer. Farbskala-Variante „Fläche“ im Panel.
+- **Anfrageformular** auf der Startseite (Besuch) und auf `besuch.html`. „Zu diesem Stück anfragen“ belegt das Formular vor. Der Versand läuft vorerst über eine vorbereitete E-Mail.
+- **Prüfung:** alle Seiten bei 1440 und 390 px ohne Konsolenfehler, Überlauf und kaputte Bilder, 35 interne Links in Ordnung.
+- **Datenmodell:** `konzept/SANITY-MODELL-WEBSITE.md`. Zweck je Abschnitt steht in `DESIGN.md`.
+
+### Offen
+- **Inhalt:**
+  - MOK-Eröffnung und Öffnungszeiten (Spotlight), sonst Platzhaltersatz
+  - Chronik-Zwischentitel gegenlesen
+  - Gallery Tohkyo
+  - Holzofen oder Gasofen
+  - 1986 oder 1987
+- **Bilder:** Hochformat-Porträt für das Handy, Ausstellungs- und Ortsfotos, Fotoecke.
+- **Formular:** echter Versand über Worker, Mail-Dienst und Turnstile. Braucht Entscheidung und Zugang des Admins sowie ein Security-Review.
+- **Live-Seite:** Datenschutzerklärung fehlt (`/firma/datenschutz/` leitet um). Datenschutzfund `wp-content/uploads/2023/12/image.png`.
+- **Nächster großer Schritt:** Umzug nach Astro mit Sanity, laut `konzept/AUFTRAG-ASTRO.md`.
