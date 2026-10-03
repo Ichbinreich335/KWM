@@ -15,6 +15,10 @@ Bitte zu jedem Punkt eine kurze Antwort oder die Datei. Was nicht geklärt ist, 
    - das Plakatfoto mit dem Porträt von Young-Jae Lee
 4. **Essays und Zitate:** Dürfen die Zitate von Thomas Wagner, Gisela Jahn und Barbara Catoir mit Quellenangabe verwendet werden?
 
+5. **Impressum** (Stand 2009) prüfen. Der darin enthaltene Datenschutztext stammt von 2008 (altes BDSG, nicht DSGVO) und muss durch die neue Datenschutzerklärung ersetzt werden.
+6. **AGB juristisch prüfen.** Im Text stehen offensichtliche Tippfehler, z. B. „befrachten“, „olle“, „hoben“, „K10geerhebung“, „Weilerveräußerung“, „Nacherlullung“. Wir haben sie wörtlich übernommen und nicht korrigiert. Liste in `konzept/SITEMAP-V3.md`.
+7. **Zahlung:** PayPal-QR-Code und Bankverbindung (IBAN) bestätigen.
+
 ## B. Fakten bestätigen
 | # | Frage | Wo es steht |
 |---|---|---|
@@ -41,6 +45,7 @@ Bitte zu jedem Punkt eine kurze Antwort oder die Datei. Was nicht geklärt ist, 
 | KI-Bilder ersetzen | Hände an der Scheibe, Seladon-Gefäß, Glasurdetail | Meditation, Feuer |
 
 ## D. Entscheidungen
+0. **Seitenstruktur:** Die neue Sitemap und die Weiterleitungen von den alten Adressen stehen in `konzept/SITEMAP-V3.md`. Noch offen: englische Seiten, Plakate im Jahresarchiv, eigene Seiten pro Werk.
 1. **Formular-Versand:** Soll die Website Anfragen direkt per E-Mail an `kontakt@kwm1924.de` schicken? Dafür braucht es Zugang zu den Domain-Einstellungen (DNS bzw. Cloudflare). Kosten: keine.
 2. **Englische Version:** Wird sie gebraucht, und wer übersetzt?
 3. **Wer pflegt** später Aktuelles, Hinweise (z. B. „geschlossen am …“) und Werke in Sanity, und wer bekommt einen Login?
