@@ -17,15 +17,15 @@ export default function init(el) {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  el.querySelectorAll('[data-start]').forEach((item) => {
-    const status = item.querySelector('[data-status]');
-    if (status) status.textContent = statusText(parseDay(item.dataset.start), parseDay(item.dataset.end), today);
+  el.querySelectorAll('.aktuell__item[data-start]').forEach((item) => {
+    item.querySelector('[data-status]').textContent = statusText(parseDay(item.dataset.start), parseDay(item.dataset.end), today);
   });
-  el.querySelectorAll('[data-until]').forEach((note) => {
-    note.hidden = today >= parseDay(note.dataset.until);
+  // Hinweis: nur sichtbar zwischen data-start und data-end (inklusive)
+  el.querySelectorAll('.aktuell__note').forEach((note) => {
+    note.hidden = today < parseDay(note.dataset.start) || today > parseDay(note.dataset.end);
   });
 
-  const items = [...el.querySelectorAll('.aktuell__item')];
+  const items = [...el.querySelectorAll('.aktuell__item')].filter((item) => item.querySelector('[data-more]'));
   const set = (item, open) => {
     const button = item.querySelector('[data-more]');
     item.classList.toggle('is-open', open);
