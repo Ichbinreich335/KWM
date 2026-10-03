@@ -67,12 +67,26 @@ Stand: 02.10.2026. Verbindlich für alle Seiten und Elemente in `src/v2/` und `s
 |---|---|---|
 | Hell | `--ground` | Standard |
 | Fläche | `--ground-2` (`.on-flaeche`) | ruhige Zwischenstation: Chronik, Bühnenboden |
-| Anker | `--coal` (Schrift `--on-coal`) | Einstieg (Variante), Seitenkopf der Unterseiten, Aktuell, Orte, Feuer, Footer |
+| Anker | `--coal` (Schrift `--on-coal`) | Einstieg (Variante), Seitenkopf der Werkstatt, Aktuell, Orte, Feuer, Footer |
 
 - **Rhythmus:** nie zwei Anker direkt hintereinander. Ungefähr alle zwei bis drei Bildschirme ein Anker, damit die helle Seite Halt hat.
 - **Anker setzen lokal** `--ink-2: var(--on-coal-2)`, `--hair: rgba(236,234,227,.22)`, `--cover: var(--coal)` und eigene `::selection`.
 
-**Unterseiten (Reihenfolge):** Seitenkopf (Anker, Bild randlos am Fuß) → Einleitung oder Unternavigation (hell) → Kapitel (hell, ein Kapitel als Fläche) → Abschlussband mit Anfrage (Fläche, nie Anker, weil der Footer folgt) → Footer (Anker).
+**Unterseiten (Reihenfolge):** Seitenkopf (einer der vier Kopf-Typen, siehe Seitenkopf) → Einleitung oder Unternavigation (hell, bei Bedarf Fläche) → Kapitel (hell, mindestens ein Kapitel oder eine Zäsur als Fläche) → Abschlussband mit Anfrage (Fläche, nie Anker, weil der Footer folgt) → Footer (Anker).
+- **Nicht jede Seite beginnt dunkel.** Höchstens eine Unterseite hat einen dunklen Kopf (Werkstatt), nie zwei in der Navigation direkt nebeneinander.
+- **Auf langen Seiten eine Zäsur** alle zwei bis drei Bildschirme: Bildband, Zitat auf Fläche oder Bild mit Satz. Zitat-Zäsur: `.pullquote` (Fläche, Display-Satz, Quelle). Bild-Zäsur: `.zaesur` (Fläche, Bild links, Satz rechts).
+- **Einzelwerk mit Meta-Spalte:** ein einzelnes Bild in einem Kapitel steht in Spalte 4–12, Name, Maße und Anfrage in Spalte 1–3 an derselben Oberkante (`.catalog__item--wide`). Nie ein zentriertes Einzelbild.
+- **Wechsel der Seite** bei Einträgen mit festem Aufbau (`.feature--mirror`), nie zwei gleiche Köpfe nacheinander in dieselbe Richtung ohne Grund.
+
+| Seite | Kopf-Typ | Rhythmus | Charakter-Element |
+|---|---|---|---|
+| Meisterstücke | Meta | Kopf hell → Einleitung Fläche → Schalen hell → Kummen Fläche → Vasen hell → Arbeitsweise hell → Anfrage Fläche → Footer | Einzelwerke mit Werkangaben in der Meta-Spalte |
+| Manufaktur | Fläche | Kopf Fläche → Einleitung hell → Geschirr hell → Zäsur Regal Fläche → Geschirr hell → Edition Fläche → Farben hell → Anfrage Fläche → Footer | Geschirrreihe auf Sockel im Kopf |
+| Young-Jae Lee | Name | Kopf hell → Haltung hell → Erinnerung Fläche → Biografie, Texte hell → Bildband → Ausstellungen hell → Zitat Fläche → Sammlungen bis Publikationen hell → Anfrage Fläche → Footer | großer Name, Zitat „Immer sind es Schalen …“ |
+| Werkstatt | Anker | Kopf dunkel → Arbeitsweise, Glasurfarben hell → Chronik Fläche → Team hell → Auszeichnungen Fläche → Zollverein hell → Anfrage Fläche → Footer | Panorama randlos |
+| Aktuelles | Name (ohne Bild) | Kopf hell → Einträge hell, Wesel gespiegelt → Pop-up Fläche → Archiv, Veröffentlichungen hell → Anfrage Fläche → Footer | gespiegelter Eintrag |
+| Besuch | Meta (mit Öffnungszeiten) | Kopf hell → Adresse mit Panorama hell → Anfahrt Fläche → Anfrage, Zahlung hell → Footer | Öffnungszeiten groß im Kopf |
+| 404 | Name | Kopf hell → Footer | |
 
 **Startseite (Reihenfolge):** Einstieg (Anker) → Lede mit „Zwei Linien“ (hell) → Aktuell (Anker) → Young-Jae Lee (hell) → Werkschau (hell) → Orte (Anker) → Meditation (hell) → Ausstellungs-Bühne (Fläche) → Feuer (Anker) → Manufaktur mit Farbskala (hell) → Chronik (Fläche) → Besuch (hell) → Footer (Anker).
 
@@ -84,8 +98,12 @@ Stand: 02.10.2026. Verbindlich für alle Seiten und Elemente in `src/v2/` und `s
 - Optional eine Linie in `currentColor` darunter (z. B. `.now__head`).
 
 ### Seitenkopf (`.page-hero`)
-- Anker: Titel in Spalte 1–8, Lede in Spalte 9–12, unten bündig. Darunter optional ein randloses Bild (Höhe `--hero-img` = `min(72vh, 760px)`, Streifenformat `--strip`), Bildunterschrift auf dem Anker in `--ink-2`.
-- Abstand oben `--head` + `clamp(48px, 6vw, 96px)`, ohne Bild unten `0,6 × --section`, mit Bild unten bündig mit dem Bild plus Bildunterschrift.
+Vier Typen, jede Unterseite wählt einen (Modifier-Klasse). Gemeinsam: Abstand oben `--head` + `clamp(48px, 6vw, 96px)`, Zeilenabstand `--head-gap`, Lede in Text-Schrift 1,15–1,4 rem, Bildunterschrift an fester Stelle direkt unter dem Bild in `--ink-2`.
+- **Name** (`--name`, hell): Titel in Seitennamen-Größe über die ganze Breite, Lede rechts (Spalte 6–12), darunter optional ein randloses Bild in Höhe `--hero-img` = `min(72vh, 760px)`. Young-Jae Lee, Aktuelles (ohne Bild), 404.
+- **Meta** (`--meta`, hell): Titel oben, links Meta-Spalte (Spalte 1–4) mit Lede, rechts (Spalte 5–12) ein großes Bild, das an den rechten Rand läuft, oder eine Faktentafel (Besuch: Öffnungszeiten). Meisterstücke, Besuch.
+- **Fläche** (`--flaeche`, `--ground-2`): Titel links, Lede rechts, darunter vier Produktfotos 3:2 in einer Reihe, bündig auf einem Sockel (`.plinth`, `--ground-3`) mit Beschriftungen darunter (mobil 2 × 2 ohne Sockel). Manufaktur.
+- **Anker** (`--anker`, dunkel): Titel links (Spalte 1–8), Lede rechts (9–12), randloses Panorama am Fuß (`--strip`). Werkstatt. Maximal eine Unterseite.
+- Bild und Fläche grenzen ohne Zwischenraum aneinander, nur der Sockel und das Panorama laufen randlos.
 
 ### Link mit Pfeil (`.link-arrow`)
 - 15 px, Unterstrich 1 px, Pfeil als Maske `--arrow`.
