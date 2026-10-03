@@ -49,3 +49,11 @@ Bitte zu jedem Punkt eine kurze Antwort oder die Datei. Was nicht geklärt ist, 
 1. **Formular-Versand:** Soll die Website Anfragen direkt per E-Mail an `kontakt@kwm1924.de` schicken? Dafür braucht es Zugang zu den Domain-Einstellungen (DNS bzw. Cloudflare). Kosten: keine.
 2. **Englische Version:** Wird sie gebraucht, und wer übersetzt?
 3. **Wer pflegt** später Aktuelles, Hinweise (z. B. „geschlossen am …“) und Werke in Sanity, und wer bekommt einen Login?
+
+## E. Aus dem Abgleich der englischen Seiten (Details in `konzept/EN-TEXTE.md`)
+1. **Englische AGB:** Sie stammen von 2013 und widersprechen den deutschen in Skonto und Fälligkeit. Neu übersetzen lassen oder auf die deutsche Fassung verweisen?
+2. **Produktdaten widersprechen sich zwischen DE und EN:** Dessertschale flach (Ø 15 oder 13 cm), Maße von Zucker und Milch, Krug 0,75 l (Nr. 26a) fehlt in EN, „Suppentopf“ heißt in EN „Soup bowl“.
+3. **Namen:** „Burggraf Burggraf“ oder „Elena Burggraf-Reusch“? „Scheinler“ oder „Scheibler“? „Ueberle“ oder „Veberle“?
+4. **Zahlung:** Für Auslandsüberweisungen fehlt der BIC.
+5. **Zitate auf Englisch:** Nur von Gisela Jahn gibt es eine veröffentlichte Fassung. Für Wagner und Catoir sind Übersetzung und Rechte zu klären.
+6. **Sprachvariante:** Wir empfehlen amerikanisches Englisch. Einverstanden?

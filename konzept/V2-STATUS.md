@@ -132,3 +132,12 @@ Start: `npm run dev`, dann öffnen: V1 http://localhost:4391/ und V2 http://loca
 - **Prüfung:** alle Seiten ohne Konsolenfehler, Überlauf und kaputte Bilder, 37 interne Links in Ordnung.
 - **Fragen an die Werkstatt:** `konzept/FRAGEN-AN-DIE-WERKSTATT.md`
 - **Von Agenten formuliert, gegenlesen:** Chronik-Titel „Im Handelsregister“ (1925), „Die Leitung“ (1993), „Abschied“ (2025) auf der Werkstatt-Seite; Einleitung „Dieselbe Glasur, andere Farbe“.
+
+## V3 Runde 3 (03.10.2026)
+- **Typografie:** Rollenskala mit 11 Textstilen (Tokens `--t-*` in `site/v3/styles.css`), vorher 78 verschiedene Größen. Die größere kleine Schrift ist Standard.
+- **DESIGN.md:** Textstil-Tabelle und Komponenten-Inventar mit künftigen Astro-Namen (Grundlage für den Umzug).
+- **Expander:** wiederverwendbare Aufklapp-Komponente mit mitlaufender Leiste. Damit klappt „Alle Ausstellungen seit 1980“ (260 Einträge) auf Young-Jae Lee auf, auch das Jahresarchiv auf Aktuelles nutzt sie.
+- **Lebensweg:** pinnt unter dem Zitat, deutlich weniger Leerraum.
+- **Einzelwerk:** Spindelvase oder Teeschale (Original 1500 px) als Schalter. Höher aufgelöste Werkfotos gibt es auf der alten Seite nicht.
+- **Englisch:** `konzept/EN-TEXTE.md` mit Zuordnung DE zu EN, rund 57 % aus dem Altbestand, Glossar und Sanity-Empfehlung. Umsetzung erst mit Astro und Sanity.
+- **Offen beim Umzug:** Statustexte und Monatsnamen in `sig-aktuell.js` und `sig-buehne.js` sind doppelt und deutsch fest im Code. Für EN über `Intl.DateTimeFormat` lösen.
