@@ -225,6 +225,10 @@ Sticky unter dem Header, mobil seitlich scrollbar mit Randausblendung. Der aktiv
 - **Einblenden:** Text `fade` (18 px, 1,2 s). Überschriften `words` (Maske, 1,3 s, gestaffelt um 45 ms). Bilder `img` (Abdeckung fährt nach oben, Bild von 1,12 auf 1 skaliert). Kurve `--ease`.
 - **Hover:** 0,45–0,6 s. Es werden nur `transform`, `opacity`, Farben und `flex-grow` animiert, nie `width` oder `height`.
 - **Kein Scroll-Hijacking.** Sticky mit Scroll-Steuerung ist erlaubt, wenn die Scrollgeschwindigkeit unverändert bleibt.
+- **Punkte füllen sich, wenn die Linie sie erreicht.** Gemeinsame Animation für Lebensweg und Chronik: Ring hohl, Füllung (`scale` 0 auf 1, 0,45 s, `--ease-pop` mit leichtem Überziehen) über die Klasse `.is-on`. Rückwärts leert sich der Punkt wieder. Reduzierte Bewegung: sofort gefüllt.
+- **Lebensweg** (`.journey`, Startseite): Standard ohne Haltestrecke und ohne Sticky. Sobald 30 % des Strahls im Bild sind, zeichnet sich die Linie einmal in 1,6 s (ruhige Kurve 0,45 / 0 / 0,2 / 1, per `requestAnimationFrame`), die Punkte füllen sich genau beim Erreichen. Mobil senkrecht. Variante „Beim Scrollen“ (`data-lebensweg="scrollen"`, Entwurf-Panel): Strahl hängt fest, Füllung beginnt sofort beim Einblenden und folgt dem Scrollen.
+- **Feuer** (`.sticky-bild--feuer`): Bild 82 svh (mobil 78 svh), randlos, Gegen-Parallax ≤ 5 %. Der Text steht nicht fest, sondern wandert gleichmäßig mit dem Scrollen: Mitte des Textblocks von 65 % auf 25 % der Bildhöhe (mobil halbe Strecke), nie über den Rand. Abdunklung so, dass Text ≥ 6:1 hat. Das Porträt bei Young-Jae Lee behält den festsitzenden Text.
+- **Chronik-Punkte** (`.chronicle`): Die Linie zeichnet sich scrollgebunden, jeder Punkt füllt sich beim Erreichen, die Jahreszahl wechselt von `--ink-2` zu `--ink`. Mobil (Wischleiste) füllen sich die Punkte, sobald ihre Karte in die Leiste ragt, und nur, wenn die Leiste sichtbar ist.
 
 ## 9. Barrierefreiheit (Mindeststandard)
 - Kontrast ≥ 4,5:1 für Text, ≥ 3:1 für Bedienelemente.
@@ -285,8 +289,8 @@ Jede wiederverwendbare Komponente hat einen künftigen Astro-Namen (`src/compone
 |---|---|---|---|---|
 | `Expander` | Die eine Aufklapp-Komponente (Abschnitt 6) | Aussage oder Titel (Label), Begleittext (Teaser) | `row` (Jahresarchiv), `lang` (ganze Breite, Schließen-Leiste sticky) | `css/expander.css`, `js/expander.js`; Aktuelles, Young-Jae Lee |
 | `YearArchive` | Jahresblock im Archiv mit Jahr und Einträgen | Aussage (Jahr), Body (Titel), Begleittext (Ort), Meta (Datum) | im `Expander` `row` oder `lang` | `.year__list`, `.exh-year` (`css/page-aktuelles.css`, `css/page-young-jae-lee.css`) |
-| `Timeline` | Lebensweg der Künstlerin, Jahr, Ort, Satz | Meta (Jahr), Titel (Ort), Begleittext | hell | `.journey` (`styles.css`, Startseite, `js/main.js`) |
-| `Chronicle` | Hundert Jahre Werkstatt, Jahre ziehen vorbei | Aussage (Jahr), Titel, Begleittext, Zitat klein (Lede) | Fläche | `.chronicle` (`styles.css`, `css/page-werkstatt.css`) |
+| `Timeline` | Lebensweg der Künstlerin, Jahr, Ort, Satz; zeichnet sich einmal beim Sichtbarwerden (Abschnitt 8) | Meta (Jahr), Titel (Ort), Begleittext | hell; Scroll-Variante `data-lebensweg="scrollen"` | `.journey` (`styles.css`, Startseite, `js/main.js`) |
+| `Chronicle` | Hundert Jahre Werkstatt, Jahre ziehen vorbei, Punkte füllen sich beim Erreichen der Linie | Aussage (Jahr), Titel, Begleittext, Zitat klein (Lede) | Fläche | `.chronicle` (`styles.css`, `css/page-werkstatt.css`) |
 | `PlaceGrid` | Ausstellungsorte als Bildraster mit Detail | Abschnitt (XL), Aussage (M), Titel, Meta, Begleittext | Anker | `.orte` (`css/sig-orte.css`, `js/sig-orte.js`) |
 
 ### Formulare und Hinweise

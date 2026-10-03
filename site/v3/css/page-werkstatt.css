@@ -18,6 +18,7 @@
 /* Chronik: Komponente .chronicle aus styles.css, hier nur Abstand zum Kapitel davor und der stille Schlusseintrag */
 .page-werkstatt .chronicle { margin-top: var(--section); }
 .chronicle__item--quiet .chronicle__year, .chronicle__item--quiet .chronicle__what { color: var(--ink-2); }
+.js .chronicle__list .chronicle__item--quiet.is-on .chronicle__year { color: var(--ink-2); }
 
 /* Team */
 .team-strip { margin: 0 var(--m) clamp(40px, 5vw, 64px); max-width: 1000px; }

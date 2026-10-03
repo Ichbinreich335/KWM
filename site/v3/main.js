@@ -59,66 +59,163 @@ import { random, pickGlaze as pickFrom, renderBowlSprite } from './js/keramik.js
     });
   });
 
-  /* ---------- Chronik: die Striche zwischen den Jahren füllen sich strikt nacheinander, gebunden an die Lesehöhe ---------- */
+  /* ---------- Chronik: Linie zeichnet sich strikt nacheinander an die Lesehöhe gebunden, jeder Punkt füllt sich, wenn sie ihn erreicht ---------- */
   const chronicle = $('.chronicle__list');
-  if (chronicle && !reduced) {
-    const segs = $$('li:not(:last-child)', chronicle);
+  if (chronicle) {
+    const items = $$('li', chronicle);
+    const segs = items.slice(0, -1);
     const READ_LINE = 0.62;
+    const SWIPE_EDGE = 8; // Punkt füllt sich, sobald seine Karte so weit in die Wischleiste ragt (px)
+    const SWIPE_VISIBLE = 0.9; // Wischleiste zählt als sichtbar, wenn ihre Oberkante über dieser Bildschirmhöhe liegt
+    const swipe = window.matchMedia('(max-width: 900px)');
     let framed = false;
     const paint = () => {
       framed = false;
+      if (swipe.matches) {
+        const box = chronicle.getBoundingClientRect();
+        const shown = box.top < innerHeight * SWIPE_VISIBLE;
+        items.forEach((li) => li.classList.toggle('is-on', shown && li.getBoundingClientRect().left < box.right - SWIPE_EDGE));
+        return;
+      }
       const line = innerHeight * READ_LINE;
       const dotY = parseFloat(getComputedStyle(chronicle.firstElementChild, '::before').top) + 5.5;
-      segs.forEach((li) => {
+      items.forEach((li) => {
         const box = li.getBoundingClientRect();
-        const v = Math.min(1, Math.max(0, (line - (box.top + dotY)) / box.height));
-        li.style.setProperty('--seg', v.toFixed(3));
+        li.classList.toggle('is-on', line >= box.top + dotY);
+        if (!reduced && li !== items.at(-1)) li.style.setProperty('--seg', Math.min(1, Math.max(0, (line - (box.top + dotY)) / box.height)).toFixed(3));
       });
     };
     const schedule = () => { if (!framed) { framed = true; requestAnimationFrame(paint); } };
-    addEventListener('scroll', schedule, { passive: true });
-    addEventListener('resize', schedule);
-    paint();
+    if (reduced) {
+      items.forEach((li) => li.classList.add('is-on'));
+    } else {
+      addEventListener('scroll', schedule, { passive: true });
+      addEventListener('resize', schedule, { passive: true });
+      chronicle.addEventListener('scroll', schedule, { passive: true });
+      paint();
+    }
   }
 
-  /* ---------- Lebensweg: Haltestrecke mit klebender Stage, Linie und Punkte füllen sich mit dem Scrollen ---------- */
+  /* ---------- Lebensweg: Standard zeichnet sich einmal beim Sichtbarwerden, Variante „scrollen“ folgt dem Scrollen ---------- */
   const track = $('[data-journey-track]');
   if (track && !reduced) {
     const line = $('.journey', track);
     const stage = $('.journey-stage', track);
-    const stops = $$('li', line);
-    const SOFT = 0.08;
-    const FILL = 0.8; // Anteil der Haltestrecke, in dem sich die Linie füllt; der Rest ist Pause
-    const STICK_AT = 0.44; // Strahl klebt bei 44 % der Bildschirmhöhe, das Zitat bleibt darüber im Bild
+    const stops = $$('li:not(.journey__more)', line);
+    const DRAW_MS = 1600;
+    const DRAW_EASE = [0.45, 0, 0.2, 1]; // ruhiger Anlauf, damit die Punkte hörbar nacheinander kommen
+    const SEEN = 0.3; // Anteil des Strahls im Bild, ab dem er sich zeichnet
+    const FILL = 0.8; // Scroll-Variante: Anteil der Haltestrecke, in dem sich die Linie füllt; der Rest ist Pause
+    const ENTER_AT = 0.85; // Scroll-Variante: Füllung beginnt, sobald der Strahl so tief im Bild steht
+    const STICK_AT = 0.44; // Scroll-Variante: Strahl klebt bei 44 % der Bildschirmhöhe, das Zitat bleibt darüber im Bild
     const STICK_MIN = 72; // nie unter die Kopfzeile
     const STICK_GAP = 24; // Mindestabstand zur Unterkante, falls die Stage hoch ist (Mobil)
+    const clamp01 = (v) => Math.min(1, Math.max(0, v));
+
+    // Kubische Bézierkurve wie in CSS (cubic-bezier), per Bisektion gelöst
+    const bezier = ([x1, y1, x2, y2]) => {
+      const at = (t, a, b) => 3 * a * t * (1 - t) ** 2 + 3 * b * t * t * (1 - t) + t ** 3;
+      return (x) => {
+        let lo = 0;
+        let hi = 1;
+        for (let i = 0; i < 24; i += 1) {
+          const t = (lo + hi) / 2;
+          if (at(t, x1, x2) < x) lo = t; else hi = t;
+        }
+        return at((lo + hi) / 2, y1, y2);
+      };
+    };
+    const drawEase = bezier(DRAW_EASE);
+
+    // Wo die Mitte jedes Punktes auf der Linie liegt (0 bis 1), waagerecht oder senkrecht
     let offsets = [];
     const measure = () => {
       const vertical = stops[1].offsetTop > stops[0].offsetTop + 4;
-      const size = vertical ? line.offsetHeight : line.offsetWidth;
-      offsets = stops.map((li) => (vertical ? li.offsetTop : li.offsetLeft) / size);
-      const fit = window.innerHeight - stage.offsetHeight - STICK_GAP;
-      const top = Math.max(STICK_MIN, Math.min(window.innerHeight * STICK_AT, fit));
-      track.style.setProperty('--stick', `${Math.round(top)}px`);
+      const rail = getComputedStyle(line, '::before');
+      const dot = getComputedStyle(stops[0], '::before');
+      const size = parseFloat(dot.width);
+      const start = parseFloat(vertical ? rail.top : rail.left);
+      const length = parseFloat(vertical ? rail.height : rail.width);
+      offsets = stops.map((li) => ((vertical ? li.offsetTop + parseFloat(dot.top) : li.offsetLeft) + size / 2 - start) / length);
+      return vertical;
     };
-    const clamp01 = (v) => Math.min(1, Math.max(0, v));
-    const update = () => {
-      const room = track.offsetHeight - stage.offsetHeight;
-      const p = clamp01(-track.getBoundingClientRect().top / (room * FILL));
-      line.style.setProperty('--p', p.toFixed(4));
-      stops.forEach((li, i) => li.style.setProperty('--r', clamp01((p - offsets[i]) / SOFT + 0.5).toFixed(3)));
+    const setProgress = (p) => {
+      line.style.setProperty('--p', Math.max(0, p).toFixed(4));
+      stops.forEach((li, i) => li.classList.toggle('is-on', p >= offsets[i]));
     };
-    let queued = false;
-    const request = () => {
-      if (queued) return;
-      queued = true;
-      requestAnimationFrame(() => { queued = false; update(); });
+
+    const modes = {
+      zeichnen() {
+        let frame = 0;
+        const reset = () => { measure(); setProgress(-1); };
+        const draw = () => {
+          const t0 = performance.now();
+          const step = (now) => {
+            const k = Math.min(1, (now - t0) / DRAW_MS);
+            setProgress(drawEase(k));
+            frame = k < 1 ? requestAnimationFrame(step) : 0;
+          };
+          frame = requestAnimationFrame(step);
+        };
+        const seen = new IntersectionObserver(([entry]) => {
+          if (!entry.isIntersecting) return;
+          seen.disconnect();
+          draw();
+        }, { threshold: SEEN });
+        const relayout = () => { if (!frame) measure(); };
+        reset();
+        seen.observe(line);
+        window.addEventListener('resize', relayout, { passive: true });
+        return () => {
+          seen.disconnect();
+          cancelAnimationFrame(frame);
+          window.removeEventListener('resize', relayout);
+        };
+      },
+      scrollen() {
+        let queued = 0;
+        const place = () => {
+          measure();
+          const fit = window.innerHeight - stage.offsetHeight - STICK_GAP;
+          const top = Math.max(STICK_MIN, Math.min(window.innerHeight * STICK_AT, fit));
+          track.style.setProperty('--stick', `${Math.round(top)}px`);
+          return top;
+        };
+        let stick = place();
+        const update = () => {
+          queued = 0;
+          const room = track.offsetHeight - stage.offsetHeight;
+          const from = window.innerHeight * ENTER_AT;
+          setProgress(clamp01((from - track.getBoundingClientRect().top) / (from - stick + room * FILL)));
+        };
+        const request = () => { if (!queued) queued = requestAnimationFrame(update); };
+        const relayout = () => { stick = place(); request(); };
+        track.classList.add('is-scrub');
+        stick = place();
+        update();
+        window.addEventListener('scroll', request, { passive: true });
+        window.addEventListener('resize', relayout, { passive: true });
+        return () => {
+          cancelAnimationFrame(queued);
+          window.removeEventListener('scroll', request);
+          window.removeEventListener('resize', relayout);
+          track.classList.remove('is-scrub');
+          track.style.removeProperty('--stick');
+        };
+      },
     };
-    track.classList.add('is-scrub');
-    measure();
-    update();
-    window.addEventListener('scroll', request, { passive: true });
-    window.addEventListener('resize', () => { measure(); request(); }, { passive: true });
+
+    let mode = '';
+    let stop = () => {};
+    const select = () => {
+      const next = document.documentElement.dataset.lebensweg === 'scrollen' ? 'scrollen' : 'zeichnen';
+      if (next === mode) return;
+      stop();
+      mode = next;
+      stop = modes[next]();
+    };
+    select();
+    document.addEventListener('kwm:varianten', select);
   }
 
   /* ---------- Scrollgebundene Bewegung: Einstiegsbild, Kopfzeile ---------- */

@@ -1,13 +1,14 @@
 // Entwurf-Panel: Varianten der Seite vergleichen (Grundton, Einstieg, Elemente).
 // Elemente tragen data-variant="schlüssel:wert …" und werden passend ein- oder ausgeblendet.
 // Auswahl per URL (?werk=orte) oder Klick; gemerkt nur in diesem Browser.
-// global: gilt auf allen Seiten; sonst nur zeigen, wenn die Seite Elemente mit diesem Schlüssel hat
+// global: gilt auf allen Seiten; sonst nur zeigen, wenn die Seite Elemente mit diesem Schlüssel (oder dem Selektor der Gruppe) hat
 const GROUPS = [
   { key: 'grund', label: 'Grundton', global: true, options: [['galerie', 'Galerie'], ['porzellan', 'Porzellan'], ['creme', 'Creme']] },
   { key: 'einzelwerk', label: 'Einzelwerk Meisterstücke', options: [['spindelvase', 'Spindelvase'], ['teeschale', 'Teeschale']] },
   { key: 'einstieg', label: 'Einstieg', options: [['foto', 'Foto'], ['wortbild', 'Wort und Bild']] },
   { key: 'werk', label: 'Nach der Werkschau', options: [['orte', 'Orte'], ['drehen', 'Drehen'], ['aus', 'Nichts']] },
   { key: 'kosmos', label: 'Ausstellung', options: [['buehne', 'Bühne'], ['klassisch', 'Kosmos']] },
+  { key: 'lebensweg', label: 'Lebensweg', options: [['zeichnen', 'Zeichnet sich einmal'], ['scrollen', 'Beim Scrollen']], selector: '[data-journey-track]' },
   { key: 'feuer', label: 'Feuer', options: [['zwei-farben', 'Zwei Farben'], ['liste', 'Liste']] },
   { key: 'farbskala', label: 'Farbskala', global: true, options: [['kachel', 'Testkachel'], ['flaeche', 'Fläche']] },
   { key: 'haltung', label: 'Meditation und 99 Schalen', options: [['getrennt', 'Getrennt'], ['zusammen', 'Zusammen']] },
@@ -60,7 +61,7 @@ const body = document.createElement('div');
 body.className = 'entwurf__body';
 body.id = 'entwurf-optionen';
 body.hidden = true;
-const relevant = (g) => g.global || document.querySelector(`[data-variant*="${g.key}:"]`);
+const relevant = (g) => g.global || document.querySelector(g.selector || `[data-variant*="${g.key}:"]`);
 if (isHome) {
   const row = document.createElement('div');
   row.className = 'entwurf__group';
