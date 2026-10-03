@@ -23,5 +23,16 @@ export async function browserStarten() {
     await page.getByRole("button", { name: "Anmelden" }).click();
     await page.waitForURL((url) => !url.pathname.startsWith("/login"), { timeout: 30000 });
   }
-  return { browser, seite, anmelden, fehler };
+  /** Seite öffnen und Baserows Einführungstouren wegklicken (einmalig je Bereich, danach gemerkt). */
+  async function oeffnen(page, url) {
+    await page.goto(url, { waitUntil: "networkidle" });
+    await page.waitForTimeout(1500);
+    for (let schritt = 0; schritt < 20; schritt++) {
+      const knopf = page.locator('[class*="guided-tour"] button').last();
+      if (!(await knopf.count())) break;
+      await knopf.click();
+      await page.waitForTimeout(400);
+    }
+  }
+  return { browser, seite, anmelden, oeffnen, fehler };
 }
