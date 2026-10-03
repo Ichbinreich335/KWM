@@ -122,15 +122,16 @@ async function el(s, type, props = {}, { in: eltern = null, platz = null, sichtb
     : eltern
       ? { reference_element_id: eltern, position: "child", place_in_container: platz }
       : {};
-  // Spalten von Tabellen erst nach dem Anlegen setzen (gleicher Stolperstein wie beim Menü).
-  const { fields: spalten, ...ohneSpalten } = props;
-  const e = await api("POST", `/builder/page/${s.id}/elements/`, { type, ...lage, ...ohneSpalten, ...(spalten ? { fields: [] } : {}) });
-  if (spalten || sichtbar) {
-    await api("PATCH", `/builder/element/${e.id}/`, {
-      ...(spalten ? { fields: spalten } : {}),
-      ...(sichtbar ? { visibility_condition: formel(sichtbar) } : {}),
-    });
-  }
+  // Spalten und Such-/Filter-Felder von Tabellen erst nach dem Anlegen setzen: Beim Anlegen
+  // stolpert die API über die Spalten (wie beim Menü) und verwirft property_options stillschweigend.
+  const { fields: spalten, property_options: suchfelder, ...rest } = props;
+  const e = await api("POST", `/builder/page/${s.id}/elements/`, { type, ...lage, ...rest, ...(spalten ? { fields: [] } : {}) });
+  const nachtrag = {
+    ...(spalten ? { fields: spalten } : {}),
+    ...(suchfelder ? { property_options: suchfelder } : {}),
+    ...(sichtbar ? { visibility_condition: formel(sichtbar) } : {}),
+  };
+  if (Object.keys(nachtrag).length) await api("PATCH", `/builder/element/${e.id}/`, nachtrag);
   s.letztes[schluessel] = e.id;
   return e.id;
 }
@@ -568,10 +569,8 @@ await el(
       spalte("Typ", rec(U.Typ, ".value")),
       tags("Status", rec(U.Status, ".value"), statusFarbe),
       spalte("Künstler:in", rec(U["Künstler:in"], ".0.value")),
-      spalte("Jahr", rec(U.Jahr)),
       spalte("Glasur", `join(${rec(U.Glasur, ".*.value")}, ', ')`),
-      spalte("Lagerort", rec(U.Lagerort, ".0.value")),
-      spalte("Partner", rec(U.Partner, ".0.value")),
+      spalte("Lagerort / Partner", `if(is_empty(${rec(U.Partner)}), ${rec(U.Lagerort, ".0.value")}, ${rec(U.Partner, ".0.value")})`),
       spalte("Preis intern", euro(rec(U["Preis intern"]))),
     ],
     { ...durchsuchbar([U.Inventarnummer, U.Name, U.Typ, U.Status, U["Künstler:in"], U.Jahr, U.Glasur, U.Lagerort, U.Partner, U["Preis intern"], U["Auf Website zeigen"]]), items_per_page: 50 },
