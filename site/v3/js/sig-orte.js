@@ -165,5 +165,9 @@ export default function init(el) {
     if (e.key === 'Escape' && active) { e.preventDefault(); closeDetail(); }
   });
 
+  // Fokusring im Detailbereich nur, wenn zuletzt die Tastatur bedient wurde.
+  addEventListener('keydown', () => el.classList.add('is-keys'), true);
+  addEventListener('pointerdown', () => el.classList.remove('is-keys'), true);
+
   el.classList.add('is-ready');
 }
