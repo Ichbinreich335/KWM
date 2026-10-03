@@ -211,7 +211,7 @@ export default function Block() {
     return (key: string, id: string, source: "u" | "e") => (source === "u" ? u : e).get(`${key}:${id}`) ?? 0;
   }, [unikatQuery.data, editionQuery.data]);
 
-  const stueck = (n: number, wort: string) => (n === 0 ? `noch bei keinem ${wort}` : `bei ${zahl.format(n)} ${wort}${n === 1 ? "" : "en"}`);
+  const stueck = (n: number, eins: string, mehrere: string) => (n === 0 ? `noch bei keinem ${eins}` : `bei ${zahl.format(n)} ${n === 1 ? eins : mehrere}`);
 
   async function run<T>(mutation: { mutateAsync: (v: never) => Promise<T> }, payload: unknown, refetch: () => unknown) {
     await mutation.mutateAsync(payload as never);
@@ -226,7 +226,7 @@ export default function Block() {
       hint: "Wer ein Unikat gefertigt hat. Erscheint als Auswahl beim Erfassen.",
       fields: [{ key: "name", label: "Name", kind: "text", required: true, placeholder: "Vor- und Nachname" }],
       entries: items(kuenstlerQuery).map((i) => toEntry(i, ["name"], () => "")),
-      usage: (id) => `${stueck(usage("kuenstler", id, "u"), "Unikat")}`,
+      usage: (id) => `${stueck(usage("kuenstler", id, "u"), "Unikat", "Unikaten")}`,
       save: (id, v) => run(id ? kuenstlerUpdate : kuenstlerCreate, id ? { recordId: id, fields: { name: v.name } } : { name: v.name }, kuenstlerQuery.refetch),
     },
     {
@@ -236,7 +236,7 @@ export default function Block() {
       hint: "Glasurname für Unikate und Editionsware.",
       fields: [{ key: "name", label: "Name", kind: "text", required: true, placeholder: "z. B. Seladon Nebel" }],
       entries: items(glasurQuery).map((i) => toEntry(i, ["name"], () => "")),
-      usage: (id) => `${stueck(usage("glasur", id, "u"), "Unikat")} · ${stueck(usage("glasur", id, "e"), "Editionsposten")}`,
+      usage: (id) => `${stueck(usage("glasur", id, "u"), "Unikat", "Unikaten")} · ${stueck(usage("glasur", id, "e"), "Editionsposten", "Editionsposten")}`,
       save: (id, v) => run(id ? glasurUpdate : glasurCreate, id ? { recordId: id, fields: { name: v.name } } : { name: v.name }, glasurQuery.refetch),
     },
     {
@@ -251,7 +251,7 @@ export default function Block() {
       ],
       foto: true,
       entries: items(modellQuery).map((i) => toEntry(i, ["name", "typ", "masse"], (v) => [v.typ, v.masse].filter(Boolean).join(" · "), "foto")),
-      usage: (id) => stueck(usage("modell", id, "e"), "Editionsposten"),
+      usage: (id) => stueck(usage("modell", id, "e"), "Editionsposten", "Editionsposten"),
       save: (id, v, fotos) => {
         const fields = { name: v.name, typ: v.typ || null, masse: v.masse.trim(), ...(fotos ? { foto: fotos } : {}) };
         return run(id ? modellUpdate : modellCreate, id ? { recordId: id, fields } : fields, modellQuery.refetch);
@@ -271,7 +271,7 @@ export default function Block() {
         { key: "notiz", label: "Notiz", kind: "textarea" },
       ],
       entries: items(partnerQuery).map((i) => toEntry(i, ["name", "art", "ort", "kontakt", "zusammenarbeit", "notiz"], (v) => [v.art, v.ort, v.zusammenarbeit === "beendet" ? "beendet" : ""].filter(Boolean).join(" · "))),
-      usage: (id) => `zurzeit ${stueck(usage("galerie", id, "u"), "Unikat")}`,
+      usage: (id) => `zurzeit ${stueck(usage("galerie", id, "u"), "Unikat", "Unikaten")}`,
       save: (id, v) => {
         const fields = { name: v.name, art: v.art || null, ort: v.ort.trim(), zusammenarbeit: v.zusammenarbeit || null, kontakt: v.kontakt.trim(), notiz: v.notiz.trim() };
         return run(id ? partnerUpdate : partnerCreate, id ? { recordId: id, fields } : fields, partnerQuery.refetch);
@@ -287,7 +287,7 @@ export default function Block() {
         { key: "bereich", label: "Bereich", kind: "chips", options: bereiche },
       ],
       entries: items(lagerortQuery).map((i) => toEntry(i, ["name", "bereich"], (v) => v.bereich)),
-      usage: (id) => `${stueck(usage("lagerort", id, "u"), "Unikat")} · ${stueck(usage("lagerort", id, "e"), "Editionsposten")}`,
+      usage: (id) => `${stueck(usage("lagerort", id, "u"), "Unikat", "Unikaten")} · ${stueck(usage("lagerort", id, "e"), "Editionsposten", "Editionsposten")}`,
       locked: (e) => (e.name === AUSSER_HAUS_ORT ? "Diesen Namen setzen die Regeln für Stücke außer Haus. Er bleibt fest." : undefined),
       save: (id, v) => run(id ? lagerortUpdate : lagerortCreate, id ? { recordId: id, fields: { name: v.name, bereich: v.bereich || null } } : { name: v.name, bereich: v.bereich || null }, lagerortQuery.refetch),
     },

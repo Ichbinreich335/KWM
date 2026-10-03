@@ -56,7 +56,6 @@ const SCROLL_STEP = 320;
 const UNIKAT = "Unikat";
 const EDITION = "Editionsware";
 
-
 type Row = {
   id: string;
   art: string;
@@ -836,115 +835,115 @@ export default function Block() {
           <LoadingState text="Tabelle wird geladen …" />
         ) : (
           <>
-          <div className="sm:hidden space-y-2" lang="de">
-            {visibleRows.length === 0 ? (
-              <EmptyState text="Keine Einträge gefunden." />
-            ) : (
-              <ul className="rounded-xl border bg-card px-3 divide-y">
-                {visibleRows.map((r) => (
-                  <li key={`${r.art}-${r.id}`}>
-                    <ListRow
-                      fotos={r.fotos}
-                      title={r.name || "Ohne Namen"}
-                      sub={[r.inv, r.typ, r.galerie || r.lagerort].filter(Boolean).join(" · ")}
-                      meta={
-                        <span className="flex flex-col items-end gap-1">
-                          <StatusBadge text={r.status} />
-                          <span className="text-sm tabular-nums">{r.art === EDITION ? `${zahl.format(r.anzahl)} Stück` : r.preis !== null ? euro.format(r.preis) : ""}</span>
-                        </span>
-                      }
-                      onClick={() => setSelected(r)}
-                    />
-                  </li>
-                ))}
-              </ul>
-            )}
-            {visibleRows.length > 0 && (
-              <p className="text-sm font-medium text-right">
-                Summe: {zahl.format(summeAnzahl)} Stück · {euro.format(summePreis)}
-              </p>
-            )}
-          </div>
-          <div className="hidden sm:block space-y-2">
-            {(scrollState.left || scrollState.right) && (
-              <div className="flex items-center justify-end gap-2">
-                <span className="text-sm text-muted-foreground mr-auto">Weitere Spalten: seitlich wischen oder Pfeile nutzen.</span>
-                <Button variant="outline" className="h-11 w-11 p-0" aria-label="Spalten links zeigen" disabled={!scrollState.left} onClick={() => scrollBy(-SCROLL_STEP)}>
-                  <ChevronLeft className="w-5 h-5" aria-hidden />
-                </Button>
-                <Button variant="outline" className="h-11 w-11 p-0" aria-label="Spalten rechts zeigen" disabled={!scrollState.right} onClick={() => scrollBy(SCROLL_STEP)}>
-                  <ChevronRight className="w-5 h-5" aria-hidden />
-                </Button>
-              </div>
-            )}
-          <div ref={scrollRef} onScroll={updateScroll} className="rounded-xl border overflow-auto max-h-[70vh] [scrollbar-width:auto] [scrollbar-color:#a1a1aa_#f4f4f5] [&::-webkit-scrollbar]:h-3 [&::-webkit-scrollbar]:w-3 [&::-webkit-scrollbar-track]:bg-zinc-100 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-400">
-            <table className="w-full text-sm">
-              <thead className="bg-muted text-muted-foreground sticky top-0 z-10">
-                <tr>
-                  <th scope="col" className="px-2.5 py-1 w-14">
-                    <span className="sr-only">Foto</span>
-                  </th>
-                  {shown.map((c) => {
-                    const active = sort?.key === c.key;
-                    return (
-                      <th key={c.key} scope="col" className={`px-2.5 py-1 font-medium whitespace-nowrap ${c.align === "right" ? "text-right" : "text-left"}`} aria-sort={active ? (sort?.dir === "asc" ? "ascending" : "descending") : "none"}>
-                        <button type="button" onClick={() => toggleSort(c.key)} className="inline-flex items-center gap-1 min-h-11 min-w-11 hover:text-foreground">
-                          {c.label}
-                          {active && (sort?.dir === "asc" ? <ArrowUp className="w-4 h-4" aria-hidden /> : <ArrowDown className="w-4 h-4" aria-hidden />)}
-                        </button>
-                      </th>
-                    );
-                  })}
-                </tr>
-              </thead>
-              <tbody>
-                {visibleRows.length === 0 ? (
-                  <tr>
-                    <td colSpan={shown.length + 1} className="px-4 py-10 text-center text-base">
-                      Keine Einträge gefunden.{" "}
-                      <button type="button" className="underline min-h-11" onClick={reset}>
-                        Filter zurücksetzen
-                      </button>
-                    </td>
-                  </tr>
-                ) : (
-                  visibleRows.map((r) => (
-                    <tr key={`${r.art}-${r.id}`} onClick={() => setSelected(r)} className="border-t cursor-pointer hover:bg-muted/40">
-                      <td className="px-2.5 py-1.5">
-                        <Thumb fotos={r.fotos} className="w-9 h-9 rounded" />
-                      </td>
-                      {shown.map((c) => (
-                        <td key={c.key} className={`px-2.5 py-1.5 ${c.align === "right" ? "text-right tabular-nums whitespace-nowrap" : ""} ${c.key === "name" ? "font-medium min-w-44" : c.key === "notiz" ? "min-w-56" : "whitespace-nowrap"}`}>
-                          {c.key === "status" && r.status ? (
+            <div className="sm:hidden space-y-2" lang="de">
+              {visibleRows.length === 0 ? (
+                <EmptyState text="Keine Einträge gefunden." />
+              ) : (
+                <ul className="rounded-xl border bg-card px-3 divide-y">
+                  {visibleRows.map((r) => (
+                    <li key={`${r.art}-${r.id}`}>
+                      <ListRow
+                        fotos={r.fotos}
+                        title={r.name || "Ohne Namen"}
+                        sub={[r.inv, r.typ, r.galerie || r.lagerort].filter(Boolean).join(" · ")}
+                        meta={
+                          <span className="flex flex-col items-end gap-1">
                             <StatusBadge text={r.status} />
-                          ) : c.key === "name" ? (
-                            <button type="button" className="text-left hover:underline min-h-11" onClick={() => setSelected(r)}>
-                              {r.name || "Ohne Namen"}
-                            </button>
-                          ) : (
-                            formatCell(c, r)
-                          )}
-                        </td>
-                      ))}
-                    </tr>
-                  ))
-                )}
-              </tbody>
-              {visibleRows.length > 0 && (
-                <tfoot className="bg-muted sticky bottom-0 shadow-[0_-1px_0_0_rgba(0,0,0,0.08)]">
-                  <tr className="border-t font-medium">
-                    <td className="px-2.5 py-2" />
-                    {shown.map((c, i) => (
-                      <td key={c.key} className={`px-2.5 py-2 whitespace-nowrap ${c.align === "right" ? "text-right tabular-nums" : ""}`}>
-                        {c.key === "anzahl" ? `${zahl.format(summeAnzahl)} Stück` : c.key === "preis" ? euro.format(summePreis) : i === 0 ? "Summe" : ""}
-                      </td>
-                    ))}
-                  </tr>
-                </tfoot>
+                            <span className="text-sm tabular-nums">{r.art === EDITION ? `${zahl.format(r.anzahl)} Stück` : r.preis !== null ? euro.format(r.preis) : ""}</span>
+                          </span>
+                        }
+                        onClick={() => setSelected(r)}
+                      />
+                    </li>
+                  ))}
+                </ul>
               )}
-            </table>
-          </div>
-          </div>
+              {visibleRows.length > 0 && (
+                <p className="text-sm font-medium text-right">
+                  Summe: {zahl.format(summeAnzahl)} Stück · {euro.format(summePreis)}
+                </p>
+              )}
+            </div>
+            <div className="hidden sm:block space-y-2">
+              {(scrollState.left || scrollState.right) && (
+                <div className="flex items-center justify-end gap-2">
+                  <span className="text-sm text-muted-foreground mr-auto">Weitere Spalten: seitlich wischen oder Pfeile nutzen.</span>
+                  <Button variant="outline" className="h-11 w-11 p-0" aria-label="Spalten links zeigen" disabled={!scrollState.left} onClick={() => scrollBy(-SCROLL_STEP)}>
+                    <ChevronLeft className="w-5 h-5" aria-hidden />
+                  </Button>
+                  <Button variant="outline" className="h-11 w-11 p-0" aria-label="Spalten rechts zeigen" disabled={!scrollState.right} onClick={() => scrollBy(SCROLL_STEP)}>
+                    <ChevronRight className="w-5 h-5" aria-hidden />
+                  </Button>
+                </div>
+              )}
+              <div ref={scrollRef} onScroll={updateScroll} className="rounded-xl border overflow-auto max-h-[70vh] [scrollbar-width:auto] [scrollbar-color:#a1a1aa_#f4f4f5] [&::-webkit-scrollbar]:h-3 [&::-webkit-scrollbar]:w-3 [&::-webkit-scrollbar-track]:bg-zinc-100 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-400">
+                <table className="w-full text-sm">
+                  <thead className="bg-muted text-muted-foreground sticky top-0 z-10">
+                    <tr>
+                      <th scope="col" className="px-2.5 py-1 w-14">
+                        <span className="sr-only">Foto</span>
+                      </th>
+                      {shown.map((c) => {
+                        const active = sort?.key === c.key;
+                        return (
+                          <th key={c.key} scope="col" className={`px-2.5 py-1 font-medium whitespace-nowrap ${c.align === "right" ? "text-right" : "text-left"}`} aria-sort={active ? (sort?.dir === "asc" ? "ascending" : "descending") : "none"}>
+                            <button type="button" onClick={() => toggleSort(c.key)} className="inline-flex items-center gap-1 min-h-11 min-w-11 hover:text-foreground">
+                              {c.label}
+                              {active && (sort?.dir === "asc" ? <ArrowUp className="w-4 h-4" aria-hidden /> : <ArrowDown className="w-4 h-4" aria-hidden />)}
+                            </button>
+                          </th>
+                        );
+                      })}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {visibleRows.length === 0 ? (
+                      <tr>
+                        <td colSpan={shown.length + 1} className="px-4 py-10 text-center text-base">
+                          Keine Einträge gefunden.{" "}
+                          <button type="button" className="underline min-h-11" onClick={reset}>
+                            Filter zurücksetzen
+                          </button>
+                        </td>
+                      </tr>
+                    ) : (
+                      visibleRows.map((r) => (
+                        <tr key={`${r.art}-${r.id}`} onClick={() => setSelected(r)} className="border-t cursor-pointer hover:bg-muted/40">
+                          <td className="px-2.5 py-1.5">
+                            <Thumb fotos={r.fotos} className="w-9 h-9 rounded" />
+                          </td>
+                          {shown.map((c) => (
+                            <td key={c.key} className={`px-2.5 py-1.5 ${c.align === "right" ? "text-right tabular-nums whitespace-nowrap" : ""} ${c.key === "name" ? "font-medium min-w-44" : c.key === "notiz" ? "min-w-56" : "whitespace-nowrap"}`}>
+                              {c.key === "status" && r.status ? (
+                                <StatusBadge text={r.status} />
+                              ) : c.key === "name" ? (
+                                <button type="button" className="text-left hover:underline min-h-11" onClick={() => setSelected(r)}>
+                                  {r.name || "Ohne Namen"}
+                                </button>
+                              ) : (
+                                formatCell(c, r)
+                              )}
+                            </td>
+                          ))}
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                  {visibleRows.length > 0 && (
+                    <tfoot className="bg-muted sticky bottom-0 shadow-[0_-1px_0_0_rgba(0,0,0,0.08)]">
+                      <tr className="border-t font-medium">
+                        <td className="px-2.5 py-2" />
+                        {shown.map((c, i) => (
+                          <td key={c.key} className={`px-2.5 py-2 whitespace-nowrap ${c.align === "right" ? "text-right tabular-nums" : ""}`}>
+                            {c.key === "anzahl" ? `${zahl.format(summeAnzahl)} Stück` : c.key === "preis" ? euro.format(summePreis) : i === 0 ? "Summe" : ""}
+                          </td>
+                        ))}
+                      </tr>
+                    </tfoot>
+                  )}
+                </table>
+              </div>
+            </div>
           </>
         )}
         <p className="text-sm text-muted-foreground">
