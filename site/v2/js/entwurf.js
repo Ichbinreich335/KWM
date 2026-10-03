@@ -8,6 +8,7 @@ const GROUPS = [
   { key: 'werk', label: 'Nach der Werkschau', options: [['orte', 'Orte'], ['drehen', 'Drehen'], ['aus', 'Nichts']] },
   { key: 'kosmos', label: 'Ausstellung', options: [['buehne', 'Bühne'], ['klassisch', 'Kosmos']] },
   { key: 'feuer', label: 'Feuer', options: [['zwei-farben', 'Zwei Farben'], ['liste', 'Liste']] },
+  { key: 'farbskala', label: 'Farbskala', global: true, options: [['kachel', 'Testkachel'], ['flaeche', 'Fläche']] },
   { key: 'profil', label: 'Schale im Einstieg', options: [['aus', 'Aus'], ['an', 'An']] },
 ];
 // Startseite: neue Fassung (index.html) oder vorherige (start-vorher.html)

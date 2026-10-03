@@ -14,6 +14,7 @@ const SPRING = 5.5;
 const REST_EDGE = 0.34;
 const OPEN_EDGE = 0.2;
 
+const flat = () => document.documentElement.dataset.farbskala === 'flaeche';
 const rgb = (hex) => { const n = parseInt(hex.slice(1), 16); return [n >> 16, (n >> 8) & 255, n & 255]; };
 const rgba = (c, a) => `rgba(${c[0]},${c[1]},${c[2]},${a})`;
 const mix = (a, b, t) => a.map((v, i) => Math.round(v + (b[i] - v) * t));
@@ -173,6 +174,7 @@ class Tile {
 
   // Maße neu aufnehmen: T = Dicke der Kachel (fest auf die größte Weite), L = Länge
   layout(horizontal, box, dpr) {
+    this.painted = false;
     const share = OPEN_GROW / (OPEN_GROW + OTHER_GROW * (BAND_COUNT - 1));
     this.horizontal = horizontal;
     this.dpr = dpr;
@@ -188,6 +190,8 @@ class Tile {
     this.rest = Math.max(this.L * REST_EDGE, horizontal ? 104 : 148);
     this.p0 = (this.L - this.rest) / (this.L - this.hi);
 
+    if (flat()) { this.dirty = true; return; }
+    this.painted = true;
     const rand = random(this.glaze.seed * 977 + 13);
     this.bisc = offscreen(this.T, this.L, dpr);
     paintBiscuit(this.bisc.x, this.T, this.L, this.grain, rand);
@@ -218,6 +222,7 @@ class Tile {
   }
 
   draw() {
+    if (!this.painted) { this.dirty = false; return; }
     const { ctx, T, L, glaze, dpr } = this;
     this.visible = this.horizontal ? this.el.clientHeight : this.el.clientWidth;
     const e = this.L - this.p * (this.L - this.hi);
@@ -383,6 +388,7 @@ export default function init(el) {
   };
 
   el.classList.add('is-live');
+  let flatNow = flat();
   build();
   tiles.forEach((t) => { t.target = 0; t.p = 0; });
   tiles.forEach((t) => t.draw());
@@ -410,6 +416,15 @@ export default function init(el) {
     start();
   }, { threshold: 0.25 });
   io.observe(el);
+
+  // Umschalten im Entwurf-Panel: Kacheln erst beim Wechsel zurück zeichnen, in „Fläche“ nichts rechnen
+  document.addEventListener('kwm:varianten', () => {
+    if (flat() === flatNow) return;
+    flatNow = flat();
+    build();
+    tiles.forEach((t) => { t.dirty = true; });
+    wake();
+  });
 
   const size = { w: el.clientWidth, h: el.clientHeight };
   let resizeFrame = 0;
