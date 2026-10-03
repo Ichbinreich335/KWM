@@ -115,3 +115,20 @@ Start: `npm run dev`, dann öffnen: V1 http://localhost:4391/ und V2 http://loca
 - **Formular:** echter Versand über Worker, Mail-Dienst und Turnstile. Braucht Entscheidung und Zugang des Admins sowie ein Security-Review.
 - **Live-Seite:** Datenschutzerklärung fehlt (`/firma/datenschutz/` leitet um). Datenschutzfund `wp-content/uploads/2023/12/image.png`.
 - **Nächster großer Schritt:** Umzug nach Astro mit Sanity, laut `konzept/AUFTRAG-ASTRO.md`.
+
+## V3 (Branch `design-v3`, 03.10.2026): Stand zur Präsentation
+- V3 liegt unter `/v3/` (Quelle `src/v3/`, CSS/JS `site/v3/`). V2 bleibt unverändert zum Vergleich.
+- **Präsentationslink ohne Entwurf-Panel:** `/v3/?praesentation`
+- **Umgesetzt (Feedback 5):**
+  - Meditation und 99 Schalen sind getrennt (Variante „zusammen“ im Panel).
+  - Lebensweg sofort sichtbar und kurz haltend.
+  - Meisterstücke mit Statement neben dem Einzelwerk.
+  - Manufaktur-Bild unter den Fakten.
+  - Orte ohne Markierungsrand, mit Bedienhinweis.
+  - Chronik am Handy als Wischleiste, Linien nacheinander.
+  - Kapitelköpfe überall mit Linie unter der Überschrift.
+  - Jede Unterseite mit einem Kontrast-Anker und einer Anfrage-Leiste.
+  - Werkstatt mit Chronik-Komponente und sauberem Glasurwechsel.
+- **Prüfung:** alle Seiten ohne Konsolenfehler, Überlauf und kaputte Bilder, 37 interne Links in Ordnung.
+- **Fragen an die Werkstatt:** `konzept/FRAGEN-AN-DIE-WERKSTATT.md`
+- **Von Agenten formuliert, gegenlesen:** Chronik-Titel „Im Handelsregister“ (1925), „Die Leitung“ (1993), „Abschied“ (2025) auf der Werkstatt-Seite; Einleitung „Dieselbe Glasur, andere Farbe“.
