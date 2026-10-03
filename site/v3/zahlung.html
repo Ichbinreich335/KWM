@@ -11,9 +11,10 @@
 <link rel="stylesheet" href="fonts/fonts.css">
 <link rel="stylesheet" href="styles.css">
 <link rel="stylesheet" href="css/pages.css">
+<link rel="stylesheet" href="css/expander.css">
 <link rel="stylesheet" href="css/page-text.css">
 <link rel="stylesheet" href="css/signaturen.css">
-<script>document.documentElement.classList.add('js');try{if(!sessionStorage.getItem('kwm-logo')){sessionStorage.setItem('kwm-logo','1');document.documentElement.classList.add('logo-draw')}}catch(e){document.documentElement.classList.add('logo-draw')}try{const q=new URLSearchParams(location.search),s=JSON.parse(localStorage.getItem('kwm-entwurf')||'{}'),d=document.documentElement.dataset;d.grund=q.get('grund')||s.grund||'galerie';d.klein=q.get('klein')||s.klein||'groesser'}catch(e){}</script>
+<script>document.documentElement.classList.add('js');try{if(!sessionStorage.getItem('kwm-logo')){sessionStorage.setItem('kwm-logo','1');document.documentElement.classList.add('logo-draw')}}catch(e){document.documentElement.classList.add('logo-draw')}try{const q=new URLSearchParams(location.search),s=JSON.parse(localStorage.getItem('kwm-entwurf')||'{}'),d=document.documentElement.dataset;d.grund=q.get('grund')||s.grund||'galerie'}catch(e){}</script>
 </head>
 <body class="page-text">
 
@@ -132,6 +133,7 @@
 
 <script type="module" src="main.js"></script>
 <script type="module" src="js/signaturen.js"></script>
+<script type="module" src="js/expander.js"></script>
 <script type="module" src="js/entwurf.js"></script>
 </body>
 </html>

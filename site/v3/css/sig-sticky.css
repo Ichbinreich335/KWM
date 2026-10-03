@@ -7,7 +7,6 @@
   --sticky-shift: 0%;         /* setzt sig-sticky.js, Wertebereich ±5 % der Bildhöhe */
   --sticky-text-from: 1;
   --sticky-text-to: 9;
-  --sticky-fs: clamp(1.25rem, 1.7vw, 1.6rem);
   position: relative;
   height: var(--sticky-h);
   overflow: clip;
@@ -52,10 +51,10 @@
   justify-items: start;
   pointer-events: auto;
 }
-.sticky-bild__lede { font-family: var(--f-text); font-size: var(--sticky-fs); line-height: 1.5; max-width: 40ch; margin: 0; text-wrap: pretty; }
+.sticky-bild__lede { font-family: var(--f-text); font-size: var(--t-quote); line-height: var(--t-quote-lh); max-width: 40ch; margin: 0; text-wrap: pretty; }
 .sticky-bild__quote { margin: 0; display: grid; gap: 18px; }
-.sticky-bild__quote p { font-family: var(--f-text); font-size: var(--sticky-fs); line-height: 1.42; margin: 0; text-wrap: pretty; }
-.sticky-bild__quote footer { font-size: 14px; color: var(--on-coal); }
+.sticky-bild__quote p { font-family: var(--f-text); font-size: var(--t-quote); line-height: var(--t-quote-lh); margin: 0; text-wrap: pretty; }
+.sticky-bild__quote footer { font-size: var(--t-small); line-height: var(--t-small-lh); color: var(--on-coal); }
 
 /* Porträt: Text rechts, Foto läuft links weiter; Bildunterschrift auf dem Papier darunter */
 .sticky-bild--portrait {
@@ -67,8 +66,7 @@
 .sticky-bild--portrait .sticky-bild__media::after {
   background: linear-gradient(270deg, rgb(10 10 10 / 0.78) 0%, rgb(10 10 10 / 0.6) 45%, rgb(10 10 10 / 0.12) 100%);
 }
-.sticky-bild--portrait .sticky-bild__quote p { font-size: clamp(1.25rem, 1.9vw, 1.85rem); }
-.sticky-bild__caption { margin: 0; padding: 10px var(--m) 0; font-size: 13px; line-height: 1.4; color: var(--ink-2); }
+.sticky-bild__caption { margin: 0; padding: 10px var(--m) 0; font-size: var(--t-meta); line-height: var(--t-meta-lh); color: var(--ink-2); }
 .sticky-bild-wrap { margin: 0; }
 /* Feuer: kurz, Text bleibt nur einen Atemzug lang stehen */
 #feuer { --sticky-h: 118svh; }
@@ -80,7 +78,6 @@
   .sticky-bild__media::after,
   .sticky-bild--portrait .sticky-bild__media::after { background: rgb(10 10 10 / 0.66); }
   .sticky-bild__pane { align-content: end; padding-bottom: clamp(48px, 12svh, 96px); }
-  .sticky-bild--portrait .sticky-bild__quote p { font-size: var(--sticky-fs); }
   .sticky-bild--portrait .sticky-bild__img { object-position: 22% 50%; }
 }
 

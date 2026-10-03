@@ -1,6 +1,6 @@
 # DESIGN.md: Designsystem der KWM-Website (V2)
 
-Stand: 02.10.2026. Verbindlich für alle Seiten und Elemente in `src/v2/` und `site/v2/` sowie für den späteren Umbau in Astro-Komponenten. Neue Elemente setzen sich aus den Bausteinen unten zusammen. Wer etwas Neues braucht, ergänzt es zuerst hier.
+Stand: 03.10.2026. Verbindlich für alle Seiten und Elemente in `src/v2/` und `site/v2/` sowie für den späteren Umbau in Astro-Komponenten. Neue Elemente setzen sich aus den Bausteinen unten zusammen. Wer etwas Neues braucht, ergänzt es zuerst hier.
 
 ## 1. Haltung
 - **Ausstellungskatalog, kein Shop.** Das Objekt führt, die Oberfläche tritt zurück.
@@ -33,32 +33,41 @@ Stand: 02.10.2026. Verbindlich für alle Seiten und Elemente in `src/v2/` und `s
 **Varianten zum Vergleich** (Entwurf-Panel): `data-grund="porzellan"` (kühler) und `data-grund="creme"` (alter Ton). Der Standard ist Galerie.
 
 ## 3. Typografie
-- **Schriften:** Libre Caslon Display (Überschriften), Libre Caslon Text (Zitate, Lede), Jost 300–500 (Text, Navigation, Daten). Alle selbst gehostet in `site/v2/fonts/`.
-- **Skala:**
 
-| Rolle | Größe | Schrift |
-|---|---|---|
-| Seitenname (riesig) | `clamp(3.4rem, 12.4vw, 13rem)`, Zeilenhöhe 0.9 | Display |
-| Seitentitel H1 (Einstieg Startseite) | `clamp(2.6rem, 4.7vw, 5.4rem)` | Display |
-| Seitentitel Unterseite (`.page-hero__title`) | `clamp(3rem, 7vw, 7rem)`, Zeilenhöhe 0.95 | Display |
-| Zitat groß (`--fs-statement`) | `clamp(2rem, 3.6vw, 3.6rem)`, Zeilenhöhe 1.06 | Display |
-| Abschnitt H2 (`.h2`) | `clamp(2.3rem, 4.6vw, 4.6rem)`, Zeilenhöhe 1.02 | Display |
-| Kachel-/Eintragstitel | `clamp(1.4rem, 2vw, 1.9rem)` | Display |
-| Lede | `clamp(1.65rem, 2.9vw, 2.75rem)` | Text |
-| Begleittext (`--fs-aside`: Abschnittskopf-Aside, Kapitel-Intro, Orte-Aside) | 16 px; ab 901 px bei „Größer“ `clamp(16px, 0.55vw + 9px, 18px)` | Jost |
-| Daten/Meta (`--fs-meta`: Jahr, Datum, Orte-Details) | 13,5 px; ab 901 px bei „Größer“ `clamp(13.5px, 0.35vw + 9px, 15px)` | Jost |
-| Bildunterschrift (`--fs-cap`) | 12,5 px; ab 901 px bei „Größer“ `clamp(12.5px, 0.3vw + 9px, 14px)` | Jost |
-| Zitat klein | `clamp(1.25rem, 1.7vw, 1.6rem)` | Text |
-| Fließtext | 17 px (mobil 16), Zeilenhöhe 1.55, max. 68ch | Jost |
-| Klein | 15 px | Jost |
-| Daten, Bildunterschrift | 13–13,5 px, `--ink-2`, `tabular-nums` bei Daten | Jost |
-| Spaltenlabel | 12,5–13 px, Versalien, Sperrung .08em | Jost |
+**Schriften:** Libre Caslon Display (Überschriften, Namen, Zahlen), Libre Caslon Text (Zitate, Lede, Einleitungen), Jost 300–500 (Text, Navigation, Daten). Alle selbst gehostet in `site/v3/fonts/`.
 
+**Regel: Es gibt nur Textstile.** Jede Schriftgröße im CSS kommt aus einem Token der Rollenskala in `site/v3/styles.css` (`:root`, Block „Textstile“). Ein Textstil besteht aus `--t-<name>` (Größe) und `--t-<name>-lh` (Zeilenhöhe) und wird immer als Paar gesetzt: `font-size: var(--t-small); line-height: var(--t-small-lh);`. Nackte `px`-, `rem`- oder `clamp()`-Werte außerhalb von `:root` sind nicht erlaubt. Wer eine Größe braucht, die es nicht gibt, ordnet das Element einer vorhandenen Rolle zu. Eine neue Rolle braucht einen Eintrag in der Tabelle und einen eigenen Zweck. Die kleinen Rollen (`small`, `meta`) wachsen auf großen Bildschirmen fließend („Größer“ ist Standard, es gibt keine Variante „Kleine Schrift“ mehr), mobil sind es 16 px und 13,5 px.
+
+### Textstile
+
+| Name | Token | Schrift | Größe (mobil → groß) | Zeilenhöhe | Farbe hell / Anker | Beispiele |
+|---|---|---|---|---|---|---|
+| Mega | `--t-mega` | Display | 3 rem bis 6 rem (15,5 vw) bis 900 px, danach 12,4 vw bis 13 rem | 0,9 | `--ink` / `--on-coal` | Name „Young-Jae Lee“, Titel der Name-Köpfe (Aktuelles, 404) |
+| Wortmarke | `--t-wordmark` | Display | 17,6 vw | 0,74 | `--on-coal` | „Margaretenhöhe“ im Footer, unten beschnitten |
+| Seitentitel | `--t-display` | Display | 3 rem bis 7 rem (7 vw) | 0,95 | `--ink` / `--on-coal` | `.page-hero__title`, Zitat-Zäsur Young-Jae Lee, Glasurname, große Zahl der Bühne |
+| Abschnitt | `--t-h2` | Display | 2,3 rem bis 4,6 rem (4,6 vw) | 1,02 | `--ink` / `--on-coal` | `.h2`, Einstiegstitel, `.lines__name`, Jahreszahl im Archiv, Öffnungszeiten groß, Orts-Kachel XL |
+| Aussage | `--t-statement` | Display | 2 rem bis 3,6 rem (3,6 vw) | 1,06 | `--ink` / `--on-coal` | Zitat groß (`.med__quote`, `.zaesur__text`, `.stance__quote`), Spotlight-Titel, Mobilmenü-Namen, Jahr im Ausstellungsarchiv, Chronik-Jahr |
+| Lede | `--t-lede` | Text | 1,65 rem bis 2,75 rem (2,9 vw) | 1,22 | `--ink` / `--on-coal` | `.lede__text` |
+| Titel | `--t-h3` | Display (auch Text) | 1,5 rem bis 2,2 rem (2,2 vw) | 1,1 | `--ink` / `--on-coal` | Kachel-, Eintrags- und Kartentitel, `.legal__body h2`, Anfrage-Leiste, Zitat mittel (`.artist__quote`) |
+| Jahreszahl | `--t-numeral` | Display | 1,3 rem bis 2,4 rem (2,4 vw) | 1 | `--ink` / `--on-coal` | `.datelist__year`, Werkstatt-Daten, Lebensdaten |
+| Zitat klein | `--t-quote` | Text | 1,25 rem bis 1,6 rem (1,7 vw) | 1,35 | `--ink` / `--on-coal` | Zitate und Einleitungen (`.page-hero__lede`), Werkname (`.piece__name`), Adresse, Bühnen-Zitat |
+| Fließtext | `--t-body` | Jost (Text für lange Absätze) | 17 px bis 19 px | 1,55 | `--ink` / `--on-coal` | Absätze, `<body>`, Formularfelder, Listeneinträge mit Titel (`.year__list .t`, `.facts dd` breit), Lead-Absatz |
+| Begleittext | `--t-small` | Jost | 16 px bis 18 px | 1,5 | `--ink-2` / `--on-coal-2` | Abschnitts-Aside, Teaser, Ortslisten, Beschreibungen in Listen, Navigation, Buttons, Link mit Pfeil, Footer-Spalten |
+| Meta | `--t-meta` | Jost | 13,5 px bis 15 px | 1,45 | `--ink-2` / `--on-coal-2` | Daten, Orte-Details, Bildunterschriften (`figcaption`), Spaltenlabel (Versalien, Sperrung 0,08 em), Quellenzeilen |
+
+Größen bei 1440 px: Mega 179, Seitentitel 101, Abschnitt 66, Aussage 52, Lede 42, Zahl 35, Titel 32, Zitat klein 24, Fließtext 18, Begleittext 17, Meta 14. Benachbarte Rollen unterscheiden sich um mindestens 10 % in der Größe, Fließtext und Begleittext zusätzlich über Farbe (`--ink` gegen `--ink-2`).
+
+**Zuordnung:** Überschrift eines Abschnitts oder einer Seite = Abschnitt oder Seitentitel; Titel eines Eintrags in einer Reihe oder Kachel = Titel; Satz in der Schrift Text, der als Stimme der Werkstatt oder des Künstlers steht = Lede, Zitat klein; alles Lesbare in ganzen Sätzen = Fließtext; alles Erklärende neben oder unter einem Titel = Begleittext; alles, was ein Datum, ein Maß, ein Ort oder eine Beschriftung ist = Meta.
+
+**Ausnahmen (bewusst, nicht aus der Skala):**
+- Zeichnungen im Canvas (`sig-drehen.js`: 11,5 px für Maßbeschriftungen im Bild) sind Teil der Grafik und skalieren mit ihr.
+- `--t-wordmark` ist keine Leseschrift, sondern Bildelement mit Breite 17,6 vw.
+
+**Weitere Regeln:**
 - **Spaltenlabel nur über Info-Spalten** (Footer, Werkangaben). **Nie als Kicker über einer Überschrift.**
 - **Umbruch:** Überschriften `text-wrap: balance`, Absätze `pretty`. Namen mit Bindestrich (Young-Jae) brechen nicht um, dafür das geschützte Zeichen `&#8209;` oder `white-space: nowrap` verwenden.
 - **Unterlängen-Maske** bei der Wort-Einblendung: `padding-bottom: 0.25em`, nie knapper.
-
-Kleine Schrift: Variante `data-klein` (Entwurf-Panel „Kleine Schrift“, Standard „Größer“, früh im Head gesetzt). Nur kleine Begleittexte wachsen auf großen Bildschirmen, mobil bleibt alles gleich. Neue kleine Texte nutzen die Tokens, keine festen px-Werte.
+- **Messlänge:** Fließtext höchstens 68 Zeichen, Begleittext 44 Zeichen.
 
 ## 4. Raster und Abstand
 - **Raster:** 12 Spalten (`.grid`), Seitenrand `--m` = `clamp(16px, 2.8vw, 44px)`, Spaltenabstand `--g` = `clamp(12px, 1.6vw, 24px)`.
@@ -115,7 +124,7 @@ Kleine Schrift: Variante `data-klein` (Entwurf-Panel „Kleine Schrift“, Stand
 
 ### Abschnittskopf (`.sec-head` auf der Startseite, `.chapter__head` auf Unterseiten)
 Ein Muster für die ganze Website:
-- H2 in Spalte 1–8, Begleittext (16 px, `--ink-2`, max. 44ch) oder Link in Spalte 9–12.
+- H2 in Spalte 1–8, Begleittext (Textstil Begleittext, `--ink-2`, max. 44ch) oder Link in Spalte 9–12.
 - Unten bündig (`align-items: end`), **Haarlinie darunter** (1 px, `currentColor`, 20 px Abstand), danach `--head-gap` zum Inhalt. Nie eine Linie über der Überschrift.
 - Folgt direkt eine Liste mit eigener oberer Linie (`.datelist`, `.texts`, `.pubs`), entfällt deren Linie, die Kopflinie genügt.
 - Mobil stehen H2 und Begleittext untereinander.
@@ -123,20 +132,27 @@ Ein Muster für die ganze Website:
 
 ### Anfrage-Leiste (`.anfrage-band`, Partial `partials/anfrage-band.html`)
 - Ruhiger Abschluss jeder Unterseite außer Besuch (dort ist das Formular) und 404, direkt vor dem Footer. Fläche `--ground-2`, nie Anker.
-- Ein kurzer Satz in Text-Schrift (Spalte 1–7), rechts (9–12) Button „Anfrage schreiben“ → `besuch.html#anfrage` und daneben die Telefonnummer +49 201 30 50 80. Darunter optional eine Hinweiszeile (14 px, `--ink-2`), z. B. dass man ein Stück nennen kann.
+- Ein kurzer Satz in Text-Schrift (Spalte 1–7), rechts (9–12) Button „Anfrage schreiben“ → `besuch.html#anfrage` und daneben die Telefonnummer +49 201 30 50 80. Darunter optional eine Hinweiszeile (Begleittext, `--ink-2`), z. B. dass man ein Stück nennen kann.
 - Einbindung: `<!-- @include anfrage-band {"text": "…", "query": "?stueck=…", "hinweis": "…"} -->`. `query` füllt das Feld „Stück“ im Formular vor, `hinweis` darf Links enthalten (einfache Anführungszeichen in Attributen).
 - Das ältere `.cta-band` bleibt nur auf der Werkstatt, bis dort umgestellt ist.
 
 ### Seitenkopf (`.page-hero`)
-Vier Typen, jede Unterseite wählt einen (Modifier-Klasse). Gemeinsam: Abstand oben `--head` + `clamp(48px, 6vw, 96px)`, Zeilenabstand `--head-gap`, Lede in Text-Schrift 1,15–1,4 rem, Bildunterschrift an fester Stelle direkt unter dem Bild in `--ink-2`.
+Vier Typen, jede Unterseite wählt einen (Modifier-Klasse). Gemeinsam: Abstand oben `--head` + `clamp(48px, 6vw, 96px)`, Zeilenabstand `--head-gap`, Lede im Textstil Zitat klein, Bildunterschrift an fester Stelle direkt unter dem Bild in `--ink-2`.
 - **Name** (`--name`, hell): Titel in Seitennamen-Größe über die ganze Breite, Lede rechts (Spalte 6–12), darunter optional ein randloses Bild in Höhe `--hero-img` = `min(72vh, 760px)`. Young-Jae Lee, Aktuelles (ohne Bild), 404.
 - **Meta** (`--meta`, hell): Titel oben, links Meta-Spalte (Spalte 1–4) mit Lede, rechts (Spalte 5–12) ein großes Bild, das an den rechten Rand läuft, oder eine Faktentafel (Besuch: Öffnungszeiten). Meisterstücke, Besuch.
 - **Fläche** (`--flaeche`, `--ground-2`): Titel links, Lede rechts, darunter vier Produktfotos 3:2 in einer Reihe, bündig auf einem Sockel (`.plinth`, `--ground-3`) mit Beschriftungen darunter (mobil 2 × 2 ohne Sockel). Manufaktur.
 - **Anker** (`--anker`, dunkel): Titel links (Spalte 1–8), Lede rechts (9–12), randloses Panorama am Fuß (`--strip`). Werkstatt. Maximal eine Unterseite.
 - Bild und Fläche grenzen ohne Zwischenraum aneinander, nur der Sockel und das Panorama laufen randlos.
 
+### Expander (`.expander`, `css/expander.css`, `js/expander.js`)
+Die eine Aufklapp-Komponente der Seite. Kein `<details>`, keine eigenen Aufklapper pro Seite.
+- Aufbau: `.expander > h3.expander__bar > button.expander__btn[aria-expanded][aria-controls]` und `.expander__panel > .expander__inner`. Plus dreht sich zum Minus, Höhe über `grid-template-rows` 0fr nach 1fr in 0,5 s, bei reduzierter Bewegung ohne Animation. Ohne JavaScript bleibt der Inhalt offen sichtbar. Ein Sprung auf einen `#id` im Inhalt öffnet den Expander.
+- **Zeile** (`--row`): Jahr groß links, Teaser in der Mitte, Plus rechts, Haarlinie darunter. Jahresarchiv auf Aktuelles (Inhalt `.year__list`).
+- **Lang** (`--lang`): großer Knopf über die ganze Breite (Display-Schrift, Linie oben). Offen bleibt die Leiste beim Scrollen unter Kopf und Sprungleiste stehen (`top: var(--head) + var(--subnav)`, bei ausgeblendetem Kopf `var(--subnav)`) und zeigt „Schließen“. Beim Schließen springt die Ansicht ruhig an den Knopf zurück. Young-Jae Lee: „Alle Ausstellungen seit 1980“ (Inhalt `.exh-archive`).
+- Neue Aufklapper nutzen diese Komponente, nur der Inhalt ist seitenspezifisch.
+
 ### Link mit Pfeil (`.link-arrow`)
-- 15 px, Unterstrich 1 px, Pfeil als Maske `--arrow`.
+- Textstil Begleittext, Unterstrich 1 px, Pfeil als Maske `--arrow`.
 - Hover: Linie zieht sich zurück, Pfeil rückt 4 px.
 - Tippfläche ≥ 44 px über Padding mit negativem Rand, optisch unverändert.
 
@@ -167,7 +183,7 @@ Liste mit Spaltenlabel und Haarlinien. Ganz unten der Anfrage-Link „Zu diesem 
 - Quelle immer mit Namen, im Daten-Stil darunter.
 
 ### Bildunterschrift und Nachweis
-- `figcaption`: 12,5–13 px, `--ink-2`, 10 px unter dem Bild.
+- `figcaption`: Textstil Meta, `--ink-2`, 10 px unter dem Bild.
 - Nachweis über einem Foto nur auf einer Fläche im Grundton, nie als weiße Schrift direkt auf dem Bild.
 
 ### Navigation
@@ -178,7 +194,7 @@ Liste mit Spaltenlabel und Haarlinien. Ganz unten der Anfrage-Link „Zu diesem 
 Sticky unter dem Header, mobil seitlich scrollbar mit Randausblendung. Der aktive Eintrag wird markiert.
 
 ### Footer
-- Anker mit Logo-Konstruktion (`sig-logo`) in Spalte 1–4 und vier Infospalten in 16,5 px.
+- Anker mit Logo-Konstruktion (`sig-logo`) in Spalte 1–4 und vier Infospalten im Textstil Begleittext.
 - Riesige Wortmarke „Margaretenhöhe“, unten an der Seitenkante beschnitten (gewollt).
 
 ## 7. Signaturen (generative Elemente)
@@ -226,3 +242,75 @@ Sticky unter dem Header, mobil seitlich scrollbar mit Randausblendung. Der aktiv
   - Verwendung: Werkschau, Werkseiten, Kacheln
 - **Galerie- und Ausstellungsfotos:** Raumansichten, Einzelwerke im Museum. Verwendung: Aktuell, Orte, Bühne, große Bildstrecken.
 - **KI-Bilder** sind nur Platzhalter und werden ersetzt.
+
+## 11. Komponenten-Inventar (Grundlage für den Astro-Umbau)
+
+Jede wiederverwendbare Komponente hat einen künftigen Astro-Namen (`src/components/<Name>.astro`), einen Zweck, ihre Textstile (Abschnitt 3) und feste Varianten. Neue Seiten setzen sich nur aus diesen Komponenten zusammen. Was fehlt, wird zuerst hier ergänzt. Fundstellen verweisen auf V3 (`src/v3/`, CSS in `site/v3/`). „Hell“ = `--ground`, „Fläche“ = `--ground-2` (`.on-flaeche`), „Anker“ = `--coal` (`.on-anker`). Kurzformen der Textstile: Mega, Seitentitel (display), Abschnitt (h2), Aussage (statement), Lede, Titel (h3), Jahreszahl (numeral), Zitat klein (quote), Fließtext (body), Begleittext (small), Meta.
+
+### Gerüst und Navigation
+
+| Komponente | Zweck | Textstile | Varianten | Fundstellen |
+|---|---|---|---|---|
+| `Header` | Kopfzeile mit Wortmarke, Navigation, Sprachumschalter, Mobilmenü | Begleittext (Links, Sprache), Aussage (Menünamen mobil), Titel (Telefon mobil) | hell, auf Bild/Anker invertiert; Mobil als Vollbildmenü | `partials/header.html`, `styles.css` (`.nav`, `.lang`, `.menu-toggle`) |
+| `Footer` | Abschluss jeder Seite: Logo-Konstruktion, vier Infospalten, Wortmarke | Meta (Spaltenlabel), Begleittext (Spalten), Wortmarke | nur Anker | `partials/footer.html`, `styles.css` (`.footer*`), `css/sig-logo.css` |
+| `SubNav` | Sprungleiste unter dem Header, sticky, mobil seitlich scrollbar | Begleittext | hell | `css/pages.css` (`.subnav`), auf Meisterstücke, Manufaktur, Young-Jae Lee, Werkstatt, Aktuelles |
+| `PageHero` | Seitenkopf, einer der vier Typen | Seitentitel oder Mega (Name), Zitat klein (Lede), Meta (Bildunterschrift) | `name`, `meta`, `flaeche`, `anker` (Abschnitt 6, Seitenkopf) | `css/pages.css` (`.page-hero*`), alle Unterseiten |
+
+### Abschnitte und Köpfe
+
+| Komponente | Zweck | Textstile | Varianten | Fundstellen |
+|---|---|---|---|---|
+| `SectionHead` | Abschnittskopf: Überschrift links, Begleittext oder Link rechts, Haarlinie darunter | Abschnitt (H2), Begleittext (Aside) | hell, Fläche, Anker | `.sec-head` (`styles.css`, Startseite), `.chapter__head` (`css/pages.css`, Unterseiten): beides wird eine Komponente |
+| `ChapterHead` | Kapitel einer Unterseite mit Einleitung (`.chapter__intro`) | Abschnitt, Begleittext | hell, Fläche, Anker | `css/pages.css` (`.chapter`), alle Unterseiten |
+| `Statement` | Zitat oder Aussage groß, mit Quelle | Aussage oder Seitentitel (`pullquote`), Meta (Quelle) | hell, Fläche, Anker; `--bild` (`.zaesur`: Bild links, Satz rechts) | `.pullquote`, `.stance__quote`, `.zaesur`, `.catalog__quote`, `.mf-intro__rule`, `.med__quote`, `.rep__quote`, `.statement` |
+| `Lede` | Einleitender Absatz einer Seite oder eines Abschnitts | Lede, Begleittext (Spalten) | hell | `.lede` (Startseite), `.page-hero__lede`, `.prose` |
+| `Prose` | Fließtext mit Quelle, begrenzte Zeilenlänge | Fließtext, Meta (Quelle) | hell, Anker | `css/pages.css` (`.prose`), `.legal__body` (Rechtsseiten), `.stance__text` |
+
+### Einträge und Kacheln
+
+| Komponente | Zweck | Textstile | Varianten | Fundstellen |
+|---|---|---|---|---|
+| `ExhibitionCard` | Ausstellung mit Bild, Datum, Titel, Ort, Fakten | Meta (Datum, Status), Titel, Begleittext (Ort, Text), Aussage (Spotlight) | Spotlight (groß), Eintrag (gespiegelt wechselnd), Kachel (4:3, ein Link) | `.aktuell__item` (Startseite, `css/sig-aktuell.css`), `.feature` (Aktuelles, `css/page-aktuelles.css`), `.now__item` (Vorversion Startseite) |
+| `WorkCard` | Einzelwerk mit Bild, Name, Maßen, Anfrage-Link | Titel oder Zitat klein (Name), Meta (Jahr, Maße, Anfrage) | `catalog__item--wide` (Meta-Spalte links, Bild 4–12), Reihe (gleiche Formate) | `.catalog__item` (`css/pages.css`, `css/page-meisterstuecke.css`), `.piece` (`styles.css`), `.rail__item` (Vorversion) |
+| `WareCard` | Geschirrserie mit Bild, Titel, Größenliste | Titel, Begleittext (Liste), Meta (Nummern) | Satz (`.set`), Edition | `.ware`, `.set` (`css/page-manufaktur.css`) |
+| `FactsList` | Werkangaben und Fakten: Label links, Wert rechts, Haarlinien | Meta (Label, Versalien), Fließtext oder Begleittext (Wert) | hell, Anker; breit (`.craft__detail--wide`) | `.facts` (`styles.css`), `.method__facts`, `.place__info`, `.aktuell__facts`, `.feature__facts` |
+| `DateList` | Liste mit Jahr links, Text rechts | Jahreszahl, Begleittext, Meta | hell, Fläche | `.datelist` (`css/pages.css`), Young-Jae Lee, Manufaktur, Werkstatt |
+| `PubList` | Veröffentlichungen und Texte mit Autor, Titel, Auszug | Titel, Meta, Begleittext | `pubs`, `texts` | `.pubs`, `.pub`, `.texts` (`css/page-aktuelles.css`, `css/page-young-jae-lee.css`) |
+| `PersonCard` | Mensch der Werkstatt mit Rolle und Text | Titel (Name), Meta (Rolle), Begleittext | Reihe (`.team-strip`) | `.person` (`css/pages.css`, `css/page-werkstatt.css`) |
+| `Steps` | Arbeitsschritte, nummeriert | Titel, Begleittext | hell, Anker | `.steps` (`css/page-meisterstuecke.css`), `.route__steps` (Anfahrt) |
+
+### Aufklappen und Archive
+
+| Komponente | Zweck | Textstile | Varianten | Fundstellen |
+|---|---|---|---|---|
+| `Expander` | Die eine Aufklapp-Komponente (Abschnitt 6) | Aussage oder Titel (Label), Begleittext (Teaser) | `row` (Jahresarchiv), `lang` (ganze Breite, Schließen-Leiste sticky) | `css/expander.css`, `js/expander.js`; Aktuelles, Young-Jae Lee |
+| `YearArchive` | Jahresblock im Archiv mit Jahr und Einträgen | Aussage (Jahr), Body (Titel), Begleittext (Ort), Meta (Datum) | im `Expander` `row` oder `lang` | `.year__list`, `.exh-year` (`css/page-aktuelles.css`, `css/page-young-jae-lee.css`) |
+| `Timeline` | Lebensweg der Künstlerin, Jahr, Ort, Satz | Meta (Jahr), Titel (Ort), Begleittext | hell | `.journey` (`styles.css`, Startseite, `js/main.js`) |
+| `Chronicle` | Hundert Jahre Werkstatt, Jahre ziehen vorbei | Aussage (Jahr), Titel, Begleittext, Zitat klein (Lede) | Fläche | `.chronicle` (`styles.css`, `css/page-werkstatt.css`) |
+| `PlaceGrid` | Ausstellungsorte als Bildraster mit Detail | Abschnitt (XL), Aussage (M), Titel, Meta, Begleittext | Anker | `.orte` (`css/sig-orte.css`, `js/sig-orte.js`) |
+
+### Formulare und Hinweise
+
+| Komponente | Zweck | Textstile | Varianten | Fundstellen |
+|---|---|---|---|---|
+| `InquiryBand` | Ruhiger Abschluss mit Satz, Button und Telefon | Titel (Satz), Begleittext (Hinweis) | nur Fläche | `partials/anfrage-band.html`, `css/pages.css` (`.anfrage-band`) |
+| `InquiryForm` | Anfrageformular mit Fehlern, Bestätigung, Datenschutzhinweis | Fließtext (Felder), Meta (Label), Begleittext (Fehler, Hinweis), Titel (Bestätigung) | hell; mit `?stueck=` vorbelegt | `partials/anfrage-form.html`, `css/sig-anfrage.css`, `besuch.html` |
+| `Notice` | Hinweis- oder Platzhalterkasten | Titel, Begleittext | hell, Fläche | `.legal__notice` (`css/page-text.css`), Rechtsseiten |
+| `LinkArrow` | Link mit Pfeil und 44-px-Tippfläche | Begleittext | hell, Anker | `.link-arrow`, 73 Stellen |
+| `Button` | Primär gefüllt, Ghost | Begleittext | gefüllt, Ghost | `.button` (`styles.css`) |
+| `InfoBlock` | Seitenspezifische Linkblöcke (Zahlung, Anfahrt, 404) | Begleittext, Titel | hell | `.pay__list`, `.route`, `.not-found__links` (`css/page-besuch.css`, `css/pages.css`) |
+
+### Bild und Signatur
+
+| Komponente | Zweck | Textstile | Varianten | Fundstellen |
+|---|---|---|---|---|
+| `Figure` | Bild mit Bildunterschrift und Nachweis | Meta | 4:3, 3:2, 4:5, Panorama randlos | `figcaption` überall |
+| `Plinth` | Geschirrreihe auf Sockel mit Beschriftung | Meta | Fläche | `.plinth`, `.shelf` (`css/pages.css`, Manufaktur) |
+| `Signature` (je Name) | Generative Grafik (Abschnitt 7): `Komposition`, `Bühne`, `Orte`, `Feuer`, `Farbskala`, `Logo`, `Drehen`, `Profil`, `StickyBild` | wie die Komponente, in der sie steht | per `data-variant` | `css/sig-*.css`, `js/sig-*.js` |
+| `Hours` | Öffnungszeiten groß im Kopf | Abschnitt (Zeit), Titel (kleine Zeit), Begleittext (Tag, Hinweis), Zitat klein (Adresse) | hell | `.visit-hours` (`css/page-besuch.css`) |
+
+### Regeln für den Umbau
+- Eine Komponente trägt ihre Textstile selbst. Seiten setzen keine Schriftgrößen, Schriften oder Zeilenhöhen.
+- Varianten laufen über Props (`variant="hell | flaeche | anker"`), nicht über Seiten-CSS. Anker setzen ihre lokalen Tokens (Abschnitt 5).
+- Seitenspezifisches CSS (`css/page-*.css`) entfällt, sobald die Komponenten dieselbe Optik tragen. Was bleibt, ist nur Anordnung im 12-Spalten-Raster.
+- Inhalte kommen aus Sanity (nur freigegebene Felder), die Komponente kennt keine Preise und keine Lagerorte.

@@ -12,8 +12,8 @@
 /* Ohne Skript: die drei Schritte als Text untereinander */
 .throw__text { padding-block: var(--section); max-width: 52ch; }
 .throw__steps { display: grid; gap: 40px; }
-.throw__name { font-family: var(--f-display); font-size: clamp(1.7rem, 2.6vw, 2.4rem); line-height: 1.1; letter-spacing: -0.01em; }
-.throw__dir { margin: 8px 0 12px; font-size: 13px; letter-spacing: 0.04em; color: var(--ink-2); }
+.throw__name { font-family: var(--f-display); font-size: var(--t-h3); line-height: var(--t-h3-lh); letter-spacing: -0.01em; }
+.throw__dir { margin: 8px 0 12px; font-size: var(--t-meta); line-height: var(--t-meta-lh); letter-spacing: 0.04em; color: var(--ink-2); }
 .throw__body { margin: 0; max-width: 40ch; }
 .throw__hint, .throw__scene { display: none; }
 
@@ -31,7 +31,7 @@
 }
 .throw.is-live .throw__text { grid-column: 1 / 5; padding-block: 0; align-self: center; max-width: none; }
 .throw.is-live .throw__scene { grid-column: 5 / -1; display: block; position: relative; min-height: 0; margin-right: calc(var(--m) * -1); }
-.throw.is-live .throw__hint { display: block; margin: 36px 0 0; font-size: 13px; color: var(--ink-2); }
+.throw.is-live .throw__hint { display: block; margin: 36px 0 0; font-size: var(--t-meta); line-height: var(--t-meta-lh); color: var(--ink-2); }
 
 .throw__canvas {
   position: absolute;
@@ -50,8 +50,8 @@
 .throw.is-live .throw__steps { gap: 0; }
 .throw.is-live .throw__step { padding: 14px 0; border-top: 1px solid var(--hair); }
 .throw.is-live .throw__step:last-child { border-bottom: 1px solid var(--hair); }
-.throw.is-live .throw__name { transition: color 0.5s var(--ease), font-size 0.5s var(--ease); color: var(--ink-2); font-size: clamp(1.2rem, 1.7vw, 1.55rem); }
-.throw.is-live .throw__step.is-active .throw__name { color: var(--ink); font-size: clamp(1.7rem, 2.6vw, 2.4rem); }
+.throw.is-live .throw__name { transition: color 0.5s var(--ease), font-size 0.5s var(--ease); color: var(--ink-2); font-size: var(--t-quote); line-height: var(--t-quote-lh); }
+.throw.is-live .throw__step.is-active .throw__name { color: var(--ink); font-size: var(--t-h3); line-height: var(--t-h3-lh); }
 .throw.is-live .throw__more {
   display: grid;
   grid-template-rows: 0fr;
@@ -84,10 +84,10 @@
   .throw.is-live .throw__step { grid-area: 1 / 1; border: 0; padding: 0; opacity: 0; visibility: hidden; transition: opacity 0.5s var(--ease); }
   .throw.is-live .throw__step.is-active { opacity: 1; visibility: visible; }
   .throw.is-live .throw__step:last-child { border: 0; }
-  .throw.is-live .throw__name, .throw.is-live .throw__step.is-active .throw__name { font-size: 1.55rem; color: var(--ink); }
+  .throw.is-live .throw__name, .throw.is-live .throw__step.is-active .throw__name { font-size: var(--t-h3); line-height: var(--t-h3-lh); color: var(--ink); }
   .throw.is-live .throw__more { grid-template-rows: 1fr; opacity: 1; }
   .throw.is-live .throw__dir { margin: 4px 0 6px; }
-  .throw.is-live .throw__body { font-size: 14px; line-height: 1.45; max-width: none; }
+  .throw.is-live .throw__body { font-size: var(--t-small); line-height: var(--t-small-lh); max-width: none; }
   .throw.is-live .throw__hint { display: none; }
   .throw__bar { display: flex; gap: 6px; margin-top: 10px; }
   .throw__bar span { flex: 1; height: 2px; background: var(--hair); transition: background 0.5s var(--ease); }

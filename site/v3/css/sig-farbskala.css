@@ -53,8 +53,8 @@
   line-height: 1.2;
   white-space: nowrap;
 }
-.scale__title { font-family: var(--f-display); font-size: clamp(13px, 1.2vw, 20px); letter-spacing: 0.005em; }
-.scale__meta { font-size: 13px; letter-spacing: 0.03em; }
+.scale__title { font-family: var(--f-display); font-size: var(--t-small); line-height: var(--t-small-lh); letter-spacing: 0.005em; }
+.scale__meta { font-size: var(--t-meta); line-height: var(--t-meta-lh); letter-spacing: 0.03em; }
 .is-live .scale__label { opacity: 0; transition: opacity 0.6s var(--ease); }
 .is-live.is-ready .scale__label { opacity: 1; }
 
@@ -79,7 +79,7 @@
   .scale .scale__band.is-open .scale__sample,
   .scale:not(.is-live) .scale__band:hover .scale__sample { transform: translateY(-50%) scale(0.85); }
   .scale__label { left: auto; right: var(--g); bottom: auto; top: 50%; transform: translateY(-50%); text-align: right; }
-  .scale__title { font-size: 17px; }
+  .scale__title { font-size: var(--t-body); line-height: var(--t-body-lh); }
   .scale__band { text-align: right; }
 }
 

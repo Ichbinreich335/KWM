@@ -5,27 +5,27 @@
   grid-column: 1 / 8;
   margin: 0;
   font-family: var(--f-display);
-  font-size: var(--fs-statement);
-  line-height: 1.06;
+  font-size: var(--t-statement);
+  line-height: var(--t-statement-lh);
   letter-spacing: -0.015em;
   text-wrap: balance;
 }
 .ms-intro__text { grid-column: 9 / 13; padding-top: 10px; }
 .ms-intro__text p { max-width: 44ch; }
 
-.catalog__ask { padding-block: 12px; margin-block: -7px -12px; font-size: 13px; color: var(--ink-2); text-underline-offset: 0.28em; }
+.catalog__ask { padding-block: 12px; margin-block: -7px -12px; font-size: var(--t-meta); line-height: var(--t-meta-lh); color: var(--ink-2); text-underline-offset: 0.28em; }
 .catalog__ask:hover { color: var(--ink); }
 
 .catalog__quote { margin: 0; align-self: center; }
 .catalog__quote p {
   font-family: var(--f-display);
-  font-size: var(--fs-statement);
-  line-height: 1.06;
+  font-size: var(--t-statement);
+  line-height: var(--t-statement-lh);
   letter-spacing: -0.015em;
   text-wrap: balance;
   margin: 0 0 18px;
 }
-.catalog__quote footer { font-size: 13px; color: var(--ink-2); }
+.catalog__quote footer { font-size: var(--t-meta); line-height: var(--t-meta-lh); color: var(--ink-2); }
 
 .catalog__item--mood .catalog__frame img { aspect-ratio: 3 / 2; }
 .catalog__item--band .catalog__frame img { aspect-ratio: 16 / 7; }
@@ -41,7 +41,7 @@
 
 /* Spindelvasen: ruhige Dreierreihe */
 .spindle { margin-top: var(--section); padding-bottom: 36px; row-gap: 16px; align-items: baseline; border-top: 0; }
-.spindle__title { grid-column: 1 / 7; font-family: var(--f-display); font-size: clamp(1.8rem, 2.8vw, 2.8rem); line-height: 1.05; }
+.spindle__title { grid-column: 1 / 7; font-family: var(--f-display); font-size: var(--t-statement); line-height: var(--t-statement-lh); }
 .spindle__text { grid-column: 8 / 13; margin: 0; color: var(--ink-2); max-width: 46ch; }
 .catalog--spindle { padding-top: 28px; border-top: 1px solid var(--hair); margin-inline: var(--m); padding-inline: 0; }
 
@@ -51,8 +51,8 @@
 .steps__media img { width: 100%; aspect-ratio: 1; object-fit: cover; }
 .steps__list { grid-column: 7 / 13; border-top: 1px solid var(--ink); }
 .steps__item { padding: 22px 0 20px; border-bottom: 1px solid var(--hair); display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: 8px var(--g); }
-.steps__item dt { font-family: var(--f-display); font-size: clamp(1.35rem, 1.8vw, 1.75rem); line-height: 1.1; }
-.steps__item dd { font-size: 16px; line-height: 1.6; }
+.steps__item dt { font-family: var(--f-display); font-size: var(--t-h3); line-height: var(--t-h3-lh); }
+.steps__item dd { font-size: var(--t-small); line-height: var(--t-small-lh); }
 
 @media (max-width: 900px) {
   .ms-intro__statement, .ms-intro__text { grid-column: 1 / -1; }

@@ -81,7 +81,7 @@ import { random, pickGlaze as pickFrom, renderBowlSprite } from './js/keramik.js
     paint();
   }
 
-  /* ---------- Lebensweg: Haltestrecke mit mittig klebender Stage, Linie und Punkte füllen sich mit dem Scrollen ---------- */
+  /* ---------- Lebensweg: Haltestrecke mit klebender Stage, Linie und Punkte füllen sich mit dem Scrollen ---------- */
   const track = $('[data-journey-track]');
   if (track && !reduced) {
     const line = $('.journey', track);
@@ -89,11 +89,17 @@ import { random, pickGlaze as pickFrom, renderBowlSprite } from './js/keramik.js
     const stops = $$('li', line);
     const SOFT = 0.08;
     const FILL = 0.8; // Anteil der Haltestrecke, in dem sich die Linie füllt; der Rest ist Pause
+    const STICK_AT = 0.44; // Strahl klebt bei 44 % der Bildschirmhöhe, das Zitat bleibt darüber im Bild
+    const STICK_MIN = 72; // nie unter die Kopfzeile
+    const STICK_GAP = 24; // Mindestabstand zur Unterkante, falls die Stage hoch ist (Mobil)
     let offsets = [];
     const measure = () => {
       const vertical = stops[1].offsetTop > stops[0].offsetTop + 4;
       const size = vertical ? line.offsetHeight : line.offsetWidth;
       offsets = stops.map((li) => (vertical ? li.offsetTop : li.offsetLeft) / size);
+      const fit = window.innerHeight - stage.offsetHeight - STICK_GAP;
+      const top = Math.max(STICK_MIN, Math.min(window.innerHeight * STICK_AT, fit));
+      track.style.setProperty('--stick', `${Math.round(top)}px`);
     };
     const clamp01 = (v) => Math.min(1, Math.max(0, v));
     const update = () => {
@@ -175,14 +181,6 @@ import { random, pickGlaze as pickFrom, renderBowlSprite } from './js/keramik.js
       if (e.key === 'ArrowLeft') track.scrollBy({ left: -360, behavior: 'smooth' });
     });
   });
-
-  /* ---------- Jahresarchiv: Sprung auf #jahr-XXXX öffnet das Jahr (auch für alte Jahres-URLs) ---------- */
-  const openYear = () => {
-    const el = location.hash.startsWith('#jahr-') && document.getElementById(location.hash.slice(1));
-    if (el && el.tagName === 'DETAILS') el.open = true;
-  };
-  openYear();
-  window.addEventListener('hashchange', openYear);
 
   /* ---------- Sprungleiste der Unterseiten: aktuellen Abschnitt markieren ---------- */
   const subnav = $('.subnav');
