@@ -13,7 +13,7 @@
 <link rel="stylesheet" href="css/pages.css">
 <link rel="stylesheet" href="css/page-aktuelles.css">
 <link rel="stylesheet" href="css/signaturen.css">
-<script>document.documentElement.classList.add('js');try{if(!sessionStorage.getItem('kwm-logo')){sessionStorage.setItem('kwm-logo','1');document.documentElement.classList.add('logo-draw')}}catch(e){document.documentElement.classList.add('logo-draw')}try{const q=new URLSearchParams(location.search),s=JSON.parse(localStorage.getItem('kwm-entwurf')||'{}'),d=document.documentElement.dataset;d.grund=q.get('grund')||s.grund||'galerie'}catch(e){}</script>
+<script>document.documentElement.classList.add('js');try{if(!sessionStorage.getItem('kwm-logo')){sessionStorage.setItem('kwm-logo','1');document.documentElement.classList.add('logo-draw')}}catch(e){document.documentElement.classList.add('logo-draw')}try{const q=new URLSearchParams(location.search),s=JSON.parse(localStorage.getItem('kwm-entwurf')||'{}'),d=document.documentElement.dataset;d.grund=q.get('grund')||s.grund||'galerie';d.klein=q.get('klein')||s.klein||'groesser'}catch(e){}</script>
 </head>
 <body class="page-aktuelles">
 
@@ -127,7 +127,7 @@
   </div>
 
   <!-- Vergangene Ausstellungen -->
-  <section class="chapter chapter--anker on-anker" id="vergangene" aria-labelledby="past-title">
+  <section class="chapter" id="vergangene" aria-labelledby="past-title">
     <div class="chapter__head grid">
       <h2 class="h2" id="past-title" data-reveal="words">Vergangene Ausstellungen</h2>
       <p class="chapter__intro" data-reveal="fade">Von Kyoto bis Boston, von Breslau bis in die eigene Werkstatt: eine Auswahl der Ausstellungen seit 2016. Ein Jahr öffnen, um die Stationen zu sehen.</p>

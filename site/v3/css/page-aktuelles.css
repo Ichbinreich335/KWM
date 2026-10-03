@@ -41,9 +41,6 @@
 }
 .year > summary::-webkit-details-marker { display: none; }
 .year > summary:hover { background: var(--ground-2); }
-.on-anker .year > summary:hover { background: var(--coal-2); }
-/* Der Anker schließt direkt an die Fläche des Pop-ups an */
-#vergangene { margin-top: 0; }
 .year__num {
   grid-column: 1 / 4;
   font-family: var(--f-display);
