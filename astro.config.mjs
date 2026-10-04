@@ -77,6 +77,8 @@ export default defineConfig({
   trailingSlash: 'never',
   // Globale Stile für die responsiven Bilder (max-width bei constrained)
   image: { responsiveStyles: true },
+  // Verschobene Regeln behalten ihre Spezifität: 'where' erhöht sie nicht (Standard 'attribute' addiert +1)
+  scopedStyleStrategy: 'where',
   // Astro 7 entfernt sonst Leerzeichen zwischen Inline-Elementen (Standard 'jsx')
   compressHTML: true,
   // Selbst gehostete Schriften (SIL Open Font License), Ersatzschriften über `fallbacks`
