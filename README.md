@@ -47,12 +47,13 @@ Bis zum Go-live liefert die Seite `X-Robots-Tag: noindex, nofollow` aus (`public
 astro.config.mjs      statisch, build.format 'file' (aktuelles.astro → /aktuelles), compressHTML
 wrangler.jsonc        Worker kwm-redesign, Assets aus dist/, 404-Seite, Previews
 src/layouts/          BaseLayout.astro: Kopf, Skripte, Header und Footer (kein CSS-Import)
-src/components/       Header, Footer, InquiryBand (Anfrage-Leiste), InquiryForm (Anfrageformular)
-src/data/             kontakt.ts (Telefon, Mail, Zeiten, Adresse), navigation.ts (Menü, Fußlinks)
+src/components/       Header, Footer, InquiryBand (Anfrage-Leiste), InquiryForm (Anfrageformular), Bild (jedes Bild, rendert `<Image>` aus `astro:assets`)
+src/data/             kontakt.ts (Telefon, Mail, Zeiten, Adresse), navigation.ts (Menü, Fußlinks), bilder.ts (löst Bildpfade zu Bilddaten auf)
 src/pages/            eine .astro-Datei pro Seite
 src/styles/           basis.css (bindet global.css, pages.css, expander.css ein), seiten/ (Seiten-CSS), signaturen/ (signaturen.css und sig-*.css)
 src/scripts/          Browser-Skripte (TypeScript): main, signaturen (lädt die sig-* als eigene Chunks), expander, keramik (gemeinsame Typen und Daten); das Layout bindet sie als ein verarbeitetes Skript ein
-public/               Schriften (fonts.css), Bilder, _headers, _redirects, robots.txt (kein CSS mehr; Rest wird in Phase C gebündelt)
+src/assets/img/       Bilder, nur über `<Bild src="/img/…">` einbinden (Pfad ohne `src/assets`)
+public/               Schriften (fonts.css), Favicon (`img/kwm/logo.svg`), _headers, _redirects, robots.txt (kein CSS mehr; Rest wird in Phase C gebündelt)
 tests/                Playwright-Tests (siehe oben)
 konzept/              Konzepte, Pläne, Berichte; figures.json = Bilderliste der alten WordPress-Seite
 .shots/               Skripte für Screenshots zur Sichtprüfung (Bilder werden nicht eingecheckt)
@@ -63,6 +64,6 @@ archiv/               abgeschlossene Stände: HTML-Prototyp (V1–V3), frühe En
 
 Jede Seite importiert in dieser Reihenfolge: `../styles/basis.css`, ihr Seiten-CSS aus `../styles/seiten/` (falls vorhanden), `../styles/signaturen/signaturen.css`. Das Layout importiert kein CSS. Nur `fonts.css` bleibt ein `<link>` im Layout.
 
-Warum: Die Kaskade lebt von der Reihenfolge (Grundstile, dann Seite, dann Signaturen). Vite legt gemeinsam genutzte Stile sonst in einen Chunk, der im HTML hinter dem Seiten-CSS steht. Deshalb trennt `codeSplitting.groups` in `astro.config.mjs` die Chunks `basis` und `signaturen`, und `build.inlineStylesheets: 'never'` verhindert, dass kleines Seiten-CSS als `<style>` vor alle Links rutscht. Kaskaden-Ebenen (`@layer`) taugen hier nicht, weil sie die Spezifität umkehren.
+Warum: Die Kaskade lebt von der Reihenfolge (Grundstile, dann Seite, dann Signaturen). Vite legt gemeinsam genutzte Stile sonst in einen Chunk, der im HTML hinter dem Seiten-CSS steht. Deshalb trennt `codeSplitting.groups` in `astro.config.mjs` die Chunks `basis` und `signaturen`, und `build.inlineStylesheets: 'never'` verhindert, dass kleines Seiten-CSS als `<style>` vor alle Links rutscht. Kaskaden-Ebenen (`@layer`) taugen hier nicht, weil sie die Spezifität umkehren. Die Bildstile von Astro (`image.responsiveStyles`) sind in den Chunk `basis` eingemischt und liegen in `@layer astro.images`; diese Ebene steht unter allem CSS des Projekts ohne Ebene und kann es deshalb nie überschreiben (darum ist `@layer` dort unbedenklich, im Projekt-CSS aber nicht).
 
 Gesichert durch den Test „Stylesheet-Reihenfolge“ in `tests/routen.spec.ts`: Er prüft auf allen Seiten, dass `fonts.css`, `basis`, höchstens ein Seiten-Chunk und `signaturen` in dieser Reihenfolge geladen werden und kein `<style>` im Head steht.
