@@ -6,6 +6,9 @@ konzept
 keramik
 .shots
 tests/__screens__
+test-results
+playwright-report
+.wrangler
 package-lock.json
 # Doku und Agenten-Dateien gehören nicht zur Website
 /*.md

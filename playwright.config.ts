@@ -26,7 +26,8 @@ export default defineConfig({
       ? { command: 'npm run prototyp', url: `${basisUrl.prototyp}/v3/index.html`, reuseExistingServer: true }
       : {
           command: 'npm run build && npx wrangler dev --port 8787',
-          url: `${basisUrl.astro}/`,
+          // robots.txt gibt es immer; / antwortet erst, wenn die Startseite gebaut ist
+          url: `${basisUrl.astro}/robots.txt`,
           reuseExistingServer: true,
           timeout: 180_000,
         },

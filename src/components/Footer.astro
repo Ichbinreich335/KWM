@@ -1,0 +1,69 @@
+---
+import { kontakt } from '../data/kontakt';
+import { fussLinks } from '../data/navigation';
+---
+
+<footer class="footer">
+  <div class="footer__grid grid">
+    <svg class="footer__logo" data-sig="logo" viewBox="0 0 237 128" aria-hidden="true" focusable="false">
+      <g class="sig-main">
+        <line data-a="0" data-b=".14" x1="2.13" y1="110.25" x2="234.76" y2="110.25"></line>
+        <line data-a=".06" data-b=".2" x1="2.13" y1="126.47" x2="234.76" y2="126.47"></line>
+        <line class="sig-butt" data-a=".2" data-b=".4" x1="118.44" y1="110.25" x2="118.44" y2="1.53"></line>
+        <path
+          class="sig-butt"
+          data-a=".4"
+          data-b=".72"
+          d="M196.09,110.25c0-42.89-34.77-77.66-77.66-77.66c-42.89,0-77.66,34.77-77.66,77.66"
+        ></path>
+        <line data-a=".72" data-b=".82" data-sym x1="80.47" y1="1.53" x2="157.1" y2="1.53"></line>
+        <polyline
+          class="sig-bevel"
+          data-a=".82"
+          data-b="1"
+          points="72.88,110.25 80.47,42.59 118.44,101.46 157.1,42.59 164.35,110.25"
+        ></polyline>
+      </g>
+    </svg>
+    <div class="footer__col">
+      <p class="footer__label">Werkstatt</p>
+      <p>
+        {kontakt.firma}
+        <br />
+        {kontakt.adresse[0]}
+        <br />
+        {kontakt.adresse[1]}
+      </p>
+    </div>
+    <div class="footer__col">
+      <p class="footer__label">Geöffnet</p>
+      <p>{kontakt.zeiten.map((zeile, i) => (i === 0 ? zeile : [<br />, zeile]))}</p>
+    </div>
+    <div class="footer__col">
+      <p class="footer__label">Kontakt</p>
+      <p>
+        <a href={kontakt.telefonHref}>{kontakt.telefon}</a>
+        <br />
+        <a href={kontakt.mailHref}>{kontakt.mail}</a>
+      </p>
+    </div>
+    <div class="footer__col">
+      <p class="footer__label">Seiten</p>
+      <p class="footer__links">
+        {fussLinks.map((l) => (
+          <a href={l.href}>{l.name}</a>
+        ))}
+      </p>
+    </div>
+  </div>
+  <p class="footer__mark" aria-hidden="true">
+    Margaretenhöhe
+  </p>
+</footer>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <filter id="ink" x="-5%" y="-5%" width="110%" height="110%">
+    <feTurbulence type="fractalNoise" baseFrequency="0.07" numOctaves="2" seed="7" result="n"></feTurbulence>
+    <feDisplacementMap in="SourceGraphic" in2="n" scale="1.6"></feDisplacementMap>
+  </filter>
+</svg>
