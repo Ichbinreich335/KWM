@@ -23,3 +23,33 @@ test('Anfrageformular übernimmt ?stueck= und springt zum Formular', async ({ pa
   await expect(page.locator('#anfrage-stueck')).toHaveValue('Teeschale à la Lee');
   await expect(page.locator('#anfrage')).toBeInViewport();
 });
+
+test('Leerzeichen zwischen Inline-Links bleiben erhalten', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.locator('.hero__actions')).toHaveText(/Meisterstücke ansehen\s+Manufakturprogramm/);
+});
+
+test('Hinweiszeile erscheint nur in ihrem Zeitraum (Entscheidung im Browser, nicht beim Bauen)', async ({
+  browser,
+}) => {
+  const erkunden = await browser.newPage();
+  await erkunden.goto('/');
+  const notiz = erkunden.locator('.aktuell__note').first();
+  const { start, ende } = await notiz.evaluate((el: HTMLElement) => ({
+    start: el.dataset.start ?? '',
+    ende: el.dataset.end ?? '',
+  }));
+  await erkunden.close();
+
+  const imZeitraum = await browser.newPage();
+  await imZeitraum.clock.setFixedTime(new Date(`${start}T12:00:00`));
+  await imZeitraum.goto('/');
+  await expect(imZeitraum.locator('.aktuell__note').first()).toBeVisible();
+
+  const danach = await browser.newPage();
+  const tagDanach = new Date(`${ende}T12:00:00`);
+  tagDanach.setDate(tagDanach.getDate() + 1);
+  await danach.clock.setFixedTime(tagDanach);
+  await danach.goto('/');
+  await expect(danach.locator('.aktuell__note').first()).toBeHidden();
+});
