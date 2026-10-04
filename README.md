@@ -1,13 +1,57 @@
-# KWM – Redesign kwm-1924.de
+# KWM – Website kwm-1924.de
 
-Entwurf der neuen Website der Keramischen Werkstatt Margaretenhöhe. Konzept: [Designvorschlag-v2.md](Designvorschlag-v2.md).
+Website der Keramischen Werkstatt Margaretenhöhe. Statisch gebaut mit [Astro](https://docs.astro.build) 7, ausgeliefert als Cloudflare Worker mit Static Assets (`kwm-redesign`). Designsystem: [DESIGN.md](DESIGN.md). Aktuelle Entscheidungen: [konzept/UEBERGABE.md](konzept/UEBERGABE.md), Abschnitt 0. Umbauplan: [konzept/PLAN-ASTRO-UMBAU.md](konzept/PLAN-ASTRO-UMBAU.md).
+
+## Start
+
+Node 24 (siehe `.nvmrc`).
 
 ```bash
-npm install        # Playwright für Screenshots
-npm run dev        # baut src/ → site/ und startet http://localhost:4391
-npm run watch      # baut bei Änderungen in src/ neu
+npm install
+npx playwright install chromium   # einmalig, für die Tests
+npm run dev                       # Entwicklungsserver http://localhost:4321
+npm run preview                   # baut dist/ und startet wrangler dev (wie in Produktion: Weiterleitungen, Header, 404)
 ```
 
-- `src/` – Seitenvorlagen, `src/partials/` gemeinsamer Head/Header/Footer
-- `site/` – ausgelieferte Website (CSS, JS, Bilder, gebaute HTML-Seiten)
-- `.shots/` – Playwright-Skripte für visuelle Prüfung
+## Prüfen
+
+```bash
+npm run check                     # Prettier, ESLint, astro check, Build – muss vor jedem Merge grün sein (CI prüft dasselbe)
+npm run test:ausgangsstand        # Referenz-Screens aus dem Prototyp erzeugen (tests/__screens__/, nicht im Repo)
+npm test                          # alle Playwright-Tests gegen dist/ unter wrangler dev
+BASIS_URL=https://… npm test      # dieselben Tests gegen eine Vorschau- oder Produktions-URL
+```
+
+| Test                             | Prüft                                                                                                                |
+| -------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| `tests/optik.spec.ts`            | Ganzseitige Screens aller 13 Seiten, Desktop 1440 px und Mobil 390 px, gegen den Ausgangsstand; keine Konsolenfehler |
+| `tests/routen.spec.ts`           | 404-Seite, saubere URLs ohne `.html`, `noindex`, Linkprüfung aller Seiten, Weiterleitung alter `/v3/`-Links          |
+| `tests/verhalten.spec.ts`        | Anfrage-Leiste und -Formular, Sonderzeichen, Leerzeichen, datumsabhängige Hinweise                                   |
+| `tests/barrierefreiheit.spec.ts` | axe-core, WCAG 2.2 AA, alle Seiten                                                                                   |
+
+Die Optik-Tests laufen nur lokal (die Schriftdarstellung unter Linux weicht ab), nicht in CI. Läuft schon ein `wrangler dev` auf Port 8787, verwenden die Tests ihn weiter und bauen nicht neu; dann vorher `npm run build`.
+
+## Deploy
+
+Workers Builds baut bei jedem Push mit `npm run build`:
+
+- Branch `main` → `npx wrangler deploy` → Produktion
+- jeder andere Branch → `npx wrangler preview` → eigene Vorschau-URL `https://<branch>-kwm-redesign.<subdomain>.workers.dev`
+
+Bis zum Go-live liefert die Seite `X-Robots-Tag: noindex, nofollow` aus (`public/_headers`), und `public/robots.txt` sperrt alles. Vorschau-URLs sind öffentlich erreichbar.
+
+## Wo liegt was
+
+```
+astro.config.mjs      statisch, build.format 'file' (aktuelles.astro → /aktuelles), compressHTML
+wrangler.jsonc        Worker kwm-redesign, Assets aus dist/, 404-Seite, Previews
+src/layouts/          BaseLayout.astro: Kopf, Stylesheets, Skripte, Header und Footer
+src/components/       Header, Footer, InquiryBand (Anfrage-Leiste), InquiryForm (Anfrageformular)
+src/data/             kontakt.ts (Telefon, Mail, Zeiten, Adresse), navigation.ts (Menü, Fußlinks)
+src/pages/            eine .astro-Datei pro Seite
+public/               CSS, JS, Schriften, Bilder, _headers, _redirects, robots.txt (aus dem Prototyp übernommen; wird in Phase C gebündelt)
+tests/                Playwright-Tests (siehe oben)
+konzept/              Konzepte, Pläne, Berichte
+.shots/               Skripte für Screenshots zur Sichtprüfung (Bilder werden nicht eingecheckt)
+prototyp/             alter HTML-Prototyp (V1–V3), nur bis zur Abnahme von Phase A
+```
