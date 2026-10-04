@@ -9,7 +9,8 @@ Stand: 04.10.2026, abends
 | Läuft | Was passiert | Wo |
 |---|---|---|
 | **Porträt und Feuer** (Feinschliff, Teil 1) | Am Handy stehen Porträt und Zitat untereinander, das Gesicht ist frei. Der Feuer-Text läuft bis unten mit. Porträt und Feuer werden schärfer. | Branch `phase-b3-feinschliff`, Ordner `../KWM-phase-b3` |
-| **Bausteine, Teil 1** (Seitenkopf, Sprungleiste) | Korrekturrunde nach dem Review. Die CSS-Reihenfolge der Bausteine wird festgelegt und durch einen Test gesichert. | Branch `phase-d1-geruest`, Ordner `../KWM-phase-d` |
+| **Bausteine, Teil 1b** (Abschnittskopf, Kapitelkopf, Einleitung, Fließtext) | Seitenkopf und Sprungleiste sind fertig und geprüft. Jetzt folgen die nächsten vier Bausteine. | Branch `phase-d1-geruest`, Ordner `../KWM-phase-d` |
+| **Vergleich Hell/Dunkel** | Screens der Startseite in vier Fassungen (heute, Orte hell, ohne Grau, beides), nur zum Ansehen | `.shots/rhythmus/` |
 
 ## Fertig (wartet auf deine Abnahme)
 
@@ -37,9 +38,10 @@ Alle PRs sind Entwürfe und bauen aufeinander auf. Gemergt wird in dieser Reihen
    - Raster: Lebensweg, Links der Aktuell-Karten, Fußzeile
 
    Danach misst ein Agent die Dichte am Handy, und du bekommst einen Vorschlag mit Vorher- und Nachher-Screens.
-2. **Bausteine, Teil 1 fertig**: Abschnittskopf, Zitat, Einleitung und Fließtext als Bausteine, danach der PR.
-3. **Bausteine, Teil 2 bis 5**: Karten, Listen, Aufklapper, Formular, Bilder; Inhalte als Daten in der Form, die Sanity später liefert.
-4. **SEO und Sicherheit**: Sitemap, Vorschaubilder für Links, strukturierte Daten, Sicherheits-Header. `noindex` bleibt bis zum Go-live.
+2. **Bausteine, Teil 1 fertig**: danach der Zitat-Baustein, dann der PR.
+3. **Vorschlag kürzere Startseite** mit Screens, zur Entscheidung.
+4. **Bausteine, Teil 2 bis 5**: Karten, Listen, Aufklapper, Formular, Bilder; Daten-Dateien nur für das, was später in Sanity kommt (Vorschlag: Ausstellungen, Orte, Werke).
+5. **SEO und Sicherheit**: Sitemap, Vorschaubilder für Links, strukturierte Daten, Sicherheits-Header. `noindex` bleibt bis zum Go-live.
 
 ## Warum in Schritten und nicht alles beim Umzug
 
