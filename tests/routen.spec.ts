@@ -36,8 +36,7 @@ test('.html leitet auf die saubere URL um', async ({ request }) => {
 test('Alle internen Links, Bilder, Skripte und Stylesheets antworten mit 200', async ({ page, request }) => {
   const geprueft = new Set<string>();
   for (const seite of seiten) {
-    // ?praesentation: ohne den Parameter hängt entwurf.js (entfällt in Phase B) einen Link auf das nicht portierte start-vorher.html an.
-    await page.goto(`${seite.astro}?praesentation`);
+    await page.goto(seite.astro);
     const ziele = await page
       .locator('a[href], img[src], link[href], script[src], [data-img]')
       .evaluateAll((els) =>

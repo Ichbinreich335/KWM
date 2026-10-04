@@ -91,7 +91,7 @@ Auf der Cloudflare-Vorschau (mobil, Median aus 3): Startseite Leistung 95, Barri
 6. Test-Server gilt als bereit, sobald `/robots.txt` antwortet (die Startseite gab es erst ab A6).
 7. **Zusätzliche Abnahme Textvergleich:** Der Optik-Test hat 0,2 % Pixeltoleranz und übersieht deshalb ein einzelnes verschobenes Leerzeichen. Der Textvergleich hat zweimal genau so einen Fehler gefunden (siehe 4.1).
 8. `"previews": {}` in `wrangler.jsonc`, fehlte im Plan, Pflicht laut Cloudflare-Doku.
-9. Linkprüfung mit `?praesentation`, weil das Entwurf-Panel ohne den Parameter auf das nicht portierte `start-vorher.html` verlinkt. Folge: Die Standardansicht ohne Parameter wird bei der Linkprüfung nicht abgedeckt, ihr Panel-Link „Vorher“ führt auf eine 404-Seite. Das Panel fällt in Phase B weg. Reine Anker (`#…`) werden übersprungen (der Sprachlink „DE“ zeigt auf `#`).
+9. **Entwurf-Panel schon in Phase A entfernt** (Admin, 04.10.2026). Es war ohne `?praesentation` für jeden Besucher sichtbar, und eine einmal angeklickte Variante blieb im Browser gespeichert. `public/js/varianten.js` setzt jetzt fest die Fassung aus E5 (jeweils die erste Option) und liest weder URL noch Speicher; `entwurf.js` und `entwurf.css` sind gelöscht, der Grundton steht fest als `data-grund="galerie"` auf `<html>`. Ein Verhaltenstest sichert das ab, auch mit früher gespeicherter Auswahl. Linkprüfung und Barrierefreiheits-Test prüfen dadurch die normale Ansicht ohne Parameter. Reine Anker (`#…`) überspringt die Linkprüfung weiterhin (der Sprachlink „DE“ zeigt auf `#`).
 10. Watch-Pfade in der Schreibweise der Cloudflare-Doku (`src/*` statt `src/**`).
 11. Die unsichtbaren Barrierefreiheits-Fehler sind schon in Phase A behoben und der axe-Test ist scharf geschaltet (der Plan sah `test.fixme` bis Phase B vor). Grund: Plan-Regel „Unsichtbare Korrekturen sofort, solange der Optik-Test grün bleibt“.
 
@@ -118,7 +118,7 @@ Fehler-Audit: axe-core (WCAG 2.2 AA + Best Practices), Lighthouse (alle Kategori
 | P3 | Start | `sig-orte.css:117` (`transition: margin-top`) | animiert Layout-Eigenschaft | `translate` statt `margin-top` |
 | P3 | alle | `--ease-pop` (Überschwing-Kurve) | Detektor meldet „Bounce-Easing“; laut Kommentar bewusst | Designentscheidung, nur bestätigen |
 
-Aufräumen in Phase B (ohne sichtbare Wirkung): `sig-buehne.css/js` werden von keiner Seite genutzt; Kommentar in `index.astro` nennt `js/sig-komposition.js`; Entwurf-Panel samt Link auf `start-vorher.html`.
+Aufräumen in Phase B (ohne sichtbare Wirkung): die nicht gewählten Varianten-Abschnitte im Markup und danach `varianten.js`; `sig-buehne.css/js` und weitere Signaturen, die keine Seite mehr nutzt; Kommentar in `index.astro` zu `js/sig-komposition.js`; CSS-Regeln für `data-grund="porzellan"/"creme"`, `data-feuertext="wandernd"`, `data-farbskala="flaeche"`.
 
 Für spätere Phasen notiert: Kontaktdaten im Anfrageformular dreifach fest im Markup statt aus `kontakt.ts` (Phase D); die zwei `prettier-ignore` durch eine robustere Lösung ersetzen (Phase D); Weiterleitungstest auf 302-Status und `/v2/*` schärfen (Phase E); `/v3/:seite` leitet nur einstufige Pfade um, alte Asset-URLs wie `/v3/img/…` nicht (bewusst, geteilt wurden nur Seitenlinks); Anker-Ziele (`#…`) prüft der Linktest nicht.
 

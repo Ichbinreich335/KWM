@@ -55,3 +55,18 @@ test('Hinweiszeile erscheint nur in ihrem Zeitraum (Entscheidung im Browser, nic
   await imZeitraum.close();
   await danach.close();
 });
+
+test('Kein Entwurf-Panel, feste Fassung auch mit früher gespeicherter Auswahl', async ({ page }) => {
+  await page.addInitScript(() =>
+    localStorage.setItem(
+      'kwm-entwurf',
+      JSON.stringify({ grund: 'creme', lebensweg: 'zeichnen', einstieg: 'wortbild' }),
+    ),
+  );
+  await page.goto('/?grund=porzellan&einstieg=wortbild');
+  await expect(page.locator('html')).toHaveAttribute('data-grund', 'galerie');
+  await expect(page.locator('html')).toHaveAttribute('data-lebensweg', 'scrollen');
+  await expect(page.locator('[data-variant="einstieg:foto"]')).toBeVisible();
+  await expect(page.locator('[data-variant="einstieg:wortbild"]')).toBeHidden();
+  await expect(page.getByRole('button', { name: /Entwurf/ })).toHaveCount(0);
+});

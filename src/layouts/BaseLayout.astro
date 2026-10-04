@@ -13,7 +13,7 @@ const { title, description, bodyClass, nav } = Astro.props;
 ---
 
 <!doctype html>
-<html lang="de">
+<html lang="de" data-grund="galerie">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -28,7 +28,7 @@ const { title, description, bodyClass, nav } = Astro.props;
     <link rel="stylesheet" href="/css/expander.css" />
     <slot name="head" />
     <link rel="stylesheet" href="/css/signaturen.css" />
-    {/* Muss vor dem ersten Rendern laufen (Logo-Zeichnung einmal pro Sitzung, Grundton), daher inline */}
+    {/* Muss vor dem ersten Rendern laufen (Logo-Zeichnung einmal pro Sitzung), daher inline */}
     <script is:inline>
       document.documentElement.classList.add('js');
       try {
@@ -39,12 +39,6 @@ const { title, description, bodyClass, nav } = Astro.props;
       } catch {
         document.documentElement.classList.add('logo-draw');
       }
-      try {
-        const q = new URLSearchParams(location.search),
-          s = JSON.parse(localStorage.getItem('kwm-entwurf') || '{}'),
-          d = document.documentElement.dataset;
-        d.grund = q.get('grund') || s.grund || 'galerie';
-      } catch {}
     </script>
   </head>
   <body class={bodyClass}>
@@ -54,6 +48,6 @@ const { title, description, bodyClass, nav } = Astro.props;
     <script is:inline type="module" src="/main.js"></script>
     <script is:inline type="module" src="/js/signaturen.js"></script>
     <script is:inline type="module" src="/js/expander.js"></script>
-    <script is:inline type="module" src="/js/entwurf.js"></script>
+    <script is:inline type="module" src="/js/varianten.js"></script>
   </body>
 </html>
