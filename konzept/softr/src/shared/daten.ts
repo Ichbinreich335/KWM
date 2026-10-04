@@ -54,6 +54,29 @@ export function activeOptions(data: { pages: { items: unknown[] }[] } | undefine
     .sort((a, b) => a.label.localeCompare(b.label, "de"));
 }
 
+// Nachschlagefelder liefern je nach Feld einen Wert oder eine Liste mit einem Wert.
+export function lookupValue(v: unknown): unknown {
+  return Array.isArray(v) ? v[0] : v;
+}
+
+// Artikelnummern wie 2, 6a, 10, 2018a in natürlicher Reihenfolge.
+export function compareNr(a: string, b: string): number {
+  if (!a || !b) return a ? -1 : b ? 1 : 0;
+  return a.localeCompare(b, "de", { numeric: true });
+}
+
+export function modellLabel(nr: string, name: string): string {
+  return nr ? `${nr} · ${name}` : name;
+}
+
+// Lädt eine Liste frisch vom Server, z. B. direkt vor dem Speichern. So rechnet die App nie mit veralteten Zahlen,
+// auch wenn auf einem zweiten Gerät gleichzeitig gearbeitet wird. null heißt: Laden fehlgeschlagen.
+export async function freshItems(query: { refetch: () => Promise<unknown> }): Promise<RawItem[] | null> {
+  const result = (await query.refetch()) as { data?: { pages: { items: unknown[] }[] }; status?: string } | undefined;
+  if (!result?.data || result.status === "error") return null;
+  return result.data.pages.flatMap((p) => p.items) as RawItem[];
+}
+
 export function link(id: string | undefined): string[] {
   return id ? [id] : [];
 }

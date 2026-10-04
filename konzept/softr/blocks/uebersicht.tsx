@@ -49,6 +49,15 @@ function num(v: unknown): number | null {
   return typeof v === "number" && Number.isFinite(v) ? v : null;
 }
 
+// Nachschlagefelder liefern je nach Feld einen Wert oder eine Liste mit einem Wert.
+function lookupValue(v: unknown): unknown {
+  return Array.isArray(v) ? v[0] : v;
+}
+
+function modellLabel(nr: string, name: string): string {
+  return nr ? `${nr} · ${name}` : name;
+}
+
 function formatDate(iso: string): string {
   if (!iso) return "";
   const d = new Date(iso.length === 10 ? `${iso}T00:00:00` : iso);
@@ -188,6 +197,7 @@ const editionSelect = q.select({
   foto: "nibt5",
   erfasstAm: "0x7rU",
   geaendertAm: "JZyKO",
+  artikelnr: "Zzp1S",
 });
 
 const RECENT_COUNT = 6;
@@ -325,7 +335,7 @@ export default function Block() {
         const f = (i as RawItem).fields;
         return {
           id: i.id,
-          modell: firstLabel(f.modell),
+          modell: modellLabel(str(lookupValue(f.artikelnr)), firstLabel(f.modell)),
           glasur: firstLabel(f.glasur),
           zustand: firstLabel(f.zustand),
           anzahl: num(f.anzahl) ?? 0,
@@ -382,7 +392,7 @@ export default function Block() {
   }, [unikate]);
 
   const modellRows = useMemo<CountRow[]>(() => {
-    const modelle = [...new Set(editionen.map((e) => e.modell).filter(Boolean))].sort((a, b) => a.localeCompare(b, "de"));
+    const modelle = [...new Set(editionen.map((e) => e.modell).filter(Boolean))].sort((a, b) => a.localeCompare(b, "de", { numeric: true }));
     return modelle.map((modell) => {
       const list = editionen.filter((e) => e.modell === modell);
       const roh = list.filter((e) => e.zustand === ROHLING).reduce((n, e) => n + e.anzahl, 0);

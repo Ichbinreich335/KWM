@@ -35,7 +35,7 @@ function namedSpecs(spec) {
 function parseShared(file) {
   const { imports, body } = parseImports(readFileSync(join(SHARED, file), "utf8"));
   const lines = body.split("\n");
-  const DECL_RE = /^(?:export\s+)?(?:function|const|type)\s+([A-Za-z_][A-Za-z0-9_]*)/;
+  const DECL_RE = /^(?:export\s+)?(?:async\s+function|function|const|type)\s+([A-Za-z_][A-Za-z0-9_]*)/;
   // Beginn jeder Deklaration, einschließlich direkt darüber stehender Kommentarzeilen.
   const starts = [];
   lines.forEach((line, i) => {

@@ -53,3 +53,11 @@ Grundlage: Feedback des Admins zu den Screens vom 04.10. und der Skill `impeccab
 - **Modelle:** Artikelnr. und VK-Preis (aus der Preisliste der Werkstatt) als Felder, in Stammdaten pflegbar, in der Tabelle sichtbar. Summe der Editionsware = Anzahl × VK-Preis.
 - **Typ „Übertopf“** statt „Obertopf“.
 - **Prüfung:** Typprüfung grün. Lokaler Render-Test mit Testdaten (153 Einträge, Seiten, Reiter, Filter, Zurücksetzen, Stammdaten-Dialog, Erfassen) ohne Fehler. Die Prüfung in der echten Vorschau steht weiter aus (Netzsperre `*.softr.app`).
+
+## Runde 4: Katalog der Werkstatt und Robustheit (04.10.)
+
+- **Katalog:** 81 Artikel aus den Anfrageformularen (Editionen 2001 ff., Manufakturprogramm 1 ff.) mit Nummer, deutschem und englischem Namen, Typ, Programm und Glasuren. VK-Preise der Editionen aus der gedruckten Preisliste.
+- **Erfassen:** Modell nach Nummer und Programm gruppiert. Glasur aus dem Modell, bei Geschirr Wahl aus den 6 Glasuren.
+- **Bestand:** Status-Knöpfe mit Zahl wie früher, auf Wunsch des Admins. Editionsware mit Zustand-Knöpfen und Programm.
+- **Datenstand sicher:** Alle Mengenänderungen rechnen auf dem frisch geladenen Server-Wert (zwei Geräte gleichzeitig). Keine doppelten Editionszeilen. Löschen in Stammdaten prüft frisch, ob etwas darauf verweist. Artikelnummern sind eindeutig.
+- **Prüfung:** Typprüfung grün. Lokaler Render-Test mit Katalogdaten: Gruppen und Sortierung, feste Glasur, Pflichtglasur, Weiterzählen bei geändertem Server-Wert (12 + 1 = 13), Rückgängig, Löschschutz in beiden Richtungen. Prüfung in der echten Vorschau weiter offen (Netzsperre).

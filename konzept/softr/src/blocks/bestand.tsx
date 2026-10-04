@@ -7,7 +7,7 @@ import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Check, Download, ImageOff, Loader2, Minus, Pencil, Plus, Table2 } from "lucide-react";
 import { toast } from "sonner";
-import { AUSSER_HAUS_ORT, PAGE_SIZE, RESERVIERT, ROHLING, VERFUEGBAR, VERKAUFT, isAusserHaus } from "../shared/konstanten";
+import { AUSSER_HAUS_ORT, EDITION_PROGRAMM, MANUFAKTUR_PROGRAMM, PAGE_SIZE, RESERVIERT, ROHLING, VERFUEGBAR, VERKAUFT, isAusserHaus } from "../shared/konstanten";
 import {
   type Attachment,
   type Opt,
@@ -15,10 +15,14 @@ import {
   activeOptions,
   asAttachments,
   asOpts,
+  compareNr,
   downloadCsv,
   euro,
   formatDate,
+  freshItems,
   link,
+  lookupValue,
+  modellLabel,
   num,
   parseNumber,
   str,
@@ -36,6 +40,7 @@ import {
   ErrorText,
   FIELD_CLASS,
   FieldLabel,
+  FilterChips,
   INPUT_CLASS,
   ListRow,
   LoadingState,
@@ -108,6 +113,8 @@ const editionSelect = q.select({
   lagerort: "T5iQe",
   foto: "nibt5",
   notiz: "lyJky",
+  artikelnr: "Zzp1S",
+  programm: "IIAdh",
 });
 const editionUpdateFields = q.select({ anzahl: "Ciiwp", lagerort: "T5iQe", notiz: "lyJky" });
 
@@ -142,6 +149,8 @@ type Unikat = {
 
 type Edition = {
   id: string;
+  nr: string;
+  programm: string;
   modell: string;
   typ: string;
   glasur: string;
@@ -163,7 +172,7 @@ const TABS: { key: TabKey; label: string; match?: (u: Unikat) => boolean }[] = [
   { key: "imhaus", label: "Im Haus", match: (u) => u.status === VERFUEGBAR || u.status === RESERVIERT },
   { key: "kommission", label: "Außer Haus", match: (u) => isAusserHaus(u.status) },
   { key: "verkauft", label: "Verkauft", match: (u) => u.status === VERKAUFT },
-  { key: "alle", label: "Alle Stücke" },
+  { key: "alle", label: "Alle" },
 ];
 
 const SORTS: { key: SortKey; label: string }[] = [
@@ -175,11 +184,12 @@ const SORTS: { key: SortKey; label: string }[] = [
 ];
 
 type ZustandKey = "alle" | "rohling" | "glasiert";
-const ZUSTAND_FILTER: { key: ZustandKey; label: string }[] = [
-  { key: "alle", label: "Alle Zustände" },
-  { key: "rohling", label: "Rohlinge" },
-  { key: "glasiert", label: "Glasiert" },
+const ZUSTAND_FILTER: { key: ZustandKey; label: string; match?: (e: Edition) => boolean }[] = [
+  { key: "alle", label: "Alle" },
+  { key: "rohling", label: "Rohlinge", match: (e) => e.zustand === ROHLING },
+  { key: "glasiert", label: "Glasiert", match: (e) => e.zustand !== ROHLING },
 ];
+type ProgrammKey = "" | typeof EDITION_PROGRAMM | typeof MANUFAKTUR_PROGRAMM;
 
 function initialParam(name: string): string {
   return new URLSearchParams(window.location.search).get(name) ?? "";
@@ -217,7 +227,9 @@ function toEdition(item: RawItem): Edition {
   const f = item.fields;
   return {
     id: item.id,
-    modell: asOpts(f.modell)[0]?.label ?? "",
+    nr: str(lookupValue(f.artikelnr)),
+    programm: asOpts(f.programm)[0]?.label ?? "",
+    modell: modellLabel(str(lookupValue(f.artikelnr)), asOpts(f.modell)[0]?.label ?? ""),
     typ: asOpts(f.typ)[0]?.label ?? "",
     glasur: asOpts(f.glasur)[0]?.label ?? "",
     zustand: asOpts(f.zustand)[0]?.label ?? "",
@@ -283,8 +295,8 @@ function exportUnikate(list: Unikat[]) {
 function exportEdition(list: Edition[]) {
   downloadCsv(
     `editionsbestand-${today()}.csv`,
-    ["Modell", "Typ", "Zustand", "Glasur", "Anzahl", "Lagerort", "Notiz"],
-    list.map((e) => [e.modell, e.typ, e.zustand, e.glasur, String(e.anzahl), e.lagerort?.label ?? "", e.notiz]),
+    ["Artikelnr.", "Modell", "Programm", "Typ", "Zustand", "Glasur", "Anzahl", "Lagerort", "Notiz"],
+    list.map((e) => [e.nr, e.modell, e.programm, e.typ, e.zustand, e.glasur, String(e.anzahl), e.lagerort?.label ?? "", e.notiz]),
   );
 }
 
@@ -751,6 +763,7 @@ export default function Block() {
   const [selectedId, setSelectedId] = useState(() => initialParam("id"));
   const [editionId, setEditionId] = useState("");
   const [zustandFilter, setZustandFilter] = useState<ZustandKey>("alle");
+  const [programmFilter, setProgrammFilter] = useState<ProgrammKey>("");
   const [limit, setLimit] = useState(LIST_STEP);
   const [pendingEdition, setPendingEdition] = useState("");
 
@@ -789,10 +802,13 @@ export default function Block() {
         .sort((a, b) => compare(a, b, sort)),
     [unikate, activeTab, typFilter, kuenstlerFilter, term, sort],
   );
-  const visibleEdition = editionen
-    .filter((e) => (zustandFilter === "rohling" ? e.zustand === ROHLING : zustandFilter === "glasiert" ? e.zustand !== ROHLING : true))
-    .filter((e) => !term || [e.modell, e.glasur, e.zustand, e.typ, e.lagerort?.label, e.notiz].join(" ").toLowerCase().includes(term.toLowerCase()))
-    .sort((a, b) => a.modell.localeCompare(b.modell, "de") || a.zustand.localeCompare(b.zustand, "de"));
+  const editionImProgramm = editionen.filter((e) => !programmFilter || e.programm === programmFilter);
+  const zustandChips = ZUSTAND_FILTER.map((z) => ({ key: z.key, label: z.label, count: editionImProgramm.filter((e) => !z.match || z.match(e)).length }));
+  const activeZustand = ZUSTAND_FILTER.find((z) => z.key === zustandFilter) ?? ZUSTAND_FILTER[0];
+  const visibleEdition = editionImProgramm
+    .filter((e) => !activeZustand.match || activeZustand.match(e))
+    .filter((e) => !term || [e.modell, e.programm, e.glasur, e.zustand, e.typ, e.lagerort?.label, e.notiz].join(" ").toLowerCase().includes(term.toLowerCase()))
+    .sort((a, b) => compareNr(a.nr, b.nr) || a.modell.localeCompare(b.modell, "de") || a.zustand.localeCompare(b.zustand, "de") || a.glasur.localeCompare(b.glasur, "de"));
 
   const tabs = useMemo(() => TABS.map((t) => ({ key: t.key, label: t.label, count: unikate.filter((u) => (t.match ? t.match(u) : true)).length })), [unikate]);
 
@@ -804,19 +820,42 @@ export default function Block() {
   const stueckGesamt = visibleEdition.reduce((n, e) => n + e.anzahl, 0);
   const filtered = !!(search || typFilter || kuenstlerFilter);
 
+  // Aktuelle Anzahl direkt vom Server. Rechnet nie mit einem Stand, den ein zweites Gerät schon geändert hat.
+  async function currentAnzahl(id: string): Promise<number | null> {
+    const fresh = await freshItems(editionQuery);
+    const row = fresh?.find((i) => i.id === id);
+    return row ? (num(row.fields.anzahl) ?? 0) : null;
+  }
+
+  // Änderung um delta auf den frischen Wert. Rückgängig zieht genau diese Änderung wieder ab.
+  async function changeBy(id: string, delta: number): Promise<{ vorher: number; neu: number } | null> {
+    const vorher = await currentAnzahl(id);
+    if (vorher === null) {
+      toast.error("Diesen Posten gibt es nicht mehr. Die Liste wurde neu geladen.");
+      return null;
+    }
+    const neu = Math.max(0, vorher + delta);
+    await editionUpdate.mutateAsync({ recordId: id, fields: { anzahl: neu } } as never);
+    await editionQuery.refetch();
+    return { vorher, neu };
+  }
+
   async function adjustEdition(e: Edition, delta: number) {
     setPendingEdition(e.id);
-    const neu = Math.max(0, e.anzahl + delta);
     try {
-      await editionUpdate.mutateAsync({ recordId: e.id, fields: { anzahl: neu } } as never);
-      await editionQuery.refetch();
-      toast.success(`${e.modell}${e.glasur ? ` · ${e.glasur}` : ""}: ${e.anzahl} → ${neu}`, {
-        duration: 6000,
+      const result = await changeBy(e.id, delta);
+      if (!result) return;
+      const applied = result.neu - result.vorher;
+      toast.success(`${e.modell}${e.glasur ? ` · ${e.glasur}` : ""}: ${result.vorher} → ${result.neu}`, {
+        duration: UNDO_MS,
         action: {
           label: "Rückgängig",
           onClick: async () => {
-            await editionUpdate.mutateAsync({ recordId: e.id, fields: { anzahl: e.anzahl } } as never);
-            await editionQuery.refetch();
+            try {
+              await changeBy(e.id, -applied);
+            } catch {
+              toast.error("Rückgängig hat nicht geklappt.");
+            }
           },
         },
       });
@@ -829,7 +868,20 @@ export default function Block() {
 
   async function saveEdition(e: Edition, fields: { anzahl: number; lagerort: string[]; notiz: string }) {
     try {
-      await editionUpdate.mutateAsync({ recordId: e.id, fields } as never);
+      // Hat jemand die Anzahl geändert, seit das Fenster offen ist, nicht überschreiben, sondern melden.
+      const aktuell = await currentAnzahl(e.id);
+      if (aktuell === null) {
+        toast.error("Diesen Posten gibt es nicht mehr.");
+        setEditionId("");
+        return;
+      }
+      const anzahlGeaendert = fields.anzahl !== e.anzahl;
+      if (anzahlGeaendert && aktuell !== e.anzahl) {
+        toast.error(`Die Anzahl wurde inzwischen geändert (jetzt ${aktuell}). Bitte prüfen und erneut speichern.`);
+        return;
+      }
+      // Anzahl nicht angefasst: den aktuellen Wert behalten, nur Lagerort und Notiz speichern.
+      await editionUpdate.mutateAsync({ recordId: e.id, fields: { ...fields, anzahl: anzahlGeaendert ? fields.anzahl : aktuell } } as never);
       await editionQuery.refetch();
       toast.success("Änderungen gespeichert.");
       setEditionId("");
@@ -873,39 +925,34 @@ export default function Block() {
         />
 
         {isEdition ? (
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-[minmax(0,1fr)_12rem]">
-            <div className="flex">
-              <SearchField label="Suche" placeholder="Suchen: Modell, Glasur, Ort" value={search} onChange={setSearch} />
+          <>
+            <FilterChips label="Zustand" options={zustandChips} value={zustandFilter} onChange={setZustandFilter} />
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-[minmax(0,1fr)_16rem]">
+              <div className="flex">
+                <SearchField label="Suche" placeholder="Suchen: Nummer, Modell, Glasur, Ort" value={search} onChange={setSearch} />
+              </div>
+              <select aria-label="Programm" value={programmFilter} onChange={(e) => setProgrammFilter(e.target.value as ProgrammKey)} className={INPUT_CLASS}>
+                <option value="">Alle Programme</option>
+                <option value={EDITION_PROGRAMM}>Editionen</option>
+                <option value={MANUFAKTUR_PROGRAMM}>Manufakturprogramm</option>
+              </select>
             </div>
-            <select aria-label="Zustand" value={zustandFilter} onChange={(e) => setZustandFilter(e.target.value as ZustandKey)} className={INPUT_CLASS}>
-              {ZUSTAND_FILTER.map((z) => (
-                <option key={z.key} value={z.key}>
-                  {z.label}
-                </option>
-              ))}
-            </select>
-          </div>
+          </>
         ) : (
           <>
-            <div className="grid grid-cols-2 gap-3 lg:grid-cols-[minmax(0,1fr)_11rem_10rem_12rem_11rem]">
+            <FilterChips
+              label="Status"
+              options={tabs}
+              value={tab}
+              onChange={(key) => {
+                setTab(key);
+                setLimit(LIST_STEP);
+              }}
+            />
+            <div className="grid grid-cols-2 gap-3 lg:grid-cols-[minmax(0,1fr)_10rem_12rem_11rem]">
               <div className="col-span-2 lg:col-span-1 flex">
                 <SearchField label="Suche" placeholder="Suchen: Name, Nummer, Glasur, Ort" value={search} onChange={setSearch} />
               </div>
-              <select
-                aria-label="Status"
-                value={tab}
-                onChange={(e) => {
-                  setTab(e.target.value as TabKey);
-                  setLimit(LIST_STEP);
-                }}
-                className={INPUT_CLASS}
-              >
-                {tabs.map((t) => (
-                  <option key={t.key} value={t.key}>
-                    {t.label} ({t.count})
-                  </option>
-                ))}
-              </select>
               <select aria-label="Typ" value={typFilter} onChange={(e) => setTypFilter(e.target.value)} className={INPUT_CLASS}>
                 <option value="">Alle Typen</option>
                 {typen.map((t) => (

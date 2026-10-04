@@ -66,6 +66,11 @@ function num(v: unknown): number | null {
   return typeof v === "number" && Number.isFinite(v) ? v : null;
 }
 
+// Nachschlagefelder liefern je nach Feld einen Wert oder eine Liste mit einem Wert.
+function lookupValue(v: unknown): unknown {
+  return Array.isArray(v) ? v[0] : v;
+}
+
 // Heutiges Datum in Ortszeit als JJJJ-MM-TT (nicht UTC, sonst springt das Datum nachts).
 function today(): string {
   const d = new Date();
@@ -292,6 +297,7 @@ const editionSelect = q.select({
   geaendertAm: "JZyKO",
   artikelnr: "Zzp1S",
   vk: "kAyrB",
+  programm: "IIAdh",
 });
 const ansichtSelect = q.select({ name: "8s5KL", definition: "rWGS9", von: "uPraE" });
 
@@ -310,6 +316,7 @@ type Row = {
   art: string;
   inv: string;
   artikelnr: string;
+  programm: string;
   name: string;
   typ: string;
   status: string;
@@ -336,6 +343,7 @@ type Row = {
 type FieldType = "text" | "number" | "select" | "multi" | "bool" | "date";
 type ColKey =
   | "art"
+  | "programm"
   | "inv"
   | "name"
   | "typ"
@@ -361,6 +369,7 @@ type Col = { key: ColKey; label: string; type: FieldType; get: (r: Row) => CellV
 
 const COLUMNS: Col[] = [
   { key: "art", label: "Art", type: "select", get: (r) => r.art, visible: false, only: "alle" },
+  { key: "programm", label: "Programm", type: "select", get: (r) => r.programm || null, visible: false, only: "edition" },
   { key: "inv", label: "Nr.", type: "text", get: (r) => r.inv || r.artikelnr || null, visible: true },
   { key: "name", label: "Name / Modell", type: "text", get: (r) => r.name, visible: true },
   { key: "typ", label: "Typ", type: "select", get: (r) => r.typ || null, visible: true },
@@ -388,7 +397,7 @@ function relevant(c: Col, tab: ArtTab): boolean {
   return !c.only || tab === "alle" || c.only === tab;
 }
 
-const QUICK_KEYS: ColKey[] = ["typ", "status", "kuenstler", "glasur", "lagerort", "galerie"];
+const QUICK_KEYS: ColKey[] = ["programm", "typ", "status", "kuenstler", "glasur", "lagerort", "galerie"];
 type Quick = Partial<Record<ColKey, string[]>>;
 
 function quickLabel(key: ColKey, tab: ArtTab): string {
@@ -471,10 +480,6 @@ type ViewDef = { v: number; tab: ArtTab; quick: Quick; conditions: Condition[]; 
 function labels(v: unknown): string[] {
   return asOpts(v).map((o) => o.label);
 }
-// Nachschlagefelder liefern je nach Feld einen Wert oder eine Liste mit einem Wert.
-function lookupValue(v: unknown): unknown {
-  return Array.isArray(v) ? v[0] : v;
-}
 function newId(): string {
   return Math.random().toString(36).slice(2, 10);
 }
@@ -489,6 +494,7 @@ function toUnikatRow(i: RawItem): Row {
     art: UNIKAT,
     inv: str(f.inv),
     artikelnr: "",
+    programm: "",
     name: str(f.name),
     typ: labels(f.typ)[0] ?? "",
     status: labels(f.status)[0] ?? "",
@@ -520,6 +526,7 @@ function toEditionRow(i: RawItem): Row {
     art: EDITION,
     inv: "",
     artikelnr: str(lookupValue(f.artikelnr)),
+    programm: labels(f.programm)[0] ?? "",
     name: labels(f.modell)[0] ?? "",
     typ: labels(f.typ)[0] ?? "",
     status: labels(f.zustand)[0] ?? "",
@@ -586,7 +593,7 @@ function matches(r: Row, c: Condition): boolean {
 
 function matchesSearch(r: Row, term: string): boolean {
   if (!term) return true;
-  const hay = [r.art, r.inv, r.artikelnr, r.name, r.typ, r.status, r.kuenstler, r.lagerort, r.galerie, r.masse, r.notiz, ...r.glasur].join(" ").toLowerCase();
+  const hay = [r.art, r.inv, r.artikelnr, r.programm, r.name, r.typ, r.status, r.kuenstler, r.lagerort, r.galerie, r.masse, r.notiz, ...r.glasur].join(" ").toLowerCase();
   return term
     .toLowerCase()
     .split(/\s+/)
@@ -640,9 +647,10 @@ function legacyToConditions(def: Record<string, unknown>): Condition[] {
 function exportRows(rows: Row[]) {
   downloadCsv(
     `kwm-tabelle-${today()}.csv`,
-    ["Art", "Inventarnummer", "Artikelnr.", "Name / Modell", "Typ", "Status / Zustand", "Anzahl", "Künstler:in", "Glasur", "Jahr", "Maße", "Lagerort", "Partner", "Preis intern (€)", "VK-Preis (€)", "Auf Website", "Notiz", "Erfasst am", "Verkauft am"],
+    ["Art", "Programm", "Inventarnummer", "Artikelnr.", "Name / Modell", "Typ", "Status / Zustand", "Anzahl", "Künstler:in", "Glasur", "Jahr", "Maße", "Lagerort", "Partner", "Preis intern (€)", "VK-Preis (€)", "Auf Website", "Notiz", "Erfasst am", "Verkauft am"],
     rows.map((r) => [
       r.art,
+      r.programm,
       r.inv,
       r.artikelnr,
       r.name,

@@ -18,6 +18,11 @@ const VERKAUFT = "verkauft";
 const KOMMISSION = "in Kommission";
 const AUSGESTELLT = "ausgestellt";
 const ROHLING = "Rohling";
+
+// Programme der Werkstatt laut Anfrageformular: Editionen (Nr. 2001 ff.) und Geschirr (Nr. 1 ff.).
+const EDITION_PROGRAMM = "Edition";
+
+const MANUFAKTUR_PROGRAMM = "Manufakturprogramm";
 const AUSSER_HAUS_ORT = "Außer Haus";
 const isAusserHaus = (status: string) => status === KOMMISSION || status === AUSGESTELLT;
 
@@ -33,6 +38,16 @@ const STATUS_ACTIVE: Record<string, string> = {
 type Opt = { id: string; label: string };
 type RawItem = { id: string; fields: Record<string, unknown> };
 
+function asOpts(v: unknown): Opt[] {
+  if (!v) return [];
+  if (Array.isArray(v)) return v.flatMap(asOpts);
+  if (typeof v === "object" && "id" in (v as object)) {
+    const o = v as { id: string; label?: string; title?: string };
+    return [{ id: o.id, label: o.label ?? o.title ?? "" }];
+  }
+  return [];
+}
+
 function str(v: unknown): string {
   return typeof v === "string" ? v : typeof v === "number" ? String(v) : "";
 }
@@ -44,6 +59,24 @@ function activeOptions(data: { pages: { items: unknown[] }[] } | undefined, keep
     .filter((i) => i.fields.archiviert !== true || keep.includes(i.id))
     .map((i) => ({ id: i.id, label: str(i.fields.name) }))
     .sort((a, b) => a.label.localeCompare(b.label, "de"));
+}
+
+// Artikelnummern wie 2, 6a, 10, 2018a in natürlicher Reihenfolge.
+function compareNr(a: string, b: string): number {
+  if (!a || !b) return a ? -1 : b ? 1 : 0;
+  return a.localeCompare(b, "de", { numeric: true });
+}
+
+function modellLabel(nr: string, name: string): string {
+  return nr ? `${nr} · ${name}` : name;
+}
+
+// Lädt eine Liste frisch vom Server, z. B. direkt vor dem Speichern. So rechnet die App nie mit veralteten Zahlen,
+// auch wenn auf einem zweiten Gerät gleichzeitig gearbeitet wird. null heißt: Laden fehlgeschlagen.
+async function freshItems(query: { refetch: () => Promise<unknown> }): Promise<RawItem[] | null> {
+  const result = (await query.refetch()) as { data?: { pages: { items: unknown[] }[] }; status?: string } | undefined;
+  if (!result?.data || result.status === "error") return null;
+  return result.data.pages.flatMap((p) => p.items) as RawItem[];
 }
 
 function link(id: string | undefined): string[] {
@@ -156,6 +189,26 @@ function OptionSelect({ id, value, onChange, options, placeholder, disabled }: {
           {o.label}
         </option>
       ))}
+    </select>
+  );
+}
+
+// Auswahlliste mit Gruppen (z. B. Editionen | Manufakturprogramm). Am Handy öffnet sie die Auswahl des Systems.
+function GroupedSelect({ id, value, onChange, groups, placeholder }: { id: string; value: string; onChange: (id: string) => void; groups: { label: string; options: Opt[] }[]; placeholder: string }) {
+  return (
+    <select id={id} value={value} onChange={(e) => onChange(e.target.value)} className={INPUT_CLASS}>
+      <option value="">{placeholder}</option>
+      {groups
+        .filter((g) => g.options.length > 0)
+        .map((g) => (
+          <optgroup key={g.label} label={g.label}>
+            {g.options.map((o) => (
+              <option key={o.id} value={o.id}>
+                {o.label}
+              </option>
+            ))}
+          </optgroup>
+        ))}
     </select>
   );
 }
@@ -360,7 +413,7 @@ const glasurListe = q.select({ name: "OuhBi", archiviert: "jxxXN" });
 const kuenstlerListe = q.select({ name: "vqD0c", archiviert: "TOhYe" });
 const lagerortListe = q.select({ name: "AoOjs", archiviert: "kMBsy" });
 const partnerListe = q.select({ name: "a4yfc", archiviert: "24Tn9" });
-const modellListe = q.select({ name: "eXo5w", archiviert: "3tlrw" });
+const modellListe = q.select({ name: "eXo5w", artikelnr: "BNpSN", programm: "Mrgtb", glasuren: "EazCZ", archiviert: "3tlrw" });
 
 const unikatFields = q.select({
   name: "7IBVW",
@@ -546,7 +599,30 @@ export default function Block() {
   const glasurOptions = activeOptions(glasurQuery.data);
   const lagerortOptions = activeOptions(lagerortQuery.data);
   const galerieOptions = activeOptions(galerieQuery.data);
-  const modellOptions = activeOptions(modellQuery.data);
+  // Modelle aus dem Katalog: Nummer vor dem Namen, sortiert nach Artikelnummer, gruppiert nach Programm.
+  const modelle = useMemo(
+    () =>
+      ((modellQuery.data?.pages.flatMap((p) => p.items) ?? []) as RawItem[])
+        .filter((i) => i.fields.archiviert !== true || i.id === edition.modell)
+        .map((i) => ({
+          id: i.id,
+          nr: str(i.fields.artikelnr),
+          name: str(i.fields.name),
+          label: modellLabel(str(i.fields.artikelnr), str(i.fields.name)),
+          programm: asOpts(i.fields.programm)[0]?.label ?? "",
+          glasuren: asOpts(i.fields.glasuren).map((g) => g.id),
+        }))
+        .sort((a, b) => compareNr(a.nr, b.nr) || a.name.localeCompare(b.name, "de")),
+    [modellQuery.data, edition.modell],
+  );
+  const modellGroups = [
+    { label: "Editionen", options: modelle.filter((m) => m.programm === EDITION_PROGRAMM) },
+    { label: "Manufakturprogramm (Geschirr)", options: modelle.filter((m) => m.programm === MANUFAKTUR_PROGRAMM) },
+    { label: "Weitere Modelle", options: modelle.filter((m) => m.programm !== EDITION_PROGRAMM && m.programm !== MANUFAKTUR_PROGRAMM) },
+  ];
+  const gewaehltesModell = modelle.find((m) => m.id === edition.modell);
+  // Glasuren des Modells. Leer: Glasur frei wählbar und freiwillig. Eine: fest. Mehrere: eine davon wählen.
+  const modellGlasuren = gewaehltesModell?.glasuren.length ? glasurOptions.filter((g) => gewaehltesModell.glasuren.includes(g.id)) : [];
   const [extraTypen, setExtraTypen] = useState<Opt[]>([]);
   const typChoices = [...typOptions, ...extraTypen.filter((t) => !typOptions.some((o) => o.label === t.label))];
   const createGlasur = useRecordCreate({ from: ds.glasuren, fields: glasurNeu });
@@ -590,13 +666,16 @@ export default function Block() {
   const editionReady = editionQuery.status === "success" && !editionQuery.hasNextPage;
   const editionRows = editionQuery.data?.pages.flatMap((p) => p.items) ?? [];
   const isGlasiert = edition.zustand !== ROHLING;
-  const existingRow = edition.modell
-    ? editionRows.find((r) => {
-        const f = r.fields as { modell?: Opt; zustand?: Opt; glasur?: Opt };
-        const sameGlasur = isGlasiert ? f.glasur?.id === edition.glasur : !f.glasur?.id;
-        return f.modell?.id === edition.modell && f.zustand?.label === edition.zustand && sameGlasur;
-      })
-    : undefined;
+  const wantGlasur = isGlasiert ? edition.glasur : "";
+  // Eine Editionszeile ist eindeutig durch Modell, Zustand und Glasur.
+  const findRow = (rows: { id: string; fields: unknown }[]) =>
+    edition.modell
+      ? rows.find((r) => {
+          const f = r.fields as { modell?: Opt; zustand?: Opt; glasur?: Opt };
+          return f.modell?.id === edition.modell && f.zustand?.label === edition.zustand && (f.glasur?.id ?? "") === wantGlasur;
+        })
+      : undefined;
+  const existingRow = findRow(editionRows);
   const existingCount = Number((existingRow?.fields as { anzahl?: number } | undefined)?.anzahl ?? 0);
 
   const clearError = (key: string) =>
@@ -614,6 +693,14 @@ export default function Block() {
     setEdition((s) => ({ ...s, [key]: value }));
     clearError(key);
   };
+  // Beim Modellwechsel die Glasur neu setzen: feste Glasur übernehmen, sonst leeren.
+  function chooseModell(id: string) {
+    const m = modelle.find((x) => x.id === id);
+    const fest = m && m.glasuren.length === 1 ? m.glasuren[0] : "";
+    setEdition((s) => ({ ...s, modell: id, glasur: fest }));
+    clearError("modell");
+    clearError("glasur");
+  }
   const changeFiles = (next: File[]) => {
     setFiles(next);
     clearError("fotos");
@@ -633,7 +720,7 @@ export default function Block() {
     } else {
       if (!edition.modell) e.modell = "Bitte ein Modell wählen.";
       if (!edition.zustand) e.zustand = "Bitte den Zustand wählen.";
-      if (isGlasiert && !edition.glasur) e.glasur = "Bitte die Glasur wählen.";
+      if (isGlasiert && modellGlasuren.length > 1 && !edition.glasur) e.glasur = "Bitte die Glasur wählen.";
       if (!(edition.anzahl > 0)) e.anzahl = "Die Anzahl muss mindestens 1 sein.";
     }
     return e;
@@ -686,18 +773,23 @@ export default function Block() {
         } as never);
         setSaved({ art, recordId: (created as { id: string }).id, text: `Unikat „${unikat.name.trim()}“ ist im Bestand.` });
       } else {
-        const modell = modellOptions.find((m) => m.id === edition.modell)?.label ?? "";
-        const glasur = glasurOptions.find((g) => g.id === edition.glasur)?.label;
+        const modell = gewaehltesModell?.label ?? "";
+        const glasur = glasurOptions.find((g) => g.id === wantGlasur)?.label;
         const variante = isGlasiert ? glasur ?? edition.zustand : ROHLING;
-        if (existingRow) {
-          const neu = existingCount + edition.anzahl;
-          await updateEdition.mutateAsync({ recordId: existingRow.id, fields: { anzahl: neu } } as never);
-          setSaved({ art, recordId: existingRow.id, text: `${modell} · ${variante}: jetzt ${neu} Stück.` });
+        // Direkt vor dem Speichern frisch laden: Hat jemand anderes die Zeile gerade angelegt oder geändert,
+        // wird dort weitergezählt statt eine doppelte Zeile anzulegen oder Stück zu verlieren.
+        const fresh = await freshItems(editionQuery);
+        if (!fresh) throw new Error("Der Bestand konnte nicht geladen werden. Bitte erneut speichern.");
+        const row = findRow(fresh);
+        if (row) {
+          const neu = Number((row.fields as { anzahl?: number }).anzahl ?? 0) + edition.anzahl;
+          await updateEdition.mutateAsync({ recordId: row.id, fields: { anzahl: neu } } as never);
+          setSaved({ art, recordId: row.id, text: `${modell} · ${variante}: jetzt ${neu} Stück.` });
         } else {
           const created = await createEdition.mutateAsync({
             bezeichnung: `${modell} · ${variante}`,
             modell: link(edition.modell),
-            glasur: isGlasiert ? link(edition.glasur) : [],
+            glasur: link(wantGlasur || undefined),
             zustand: edition.zustand,
             anzahl: edition.anzahl,
             lagerort: link(edition.lagerort),
@@ -925,13 +1017,7 @@ export default function Block() {
                     <FieldLabel htmlFor="e-modell" required>
                       Modell
                     </FieldLabel>
-                    <OptionSelect
-                      id="e-modell"
-                      value={edition.modell}
-                      onChange={(v) => setE("modell", v)}
-                      options={modellOptions}
-                      placeholder="Modell wählen"
-                    />
+                    <GroupedSelect id="e-modell" value={edition.modell} onChange={chooseModell} groups={modellGroups} placeholder="Modell wählen (Nummer oder Name)" />
                     <Hint>Neue Modelle unter „Stammdaten“ anlegen.</Hint>
                     <ErrorText>{errors.modell}</ErrorText>
                   </div>
@@ -947,10 +1033,21 @@ export default function Block() {
                     <ErrorText>{errors.zustand}</ErrorText>
                   </div>
 
-                  {isGlasiert && (
+                  {isGlasiert && edition.modell && (
                     <div>
-                      <FieldLabel required>Glasur</FieldLabel>
-                      <SearchPick label="Glasuren" createNoun="neue Glasur" options={glasurOptions} value={link(edition.glasur)} onChange={(ids) => setE("glasur", ids.at(-1) ?? "")} multiple={false} onCreate={addGlasur} />
+                      <FieldLabel required={modellGlasuren.length > 1}>Glasur</FieldLabel>
+                      {modellGlasuren.length === 1 ? (
+                        <p className="text-base">
+                          {modellGlasuren[0].label} <span className="text-muted-foreground">(fest bei diesem Modell)</span>
+                        </p>
+                      ) : modellGlasuren.length > 1 ? (
+                        <ChoiceChips label="Glasur" options={modellGlasuren} value={modellGlasuren.find((g) => g.id === edition.glasur)?.label ?? ""} onChange={(label) => setE("glasur", modellGlasuren.find((g) => g.label === label)?.id ?? "")} />
+                      ) : (
+                        <>
+                          <SearchPick label="Glasuren" createNoun="neue Glasur" options={glasurOptions} value={link(edition.glasur || undefined)} onChange={(ids) => setE("glasur", ids.at(-1) ?? "")} multiple={false} onCreate={addGlasur} />
+                          <Hint>Freiwillig. Feste Glasuren eines Modells unter „Stammdaten“ eintragen.</Hint>
+                        </>
+                      )}
                       <ErrorText>{errors.glasur}</ErrorText>
                     </div>
                   )}

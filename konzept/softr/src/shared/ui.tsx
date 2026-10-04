@@ -43,6 +43,20 @@ export function ChoiceChips({ label, options, value, onChange, statusColors, dis
   );
 }
 
+// Filter als Knopfreihe mit Anzahl, z. B. Im Haus 5 · Außer Haus 6. Ein Tipp, Zahlen sofort sichtbar.
+export function FilterChips<K extends string>({ label, options, value, onChange }: { label: string; options: { key: K; label: string; count?: number }[]; value: K; onChange: (key: K) => void }) {
+  return (
+    <div role="radiogroup" aria-label={label} className="flex flex-wrap gap-2">
+      {options.map((o) => (
+        <Chip key={o.key} role="radio" active={value === o.key} onClick={() => onChange(o.key)}>
+          {o.label}
+          {o.count !== undefined && <span className="tabular-nums opacity-70">{o.count}</span>}
+        </Chip>
+      ))}
+    </div>
+  );
+}
+
 // Reiter: der einzige Umschalter der App (Erfassen, Bestand, Stammdaten). Unterstrichen, am Handy seitlich wischbar.
 export function Tabs<K extends string>({ label, tabs, value, onChange }: { label: string; tabs: { key: K; label: string; count?: number }[]; value: K; onChange: (key: K) => void }) {
   return (
@@ -110,6 +124,26 @@ export function OptionSelect({ id, value, onChange, options, placeholder, disabl
           {o.label}
         </option>
       ))}
+    </select>
+  );
+}
+
+// Auswahlliste mit Gruppen (z. B. Editionen | Manufakturprogramm). Am Handy öffnet sie die Auswahl des Systems.
+export function GroupedSelect({ id, value, onChange, groups, placeholder }: { id: string; value: string; onChange: (id: string) => void; groups: { label: string; options: Opt[] }[]; placeholder: string }) {
+  return (
+    <select id={id} value={value} onChange={(e) => onChange(e.target.value)} className={INPUT_CLASS}>
+      <option value="">{placeholder}</option>
+      {groups
+        .filter((g) => g.options.length > 0)
+        .map((g) => (
+          <optgroup key={g.label} label={g.label}>
+            {g.options.map((o) => (
+              <option key={o.id} value={o.id}>
+                {o.label}
+              </option>
+            ))}
+          </optgroup>
+        ))}
     </select>
   );
 }

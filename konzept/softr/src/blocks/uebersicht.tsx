@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { datasource, q, useRecords } from "@/lib/datasource";
 import { ChevronRight } from "lucide-react";
 import { AUSGESTELLT, KOMMISSION, PAGE_SIZE, RESERVIERT, ROHLING, VERFUEGBAR, VERKAUFT, isAusserHaus } from "../shared/konstanten";
-import { type Attachment, type RawItem, asAttachments, asOpts, firstLabel, formatDate, euro, num, str, useAllPages, zahl } from "../shared/daten";
+import { type Attachment, type RawItem, asAttachments, asOpts, firstLabel, formatDate, euro, lookupValue, modellLabel, num, str, useAllPages, zahl } from "../shared/daten";
 import { EmptyState, ErrorState, ListRow, LoadingState, PageHeader, Section, Tile } from "../shared/ui";
 
 const ds = datasource.define({ unikate: "unikate", edition: "edition", partner: "partner" });
@@ -29,6 +29,7 @@ const editionSelect = q.select({
   foto: "nibt5",
   erfasstAm: "0x7rU",
   geaendertAm: "JZyKO",
+  artikelnr: "Zzp1S",
 });
 
 const RECENT_COUNT = 6;
@@ -166,7 +167,7 @@ export default function Block() {
         const f = (i as RawItem).fields;
         return {
           id: i.id,
-          modell: firstLabel(f.modell),
+          modell: modellLabel(str(lookupValue(f.artikelnr)), firstLabel(f.modell)),
           glasur: firstLabel(f.glasur),
           zustand: firstLabel(f.zustand),
           anzahl: num(f.anzahl) ?? 0,
@@ -223,7 +224,7 @@ export default function Block() {
   }, [unikate]);
 
   const modellRows = useMemo<CountRow[]>(() => {
-    const modelle = [...new Set(editionen.map((e) => e.modell).filter(Boolean))].sort((a, b) => a.localeCompare(b, "de"));
+    const modelle = [...new Set(editionen.map((e) => e.modell).filter(Boolean))].sort((a, b) => a.localeCompare(b, "de", { numeric: true }));
     return modelle.map((modell) => {
       const list = editionen.filter((e) => e.modell === modell);
       const roh = list.filter((e) => e.zustand === ROHLING).reduce((n, e) => n + e.anzahl, 0);

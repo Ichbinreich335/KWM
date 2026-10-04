@@ -36,6 +36,13 @@ Für die nächste Session. Zuerst `CLAUDE.md`, `konzept/SOFTR-AUFTRAG.md` und `k
   - Modelle: neue Felder „Artikelnr.“ `BNpSN` und „VK-Preis“ `772dM` (€, 2 Stellen), in Stammdaten pflegbar. Editionsbestand: Nachschlagefelder „Artikelnr.“ `Zzp1S` und „VK-Preis“ `kAyrB`.
   - Typ „Obertopf“ → „Übertopf“ (Unikate `7g9jI`, Modelle `gCX7K`). **Achtung:** `database_update_field` vergibt beim Umbenennen einer Auswahl eine neue ID und leert die Datensätze mit dem alten Wert. Die zwei betroffenen Datensätze wurden sofort neu gesetzt. Künftig vorher die betroffenen Datensätze notieren.
   - Offen fürs Kundengespräch: Zustände „Rohling/glasiert“ → „geschrüht/fertig“? Glasur bei Editionsware fest je Artikel? Preisliste (Foto 31.07.26) als Startbestand importieren (Handschrift unsicher, Freigabe nötig).
+- **Runde 4 (04.10. abends): Katalog und Robustheit**
+  - Katalog aus den Anfrageformularen der Werkstatt (Stand 04/2026) in „Modelle“ importiert: 27 Editionen (2001–2039, Glasur fest bzw. frei) und 54 Artikel Manufakturprogramm (1–56, je 6 Glasuren: Weiß, Hellgrün matt/glänzend, Dunkelgrün matt/glänzend, Rostbraun). VK der Editionen aus der gedruckten Preisliste 01/2024, Geschirr ohne Preis. Skript: `konzept/softr/import/katalog.py`. Keine Bestandsmengen importiert.
+  - Neue Felder Modelle: Programm `Mrgtb`, Name englisch `CyPYU`, Glasuren `EazCZ` (→ Glasuren, Gegenfeld `PQup2`). Editionsbestand: Lookup Programm `IIAdh`. Typen ergänzt: Tasse, Krug, Kanne, Flasche, Dose, Topf, Sieb, Blatt (bestehende IDs unverändert geprüft). 5 Demo-Modelle archiviert.
+  - Erfassen: Modell-Auswahl gruppiert (Editionen | Manufakturprogramm) mit Nummer. Glasur kommt aus dem Modell (eine = fest, mehrere = Pflichtauswahl, keine = freiwillig). Vor dem Speichern wird der Editionsbestand frisch geladen und dort weitergezählt.
+  - Bestand: Status wieder als Knöpfe mit Zahl (Im Haus · Außer Haus · Verkauft · Alle), Editionsware mit Zustand-Knöpfen und Programm-Auswahl, sortiert nach Artikelnr. Plus/Minus und Rückgängig rechnen auf dem frischen Server-Wert. Das Bearbeiten-Fenster überschreibt keine inzwischen geänderte Anzahl.
+  - Stammdaten: Artikelnr. eindeutig. Glasuren zählen auch die Verwendung durch Modelle. Löschen zählt direkt vorher frisch nach.
+  - Build: `build.mjs` erkennt jetzt auch `async function` in `src/shared`.
 
 ## Stand 03.10.2026 (gilt vor den Abschnitten darunter)
 - **Rechte:** Die Werkstatt darf **alle** Daten ändern, auch Preis, „Auf Website zeigen“ und Verkaufsdatum (Vorgabe Admin 03.10.). Eigene Nutzergruppen werden damit nicht mehr gebraucht. Alle Aktionen stehen auf „angemeldete Nutzer“.

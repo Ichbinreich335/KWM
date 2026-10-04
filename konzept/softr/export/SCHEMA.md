@@ -52,17 +52,20 @@ Datenbank-ID: `4a2f1f1d-3c1b-409a-8bf0-247d4ea8a943`. Export per Softr-MCP, nur 
 
 - Tabellen-ID: `AP1Orb2GOIv5yr`
 - Zweck: Modelle der Editionsware (Form, Typ, Maße, Foto). Der Editionsbestand verweist darauf. Primärfeld: Name.
-- Felder: 7, Datensätze: 5
+- Felder: 10, Datensätze: 86 (81 aus dem Katalog 04/2026, 5 Demo archiviert)
 
 | Name | Feld-ID | Typ | Optionen | Pflicht / nur lesen |
 |---|---|---|---|---|
 | Name | `eXo5w` | SINGLE_LINE_TEXT | Text, einzeilig | weder Pflicht noch schreibgeschützt |
-| Typ | `gCX7K` | SELECT | Einfachauswahl: Teller \| Schale \| Becher \| Vase \| Karaffe \| Übertopf | weder Pflicht noch schreibgeschützt |
+| Typ | `gCX7K` | SELECT | Einfachauswahl: Teller \| Schale \| Becher \| Vase \| Karaffe \| Übertopf \| Tasse \| Krug \| Kanne \| Flasche \| Dose \| Topf \| Sieb \| Blatt | weder Pflicht noch schreibgeschützt |
 | Maße | `h65qx` | SINGLE_LINE_TEXT | Text, einzeilig | weder Pflicht noch schreibgeschützt |
 | Foto | `GbUfa` | ATTACHMENT | Anhang, einzeln, Vorschau (Links laufen nach 2 Stunden ab) | weder Pflicht noch schreibgeschützt |
 | Archiviert | `3tlrw` | CHECKBOX | Archivierte fehlen in Auswahllisten | weder Pflicht noch schreibgeschützt |
 | Artikelnr. | `BNpSN` | SINGLE_LINE_TEXT | Artikelnummer der Preisliste, z. B. 2001, 2018a | weder Pflicht noch schreibgeschützt |
 | VK-Preis | `772dM` | CURRENCY | €, 2 Nachkommastellen, Verkaufspreis brutto laut Preisliste | weder Pflicht noch schreibgeschützt |
+| Programm | `Mrgtb` | SELECT | Edition \| Manufakturprogramm | weder Pflicht noch schreibgeschützt |
+| Name englisch | `CyPYU` | SINGLE_LINE_TEXT | laut Anfrageformular | weder Pflicht noch schreibgeschützt |
+| Glasuren | `EazCZ` | LINKED_RECORD | mehrfach → Glasuren (Gegenfeld `PQup2`). Eine Glasur = fest, mehrere = Auswahl beim Erfassen | weder Pflicht noch schreibgeschützt |
 
 ## Unikate
 
@@ -113,7 +116,7 @@ Datenbank-ID: `4a2f1f1d-3c1b-409a-8bf0-247d4ea8a943`. Export per Softr-MCP, nur 
 | Notiz | `lyJky` | LONG_TEXT | Text, mehrzeilig | weder Pflicht noch schreibgeschützt |
 | Erfasst am | `0x7rU` | CREATED_AT | Datum + Zeit, automatisch | nur lesen |
 | Zuletzt geändert | `JZyKO` | UPDATED_AT | Datum + Zeit, bei jeder Änderung eines editierbaren Feldes | nur lesen |
-| Typ | `8Vs2H` | LOOKUP | Nachschlagefeld über Feld „Modell“ (jxN6x) auf Modelle.Typ (gCX7K), Ergebnis Einfachauswahl: Teller \| Schale \| Becher \| Vase \| Karaffe \| Übertopf | nur lesen |
+| Typ | `8Vs2H` | LOOKUP | Nachschlagefeld über Feld „Modell“ (jxN6x) auf Modelle.Typ (gCX7K), Ergebnis Einfachauswahl: Teller \| Schale \| Becher \| Vase \| Karaffe \| Übertopf \| Tasse \| Krug \| Kanne \| Flasche \| Dose \| Topf \| Sieb \| Blatt | nur lesen |
 
 ## Ansichten
 
