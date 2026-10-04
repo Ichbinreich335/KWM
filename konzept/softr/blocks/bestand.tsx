@@ -210,7 +210,7 @@ ${footer ? `<tfoot><tr>${footer.map((v, i) => cell("td", v, columns[i])).join(""
 
 const DIALOG_CLASS = "w-[calc(100vw-2rem)] max-h-[90vh] overflow-y-auto rounded-lg p-4 sm:p-6 [&>button:last-child]:hidden";
 
-// Linienfarbe aller Bedienelemente (Feld, Auswahl, Knopf): eine Stufe kräftiger als Softrs Standard, damit Felder am Handy klar umrissen sind.
+// Die eine Rahmenfarbe der App: Flächen, Kacheln, Felder, Auswahlen, Knöpfe. Nur Trennlinien innerhalb einer Fläche bleiben heller.
 const LINE = "border-neutral-300";
 
 // md:text-base hebt das md:text-sm der shadcn-Felder auf, damit Eingabe und Auswahlliste gleich groß schreiben.
@@ -218,10 +218,9 @@ const FIELD_CLASS = `h-12 rounded-md text-base md:text-base ${LINE}`;
 
 const TEXTAREA_CLASS = `rounded-md text-base md:text-base ${LINE}`;
 const INPUT_CLASS = `w-full h-12 rounded-md border ${LINE} bg-background px-3 text-base`;
-const PANEL_CLASS = "rounded-lg border bg-card";
 
-// Gruppierung innerhalb einer Fläche (z. B. im Fenster): getönt statt umrandet, damit kein Kasten im Kasten entsteht.
-const INSET_CLASS = "rounded-lg bg-muted/60";
+// Die Box: jede umrandete Fläche (Bereich, Liste, Kachel, Tabelle). Innerhalb einer Box keine zweite Box.
+const PANEL_CLASS = `rounded-lg border ${LINE} bg-card`;
 
 // Am Handy eine Zeile zum seitlich Wischen statt mehrerer umbrochener Reihen, ab Tablet umbrechen.
 const SCROLL_ROW = "flex gap-2 py-0.5 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:flex-wrap sm:overflow-visible";
@@ -245,39 +244,28 @@ function useIsMobile(): boolean {
 }
 
 // Gewählt = gefüllt. Kein zusätzliches Symbol, damit der Knopf beim Antippen nicht breiter wird und nichts springt.
-const CHIP_BASE = "inline-flex items-center justify-center gap-2 min-h-11 px-3.5 rounded-md border text-base whitespace-nowrap transition-colors disabled:opacity-60";
+// Mindestbreite, damit kurze Wörter (Sieb, Topf) nicht winzig wirken und die Reihen ruhiger aussehen.
+const CHIP_BASE = "inline-flex items-center justify-center gap-2 min-h-11 min-w-[5rem] px-3.5 rounded-md border text-base whitespace-nowrap transition-colors disabled:opacity-60";
 
 const CHIP_IDLE = `bg-background hover:bg-muted ${LINE}`;
 const CHIP_ACTIVE = "bg-primary text-primary-foreground border-primary";
 
 // Ein einzelner Auswahl-Knopf. Gewählt: Hauptfarbe, beim Status die Statusfarbe.
-function Chip({ active, onClick, children, disabled, role, activeClass, className }: { active: boolean; onClick: () => void; children: React.ReactNode; disabled?: boolean; role?: "radio"; activeClass?: string; className?: string }) {
+function Chip({ active, onClick, children, disabled, role, activeClass }: { active: boolean; onClick: () => void; children: React.ReactNode; disabled?: boolean; role?: "radio"; activeClass?: string }) {
   const state = role === "radio" ? { "aria-checked": active } : { "aria-pressed": active };
   return (
-    <button type="button" role={role} {...state} disabled={disabled} onClick={onClick} className={`${CHIP_BASE} ${active ? `${activeClass ?? CHIP_ACTIVE} font-medium` : CHIP_IDLE} ${className ?? ""}`}>
+    <button type="button" role={role} {...state} disabled={disabled} onClick={onClick} className={`${CHIP_BASE} ${active ? `${activeClass ?? CHIP_ACTIVE} font-medium` : CHIP_IDLE}`}>
       {children}
     </button>
   );
 }
 
-// Am Handy: bis zu dieser Länge passen drei Knöpfe nebeneinander, darüber zwei.
-const CHIP_LABEL_3_COLS = 10;
-
-// Ab Tablet: Mindestbreite je Knopf = längste Beschriftung plus Innenabstand, in Zeichenbreiten.
-const CHIP_PADDING_CH = 3;
-
-// Einfachauswahl als Raster gleich breiter Knöpfe, z. B. Status, Typ, Zustand. Wert ist das Label. statusColors färbt den gewählten Status.
+// Einfachauswahl als Knopfreihe, z. B. Status, Typ, Zustand. Wert ist das Label. statusColors färbt den gewählten Status.
 function ChoiceChips({ label, options, value, onChange, statusColors, disabled }: { label: string; options: Opt[]; value: string; onChange: (label: string) => void; statusColors?: boolean; disabled?: boolean }) {
-  const longest = Math.max(...options.map((o) => o.label.length), 0);
   return (
-    <div
-      role="radiogroup"
-      aria-label={label}
-      className={`grid gap-2 ${longest > CHIP_LABEL_3_COLS ? "grid-cols-2" : "grid-cols-3"} sm:[grid-template-columns:repeat(auto-fill,minmax(var(--chip-min),1fr))]`}
-      style={{ "--chip-min": `${longest + CHIP_PADDING_CH}ch` } as React.CSSProperties}
-    >
+    <div role="radiogroup" aria-label={label} className="flex flex-wrap gap-2">
       {options.map((o) => (
-        <Chip key={o.id} role="radio" active={value === o.label} activeClass={statusColors ? STATUS_ACTIVE[o.label] : undefined} disabled={disabled} onClick={() => onChange(o.label)} className="px-2">
+        <Chip key={o.id} role="radio" active={value === o.label} activeClass={statusColors ? STATUS_ACTIVE[o.label] : undefined} disabled={disabled} onClick={() => onChange(o.label)}>
           {o.label}
         </Chip>
       ))}
@@ -568,7 +556,7 @@ function PhotoPicker({ files, onChange, multiple, error }: { files: File[]; onCh
       ) : (
         <div className="grid grid-cols-3 gap-3">
           {previews.map((src, i) => (
-            <div key={src} className="relative aspect-square rounded-md overflow-hidden border">
+            <div key={src} className={`relative aspect-square rounded-md overflow-hidden border ${LINE}`}>
               <img src={src} alt={`Foto ${i + 1}`} className="w-full h-full object-cover" />
               <button
                 type="button"
@@ -1133,10 +1121,10 @@ function UnikatDetail({ u, onClose, onSaved, stamm, typen, statusListe }: { u: U
     <Dialog open onOpenChange={(o) => !o && onClose()}>
       <DialogContent className={`${DIALOG_CLASS} max-w-3xl`}>
         <PanelHeader title={u.name || "Ohne Namen"} description={[u.inv, u.typ, u.preis !== null ? euro.format(u.preis) : ""].filter(Boolean).join(" · ")} />
-        <div className="px-4 pb-8 space-y-6" lang="de">
+        <div className="pb-2 space-y-6" lang="de">
           {!update.enabled && <StatusBadge text={u.status} />}
           {update.enabled && !editing && (
-            <section className={`${INSET_CLASS} p-4 space-y-4`} aria-labelledby="schnell-titel">
+            <section className="space-y-4" aria-labelledby="schnell-titel">
               <h3 id="schnell-titel" className="text-base font-semibold">
                 Schnell ändern <span className="font-normal text-muted-foreground">· wird sofort gespeichert</span>
               </h3>
@@ -1374,7 +1362,7 @@ function UnikatTile({ u, onOpen }: { u: Unikat; onOpen: () => void }) {
     <button
       type="button"
       onClick={onOpen}
-      className="text-left rounded-lg border bg-card overflow-hidden transition-shadow hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      className={`text-left ${PANEL_CLASS} overflow-hidden transition-shadow hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring`}
     >
       <span className="relative block aspect-square bg-muted">
         {main ? (
@@ -1484,7 +1472,7 @@ function InventurView({ rows, onApply, onClose }: { rows: Edition[]; onApply: (c
                     placeholder="–"
                     value={value}
                     onChange={(ev) => setCounts((c) => ({ ...c, [e.id]: ev.target.value.replace(/\D/g, "").slice(0, 5) }))}
-                    className="h-11 w-20 text-center text-base md:text-base"
+                    className={`h-11 w-20 text-center text-base md:text-base ${LINE}`}
                   />
                   <span className={`w-12 text-right text-sm font-medium tabular-nums ${delta === null ? "" : delta === 0 ? "text-emerald-700" : "text-amber-800"}`}>
                     {delta === null ? "" : delta === 0 ? <Check className="inline w-4 h-4" aria-label="stimmt" /> : delta > 0 ? `+${delta}` : `−${-delta}`}
@@ -1510,7 +1498,7 @@ function InventurView({ rows, onApply, onClose }: { rows: Edition[]; onApply: (c
       <Dialog open={confirm} onOpenChange={(o) => !busy && setConfirm(o)}>
         <DialogContent className={`${DIALOG_CLASS} max-w-lg`}>
           <PanelHeader title={`${changes.length} ${changes.length === 1 ? "Änderung" : "Änderungen"} übernehmen`} description="Der Bestand wird auf die gezählten Mengen gesetzt." />
-          <ul className="px-4 divide-y text-base">
+          <ul className="divide-y text-base">
             {changes.map((c) => (
               <li key={c.e.id} className="flex justify-between gap-3 py-2">
                 <span className="min-w-0 truncate">{[c.e.modell, c.e.zustand, c.e.glasur].filter(Boolean).join(" · ")}</span>
@@ -1520,7 +1508,7 @@ function InventurView({ rows, onApply, onClose }: { rows: Edition[]; onApply: (c
               </li>
             ))}
           </ul>
-          <div className="px-4 pb-6 pt-2 space-y-2">
+          <div className="pt-2 space-y-2">
             <Button className="w-full h-12 text-base" disabled={busy} onClick={apply}>
               {busy ? <Loader2 className="w-5 h-5 mr-2 animate-spin" aria-hidden /> : null}
               Jetzt übernehmen
@@ -1580,7 +1568,7 @@ function EditionDetail({
     <Dialog open onOpenChange={(o) => !o && onClose()}>
       <DialogContent className={`${DIALOG_CLASS} max-w-lg`}>
         <PanelHeader title={e.modell} description={[e.typ, e.zustand, e.glasur].filter(Boolean).join(" · ")} />
-        <div className="px-4 pb-8 space-y-6">
+        <div className="pb-2 space-y-6">
           {e.fotos[0] && <img src={thumb(e.fotos[0], "large")} alt={e.modell} className="w-full max-h-72 object-contain rounded-lg bg-muted" />}
           <div>
             <FieldLabel htmlFor="ed-anzahl">Anzahl</FieldLabel>
@@ -1594,7 +1582,7 @@ function EditionDetail({
                 disabled={!canEdit}
                 value={anzahl}
                 onChange={(ev) => setAnzahl(ev.target.value.replace(/\D/g, ""))}
-                className="h-12 w-24 rounded-md text-center text-lg md:text-lg"
+                className={`h-12 w-24 rounded-md text-center text-lg md:text-lg ${LINE}`}
               />
               <Button variant="outline" className={`h-12 w-12 ${LINE}`} aria-label="Eins mehr" disabled={!canEdit} onClick={() => setAnzahl(String(value + 1))}>
                 <Plus className="w-5 h-5" aria-hidden />

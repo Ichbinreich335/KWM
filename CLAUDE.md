@@ -37,7 +37,7 @@ Website und Lager-App der Keramischen Werkstatt Margaretenhöhe. Aktuelle Entsch
 ## Codequalität (Ziel: produktionsreif, nicht „vibe-coded“)
 - Astro + TypeScript (strict). Klare Struktur: `layouts/`, `components/`, `pages/`, Inhalte aus Sanity.
 - Keine toten Dateien, keine auskommentierten Blöcke, keine Debug-Reste, keine Magic Numbers im Markup. CSS über bestehende Variablen.
-- Vor jedem Merge muss `npm run check` grün sein: Format, Lint, `astro check` und Build. CI prüft dasselbe.
+- Vor jedem Merge muss `npm run check` grün sein (Softr-Blöcke zusätzlich: `konzept/softr/pruefung/typcheck.sh` und `einheitlich.sh`): Format, Lint, `astro check` und Build. CI prüft dasselbe.
 - Kleine, beschreibend benannte Commits. README aktuell halten (Start, Deploy, wo liegt was).
 - Vor dem Merge den Skill `code-review` ausführen. Bei Server-Code (Formular-Worker) zusätzlich `security-review`.
 - Architektur, Umbauten und Reviews mit dem stärksten verfügbaren Modell. Einfache Recherche darf delegiert werden.

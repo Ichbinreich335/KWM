@@ -65,7 +65,11 @@ function useAllPages(query: { hasNextPage?: boolean; isFetchingNextPage?: boolea
   }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 }
 
-const PANEL_CLASS = "rounded-lg border bg-card";
+// Die eine Rahmenfarbe der App: Flächen, Kacheln, Felder, Auswahlen, Knöpfe. Nur Trennlinien innerhalb einer Fläche bleiben heller.
+const LINE = "border-neutral-300";
+
+// Die Box: jede umrandete Fläche (Bereich, Liste, Kachel, Tabelle). Innerhalb einer Box keine zweite Box.
+const PANEL_CLASS = `rounded-lg border ${LINE} bg-card`;
 
 function Thumb({ fotos, size = "small", className = "w-12 h-12 rounded-md" }: { fotos: Attachment[]; size?: ThumbSize; className?: string }) {
   const first = fotos[0];
@@ -227,7 +231,7 @@ const ROW = "flex items-center gap-3 min-h-14 py-2 px-1 rounded-md hover:bg-mute
 // Vier Kennzahlen in einem Band statt einzelner Kästen. Jede führt in den passenden Bestand.
 function Kennzahlen({ items }: { items: Kennzahl[] }) {
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-px overflow-hidden rounded-lg border bg-border">
+    <div className={`grid grid-cols-2 lg:grid-cols-4 gap-px overflow-hidden rounded-lg border ${LINE} bg-neutral-300`}>
       {items.map((k) => (
         <a key={k.label} href={k.href} className="group bg-card p-4 hover:bg-muted/40 transition-colors">
           <span className="flex items-center justify-between gap-2 text-sm text-muted-foreground">

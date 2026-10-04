@@ -104,3 +104,15 @@ Grundlage: Feedback des Admins zu den Screens vom 04.10. und der Skill `impeccab
   - Außer Haus kompakter (Frist ohne Jahr). „Als Tabelle“ gibt es nur am Rechner.
   - Editionsware je Modell zeigt 8 Modelle und lässt sich aufklappen. Bei 81 Katalogartikeln wäre die Liste sonst sehr lang.
 - **Sichtprüfung:** Nachbildung mit echtem Tailwind und shadcn-Stilen in Chromium, 390 px und 1440 px, mit Testfotos aus `keramik/`. Kein horizontales Scrollen, keine Konsolenfehler. Screens unter `konzept/vergleich/runde7/`. Die echte Softr-Vorschau ist von hier aus gesperrt. Schriften und Theme-Farben können dort leicht abweichen.
+
+## Runde 8: Einheitliche Bausteine (04.10.)
+
+- **Ursache der Uneinheitlichkeit:** Es gab zwei Linienstärken (Felder kräftig, Flächen hell). Außerdem bauten Kacheln im Bestand, der Tabellenrahmen und einige Zahlenfelder ihren Rahmen selbst, statt den gemeinsamen Baustein zu nutzen.
+- **Jetzt gilt:**
+  - `LINE` ist die eine Rahmenfarbe für Flächen, Kacheln, Felder, Auswahlen und Knöpfe.
+  - `PANEL_CLASS` ist die eine Box.
+  - Nur Trennlinien innerhalb einer Box sind heller.
+- **Prüfung:** `pruefung/einheitlich.sh` schlägt an, sobald ein Block einen Rahmen von Hand baut.
+- **Kein Kasten im Kasten:** „Schnell ändern“ ist eine normale Gruppe mit Überschrift, ohne Fläche oder Tönung.
+- **Fenster:** Der Inhalt steht jetzt bündig mit der Überschrift. Vorher war er in allen Fenstern 16 px zu weit eingerückt.
+- **Auswahlknöpfe:** Sie fließen wieder nach Textlänge, wie die Glasur-Knöpfe. Die Mindestbreite von 5 rem hält kurze Wörter ruhig. Gewählt bleibt gefüllt ohne Haken, deshalb springt nichts.

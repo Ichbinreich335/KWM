@@ -12,7 +12,7 @@ import { ArrowDown, ArrowUp, Bookmark, ChevronDown, ChevronLeft, ChevronRight, C
 import { toast } from "sonner";
 import { PAGE_SIZE, VERKAUFT } from "../shared/konstanten";
 import { type Attachment, type RawItem, asAttachments, asOpts, downloadCsv, euro, formatDate, lookupValue, num, parseNumber, printTable, str, thumb, today, useAllPages, zahl } from "../shared/daten";
-import { DIALOG_CLASS, DoneButton, EmptyState, ErrorState, ExportMenu, FIELD_CLASS, ListRow, LoadingState, PANEL_CLASS, PageHeader, PanelHeader, SCROLL_ROW, SearchField, StatusBadge, Tabs, Thumb, INSET_CLASS, LINE } from "../shared/ui";
+import { DIALOG_CLASS, DoneButton, EmptyState, ErrorState, ExportMenu, FIELD_CLASS, ListRow, LoadingState, PANEL_CLASS, PageHeader, PanelHeader, SCROLL_ROW, SearchField, StatusBadge, Tabs, Thumb, LINE } from "../shared/ui";
 
 const ds = datasource.define({ unikate: "unikate", edition: "edition", ansichten: "ansichten" });
 
@@ -500,7 +500,7 @@ function QuickFilter({ label, options, value, onChange }: { label: string; optio
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant={active ? "secondary" : "outline"} className={`h-11 text-base font-normal max-w-72 ${active ? "border border-foreground/20" : ""}`}>
+        <Button variant={active ? "secondary" : "outline"} className={`h-11 text-base font-normal max-w-72 ${active ? `border ${LINE}` : ""}`}>
           <span className="truncate">
             {label}
             {active && <span className="font-medium">: {value.length === 1 ? value[0] : `${value.length} gewählt`}</span>}
@@ -588,7 +588,7 @@ function ConditionRow({
             value={typeof c.value === "string" ? c.value : ""}
             onChange={(e) => onChange({ ...c, value: e.target.value })}
             placeholder="Wert"
-            className="h-11 text-base w-44"
+            className={`h-11 text-base w-44 ${LINE}`}
           />
         ))}
       <Button variant="ghost" className="h-11 w-11 p-0" aria-label="Bedingung entfernen" onClick={onRemove}>
@@ -608,7 +608,7 @@ function Detail({ r, onClose }: { r: Row; onClose: () => void }) {
     <Dialog open onOpenChange={(o) => !o && onClose()}>
       <DialogContent className={`${DIALOG_CLASS} max-w-2xl`}>
         <PanelHeader title={r.name || "Ohne Namen"} description={[r.art, r.inv || r.artikelnr, r.typ].filter(Boolean).join(" · ")} />
-        <div className="px-4 pb-8 space-y-5">
+        <div className="pb-2 space-y-5">
           {foto ? (
             <img src={thumb(foto, "large")} alt={r.name} className="w-full max-h-80 object-contain rounded-lg bg-muted" />
           ) : (
@@ -1014,7 +1014,7 @@ export default function Block() {
         </div>
 
         {filterOpen && (
-          <div className={`${INSET_CLASS} p-3 space-y-3`}>
+          <div className={`${PANEL_CLASS} p-3 space-y-3`}>
             {conditions.length === 0 ? (
               <p className="text-base text-muted-foreground">Für Bedingungen wie „Preis ist leer“, „Verkauft am nach …“ oder „Rückgabe bis vor …“.</p>
             ) : (
@@ -1099,7 +1099,7 @@ export default function Block() {
                   </Button>
                 </div>
               )}
-              <div ref={tableBox} className="rounded-lg border bg-card">
+              <div ref={tableBox} className={PANEL_CLASS}>
                 <Table className="text-base">
                   <TableHeader>
                     <TableRow className="hover:bg-transparent">

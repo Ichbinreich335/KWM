@@ -165,16 +165,14 @@ ${footer ? `<tfoot><tr>${footer.map((v, i) => cell("td", v, columns[i])).join(""
 
 const DIALOG_CLASS = "w-[calc(100vw-2rem)] max-h-[90vh] overflow-y-auto rounded-lg p-4 sm:p-6 [&>button:last-child]:hidden";
 
-// Linienfarbe aller Bedienelemente (Feld, Auswahl, Knopf): eine Stufe kräftiger als Softrs Standard, damit Felder am Handy klar umrissen sind.
+// Die eine Rahmenfarbe der App: Flächen, Kacheln, Felder, Auswahlen, Knöpfe. Nur Trennlinien innerhalb einer Fläche bleiben heller.
 const LINE = "border-neutral-300";
 
 // md:text-base hebt das md:text-sm der shadcn-Felder auf, damit Eingabe und Auswahlliste gleich groß schreiben.
 const FIELD_CLASS = `h-12 rounded-md text-base md:text-base ${LINE}`;
 
-const PANEL_CLASS = "rounded-lg border bg-card";
-
-// Gruppierung innerhalb einer Fläche (z. B. im Fenster): getönt statt umrandet, damit kein Kasten im Kasten entsteht.
-const INSET_CLASS = "rounded-lg bg-muted/60";
+// Die Box: jede umrandete Fläche (Bereich, Liste, Kachel, Tabelle). Innerhalb einer Box keine zweite Box.
+const PANEL_CLASS = `rounded-lg border ${LINE} bg-card`;
 
 // Am Handy eine Zeile zum seitlich Wischen statt mehrerer umbrochener Reihen, ab Tablet umbrechen.
 const SCROLL_ROW = "flex gap-2 py-0.5 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:flex-wrap sm:overflow-visible";
@@ -828,7 +826,7 @@ function QuickFilter({ label, options, value, onChange }: { label: string; optio
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant={active ? "secondary" : "outline"} className={`h-11 text-base font-normal max-w-72 ${active ? "border border-foreground/20" : ""}`}>
+        <Button variant={active ? "secondary" : "outline"} className={`h-11 text-base font-normal max-w-72 ${active ? `border ${LINE}` : ""}`}>
           <span className="truncate">
             {label}
             {active && <span className="font-medium">: {value.length === 1 ? value[0] : `${value.length} gewählt`}</span>}
@@ -916,7 +914,7 @@ function ConditionRow({
             value={typeof c.value === "string" ? c.value : ""}
             onChange={(e) => onChange({ ...c, value: e.target.value })}
             placeholder="Wert"
-            className="h-11 text-base w-44"
+            className={`h-11 text-base w-44 ${LINE}`}
           />
         ))}
       <Button variant="ghost" className="h-11 w-11 p-0" aria-label="Bedingung entfernen" onClick={onRemove}>
@@ -936,7 +934,7 @@ function Detail({ r, onClose }: { r: Row; onClose: () => void }) {
     <Dialog open onOpenChange={(o) => !o && onClose()}>
       <DialogContent className={`${DIALOG_CLASS} max-w-2xl`}>
         <PanelHeader title={r.name || "Ohne Namen"} description={[r.art, r.inv || r.artikelnr, r.typ].filter(Boolean).join(" · ")} />
-        <div className="px-4 pb-8 space-y-5">
+        <div className="pb-2 space-y-5">
           {foto ? (
             <img src={thumb(foto, "large")} alt={r.name} className="w-full max-h-80 object-contain rounded-lg bg-muted" />
           ) : (
@@ -1342,7 +1340,7 @@ export default function Block() {
         </div>
 
         {filterOpen && (
-          <div className={`${INSET_CLASS} p-3 space-y-3`}>
+          <div className={`${PANEL_CLASS} p-3 space-y-3`}>
             {conditions.length === 0 ? (
               <p className="text-base text-muted-foreground">Für Bedingungen wie „Preis ist leer“, „Verkauft am nach …“ oder „Rückgabe bis vor …“.</p>
             ) : (
@@ -1427,7 +1425,7 @@ export default function Block() {
                   </Button>
                 </div>
               )}
-              <div ref={tableBox} className="rounded-lg border bg-card">
+              <div ref={tableBox} className={PANEL_CLASS}>
                 <Table className="text-base">
                   <TableHeader>
                     <TableRow className="hover:bg-transparent">

@@ -169,7 +169,7 @@ function EntryDialog({ kat, entry, onClose }: { kat: Kategorie; entry: Entry | n
     <Dialog open onOpenChange={(o) => !o && onClose()}>
       <DialogContent className={`${DIALOG_CLASS} max-w-xl`}>
         <PanelHeader title={entry ? entry.name : `${kat.singular} anlegen`} description={entry ? `${kat.singular} · ${kat.usage(entry.id)}` : kat.hint} />
-        <div className="px-4 pb-8 space-y-5" lang="de">
+        <div className="pb-2 space-y-5" lang="de">
           {kat.fields.map((f) => (
             <div key={f.key}>
               <FieldLabel htmlFor={`f-${f.key}`} required={f.required}>

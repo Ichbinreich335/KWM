@@ -92,49 +92,40 @@ function useAllPages(query: { hasNextPage?: boolean; isFetchingNextPage?: boolea
 
 const DIALOG_CLASS = "w-[calc(100vw-2rem)] max-h-[90vh] overflow-y-auto rounded-lg p-4 sm:p-6 [&>button:last-child]:hidden";
 
-// Linienfarbe aller Bedienelemente (Feld, Auswahl, Knopf): eine Stufe kräftiger als Softrs Standard, damit Felder am Handy klar umrissen sind.
+// Die eine Rahmenfarbe der App: Flächen, Kacheln, Felder, Auswahlen, Knöpfe. Nur Trennlinien innerhalb einer Fläche bleiben heller.
 const LINE = "border-neutral-300";
 
 // md:text-base hebt das md:text-sm der shadcn-Felder auf, damit Eingabe und Auswahlliste gleich groß schreiben.
 const FIELD_CLASS = `h-12 rounded-md text-base md:text-base ${LINE}`;
 
 const TEXTAREA_CLASS = `rounded-md text-base md:text-base ${LINE}`;
-const PANEL_CLASS = "rounded-lg border bg-card";
+
+// Die Box: jede umrandete Fläche (Bereich, Liste, Kachel, Tabelle). Innerhalb einer Box keine zweite Box.
+const PANEL_CLASS = `rounded-lg border ${LINE} bg-card`;
 
 // Gewählt = gefüllt. Kein zusätzliches Symbol, damit der Knopf beim Antippen nicht breiter wird und nichts springt.
-const CHIP_BASE = "inline-flex items-center justify-center gap-2 min-h-11 px-3.5 rounded-md border text-base whitespace-nowrap transition-colors disabled:opacity-60";
+// Mindestbreite, damit kurze Wörter (Sieb, Topf) nicht winzig wirken und die Reihen ruhiger aussehen.
+const CHIP_BASE = "inline-flex items-center justify-center gap-2 min-h-11 min-w-[5rem] px-3.5 rounded-md border text-base whitespace-nowrap transition-colors disabled:opacity-60";
 
 const CHIP_IDLE = `bg-background hover:bg-muted ${LINE}`;
 const CHIP_ACTIVE = "bg-primary text-primary-foreground border-primary";
 
 // Ein einzelner Auswahl-Knopf. Gewählt: Hauptfarbe, beim Status die Statusfarbe.
-function Chip({ active, onClick, children, disabled, role, activeClass, className }: { active: boolean; onClick: () => void; children: React.ReactNode; disabled?: boolean; role?: "radio"; activeClass?: string; className?: string }) {
+function Chip({ active, onClick, children, disabled, role, activeClass }: { active: boolean; onClick: () => void; children: React.ReactNode; disabled?: boolean; role?: "radio"; activeClass?: string }) {
   const state = role === "radio" ? { "aria-checked": active } : { "aria-pressed": active };
   return (
-    <button type="button" role={role} {...state} disabled={disabled} onClick={onClick} className={`${CHIP_BASE} ${active ? `${activeClass ?? CHIP_ACTIVE} font-medium` : CHIP_IDLE} ${className ?? ""}`}>
+    <button type="button" role={role} {...state} disabled={disabled} onClick={onClick} className={`${CHIP_BASE} ${active ? `${activeClass ?? CHIP_ACTIVE} font-medium` : CHIP_IDLE}`}>
       {children}
     </button>
   );
 }
 
-// Am Handy: bis zu dieser Länge passen drei Knöpfe nebeneinander, darüber zwei.
-const CHIP_LABEL_3_COLS = 10;
-
-// Ab Tablet: Mindestbreite je Knopf = längste Beschriftung plus Innenabstand, in Zeichenbreiten.
-const CHIP_PADDING_CH = 3;
-
-// Einfachauswahl als Raster gleich breiter Knöpfe, z. B. Status, Typ, Zustand. Wert ist das Label. statusColors färbt den gewählten Status.
+// Einfachauswahl als Knopfreihe, z. B. Status, Typ, Zustand. Wert ist das Label. statusColors färbt den gewählten Status.
 function ChoiceChips({ label, options, value, onChange, statusColors, disabled }: { label: string; options: Opt[]; value: string; onChange: (label: string) => void; statusColors?: boolean; disabled?: boolean }) {
-  const longest = Math.max(...options.map((o) => o.label.length), 0);
   return (
-    <div
-      role="radiogroup"
-      aria-label={label}
-      className={`grid gap-2 ${longest > CHIP_LABEL_3_COLS ? "grid-cols-2" : "grid-cols-3"} sm:[grid-template-columns:repeat(auto-fill,minmax(var(--chip-min),1fr))]`}
-      style={{ "--chip-min": `${longest + CHIP_PADDING_CH}ch` } as React.CSSProperties}
-    >
+    <div role="radiogroup" aria-label={label} className="flex flex-wrap gap-2">
       {options.map((o) => (
-        <Chip key={o.id} role="radio" active={value === o.label} activeClass={statusColors ? STATUS_ACTIVE[o.label] : undefined} disabled={disabled} onClick={() => onChange(o.label)} className="px-2">
+        <Chip key={o.id} role="radio" active={value === o.label} activeClass={statusColors ? STATUS_ACTIVE[o.label] : undefined} disabled={disabled} onClick={() => onChange(o.label)}>
           {o.label}
         </Chip>
       ))}
@@ -382,7 +373,7 @@ function PhotoPicker({ files, onChange, multiple, error }: { files: File[]; onCh
       ) : (
         <div className="grid grid-cols-3 gap-3">
           {previews.map((src, i) => (
-            <div key={src} className="relative aspect-square rounded-md overflow-hidden border">
+            <div key={src} className={`relative aspect-square rounded-md overflow-hidden border ${LINE}`}>
               <img src={src} alt={`Foto ${i + 1}`} className="w-full h-full object-cover" />
               <button
                 type="button"
@@ -546,7 +537,7 @@ function EntryDialog({ kat, entry, onClose }: { kat: Kategorie; entry: Entry | n
     <Dialog open onOpenChange={(o) => !o && onClose()}>
       <DialogContent className={`${DIALOG_CLASS} max-w-xl`}>
         <PanelHeader title={entry ? entry.name : `${kat.singular} anlegen`} description={entry ? `${kat.singular} · ${kat.usage(entry.id)}` : kat.hint} />
-        <div className="px-4 pb-8 space-y-5" lang="de">
+        <div className="pb-2 space-y-5" lang="de">
           {kat.fields.map((f) => (
             <div key={f.key}>
               <FieldLabel htmlFor={`f-${f.key}`} required={f.required}>

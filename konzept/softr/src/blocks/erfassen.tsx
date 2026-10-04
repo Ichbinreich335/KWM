@@ -711,7 +711,7 @@ export default function Block() {
                         inputMode="numeric"
                         value={String(edition.anzahl)}
                         onChange={(e) => setE("anzahl", Number(e.target.value.replace(/\D/g, "")) || 0)}
-                        className="h-12 w-24 rounded-md text-center text-lg md:text-lg"
+                        className={`h-12 w-24 rounded-md text-center text-lg md:text-lg ${LINE}`}
                       />
                       <Button
                         type="button"
