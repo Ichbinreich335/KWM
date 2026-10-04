@@ -38,3 +38,31 @@ Plan: [PLAN-PHASE-C.md](PLAN-PHASE-C.md) (eingecheckt im Branch `astro-umbau`). 
 **Korrekturrunden:** C2a: README und Pfadkommentare, ein Cast durch ein typisiertes Tupel ersetzt, Schließen-Knopf der Orte auch im Randfall verdrahtet, fehlerhafte Datumsangaben wie bisher ungültig. C2b: zwei Casts durch eine `as const`-Schlüsselliste ersetzt.
 
 **Testinfrastruktur:** Das Zeitlimit für ganzseitige Screens steht jetzt bei 30 s (vorher 15 s), weil die 18.884 px hohe Startseite unter voller Last einmal knapp darüber lag. Der Prüfmaßstab ist unverändert.
+
+## C3 – Bilder über `astro:assets` (Branch `phase-c3-bilder`)
+
+**Ergebnis:** Alle 85 Bilder liegen in `src/assets/img/` und laufen durch Astros Bildverarbeitung. Eine kleine Komponente `Bild.astro` (Pfad wie bisher `/img/…`, Auflösung über `import.meta.glob`, unbekannter Pfad bricht den Build ab) erzeugt für jedes Bild ein passendes `srcset` mit Breite und Höhe; Handys laden kleinere Dateien. In `public/img/` bleibt nur das Favicon.
+
+| Startseite, mobil, Median aus 5 | C2 | C3 |
+|---|---|---|
+| Lighthouse Leistung | 97 | **100** |
+| LCP | 2.498 ms | **1.763 ms** |
+| FCP | 1.309 ms | 1.083 ms |
+| übertragen | 326 KB | 289 KB |
+| CLS | 0 | 0 |
+
+Manufaktur: Leistung 99/99, LCP 2.088 → 2.012 ms, 183 → 176 KB.
+
+**Keine Layout-Änderung, nachgewiesen:** 250 Bildflächen und 26 Seitenhöhen (13 Seiten × Desktop/Mobil) vorher/nachher vermessen, keine Abweichung über 0,5 px. Optik 26/26 bei Standardtoleranz, Text 13/13 identisch.
+
+**Bildqualität nicht schlechter:** Jedes Bild, das vorher ein handgemachtes `srcset` hatte, bietet weiter seine größte frühere Variante an (bis 2000 px). Bei drei Bildern der Startseite war zunächst die kleinste Datei Quelle geworden; das fiel in der Prüfung auf und ist behoben (`widths`-Angabe). Der PayPal-QR-Code bietet wieder die volle Auflösung.
+
+**Weitere Verbesserungen aus den Reviews:**
+- Die sechs Einstiegsbilder nutzen die von Astro empfohlene `priority`-Einstellung (sofort laden, hohe Priorität).
+- 16 Vorschaubilder weit unten (Farbskala, Glasurknöpfe) laden jetzt erst bei Bedarf (`lazy`).
+- Die Glasurbühne nutzt beim Umschalten dieselbe Datei wie das Vorschaubild (Cache statt zweiter Download).
+- Das Favicon ist nicht mehr für ein Jahr als unveränderlich markiert (es hat keinen Hash im Namen).
+
+**Prüfhilfe:** `OPTIK_TOLERANZ` (Standard 0,002) erlaubt bei künftigen Bildänderungen einen gezielten Lauf mit höherer Toleranz; in C3 war er nicht nötig.
+
+**Hinweis:** Astro kodiert WebP neu (Qualität 80). Sollte bei Detailbildern eine Weichheit auffallen, lässt sich die Qualität zentral anheben (`image.service.config`).
