@@ -1,120 +1,5 @@
 /* Bausteine der Unterseiten. Tokens, Raster, Typografie und Motion kommen aus global.css. */
 
-/* Seitenkopf: vier Typen (DESIGN.md, Seitenkopf). Gemeinsam: Raster, Abstand oben, Titel, Lede, optionales Bild. */
-.page-hero {
-  --hero-img: min(72vh, 760px);
-  padding-top: calc(var(--head) + clamp(48px, 6vw, 96px));
-  padding-bottom: calc(var(--section) * 0.6);
-  row-gap: var(--head-gap);
-  align-items: end;
-}
-.page-hero:has(.page-hero__media) {
-  padding-bottom: 0;
-}
-.page-hero__title {
-  grid-column: 1 / 9;
-  font-family: var(--f-display);
-  font-size: var(--t-display);
-  line-height: var(--t-display-lh);
-  letter-spacing: -0.03em;
-  text-wrap: balance;
-}
-.page-hero__lede {
-  grid-column: 9 / 13;
-  font-family: var(--f-text);
-  font-size: var(--t-quote);
-  line-height: var(--t-quote-lh);
-  margin: 0;
-  text-wrap: pretty;
-}
-.page-hero__media {
-  grid-column: 1 / -1;
-  margin-inline: calc(var(--m) * -1);
-}
-.page-hero__media img {
-  width: 100%;
-  height: var(--hero-img);
-  object-fit: cover;
-}
-.page-hero__media--strip img {
-  height: auto;
-  aspect-ratio: 2560 / 398;
-  min-height: 180px;
-}
-.page-hero__media figcaption {
-  padding: 0 var(--m) 20px;
-}
-
-/* Typ Anker: dunkel, Titel links, Lede rechts, Panorama randlos am Fuß (Werkstatt) */
-.page-hero--anker {
-  --ink-2: var(--on-coal-2);
-  --hair: rgba(236, 234, 227, 0.22);
-  --cover: var(--coal);
-  background: var(--coal);
-  color: var(--on-coal);
-}
-.page-hero--anker ::selection {
-  background: var(--on-coal);
-  color: var(--coal);
-}
-
-/* Typ Name: hell, riesiger Name über die ganze Breite, Lede rechts, Bild randlos darunter (Young-Jae Lee, Aktuelles, Fehlerseite) */
-.page-hero--name .page-hero__title {
-  grid-column: 1 / -1;
-  font-size: var(--t-mega);
-  line-height: var(--t-mega-lh);
-  letter-spacing: -0.035em;
-}
-.page-hero--name .page-hero__lede {
-  grid-column: 6 / 13;
-  max-width: 46ch;
-  justify-self: end;
-}
-.page-hero--name:has(.page-hero__media) {
-  row-gap: var(--head-gap);
-}
-.page-hero--name .page-hero__media figcaption {
-  color: var(--ink-2);
-  padding-top: 10px;
-}
-
-/* Typ Meta: hell, Titel oben, links schmale Meta-Spalte, rechts ein großes Bild, das an den Rand läuft (Meisterstücke) */
-.page-hero--meta .page-hero__title {
-  grid-column: 1 / -1;
-}
-.page-hero--meta .page-hero__lede {
-  grid-column: 1 / 5;
-  align-self: start;
-  padding-right: var(--g);
-}
-.page-hero--meta .page-hero__media {
-  grid-column: 5 / -1;
-  margin-inline: 0 calc(var(--m) * -1);
-}
-.page-hero--meta .page-hero__media img {
-  height: auto;
-  aspect-ratio: 2000 / 931;
-}
-.page-hero--meta .page-hero__media figcaption {
-  padding: 10px 0 0;
-  color: var(--ink-2);
-}
-.page-hero--meta .visit-hours__times {
-  grid-column: 5 / -1;
-}
-.page-hero--meta:has(.page-hero__media) {
-  padding-bottom: var(--head-gap);
-}
-.page-hero--meta:not(:has(.page-hero__media)) {
-  padding-bottom: calc(var(--section) * 0.6);
-}
-
-/* Typ Fläche: --ground-2, Titel und Lede, darunter eine Reihe Produktfotos auf einem Sockel (Manufaktur) */
-.page-hero--flaeche {
-  background: var(--ground-2);
-  --cover: var(--ground-2);
-  padding-bottom: 0;
-}
 .shelf {
   grid-column: 1 / -1;
   display: grid;
@@ -450,28 +335,6 @@
 }
 
 @media (max-width: 900px) {
-  .page-hero__title,
-  .page-hero__lede,
-  .page-hero--name .page-hero__lede,
-  .page-hero--meta .page-hero__lede {
-    grid-column: 1 / -1;
-  }
-  .page-hero--name .page-hero__lede {
-    justify-self: start;
-  }
-  .page-hero--meta .page-hero__media {
-    grid-column: 1 / -1;
-    margin-inline: calc(var(--m) * -1);
-  }
-  .page-hero--meta .visit-hours__times {
-    grid-column: 1 / -1;
-  }
-  .page-hero--meta .page-hero__media figcaption {
-    padding: 10px var(--m) 0;
-  }
-  .page-hero--meta .page-hero__media img {
-    aspect-ratio: 4 / 3;
-  }
   .shelf {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     row-gap: var(--g);
@@ -480,12 +343,6 @@
   .plinth,
   .shelf-caps {
     display: none;
-  }
-  .page-hero--flaeche {
-    padding-bottom: calc(var(--section) * 0.5);
-  }
-  .page-hero {
-    --hero-img: 56svh;
   }
   .chapter__head .h2,
   .chapter__intro {

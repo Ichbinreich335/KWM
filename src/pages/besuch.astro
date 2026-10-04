@@ -2,6 +2,7 @@
 import Bild from '../components/Bild.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import InquiryForm from '../components/InquiryForm.astro';
+import PageHero from '../components/PageHero.astro';
 import '../styles/basis.css';
 import '../styles/seiten/page-besuch.css';
 import '../styles/signaturen/signaturen.css';
@@ -14,15 +15,13 @@ import '../styles/signaturen/signaturen.css';
   nav="besuch"
 >
   <main id="inhalt">
-    <section class="page-hero page-hero--meta grid" aria-labelledby="page-title">
-      <h1 class="page-hero__title" id="page-title" data-reveal="words">
-        Besuchen Sie die Werkstatt.
-      </h1>
-      <p class="page-hero__lede" data-reveal="fade">
+    <PageHero typ="meta">
+      <Fragment slot="titel">Besuchen Sie die Werkstatt.</Fragment>
+      <Fragment slot="lede">
         Wir danken Ihnen für Ihr Interesse. Wenn Sie Fragen haben oder Stücke aus unserem Programm erwerben möchten,
         senden wir Ihnen natürlich gerne weitere Informationen oder ein Angebot zu. Selbstverständlich können Sie unsere
         Werkstatt auch besuchen.
-      </p>
+      </Fragment>
       <div class="visit-hours__times" data-reveal="fade" role="group" aria-label="Öffnungszeiten">
         <div class="visit-hours__row">
           <span class="visit-hours__day">Montag bis Freitag</span>
@@ -37,7 +36,7 @@ import '../styles/signaturen/signaturen.css';
           <span class="visit-hours__time visit-hours__time--small">nach Vereinbarung</span>
         </div>
       </div>
-    </section>
+    </PageHero>
 
     {/* Adresse */}
     <section class="visit-hours" aria-labelledby="hours-title">

@@ -3,6 +3,7 @@ import Bild from '../components/Bild.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import InquiryBand from '../components/InquiryBand.astro';
 import SubNav from '../components/SubNav.astro';
+import PageHero from '../components/PageHero.astro';
 import '../styles/basis.css';
 import '../styles/seiten/page-werkstatt.css';
 import '../styles/signaturen/signaturen.css';
@@ -15,26 +16,22 @@ import '../styles/signaturen/signaturen.css';
   nav="werkstatt"
 >
   <main id="inhalt">
-    <section class="page-hero page-hero--anker grid" aria-labelledby="page-title">
-      <h1 class="page-hero__title" id="page-title" data-reveal="words">
-        Die Werkstatt
-      </h1>
-      <p class="page-hero__lede" data-reveal="fade">
+    <PageHero typ="anker" streifen bildunterschrift="Young-Jae Lee in der Werkstatt">
+      <Fragment slot="titel">Die Werkstatt</Fragment>
+      <Fragment slot="lede">
         Handwerkliche Ästhetik in ihrer Zurückgenommenheit, Konzentriertheit, formalen Perfektion. Aus der ständigen
         Wiederholung einer handwerklichen Technik, dem Drehen auf der Töpferscheibe, erwächst die vollkommene Schönheit
         einer Form.
-      </p>
-      <figure class="page-hero__media page-hero__media--strip" data-reveal="img">
-        <Bild
-          priority
-          src="/img/kwm/werkstatt-panorama.webp"
-          width="2560"
-          height="398"
-          alt="Young-Jae Lee an der Arbeit vor langen Regalen mit gedrehten Gefäßen"
-        />
-        <figcaption>Young-Jae Lee in der Werkstatt</figcaption>
-      </figure>
-    </section>
+      </Fragment>
+      <Bild
+        slot="bild"
+        priority
+        src="/img/kwm/werkstatt-panorama.webp"
+        width="2560"
+        height="398"
+        alt="Young-Jae Lee an der Arbeit vor langen Regalen mit gedrehten Gefäßen"
+      />
+    </PageHero>
 
     <SubNav
       label="Kapitel dieser Seite"

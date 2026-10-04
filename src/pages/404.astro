@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
 import '../styles/basis.css';
 import '../styles/signaturen/signaturen.css';
 ---
@@ -10,11 +11,9 @@ import '../styles/signaturen/signaturen.css';
   bodyClass="page-404"
 >
   <main id="inhalt">
-    <section class="page-hero page-hero--name not-found grid" aria-labelledby="page-title">
-      <h1 class="page-hero__title" id="page-title">
-        Diese Schale ist leer.
-      </h1>
-      <div class="page-hero__lede">
+    <PageHero typ="name" class="not-found" ledeBlock ohneEinblendung>
+      <Fragment slot="titel">Diese Schale ist leer.</Fragment>
+      <Fragment slot="lede">
         <p>Die Seite gibt es nicht oder nicht mehr. Vielleicht führt einer dieser Wege weiter.</p>
         <ul class="not-found__links">
           <li>
@@ -38,7 +37,7 @@ import '../styles/signaturen/signaturen.css';
             </a>
           </li>
         </ul>
-      </div>
-    </section>
+      </Fragment>
+    </PageHero>
   </main>
 </BaseLayout>

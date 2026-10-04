@@ -3,6 +3,7 @@ import Bild from '../components/Bild.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import InquiryBand from '../components/InquiryBand.astro';
 import SubNav from '../components/SubNav.astro';
+import PageHero from '../components/PageHero.astro';
 import '../styles/basis.css';
 import '../styles/seiten/page-meisterstuecke.css';
 import '../styles/signaturen/signaturen.css';
@@ -15,26 +16,22 @@ import '../styles/signaturen/signaturen.css';
   nav="meisterstuecke"
 >
   <main id="inhalt">
-    <section class="page-hero page-hero--meta grid" aria-labelledby="ms-title">
-      <h1 class="page-hero__title" id="ms-title" data-reveal="words">
-        Meisterstücke
-      </h1>
-      <p class="page-hero__lede" data-reveal="fade">
+    <PageHero typ="meta" titelId="ms-title" bildunterschrift="Schalen von Young-Jae Lee">
+      <Fragment slot="titel">Meisterstücke</Fragment>
+      <Fragment slot="lede">
         Alle hier gezeigten Meisterstücke stammen aus der Hand Young-Jae Lees und wurden von ihr selbst gedreht, bemalt
         und glasiert.
-      </p>
-      <figure class="page-hero__media" data-reveal="img">
-        <Bild
-          priority
-          src="/img/kwm/schalen-trio.webp"
-          sizes="100vw"
-          width="2000"
-          height="931"
-          alt="Vier Schalen von Young-Jae Lee nebeneinander: tiefrot, weiß mit blauem Pinselpunkt, rosé-violett und hellbraun"
-        />
-        <figcaption>Schalen von Young-Jae Lee</figcaption>
-      </figure>
-    </section>
+      </Fragment>
+      <Bild
+        slot="bild"
+        priority
+        src="/img/kwm/schalen-trio.webp"
+        sizes="100vw"
+        width="2000"
+        height="931"
+        alt="Vier Schalen von Young-Jae Lee nebeneinander: tiefrot, weiß mit blauem Pinselpunkt, rosé-violett und hellbraun"
+      />
+    </PageHero>
 
     <section class="ms-intro on-flaeche grid" aria-label="Über die Meisterstücke">
       <p class="ms-intro__statement" data-reveal="words">

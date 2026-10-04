@@ -1,20 +1,6 @@
 /* Textseiten: Impressum, Datenschutz, AGB, Verpackung und Transport, Zahlung.
    Heller Seitenkopf (Typ Name ohne Bild), links Seitennavigation, rechts Text in lesbarer Zeilenlänge. */
 
-.page-hero--text {
-  padding-bottom: calc(var(--section) * 0.4);
-}
-.page-hero--text .page-hero__title {
-  grid-column: 1 / -1;
-  font-size: var(--t-display);
-  line-height: var(--t-display-lh);
-}
-.page-hero--text .page-hero__lede {
-  grid-column: 4 / 11;
-  max-width: 46ch;
-  justify-self: start;
-}
-
 .legal {
   padding-bottom: var(--section);
   row-gap: 40px;
@@ -140,9 +126,6 @@
 }
 
 @media (max-width: 900px) {
-  .page-hero--text .page-hero__lede {
-    grid-column: 1 / -1;
-  }
   .legal {
     row-gap: 32px;
   }

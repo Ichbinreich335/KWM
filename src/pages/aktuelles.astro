@@ -3,6 +3,7 @@ import Bild from '../components/Bild.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import InquiryBand from '../components/InquiryBand.astro';
 import SubNav from '../components/SubNav.astro';
+import PageHero from '../components/PageHero.astro';
 import '../styles/basis.css';
 import '../styles/seiten/page-aktuelles.css';
 import '../styles/signaturen/signaturen.css';
@@ -15,14 +16,12 @@ import '../styles/signaturen/signaturen.css';
   nav="aktuelles"
 >
   <main id="inhalt">
-    <section class="page-hero page-hero--name grid" aria-labelledby="page-title">
-      <h1 class="page-hero__title" id="page-title" data-reveal="words">
-        Aktuelles
-      </h1>
-      <p class="page-hero__lede" data-reveal="fade">
+    <PageHero typ="name">
+      <Fragment slot="titel">Aktuelles</Fragment>
+      <Fragment slot="lede">
         Liebe Freunde der Keramischen Werkstatt, besuchen Sie und freuen Sie sich auf die folgenden Ausstellungen.
-      </p>
-    </section>
+      </Fragment>
+    </PageHero>
 
     <SubNav
       label="Auf dieser Seite"

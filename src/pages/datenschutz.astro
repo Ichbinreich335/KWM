@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
 import '../styles/basis.css';
 import '../styles/seiten/page-text.css';
 import '../styles/signaturen/signaturen.css';
@@ -14,14 +15,10 @@ import '../styles/signaturen/signaturen.css';
     <meta name="robots" content="noindex" />
   </Fragment>
   <main id="inhalt">
-    <section class="page-hero page-hero--name page-hero--text grid" aria-labelledby="page-title">
-      <h1 class="page-hero__title" id="page-title" data-reveal="words">
-        Datenschutz
-      </h1>
-      <p class="page-hero__lede" data-reveal="fade">
-        Hier steht die Datenschutzerklärung dieser Website.
-      </p>
-    </section>
+    <PageHero typ="name" text>
+      <Fragment slot="titel">Datenschutz</Fragment>
+      <Fragment slot="lede">Hier steht die Datenschutzerklärung dieser Website.</Fragment>
+    </PageHero>
 
     <div class="legal grid">
       <aside class="legal__aside">

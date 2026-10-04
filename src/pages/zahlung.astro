@@ -2,6 +2,7 @@
 import Bild from '../components/Bild.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import InquiryBand from '../components/InquiryBand.astro';
+import PageHero from '../components/PageHero.astro';
 import '../styles/basis.css';
 import '../styles/seiten/page-text.css';
 import '../styles/signaturen/signaturen.css';
@@ -13,14 +14,10 @@ import '../styles/signaturen/signaturen.css';
   bodyClass="page-text"
 >
   <main id="inhalt">
-    <section class="page-hero page-hero--name page-hero--text grid" aria-labelledby="page-title">
-      <h1 class="page-hero__title" id="page-title" data-reveal="words">
-        Zahlungsmöglichkeiten
-      </h1>
-      <p class="page-hero__lede" data-reveal="fade">
-        Per Überweisung oder PayPal.
-      </p>
-    </section>
+    <PageHero typ="name" text>
+      <Fragment slot="titel">Zahlungsmöglichkeiten</Fragment>
+      <Fragment slot="lede">Per Überweisung oder PayPal.</Fragment>
+    </PageHero>
 
     <div class="legal grid">
       <aside class="legal__aside">

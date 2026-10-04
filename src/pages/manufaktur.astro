@@ -4,6 +4,7 @@ import Bild from '../components/Bild.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import InquiryBand from '../components/InquiryBand.astro';
 import SubNav from '../components/SubNav.astro';
+import PageHero from '../components/PageHero.astro';
 import '../styles/basis.css';
 import '../styles/seiten/page-manufaktur.css';
 import '../styles/signaturen/signaturen.css';
@@ -30,14 +31,12 @@ const glasurBild = async (src: string) =>
   nav="manufaktur"
 >
   <main id="inhalt">
-    <section class="page-hero page-hero--flaeche mf-hero grid" aria-labelledby="mf-title">
-      <h1 class="page-hero__title" id="mf-title" data-reveal="words">
-        Manufaktur&shy;programm
-      </h1>
-      <p class="page-hero__lede" data-reveal="fade">
+    <PageHero typ="flaeche" titelId="mf-title" class="mf-hero">
+      <Fragment slot="titel">Manufaktur&shy;programm</Fragment>
+      <Fragment slot="lede">
         Vom Teller bis zur Schüssel, von der Tasse bis zum Krug hin zu Salz-, Pfeffer-, Milch- und Zuckergefäßen –
         unsere Geschirr-Serie umfasst alle Bestandteile eines Speisegeschirrs.
-      </p>
+      </Fragment>
       <ul class="shelf" data-reveal="img">
         <li class="shelf__item">
           <Bild
@@ -83,7 +82,7 @@ const glasurBild = async (src: string) =>
         <li>Becher und Tassen</li>
         <li>Töpfe und Dosen</li>
       </ul>
-    </section>
+    </PageHero>
 
     <section class="mf-intro on-anker grid" aria-label="Über das Manufakturprogramm">
       <blockquote class="mf-intro__rule">

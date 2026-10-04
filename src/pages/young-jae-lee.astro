@@ -3,6 +3,7 @@ import Bild from '../components/Bild.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import InquiryBand from '../components/InquiryBand.astro';
 import SubNav from '../components/SubNav.astro';
+import PageHero from '../components/PageHero.astro';
 import '../styles/basis.css';
 import '../styles/seiten/page-young-jae-lee.css';
 import '../styles/signaturen/signaturen.css';
@@ -15,26 +16,22 @@ import '../styles/signaturen/signaturen.css';
   nav="young-jae-lee"
 >
   <main id="inhalt">
-    <section class="page-hero page-hero--name yjl-hero grid" aria-labelledby="page-title">
-      <h1 class="page-hero__title" id="page-title" data-reveal="words">
-        Young-Jae Lee
-      </h1>
-      <p class="page-hero__lede" data-reveal="fade">
+    <PageHero typ="name" class="yjl-hero" bildunterschrift="Young-Jae Lee in der Werkstatt">
+      <Fragment slot="titel">Young-Jae Lee</Fragment>
+      <Fragment slot="lede">
         Geboren 1951 in Seoul, Studium in Seoul und Wiesbaden. Seit 1987 leitet sie die Keramische Werkstatt
         Margaretenhöhe in Essen – alle Meisterstücke stammen aus ihrer Hand.
-      </p>
-      <figure class="page-hero__media" data-reveal="img">
-        <Bild
-          priority
-          src="/img/kwm/portrait-yjl.webp"
-          sizes="100vw"
-          width="2000"
-          height="1312"
-          alt="Young-Jae Lee arbeitet an einem Tisch voller ungebrannter Gefäße, hinter ihr Regale mit Vasen und Schalen"
-        />
-        <figcaption>Young-Jae Lee in der Werkstatt</figcaption>
-      </figure>
-    </section>
+      </Fragment>
+      <Bild
+        slot="bild"
+        priority
+        src="/img/kwm/portrait-yjl.webp"
+        sizes="100vw"
+        width="2000"
+        height="1312"
+        alt="Young-Jae Lee arbeitet an einem Tisch voller ungebrannter Gefäße, hinter ihr Regale mit Vasen und Schalen"
+      />
+    </PageHero>
 
     <SubNav
       label="Kapitel dieser Seite"
