@@ -1,4 +1,5 @@
 ---
+import Bild from '../components/Bild.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import InquiryForm from '../components/InquiryForm.astro';
 import '../styles/basis.css';
@@ -44,11 +45,12 @@ import '../styles/signaturen/signaturen.css';
         Adresse
       </h2>
       <figure class="visit-hours__media" data-reveal="img">
-        <img
+        <Bild
           src="/img/kwm/werkstatt-panorama.webp"
           width="2560"
           height="398"
           alt="Young-Jae Lee am Arbeitstisch vor langen Regalen mit ungebrannten Gefäßen"
+          loading="eager"
         />
         <figcaption>In der Werkstatt</figcaption>
       </figure>

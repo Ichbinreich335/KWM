@@ -20,7 +20,10 @@ export default defineConfig({
           codeSplitting: {
             groups: [
               { name: 'signaturen', test: /\/src\/styles\/signaturen\// },
-              { name: 'basis', test: /\/src\/styles\/(basis|global|pages|expander)\.css/ },
+              {
+                name: 'basis',
+                test: /\/src\/styles\/(basis|global|pages|expander)\.css|virtual:astro:image-styles\.css/,
+              },
             ],
           },
         },

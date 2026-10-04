@@ -1,4 +1,5 @@
 ---
+import Bild from '../components/Bild.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import InquiryForm from '../components/InquiryForm.astro';
 import '../styles/basis.css';
@@ -14,13 +15,14 @@ import '../styles/signaturen/signaturen.css';
     {/* Einstieg: Zitat links, Kummerschalen rechts (hell) */}
     <section class="hero grid" id="top" aria-labelledby="hero-title">
       <figure class="hero__media" data-reveal="img">
-        <img
+        <Bild
           src="/img/kwm/kummerschalen.webp"
           width="937"
           height="1040"
           alt="Viele flache Schalen von Young-Jae Lee auf einem Steinboden, seladonblau, schwarz gesprenkelt und rotbraun glasiert"
           fetchpriority="high"
           data-parallax
+          loading="eager"
         />
         <figcaption class="hero__credit">Kummerschalen · Foto: Christopher Clem Franken</figcaption>
       </figure>
@@ -66,9 +68,8 @@ import '../styles/signaturen/signaturen.css';
         <li class="aktuell__item" data-spotlight data-start="2026-04-23" data-end="2026-10-25">
           <figure class="aktuell__media">
             <span class="aktuell__frame">
-              <img
+              <Bild
                 src="/img/kwm/aktuell/mok-1400.webp"
-                srcset="/img/kwm/aktuell/mok-960.webp 960w, /img/kwm/aktuell/mok-1400.webp 1400w, /img/kwm/aktuell/mok-2000.webp 2000w"
                 sizes="(min-width: 900px) 64vw, 100vw"
                 width="1400"
                 height="652"
@@ -111,9 +112,8 @@ import '../styles/signaturen/signaturen.css';
         <li class="aktuell__item" data-start="2026-08-16" data-end="2026-10-31">
           <figure class="aktuell__media">
             <span class="aktuell__frame">
-              <img
+              <Bild
                 src="/img/kwm/aktuell/wesel-seladon-640.webp"
-                srcset="/img/kwm/aktuell/wesel-seladon-640.webp 640w, /img/kwm/aktuell/wesel-seladon-800.webp 800w"
                 sizes="(min-width: 900px) 31vw, 100vw"
                 width="640"
                 height="480"
@@ -178,7 +178,7 @@ import '../styles/signaturen/signaturen.css';
         <li class="aktuell__item" data-start="2026-10-03" data-end="2026-12-12">
           <figure class="aktuell__media">
             <span class="aktuell__frame">
-              <img
+              <Bild
                 src="/img/kwm/aktuell/greve-533.webp"
                 width="533"
                 height="400"
@@ -227,9 +227,8 @@ import '../styles/signaturen/signaturen.css';
         <li class="aktuell__item" data-start="2026-11-06" data-end="2026-11-08">
           <figure class="aktuell__media">
             <span class="aktuell__frame">
-              <img
+              <Bild
                 src="/img/kwm/aktuell/popup-640.webp"
-                srcset="/img/kwm/aktuell/popup-640.webp 640w, /img/kwm/aktuell/popup-954.webp 954w"
                 sizes="(min-width: 900px) 31vw, 100vw"
                 width="640"
                 height="480"
@@ -337,10 +336,9 @@ import '../styles/signaturen/signaturen.css';
       <figure class="sticky-bild-wrap">
         <div class="sticky-bild sticky-bild--portrait" data-sig="sticky">
           <div class="sticky-bild__media">
-            <img
+            <Bild
               class="sticky-bild__img"
               src="/img/kwm/portrait-yjl.webp"
-              srcset="/img/kwm/portrait-yjl-900.webp 900w, /img/kwm/portrait-yjl-1400.webp 1400w, /img/kwm/portrait-yjl.webp 2000w"
               sizes="100vw"
               width="2000"
               height="1313"
@@ -431,7 +429,7 @@ import '../styles/signaturen/signaturen.css';
       </div>
       <div class="works__feature grid">
         <figure class="works__single" data-reveal="img">
-          <img
+          <Bild
             src="/img/kwm/werke/spindelvase-einzeln-1200.webp"
             width="1200"
             height="1200"
@@ -462,7 +460,7 @@ import '../styles/signaturen/signaturen.css';
         <li class="piece">
           <a href="/meisterstuecke#kummen">
             <span class="piece__media">
-              <img
+              <Bild
                 src="/img/kwm/kumme_2.webp"
                 width="600"
                 height="400"
@@ -481,7 +479,7 @@ import '../styles/signaturen/signaturen.css';
         <li class="piece">
           <a href="/meisterstuecke#schalen">
             <span class="piece__media">
-              <img
+              <Bild
                 src="/img/kwm/schale_spitz_xxl_1.webp"
                 width="600"
                 height="400"
@@ -500,7 +498,7 @@ import '../styles/signaturen/signaturen.css';
         <li class="piece">
           <a href="/meisterstuecke#vasen">
             <span class="piece__media">
-              <img
+              <Bild
                 src="/img/kwm/zylindervasen_gross.webp"
                 width="600"
                 height="400"
@@ -519,7 +517,7 @@ import '../styles/signaturen/signaturen.css';
         <li class="piece">
           <a href="/meisterstuecke#schalen">
             <span class="piece__media">
-              <img
+              <Bild
                 src="/img/kwm/schale_spitz_xl_1.webp"
                 width="600"
                 height="400"
@@ -538,7 +536,7 @@ import '../styles/signaturen/signaturen.css';
         <li class="piece">
           <a href="/meisterstuecke#kummen">
             <span class="piece__media">
-              <img
+              <Bild
                 src="/img/kwm/kumme_3.webp"
                 width="600"
                 height="400"
@@ -557,7 +555,7 @@ import '../styles/signaturen/signaturen.css';
         <li class="piece">
           <a href="/meisterstuecke#schalen">
             <span class="piece__media">
-              <img
+              <Bild
                 src="/img/kwm/schale_spitz_gross.webp"
                 width="600"
                 height="400"
@@ -594,7 +592,7 @@ import '../styles/signaturen/signaturen.css';
       <p class="orte__tip" data-orte-tip>Auf eine Stadt <span class="orte__tip-fine">klicken</span><span class="orte__tip-coarse">tippen</span>, um die Ausstellungen dort zu sehen.</p>
       <ul class="orte__grid">
         <li class="orte__tile orte__tile--xl">
-          <img
+          <Bild
             class="orte__img"
             src="/img/kwm/schalen-trio-1400.webp"
             width="1400"
@@ -651,7 +649,7 @@ import '../styles/signaturen/signaturen.css';
           </ol>
         </li>
         <li class="orte__tile orte__tile--xl">
-          <img class="orte__img" src="/img/kwm/regal.webp" width="954" height="905" loading="lazy" alt="" />
+          <Bild class="orte__img" src="/img/kwm/regal.webp" width="954" height="905" loading="lazy" alt="" />
           <h3 class="orte__name">München</h3>
           <p class="orte__meta">
             <span>2016–2026</span>
@@ -695,7 +693,7 @@ import '../styles/signaturen/signaturen.css';
           </ol>
         </li>
         <li class="orte__tile orte__tile--m orte__tile--full">
-          <img class="orte__img" src="/img/kwm/seladon-schalen.webp" width="900" height="600" loading="lazy" alt="" />
+          <Bild class="orte__img" src="/img/kwm/seladon-schalen.webp" width="900" height="600" loading="lazy" alt="" />
           <h3 class="orte__name">Tokio</h3>
           <p class="orte__meta">
             <span>2016–2025</span>
@@ -735,7 +733,7 @@ import '../styles/signaturen/signaturen.css';
           </ol>
         </li>
         <li class="orte__tile orte__tile--m">
-          <img class="orte__img" src="/img/kwm/kummerschalen.webp" width="937" height="1040" loading="lazy" alt="" />
+          <Bild class="orte__img" src="/img/kwm/kummerschalen.webp" width="937" height="1040" loading="lazy" alt="" />
           <h3 class="orte__name">Essen</h3>
           <p class="orte__meta">
             <span>2019–2025</span>
@@ -770,7 +768,7 @@ import '../styles/signaturen/signaturen.css';
           </ol>
         </li>
         <li class="orte__tile orte__tile--m">
-          <img class="orte__img" src="/img/kwm/teeschale.webp" width="1200" height="1200" loading="lazy" alt="" />
+          <Bild class="orte__img" src="/img/kwm/teeschale.webp" width="1200" height="1200" loading="lazy" alt="" />
           <h3 class="orte__name">Korea</h3>
           <p class="orte__meta">
             <span>2017–2019</span>
@@ -794,7 +792,7 @@ import '../styles/signaturen/signaturen.css';
           </ol>
         </li>
         <li class="orte__tile orte__tile--s">
-          <img class="orte__img" src="/img/kwm/kugelvase.webp" width="600" height="400" loading="lazy" alt="" />
+          <Bild class="orte__img" src="/img/kwm/kugelvase.webp" width="600" height="400" loading="lazy" alt="" />
           <h3 class="orte__name">Boston</h3>
           <p class="orte__meta">
             <span>2016–2022</span>
@@ -822,7 +820,7 @@ import '../styles/signaturen/signaturen.css';
           </ol>
         </li>
         <li class="orte__tile orte__tile--s">
-          <img class="orte__img" src="/img/kwm/schalen.webp" width="600" height="400" loading="lazy" alt="" />
+          <Bild class="orte__img" src="/img/kwm/schalen.webp" width="600" height="400" loading="lazy" alt="" />
           <h3 class="orte__name">Krakau und Breslau</h3>
           <p class="orte__meta">
             <span>2016</span>
@@ -852,7 +850,7 @@ import '../styles/signaturen/signaturen.css';
           </ol>
         </li>
         <li class="orte__tile orte__tile--s">
-          <img class="orte__img" src="/img/kwm/schale_gross.webp" width="600" height="400" loading="lazy" alt="" />
+          <Bild class="orte__img" src="/img/kwm/schale_gross.webp" width="600" height="400" loading="lazy" alt="" />
           <h3 class="orte__name">Chemnitz</h3>
           <p class="orte__meta">
             <span>2024–2025</span>
@@ -875,7 +873,7 @@ import '../styles/signaturen/signaturen.css';
           </ol>
         </li>
         <li class="orte__tile orte__tile--s">
-          <img class="orte__img" src="/img/kwm/schalen2.webp" width="600" height="400" loading="lazy" alt="" />
+          <Bild class="orte__img" src="/img/kwm/schalen2.webp" width="600" height="400" loading="lazy" alt="" />
           <h3 class="orte__name">Bonn</h3>
           <p class="orte__meta">
             <span>2019–2020</span>
@@ -899,7 +897,7 @@ import '../styles/signaturen/signaturen.css';
           </ol>
         </li>
         <li class="orte__tile orte__tile--s">
-          <img class="orte__img" src="/img/kwm/spindelvase1.webp" width="600" height="400" loading="lazy" alt="" />
+          <Bild class="orte__img" src="/img/kwm/spindelvase1.webp" width="600" height="400" loading="lazy" alt="" />
           <h3 class="orte__name">New York</h3>
           <p class="orte__meta">
             <span>2024</span>
@@ -917,7 +915,7 @@ import '../styles/signaturen/signaturen.css';
           </ol>
         </li>
         <li class="orte__tile orte__tile--s">
-          <img class="orte__img" src="/img/kwm/kannen.webp" width="600" height="400" loading="lazy" alt="" />
+          <Bild class="orte__img" src="/img/kwm/kannen.webp" width="600" height="400" loading="lazy" alt="" />
           <h3 class="orte__name">Düsseldorf</h3>
           <p class="orte__meta">
             <span>2024</span>
@@ -935,7 +933,7 @@ import '../styles/signaturen/signaturen.css';
           </ol>
         </li>
         <li class="orte__tile orte__tile--s">
-          <img class="orte__img" src="/img/kwm/schale2.webp" width="600" height="400" loading="lazy" alt="" />
+          <Bild class="orte__img" src="/img/kwm/schale2.webp" width="600" height="400" loading="lazy" alt="" />
           <h3 class="orte__name">Wien</h3>
           <p class="orte__meta">
             <span>2016</span>
@@ -953,7 +951,7 @@ import '../styles/signaturen/signaturen.css';
           </ol>
         </li>
         <li class="orte__tile orte__tile--s">
-          <img class="orte__img" src="/img/kwm/schalen3.webp" width="600" height="400" loading="lazy" alt="" />
+          <Bild class="orte__img" src="/img/kwm/schalen3.webp" width="600" height="400" loading="lazy" alt="" />
           <h3 class="orte__name">Zürich</h3>
           <p class="orte__meta">
             <span>2023</span>
@@ -990,9 +988,8 @@ import '../styles/signaturen/signaturen.css';
           </p>
         </div>
         <figure class="med__media" data-reveal="img">
-          <img
+          <Bild
             src="/img/01-seladon-gefaess.webp"
-            srcset="/img/01-seladon-gefaess-800.webp 800w, /img/01-seladon-gefaess.webp 1600w"
             sizes="(min-width: 900px) 40vw, 100vw"
             width="1600"
             height="1067"
@@ -1082,7 +1079,7 @@ import '../styles/signaturen/signaturen.css';
           data-speckle="#9a6a2c"
           data-seed="3"
         >
-          <img class="scale__sample" src="/img/kwm/weiss.webp" alt="" width="100" height="100" />
+          <Bild class="scale__sample" src="/img/kwm/weiss.webp" alt="" width="100" height="100" loading="eager" />
           <span class="scale__label">
             <span class="scale__title">weiß</span>
           </span>
@@ -1098,7 +1095,14 @@ import '../styles/signaturen/signaturen.css';
           data-finish="matt"
           data-seed="4"
         >
-          <img class="scale__sample" src="/img/kwm/hellgruen_matt.webp" alt="" width="100" height="100" />
+          <Bild
+            class="scale__sample"
+            src="/img/kwm/hellgruen_matt.webp"
+            alt=""
+            width="100"
+            height="100"
+            loading="eager"
+          />
           <span class="scale__label">
             <span class="scale__title">hellgrün</span>
             <span class="scale__meta">matt</span>
@@ -1116,7 +1120,14 @@ import '../styles/signaturen/signaturen.css';
           data-schichten
           data-seed="5"
         >
-          <img class="scale__sample" src="/img/kwm/hellgruen_glaenzend.webp" alt="" width="100" height="100" />
+          <Bild
+            class="scale__sample"
+            src="/img/kwm/hellgruen_glaenzend.webp"
+            alt=""
+            width="100"
+            height="100"
+            loading="eager"
+          />
           <span class="scale__label">
             <span class="scale__title">hellgrün</span>
             <span class="scale__meta">glänzend</span>
@@ -1133,7 +1144,14 @@ import '../styles/signaturen/signaturen.css';
           data-finish="glanz"
           data-seed="6"
         >
-          <img class="scale__sample" src="/img/kwm/dunkelgruen_glaenzend.webp" alt="" width="100" height="100" />
+          <Bild
+            class="scale__sample"
+            src="/img/kwm/dunkelgruen_glaenzend.webp"
+            alt=""
+            width="100"
+            height="100"
+            loading="eager"
+          />
           <span class="scale__label">
             <span class="scale__title">dunkelgrün</span>
             <span class="scale__meta">glänzend</span>
@@ -1151,7 +1169,14 @@ import '../styles/signaturen/signaturen.css';
           data-speckle="#a3a28b"
           data-seed="7"
         >
-          <img class="scale__sample" src="/img/kwm/dunkelgruen_matt.webp" alt="" width="100" height="100" />
+          <Bild
+            class="scale__sample"
+            src="/img/kwm/dunkelgruen_matt.webp"
+            alt=""
+            width="100"
+            height="100"
+            loading="eager"
+          />
           <span class="scale__label">
             <span class="scale__title">dunkelgrün</span>
             <span class="scale__meta">matt</span>
@@ -1169,7 +1194,7 @@ import '../styles/signaturen/signaturen.css';
           data-speckle="#6a3a04"
           data-seed="8"
         >
-          <img class="scale__sample" src="/img/kwm/rostbraun.webp" alt="" width="100" height="100" />
+          <Bild class="scale__sample" src="/img/kwm/rostbraun.webp" alt="" width="100" height="100" loading="eager" />
           <span class="scale__label">
             <span class="scale__title">rostbraun</span>
           </span>
@@ -1184,7 +1209,7 @@ import '../styles/signaturen/signaturen.css';
 
       <div class="craft__detail craft__detail--wide grid">
         <figure class="craft__media" data-reveal="img">
-          <img
+          <Bild
             src="/img/kwm/regal.webp"
             width="954"
             height="905"
@@ -1223,7 +1248,7 @@ import '../styles/signaturen/signaturen.css';
           </div>
         </div>
         <figure class="craft__media3" data-reveal="img">
-          <img
+          <Bild
             src="/img/kwm/kannen.webp"
             width="600"
             height="400"
@@ -1238,10 +1263,9 @@ import '../styles/signaturen/signaturen.css';
     {/* Feuer: Text bleibt beim Scrollen auf dem Glasurfoto stehen */}
     <section class="sticky-bild sticky-bild--feuer" id="feuer" data-sig="sticky" aria-labelledby="feuer-title">
       <div class="sticky-bild__media">
-        <img
+        <Bild
           class="sticky-bild__img"
           src="/img/03-glasur-detail.webp"
-          srcset="/img/03-glasur-detail-800.webp 800w, /img/03-glasur-detail.webp 1600w"
           sizes="100vw"
           width="1600"
           height="1067"

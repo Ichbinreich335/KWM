@@ -1,4 +1,5 @@
 ---
+import Bild from '../components/Bild.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import InquiryBand from '../components/InquiryBand.astro';
 import '../styles/basis.css';
@@ -23,37 +24,41 @@ import '../styles/signaturen/signaturen.css';
       </p>
       <ul class="shelf" data-reveal="img">
         <li class="shelf__item">
-          <img
+          <Bild
             src="/img/kwm/teller.webp"
             width="600"
             height="400"
             fetchpriority="high"
             alt="Teller in Dunkelgrün, Hellgrün und Rostbraun, von oben gesehen"
+            loading="eager"
           />
         </li>
         <li class="shelf__item">
-          <img
+          <Bild
             src="/img/kwm/kannen.webp"
             width="600"
             height="400"
             fetchpriority="high"
             alt="Krüge in Seladon und Beige und ein dunkelgrüner Becher"
+            loading="eager"
           />
         </li>
         <li class="shelf__item">
-          <img
+          <Bild
             src="/img/kwm/tassen2.webp"
             width="600"
             height="400"
             alt="Teebecher und Trinkbecher in Beige, Seladon und Dunkelbraun"
+            loading="eager"
           />
         </li>
         <li class="shelf__item">
-          <img
+          <Bild
             src="/img/kwm/toepfe.webp"
             width="600"
             height="400"
             alt="Deckeldose und Deckeltöpfe in Dunkelbraun, Grau, Orange und Seladon"
+            loading="eager"
           />
         </li>
       </ul>
@@ -75,11 +80,12 @@ import '../styles/signaturen/signaturen.css';
         <footer data-reveal="fade">Die wichtigsten Vorgaben für das Manufakturprogramm</footer>
       </blockquote>
       <figure class="mf-intro__aside" data-reveal="img">
-        <img
+        <Bild
           src="/img/kwm/teekanne.webp"
           width="1030"
           height="687"
           alt="Weiße Teekanne und dunkle Teeschale auf einem hellen, rechteckigen Plattenteller"
+          loading="eager"
         />
         <figcaption>Teekanne, Teeschale und Plattenteller</figcaption>
       </figure>
@@ -121,7 +127,7 @@ import '../styles/signaturen/signaturen.css';
         <div class="ware__sets">
           <figure class="set">
             <div class="set__frame" data-reveal="img">
-              <img
+              <Bild
                 src="/img/kwm/teller.webp"
                 width="600"
                 height="400"
@@ -159,7 +165,7 @@ import '../styles/signaturen/signaturen.css';
           </figure>
           <figure class="set">
             <div class="set__frame" data-reveal="img">
-              <img
+              <Bild
                 src="/img/kwm/neue_serie-1.webp"
                 width="600"
                 height="400"
@@ -213,7 +219,7 @@ import '../styles/signaturen/signaturen.css';
         <div class="ware__sets">
           <figure class="set">
             <div class="set__frame" data-reveal="img">
-              <img
+              <Bild
                 src="/img/kwm/viereckteller-2.webp"
                 width="600"
                 height="400"
@@ -258,7 +264,7 @@ import '../styles/signaturen/signaturen.css';
         <div class="ware__sets">
           <figure class="set">
             <div class="set__frame" data-reveal="img">
-              <img
+              <Bild
                 src="/img/kwm/schalen.webp"
                 width="600"
                 height="400"
@@ -291,7 +297,7 @@ import '../styles/signaturen/signaturen.css';
           </figure>
           <figure class="set">
             <div class="set__frame" data-reveal="img">
-              <img
+              <Bild
                 src="/img/kwm/schalen2.webp"
                 width="600"
                 height="400"
@@ -314,7 +320,7 @@ import '../styles/signaturen/signaturen.css';
           </figure>
           <figure class="set">
             <div class="set__frame" data-reveal="img">
-              <img
+              <Bild
                 src="/img/kwm/schalen3.webp"
                 width="600"
                 height="400"
@@ -352,7 +358,7 @@ import '../styles/signaturen/signaturen.css';
           </figure>
           <figure class="set">
             <div class="set__frame" data-reveal="img">
-              <img
+              <Bild
                 src="/img/kwm/schalen4.webp"
                 width="600"
                 height="400"
@@ -387,7 +393,7 @@ import '../styles/signaturen/signaturen.css';
     {/* Zäsur: Regal der Werkstatt */}
     <section class="zaesur on-flaeche grid" aria-label="Handarbeit in der Werkstatt">
       <figure class="zaesur__media" data-reveal="img">
-        <img
+        <Bild
           src="/img/kwm/regal.webp"
           width="954"
           height="905"
@@ -409,7 +415,7 @@ import '../styles/signaturen/signaturen.css';
         <div class="ware__sets">
           <figure class="set">
             <div class="set__frame" data-reveal="img">
-              <img
+              <Bild
                 src="/img/kwm/tassen.webp"
                 width="600"
                 height="400"
@@ -455,7 +461,7 @@ import '../styles/signaturen/signaturen.css';
           </figure>
           <figure class="set">
             <div class="set__frame" data-reveal="img">
-              <img
+              <Bild
                 src="/img/kwm/tassen2.webp"
                 width="600"
                 height="400"
@@ -491,7 +497,7 @@ import '../styles/signaturen/signaturen.css';
         <div class="ware__sets">
           <figure class="set">
             <div class="set__frame" data-reveal="img">
-              <img
+              <Bild
                 src="/img/kwm/toepfe.webp"
                 width="600"
                 height="400"
@@ -524,7 +530,7 @@ import '../styles/signaturen/signaturen.css';
           </figure>
           <figure class="set">
             <div class="set__frame" data-reveal="img">
-              <img
+              <Bild
                 src="/img/kwm/toepfe2.webp"
                 width="600"
                 height="400"
@@ -542,7 +548,7 @@ import '../styles/signaturen/signaturen.css';
           </figure>
           <figure class="set">
             <div class="set__frame" data-reveal="img">
-              <img
+              <Bild
                 src="/img/kwm/toepfe3.webp"
                 width="600"
                 height="400"
@@ -585,7 +591,7 @@ import '../styles/signaturen/signaturen.css';
         <div class="ware__sets">
           <figure class="set">
             <div class="set__frame" data-reveal="img">
-              <img
+              <Bild
                 src="/img/kwm/kannen.webp"
                 width="600"
                 height="400"
@@ -620,7 +626,7 @@ import '../styles/signaturen/signaturen.css';
           </figure>
           <figure class="set">
             <div class="set__frame" data-reveal="img">
-              <img
+              <Bild
                 src="/img/kwm/kannen2.webp"
                 width="600"
                 height="400"
@@ -648,7 +654,7 @@ import '../styles/signaturen/signaturen.css';
           </figure>
           <figure class="set">
             <div class="set__frame" data-reveal="img">
-              <img
+              <Bild
                 src="/img/kwm/kannen3.webp"
                 width="600"
                 height="400"
@@ -679,7 +685,7 @@ import '../styles/signaturen/signaturen.css';
         <div class="ware__sets">
           <figure class="set set--wide">
             <div class="set__frame" data-reveal="img">
-              <img
+              <Bild
                 src="/img/kwm/suppenschale.webp"
                 width="600"
                 height="400"
@@ -727,7 +733,7 @@ import '../styles/signaturen/signaturen.css';
           </figure>
           <figure class="set">
             <div class="set__frame" data-reveal="img">
-              <img
+              <Bild
                 src="/img/kwm/sieb.webp"
                 width="600"
                 height="400"
@@ -750,7 +756,7 @@ import '../styles/signaturen/signaturen.css';
           </figure>
           <figure class="set">
             <div class="set__frame" data-reveal="img">
-              <img
+              <Bild
                 src="/img/kwm/milch.webp"
                 width="600"
                 height="400"
@@ -773,7 +779,7 @@ import '../styles/signaturen/signaturen.css';
           </figure>
           <figure class="set">
             <div class="set__frame" data-reveal="img">
-              <img
+              <Bild
                 src="/img/kwm/streuer.webp"
                 width="600"
                 height="400"
@@ -821,7 +827,7 @@ import '../styles/signaturen/signaturen.css';
         <div class="ware__sets ware__sets--three">
           <figure class="set">
             <div class="set__frame" data-reveal="img">
-              <img
+              <Bild
                 src="/img/kwm/vasen.webp"
                 width="600"
                 height="400"
@@ -844,7 +850,7 @@ import '../styles/signaturen/signaturen.css';
           </figure>
           <figure class="set">
             <div class="set__frame" data-reveal="img">
-              <img
+              <Bild
                 src="/img/kwm/vasen2.webp"
                 width="600"
                 height="400"
@@ -862,7 +868,7 @@ import '../styles/signaturen/signaturen.css';
           </figure>
           <figure class="set">
             <div class="set__frame set__frame--contain" data-reveal="img">
-              <img
+              <Bild
                 src="/img/kwm/vasen3.webp"
                 width="296"
                 height="400"
@@ -880,7 +886,7 @@ import '../styles/signaturen/signaturen.css';
           </figure>
           <figure class="set">
             <div class="set__frame set__frame--contain" data-reveal="img">
-              <img
+              <Bild
                 src="/img/kwm/vasen4.webp"
                 width="300"
                 height="198"
@@ -898,7 +904,7 @@ import '../styles/signaturen/signaturen.css';
           </figure>
           <figure class="set">
             <div class="set__frame set__frame--contain" data-reveal="img">
-              <img
+              <Bild
                 src="/img/kwm/vasen5.webp"
                 width="300"
                 height="452"
@@ -924,7 +930,7 @@ import '../styles/signaturen/signaturen.css';
         <div class="ware__sets ware__sets--three">
           <figure class="set">
             <div class="set__frame" data-reveal="img">
-              <img
+              <Bild
                 src="/img/kwm/plattenteller.webp"
                 width="600"
                 height="400"
@@ -942,7 +948,7 @@ import '../styles/signaturen/signaturen.css';
           </figure>
           <figure class="set">
             <div class="set__frame" data-reveal="img">
-              <img
+              <Bild
                 src="/img/kwm/plattenteller2.webp"
                 width="600"
                 height="400"
@@ -960,7 +966,7 @@ import '../styles/signaturen/signaturen.css';
           </figure>
           <figure class="set">
             <div class="set__frame" data-reveal="img">
-              <img
+              <Bild
                 src="/img/kwm/plattenteller3.webp"
                 width="600"
                 height="400"
@@ -1001,7 +1007,7 @@ import '../styles/signaturen/signaturen.css';
         <div class="ware__sets ware__sets--three">
           <figure class="set">
             <div class="set__frame" data-reveal="img">
-              <img
+              <Bild
                 src="/img/kwm/pflanzgefaesse.webp"
                 width="600"
                 height="400"
@@ -1029,7 +1035,7 @@ import '../styles/signaturen/signaturen.css';
           </figure>
           <figure class="set">
             <div class="set__frame set__frame--contain" data-reveal="img">
-              <img
+              <Bild
                 src="/img/kwm/pflanzgefaesse2.webp"
                 width="300"
                 height="199"
@@ -1057,7 +1063,7 @@ import '../styles/signaturen/signaturen.css';
           </figure>
           <figure class="set">
             <div class="set__frame" data-reveal="img">
-              <img
+              <Bild
                 src="/img/kwm/pflanzgefaesse3.webp"
                 width="600"
                 height="400"
@@ -1083,7 +1089,7 @@ import '../styles/signaturen/signaturen.css';
         <div class="ware__sets ware__sets--three">
           <figure class="set">
             <div class="set__frame" data-reveal="img">
-              <img
+              <Bild
                 src="/img/kwm/schale.webp"
                 width="600"
                 height="400"
@@ -1101,7 +1107,7 @@ import '../styles/signaturen/signaturen.css';
           </figure>
           <figure class="set">
             <div class="set__frame" data-reveal="img">
-              <img
+              <Bild
                 src="/img/kwm/schale2.webp"
                 width="600"
                 height="400"
@@ -1169,7 +1175,7 @@ import '../styles/signaturen/signaturen.css';
                 data-color="#e1dccc"
                 data-img="/img/kwm/weiss.webp"
               >
-                <img src="/img/kwm/weiss.webp" width="100" height="100" alt="" />
+                <Bild src="/img/kwm/weiss.webp" width="100" height="100" alt="" loading="eager" />
                 <span>weiß</span>
               </button>
             </li>
@@ -1183,7 +1189,7 @@ import '../styles/signaturen/signaturen.css';
                 data-color="#cfe0d5"
                 data-img="/img/kwm/hellgruen_matt.webp"
               >
-                <img src="/img/kwm/hellgruen_matt.webp" width="100" height="100" alt="" />
+                <Bild src="/img/kwm/hellgruen_matt.webp" width="100" height="100" alt="" loading="eager" />
                 <span>hellgrün matt</span>
               </button>
             </li>
@@ -1198,7 +1204,7 @@ import '../styles/signaturen/signaturen.css';
                 data-img="/img/kwm/hellgruen_glaenzend.webp"
                 data-gloss
               >
-                <img src="/img/kwm/hellgruen_glaenzend.webp" width="100" height="100" alt="" />
+                <Bild src="/img/kwm/hellgruen_glaenzend.webp" width="100" height="100" alt="" loading="eager" />
                 <span>hellgrün glänzend</span>
               </button>
             </li>
@@ -1214,7 +1220,7 @@ import '../styles/signaturen/signaturen.css';
                 data-gloss
                 data-dark
               >
-                <img src="/img/kwm/dunkelgruen_glaenzend.webp" width="100" height="100" alt="" />
+                <Bild src="/img/kwm/dunkelgruen_glaenzend.webp" width="100" height="100" alt="" loading="eager" />
                 <span>dunkelgrün glänzend</span>
               </button>
             </li>
@@ -1229,7 +1235,7 @@ import '../styles/signaturen/signaturen.css';
                 data-img="/img/kwm/dunkelgruen_matt.webp"
                 data-dark
               >
-                <img src="/img/kwm/dunkelgruen_matt.webp" width="100" height="100" alt="" />
+                <Bild src="/img/kwm/dunkelgruen_matt.webp" width="100" height="100" alt="" loading="eager" />
                 <span>dunkelgrün matt</span>
               </button>
             </li>
@@ -1244,7 +1250,7 @@ import '../styles/signaturen/signaturen.css';
                 data-img="/img/kwm/rostbraun.webp"
                 data-dark
               >
-                <img src="/img/kwm/rostbraun.webp" width="100" height="100" alt="" />
+                <Bild src="/img/kwm/rostbraun.webp" width="100" height="100" alt="" loading="eager" />
                 <span>rostbraun</span>
               </button>
             </li>
@@ -1262,7 +1268,7 @@ import '../styles/signaturen/signaturen.css';
                 data-img="/img/kwm/hellblau.webp"
                 data-dark
               >
-                <img src="/img/kwm/hellblau.webp" width="100" height="100" alt="" />
+                <Bild src="/img/kwm/hellblau.webp" width="100" height="100" alt="" loading="eager" />
                 <span>hellblau</span>
               </button>
             </li>
@@ -1276,7 +1282,7 @@ import '../styles/signaturen/signaturen.css';
                 data-color="#c3bcaf"
                 data-img="/img/kwm/craquele_weiss.webp"
               >
-                <img src="/img/kwm/craquele_weiss.webp" width="100" height="100" alt="" />
+                <Bild src="/img/kwm/craquele_weiss.webp" width="100" height="100" alt="" loading="eager" />
                 <span>weiß</span>
               </button>
             </li>
@@ -1291,7 +1297,7 @@ import '../styles/signaturen/signaturen.css';
                 data-img="/img/kwm/craquele_hellgruen.webp"
                 data-dark
               >
-                <img src="/img/kwm/craquele_hellgruen.webp" width="100" height="100" alt="" />
+                <Bild src="/img/kwm/craquele_hellgruen.webp" width="100" height="100" alt="" loading="eager" />
                 <span>hellgrün</span>
               </button>
             </li>
@@ -1306,7 +1312,7 @@ import '../styles/signaturen/signaturen.css';
                 data-img="/img/kwm/craquele_dunkelgruen.webp"
                 data-dark
               >
-                <img src="/img/kwm/craquele_dunkelgruen.webp" width="100" height="100" alt="" />
+                <Bild src="/img/kwm/craquele_dunkelgruen.webp" width="100" height="100" alt="" loading="eager" />
                 <span>dunkelgrün</span>
               </button>
             </li>

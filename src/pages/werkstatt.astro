@@ -1,4 +1,5 @@
 ---
+import Bild from '../components/Bild.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import InquiryBand from '../components/InquiryBand.astro';
 import '../styles/basis.css';
@@ -23,12 +24,13 @@ import '../styles/signaturen/signaturen.css';
         einer Form.
       </p>
       <figure class="page-hero__media page-hero__media--strip" data-reveal="img">
-        <img
+        <Bild
           src="/img/kwm/werkstatt-panorama.webp"
           width="2560"
           height="398"
           alt="Young-Jae Lee an der Arbeit vor langen Regalen mit gedrehten Gefäßen"
           fetchpriority="high"
+          loading="eager"
         />
         <figcaption>Young-Jae Lee in der Werkstatt</figcaption>
       </figure>
@@ -55,7 +57,7 @@ import '../styles/signaturen/signaturen.css';
       </div>
       <div class="method grid">
         <figure class="method__media" data-reveal="img">
-          <img
+          <Bild
             src="/img/kwm/regal.webp"
             width="954"
             height="905"
@@ -125,7 +127,7 @@ import '../styles/signaturen/signaturen.css';
       </div>
       <div class="fire-colors grid">
         <figure class="fire-colors__media" data-reveal="img">
-          <img
+          <Bild
             src="/img/kwm/seladon-schalen.webp"
             width="900"
             height="600"
@@ -313,7 +315,7 @@ import '../styles/signaturen/signaturen.css';
         </p>
       </div>
       <figure class="team-strip" data-reveal="img">
-        <img
+        <Bild
           src="/img/kwm/leiste-team.webp"
           width="900"
           height="140"
