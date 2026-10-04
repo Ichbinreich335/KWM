@@ -22,6 +22,7 @@ Stand: 04.10.2026 (abends)
 
 | Frage | Optionen | Meine Empfehlung |
 |---|---|---|
+| Leichtes Überschwingen der Punkte in Lebensweg und Chronik (`--ease-pop`) | Laut Kommentar im Code bewusst gewählt („Punkt füllt sich mit leichtem Überziehen“); ein Prüfwerkzeug meldet so etwas pauschal als „veraltet“. (a) so lassen, (b) ruhig auslaufen lassen ohne Überschwingen | (a), wenn es dir gefällt. Ansehen: Startseite, Abschnitt Lebensweg beim Scrollen |
 | Vorschauen der alten Branches (`design-v3`, `claude/softr-lager-app`, `claude/baserow-nachbau`, `design-v2` …) | Sie scheitern seit 04.10. an einer neuen Cloudflare-Pflichtangabe (`previews`-Block). (a) Angabe dort ergänzen, (b) ignorieren, (c) Branches später aufräumen | (b), solange sie nicht gebraucht werden; nach dem Merge erben neue Branches die Angabe |
 | Google Tag Manager vorziehen (Phase 4)? | Braucht GTM-Container-ID und Wahl des Einwilligungsbanners | Nach Phase B; Conversion „Anfrage gesendet“ ist erst mit dem Formular-Worker (Phase 3) sinnvoll |
 | Vorschau-URLs schützen (E6)? | Cloudflare Access an/aus | Für den Prototyp nicht nötig (Seiten sind `noindex`) |
