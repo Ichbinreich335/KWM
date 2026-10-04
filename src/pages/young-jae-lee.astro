@@ -1,6 +1,9 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import InquiryBand from '../components/InquiryBand.astro';
+import '../styles/basis.css';
+import '../styles/seiten/page-young-jae-lee.css';
+import '../styles/signaturen/signaturen.css';
 ---
 
 <BaseLayout
@@ -9,9 +12,7 @@ import InquiryBand from '../components/InquiryBand.astro';
   bodyClass="page-yjl"
   nav="young-jae-lee"
 >
-  <Fragment slot="head">
-    <link rel="stylesheet" href="/css/page-young-jae-lee.css" />
-  </Fragment>
+  <Fragment slot="head" />
   <main id="inhalt">
     <section class="page-hero page-hero--name yjl-hero grid" aria-labelledby="page-title">
       <h1 class="page-hero__title" id="page-title" data-reveal="words">

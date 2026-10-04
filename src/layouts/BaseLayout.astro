@@ -23,11 +23,7 @@ const { title, description, bodyClass, nav } = Astro.props;
     <link rel="preload" href="/fonts/libre-caslon-display-normal-latin.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="/fonts/jost-normal-latin.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="stylesheet" href="/fonts/fonts.css" />
-    <link rel="stylesheet" href="/styles.css" />
-    <link rel="stylesheet" href="/css/pages.css" />
-    <link rel="stylesheet" href="/css/expander.css" />
     <slot name="head" />
-    <link rel="stylesheet" href="/css/signaturen.css" />
     {/* Muss vor dem ersten Rendern laufen (Logo-Zeichnung einmal pro Sitzung), daher inline */}
     <script is:inline>
       document.documentElement.classList.add('js');

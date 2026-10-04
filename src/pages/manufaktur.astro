@@ -1,6 +1,9 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import InquiryBand from '../components/InquiryBand.astro';
+import '../styles/basis.css';
+import '../styles/seiten/page-manufaktur.css';
+import '../styles/signaturen/signaturen.css';
 ---
 
 <BaseLayout
@@ -9,9 +12,7 @@ import InquiryBand from '../components/InquiryBand.astro';
   bodyClass="page-manufaktur"
   nav="manufaktur"
 >
-  <Fragment slot="head">
-    <link rel="stylesheet" href="/css/page-manufaktur.css" />
-  </Fragment>
+  <Fragment slot="head" />
   <main id="inhalt">
     <section class="page-hero page-hero--flaeche mf-hero grid" aria-labelledby="mf-title">
       <h1 class="page-hero__title" id="mf-title" data-reveal="words">

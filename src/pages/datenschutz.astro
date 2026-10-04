@@ -1,5 +1,8 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import '../styles/basis.css';
+import '../styles/seiten/page-text.css';
+import '../styles/signaturen/signaturen.css';
 ---
 
 <BaseLayout
@@ -8,7 +11,6 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   bodyClass="page-text"
 >
   <Fragment slot="head">
-    <link rel="stylesheet" href="/css/page-text.css" />
     <meta name="robots" content="noindex" />
   </Fragment>
   <main id="inhalt">

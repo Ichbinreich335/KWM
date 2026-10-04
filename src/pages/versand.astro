@@ -1,6 +1,9 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import InquiryBand from '../components/InquiryBand.astro';
+import '../styles/basis.css';
+import '../styles/seiten/page-text.css';
+import '../styles/signaturen/signaturen.css';
 ---
 
 <BaseLayout
@@ -8,9 +11,7 @@ import InquiryBand from '../components/InquiryBand.astro';
   description="Wie sich Verpackungs- und Transportkosten bei der Keramischen Werkstatt Margaretenhöhe berechnen, auch bei Lieferungen ins Ausland."
   bodyClass="page-text"
 >
-  <Fragment slot="head">
-    <link rel="stylesheet" href="/css/page-text.css" />
-  </Fragment>
+  <Fragment slot="head" />
   <main id="inhalt">
     <section class="page-hero page-hero--name page-hero--text grid" aria-labelledby="page-title">
       <h1 class="page-hero__title" id="page-title" data-reveal="words">

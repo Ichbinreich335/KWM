@@ -1,6 +1,9 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import InquiryBand from '../components/InquiryBand.astro';
+import '../styles/basis.css';
+import '../styles/seiten/page-meisterstuecke.css';
+import '../styles/signaturen/signaturen.css';
 ---
 
 <BaseLayout
@@ -9,9 +12,7 @@ import InquiryBand from '../components/InquiryBand.astro';
   bodyClass="page-meisterstuecke"
   nav="meisterstuecke"
 >
-  <Fragment slot="head">
-    <link rel="stylesheet" href="/css/page-meisterstuecke.css" />
-  </Fragment>
+  <Fragment slot="head" />
   <main id="inhalt">
     <section class="page-hero page-hero--meta grid" aria-labelledby="ms-title">
       <h1 class="page-hero__title" id="ms-title" data-reveal="words">

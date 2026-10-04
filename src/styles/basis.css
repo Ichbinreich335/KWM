@@ -1,0 +1,4 @@
+/* Grundstile in fester Reihenfolge: global, Seitenmuster, Aufklapper */
+@import './global.css';
+@import './pages.css';
+@import './expander.css';
