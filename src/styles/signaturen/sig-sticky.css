@@ -1,5 +1,5 @@
 /* Signatur: sticky – Text bleibt beim Scrollen oben im Foto stehen, bis das Bild durch ist (Porträt und Feuer).
-   Abschnitt ist höher als der Bildschirm, die Textebene klebt oben (100svh) und zieht am Ende mit dem Abschnitt weiter.
+   Abschnitt ist höher als der Bildschirm, die Textebene ist nur so hoch wie der Text, klebt oben und zieht am Ende mit dem Abschnitt weiter.
    Das Foto läuft normal mit; src/scripts/sig-sticky.ts verschiebt es nur minimal gegenläufig (Parallax, ≤ 5 %). */
 .sticky-bild {
   --sticky-h: 150svh;
@@ -160,7 +160,7 @@
   }
   .sticky-bild--portrait .sticky-bild__media {
     position: relative;
-    aspect-ratio: 4 / 5;
+    aspect-ratio: 4 / 5; /* Porträtformat nach DESIGN.md §3 */
   }
   .sticky-bild--portrait .sticky-bild__media::after {
     content: none;
@@ -169,7 +169,7 @@
     inset-block: 0;
     height: 100%;
     transform: none;
-    object-position: 8% 50%;
+    object-position: 8% 50%; /* Gesicht liegt im 4:5-Ausschnitt mittig */
   }
   .sticky-bild--portrait .sticky-bild__pane {
     position: static;
