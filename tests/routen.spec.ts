@@ -60,3 +60,18 @@ test('Geteilte Prototyp-Links unter /v3/ führen auf die neue Seite, mit Paramet
   await page.goto('/v3/index.html');
   expect(new URL(page.url()).pathname).toBe('/');
 });
+
+test('Stylesheet-Reihenfolge: Schriften, Grundstile, Seiten-CSS, Signaturen, nichts inline', async ({ page }) => {
+  for (const seite of seiten) {
+    await page.goto(seite.astro);
+    const pfade = await page
+      .locator('link[rel=stylesheet]')
+      .evaluateAll((links) => links.map((l) => new URL((l as HTMLLinkElement).href).pathname));
+    const wo = `${seite.name}: ${pfade.join(', ')}`;
+    expect(pfade[0], wo).toBe('/fonts/fonts.css');
+    expect(pfade[1], wo).toMatch(/^\/_astro\/basis\..+\.css$/);
+    expect(pfade.at(-1), wo).toMatch(/^\/_astro\/signaturen\..+\.css$/);
+    expect(pfade.length, wo).toBeLessThanOrEqual(4);
+    expect(await page.locator('head style').count(), `${seite.name}: <style> im Head`).toBe(0);
+  }
+});
