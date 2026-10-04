@@ -1,8 +1,8 @@
 /* Styles der generativen Elemente (Signaturen) */
-@import url("sig-logo.css");
-@import url("sig-farbskala.css");
-@import url("sig-orte.css");
-@import url("sig-feuer.css");
-@import url("sig-sticky.css");
-@import url("sig-aktuell.css");
-@import url("sig-anfrage.css");
+@import './sig-logo.css';
+@import './sig-farbskala.css';
+@import './sig-orte.css';
+@import './sig-feuer.css';
+@import './sig-sticky.css';
+@import './sig-aktuell.css';
+@import './sig-anfrage.css';
