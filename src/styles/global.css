@@ -840,18 +840,6 @@ body::after {
 }
 .artist__quote {
   grid-column: 1 / 9;
-  margin: 0;
-}
-.artist__quote p {
-  font-family: var(--f-text);
-  font-size: var(--t-h3);
-  line-height: var(--t-h3-lh);
-  text-wrap: pretty;
-}
-.artist__quote footer {
-  font-size: var(--t-meta);
-  line-height: var(--t-meta-lh);
-  color: var(--ink-2);
 }
 .artist__heritage {
   grid-column: 10 / 13;

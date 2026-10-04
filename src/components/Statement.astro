@@ -1,7 +1,9 @@
 ---
 interface Props {
-  /** `gross`: Display-Zitat als Zäsur; `aussage`: Aussage in Textgröße Statement; `regel`: wie `aussage`, mit engerem Satz und Abstand */
-  typ: 'gross' | 'aussage' | 'regel';
+  /** `gross`: Display-Zitat als Zäsur; `aussage`: Aussage in Textgröße Statement; `regel`: wie `aussage`, mit engerem Satz und Abstand; `zitat`: Text-Schnitt in Titelgröße, ruhig */
+  typ: 'gross' | 'aussage' | 'regel' | 'zitat';
+  /** Einblend-Animation des Satzes */
+  einblendung?: 'words' | 'fade';
   /** Urheber oder Quelle unter dem Satz */
   quelle?: string;
   /** Id des Satzes, wenn ein Abschnitt per `aria-labelledby` darauf zeigt */
@@ -10,11 +12,11 @@ interface Props {
   class?: string | undefined;
 }
 
-const { typ, quelle, textId, class: klasse } = Astro.props;
+const { typ, einblendung = 'words', quelle, textId, class: klasse } = Astro.props;
 ---
 
 <blockquote class:list={['statement', klasse]}>
-  <p class:list={['statement__text', `statement--${typ}`]} id={textId} data-reveal="words">
+  <p class:list={['statement__text', `statement--${typ}`]} id={textId} data-reveal={einblendung}>
     <slot />
   </p>
   {quelle && <footer data-reveal="fade">{quelle}</footer>}
@@ -55,5 +57,14 @@ const { typ, quelle, textId, class: klasse } = Astro.props;
   }
   .statement--regel:has(+ footer) {
     margin-bottom: 18px;
+  }
+  .statement--zitat {
+    font-family: var(--f-text);
+    font-size: var(--t-h3);
+    line-height: var(--t-h3-lh);
+    text-wrap: pretty;
+  }
+  .statement--zitat:has(+ footer) {
+    margin-bottom: 1em;
   }
 </style>
