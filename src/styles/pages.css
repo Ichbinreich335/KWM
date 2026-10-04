@@ -1,4 +1,4 @@
-/* Bausteine der Unterseiten. Tokens, Raster, Typografie und Motion kommen aus styles.css. */
+/* Bausteine der Unterseiten. Tokens, Raster, Typografie und Motion kommen aus global.css. */
 
 /* Seitenkopf: vier Typen (DESIGN.md, Seitenkopf). Gemeinsam: Raster, Abstand oben, Titel, Lede, optionales Bild. */
 .page-hero {

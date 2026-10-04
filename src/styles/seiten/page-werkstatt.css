@@ -59,7 +59,7 @@
   line-height: var(--t-body-lh);
 }
 
-/* Chronik: Komponente .chronicle aus styles.css, hier nur Abstand zum Kapitel davor und der stille Schlusseintrag */
+/* Chronik: Komponente .chronicle aus global.css, hier nur Abstand zum Kapitel davor und der stille Schlusseintrag */
 .page-werkstatt .chronicle {
   margin-top: var(--section);
 }

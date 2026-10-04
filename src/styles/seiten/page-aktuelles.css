@@ -94,7 +94,7 @@
   padding-bottom: var(--section);
 }
 
-/* Jahresarchiv: Aufklapper aus css/expander.css (--row), hier nur der Inhalt */
+/* Jahresarchiv: Aufklapper aus expander.css (--row), hier nur der Inhalt */
 .years {
   padding-inline: var(--m);
 }

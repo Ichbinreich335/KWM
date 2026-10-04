@@ -230,7 +230,7 @@
   text-wrap: pretty;
 }
 
-/* Alle Ausstellungen seit 1980: Aufklapper aus css/expander.css (--lang), hier die Liste */
+/* Alle Ausstellungen seit 1980: Aufklapper aus expander.css (--lang), hier die Liste */
 #alle-ausstellungen {
   grid-column: 1 / -1;
   margin-top: var(--head-gap);

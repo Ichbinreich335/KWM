@@ -1,4 +1,4 @@
-/* Expander: Auf- und Zuklappen für alle [data-expander] (siehe css/expander.css).
+/* Expander: Auf- und Zuklappen für alle [data-expander] (siehe src/styles/expander.css).
    Lang: beim Schließen springt die Ansicht ruhig zurück an den Knopf. */
 const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
 const expanders = [...document.querySelectorAll('[data-expander]')];
