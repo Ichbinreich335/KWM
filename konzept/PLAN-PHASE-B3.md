@@ -82,11 +82,11 @@ Admin: Am Desktop ist die Startseite „wie eine Reise“, die Länge bleibt. Am
 | Aktuell | Spotlight bleibt wie heute; die drei weiteren Karten als Wischreihe (Karte ~80 % Breite, Bild 4:3, Hinweis „Wischen“ wie Chronik) | 1.200 |
 | Young-Jae Lee | Porträt-Zitat eine Stufe kleiner (`--t-quote` statt `--t-lede`); Lebensweg als Wischreihe statt fünf Stationen untereinander | 600 |
 | Meisterstücke | Satz „Alle Meisterstücke …“ am Handy ausblenden (steht auf der Unterseite); Raster zeigt 4 statt 6 Werke, Werkangaben nur Titel und Jahr | 700 |
-| Orte | Köln und München groß, die übrigen Städte als zweispaltige flache Kacheln (halbe Höhe); Öffnen-Verhalten unverändert | 900 |
+| Orte | Behutsam (Admin: Aufklappen gefällt, nicht zu stark reduzieren): alle Städte bleiben als Bildkacheln, Köln und München groß, die übrigen zweispaltig mit etwa zwei Dritteln der heutigen Höhe; Aufklappen unverändert | 500 |
 | 99 Schalen | Bühne ohne graue Fläche (auch Desktop, Admin: „Grau seltener“ – als einzige Desktop-Änderung, Optik 1440 gezielt aktualisieren); Wagner-Zitat am Handy ausblenden (die H2 wiederholt es) | 300 |
 | Manufaktur | Farbskala bleibt; zweites Foto (Krüge) am Handy ausblenden; Faktenliste auf Masse, Glasurbrand, Gebrauch | 700 |
 | übrige | große Zitate und Aussagen am Handy eine Stufe kleiner, falls nach den obigen Punkten noch zu wuchtig (am Screen entscheiden, Tokens nur im Medienblock) | 300 |
 
-**Prüfen:** Ganzseiten-Screens 390 und 768 vorher/nachher, Höhe je Abschnitt vorher/nachher (Skript `.superpowers/hoehen.mjs <url>`), Tastatur und Screenreader-Reihenfolge der Wischreihen (Fokus sichtbar, kein Inhalt nur per Wischen erreichbar ohne Hinweis), axe grün, Konsole sauber.
+**Prüfen (immer visuell, Admin):** Ganzseiten-Screens 390 und 768 vorher/nachher, Höhe je Abschnitt vorher/nachher (Skript `.superpowers/hoehen.mjs <url>`), Tastatur und Screenreader-Reihenfolge der Wischreihen (Fokus sichtbar, kein Inhalt nur per Wischen erreichbar ohne Hinweis), axe grün, Konsole sauber.
 
 **Vergleichsseite:** Der Controller baut eine Vergleichsseite (Artifact) mit beiden Vorschau-Links, Ganzseiten-Screens nebeneinander und den Höhen je Abschnitt.
