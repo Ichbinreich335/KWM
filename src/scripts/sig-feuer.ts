@@ -378,7 +378,7 @@ export default function init(el: Element) {
 
   const note = document.createElement('p');
   note.className = 'feuer-farben__note';
-  note.textContent = 'Holzofen · 9–10 Stunden · bis 1300 °C';
+  note.textContent = 'Holzofen · 9–10 Stunden · bis 1300\u202F°C';
 
   el.replaceChildren(...intro, stage, controls, result, note);
 
