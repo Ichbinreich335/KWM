@@ -1057,15 +1057,6 @@ body::after {
 .med__quote {
   grid-column: 1 / 8;
   grid-row: 1;
-  margin: 0;
-}
-.med__quote p {
-  font-family: var(--f-display);
-  font-size: var(--t-statement);
-  line-height: var(--t-statement-lh);
-  letter-spacing: -0.02em;
-  text-wrap: balance;
-  margin: 0;
 }
 .med__body {
   grid-column: 1 / 7;

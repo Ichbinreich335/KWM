@@ -1,5 +1,6 @@
 ---
 import '../styles/basis.css';
+import Statement from '../components/Statement.astro';
 import ChapterHead from '../components/ChapterHead.astro';
 import Bild from '../components/Bild.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
@@ -114,10 +115,13 @@ import '../styles/signaturen/signaturen.css';
             </a>
           </figcaption>
         </figure>
-        <blockquote class="catalog__quote">
-          <p data-reveal="words">Vom Volumen bezieht die Schale ihre Kraft, ihre Präsenz.</p>
-          <footer data-reveal="fade">Gisela Jahn, »Gefäße drehen, Gefäße betrachten, Gefäße benutzen«</footer>
-        </blockquote>
+        <Statement
+          typ="regel"
+          class="catalog__quote"
+          quelle="Gisela Jahn, »Gefäße drehen, Gefäße betrachten, Gefäße benutzen«"
+        >
+          Vom Volumen bezieht die Schale ihre Kraft, ihre Präsenz.
+        </Statement>
         <figure class="catalog__item catalog__item--half">
           <div class="catalog__frame" data-reveal="img">
             <Bild
@@ -438,12 +442,9 @@ import '../styles/signaturen/signaturen.css';
             </a>
           </figcaption>
         </figure>
-        <blockquote class="catalog__quote">
-          <p data-reveal="words">
-            Bauchige Becher, die ihr Inneres verbergen und es im kecken Schwung ihrer Lippe doch noch anbieten.
-          </p>
-          <footer data-reveal="fade">Thomas Wagner, »Die aufgehobene Zeit?«</footer>
-        </blockquote>
+        <Statement typ="regel" class="catalog__quote" quelle="Thomas Wagner, »Die aufgehobene Zeit?«">
+          Bauchige Becher, die ihr Inneres verbergen und es im kecken Schwung ihrer Lippe doch noch anbieten.
+        </Statement>
         <figure class="catalog__item catalog__item--half">
           <div class="catalog__frame" data-reveal="img">
             <Bild
@@ -586,13 +587,14 @@ import '../styles/signaturen/signaturen.css';
           </figcaption>
         </figure>
 
-        <blockquote class="catalog__quote">
-          <p data-reveal="words">
-            Das sinnliche Gespür […] reifte in der frühen Essener Zeit mit der Wiederannäherung an die koreanische
-            Keramik.
-          </p>
-          <footer data-reveal="fade">Gisela Jahn, »Gefäße drehen, Gefäße betrachten, Gefäße benutzen«</footer>
-        </blockquote>
+        <Statement
+          typ="regel"
+          class="catalog__quote"
+          quelle="Gisela Jahn, »Gefäße drehen, Gefäße betrachten, Gefäße benutzen«"
+        >
+          Das sinnliche Gespür […] reifte in der frühen Essener Zeit mit der Wiederannäherung an die koreanische
+          Keramik.
+        </Statement>
         <figure class="catalog__item catalog__item--half">
           <div class="catalog__frame" data-reveal="img">
             <Bild

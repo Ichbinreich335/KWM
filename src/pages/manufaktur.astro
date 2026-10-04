@@ -1,5 +1,6 @@
 ---
 import '../styles/basis.css';
+import Statement from '../components/Statement.astro';
 import ChapterHead from '../components/ChapterHead.astro';
 import { getImage } from 'astro:assets';
 import Bild from '../components/Bild.astro';
@@ -86,13 +87,10 @@ const glasurBild = async (src: string) =>
     </PageHero>
 
     <section class="mf-intro on-anker grid" aria-label="Über das Manufakturprogramm">
-      <blockquote class="mf-intro__rule">
-        <p data-reveal="words">
-          Jedes Stück muss gut zu drehen sein und auch zu benutzen. Alle Teile eines Geschirrs, gleich welcher Farbe,
-          sollten miteinander kombinierbar sein.
-        </p>
-        <footer data-reveal="fade">Die wichtigsten Vorgaben für das Manufakturprogramm</footer>
-      </blockquote>
+      <Statement typ="regel" class="mf-intro__rule" quelle="Die wichtigsten Vorgaben für das Manufakturprogramm">
+        Jedes Stück muss gut zu drehen sein und auch zu benutzen. Alle Teile eines Geschirrs, gleich welcher Farbe,
+        sollten miteinander kombinierbar sein.
+      </Statement>
       <figure class="mf-intro__aside" data-reveal="img">
         <Bild
           src="/img/kwm/teekanne.webp"

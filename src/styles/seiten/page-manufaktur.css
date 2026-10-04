@@ -47,20 +47,6 @@
 }
 .mf-intro__rule {
   grid-column: 1 / 8;
-  margin: 0;
-}
-.mf-intro__rule p {
-  font-family: var(--f-display);
-  font-size: var(--t-statement);
-  line-height: var(--t-statement-lh);
-  letter-spacing: -0.015em;
-  text-wrap: balance;
-  margin: 0 0 18px;
-}
-.mf-intro__rule footer {
-  font-size: var(--t-meta);
-  line-height: var(--t-meta-lh);
-  color: var(--ink-2);
 }
 .mf-intro__aside {
   grid-column: 1 / 6;

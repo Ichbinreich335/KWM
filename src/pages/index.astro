@@ -1,5 +1,6 @@
 ---
 import '../styles/basis.css';
+import Statement from '../components/Statement.astro';
 import SectionHead from '../components/SectionHead.astro';
 import Bild from '../components/Bild.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
@@ -974,11 +975,9 @@ import '../styles/signaturen/signaturen.css';
     {/* Meditation: Haltung und Arbeitsweise */}
     <section class="med" id="haltung-meditation" aria-labelledby="med-title">
       <div class="med__grid grid">
-        <blockquote class="med__quote">
-          <p id="med-title" data-reveal="words">
-            Die Herstellung jedes neuen Gefäßes gleicht einer Meditation.
-          </p>
-        </blockquote>
+        <Statement typ="aussage" class="med__quote" textId="med-title">
+          Die Herstellung jedes neuen Gefäßes gleicht einer Meditation.
+        </Statement>
         <div class="med__body">
           <p data-reveal="fade">
             Für Young-Jae Lee ist – in Anlehnung an die koreanische Tradition – nicht die ständige Neuerfindung von

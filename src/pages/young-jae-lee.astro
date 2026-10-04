@@ -1,5 +1,6 @@
 ---
 import '../styles/basis.css';
+import Statement from '../components/Statement.astro';
 import ChapterHead from '../components/ChapterHead.astro';
 import Bild from '../components/Bild.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
@@ -49,13 +50,10 @@ import '../styles/signaturen/signaturen.css';
 
     {/* Haltung */}
     <section class="stance grid" id="haltung" aria-labelledby="stance-title">
-      <blockquote class="stance__quote">
-        <p data-reveal="words">
-          „Die minimale Veränderung ist Young-Jae Lees unbegrenzter Freiraum – in der Form wie in der Farbigkeit der
-          Glasur und der Bemalung.“
-        </p>
-        <footer data-reveal="fade">Gisela Jahn</footer>
-      </blockquote>
+      <Statement typ="aussage" class="stance__quote" quelle="Gisela Jahn">
+        „Die minimale Veränderung ist Young-Jae Lees unbegrenzter Freiraum – in der Form wie in der Farbigkeit der
+        Glasur und der Bemalung.“
+      </Statement>
       <figure class="stance__media" data-reveal="img">
         <Bild
           src="/img/kwm/teeschale.webp"
@@ -937,10 +935,9 @@ import '../styles/signaturen/signaturen.css';
 
     {/* Zitat als Zäsur */}
     <section class="pullquote on-flaeche grid" aria-label="Zitat von Thomas Wagner">
-      <blockquote class="pullquote__quote">
-        <p data-reveal="words">„Immer sind es Schalen, und doch ist keine wie die andere.“</p>
-        <footer data-reveal="fade">Thomas Wagner, »Die aufgehobene Zeit«</footer>
-      </blockquote>
+      <Statement typ="gross" class="pullquote__quote" quelle="Thomas Wagner, »Die aufgehobene Zeit«">
+        „Immer sind es Schalen, und doch ist keine wie die andere.“
+      </Statement>
     </section>
 
     {/* Sammlungen */}
