@@ -30,22 +30,20 @@ const glasurBild = async (src: string) => (await getImage({ src: bildMetadaten(s
       <ul class="shelf" data-reveal="img">
         <li class="shelf__item">
           <Bild
+            priority
             src="/img/kwm/teller.webp"
             width="600"
             height="400"
-            fetchpriority="high"
             alt="Teller in Dunkelgrün, Hellgrün und Rostbraun, von oben gesehen"
-            loading="eager"
           />
         </li>
         <li class="shelf__item">
           <Bild
+            priority
             src="/img/kwm/kannen.webp"
             width="600"
             height="400"
-            fetchpriority="high"
             alt="Krüge in Seladon und Beige und ein dunkelgrüner Becher"
-            loading="eager"
           />
         </li>
         <li class="shelf__item">

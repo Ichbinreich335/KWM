@@ -3,7 +3,7 @@ import type { HTMLAttributes } from 'astro/types';
 import { Image } from 'astro:assets';
 import { bildMetadaten } from '../data/bilder';
 
-interface Props extends Omit<HTMLAttributes<'img'>, 'src' | 'srcset' | 'alt' | 'width' | 'height'> {
+type Props = Omit<HTMLAttributes<'img'>, 'src' | 'srcset' | 'alt' | 'width' | 'height' | 'sizes'> & {
   /** Pfad wie in den Seiten, z. B. `/img/kwm/kannen.webp` (liegt unter `src/assets/img/`). */
   src: string;
   alt: string;
@@ -11,9 +11,17 @@ interface Props extends Omit<HTMLAttributes<'img'>, 'src' | 'srcset' | 'alt' | '
   width: number | `${number}`;
   height: number | `${number}`;
   layout?: 'constrained' | 'full-width';
-  /** Breiten der srcset-Kandidaten, wenn die Quelle größer ist als die angezeigte Eigengröße. */
-  widths?: number[];
-}
+  /** Bild im ersten Bildschirm: setzt loading="eager", decoding="sync" und fetchpriority="high". */
+  priority?: boolean;
+} & (
+    | {
+        /** Breiten der srcset-Kandidaten, wenn die Quelle größer ist als die angezeigte Eigengröße. */
+        widths: number[];
+        /** Pflicht, sobald `widths` gesetzt ist (Doku). */
+        sizes: string;
+      }
+    | { widths?: never; sizes?: string }
+  );
 
 const { src, layout = 'constrained', ...rest } = Astro.props;
 
