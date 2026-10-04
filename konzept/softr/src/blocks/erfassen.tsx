@@ -16,11 +16,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import { Check, Loader2, Minus, Plus } from "lucide-react";
+import { Check, ChevronDown, Loader2, Minus, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { AUSSER_HAUS_ORT, EDITION_PROGRAMM, MANUFAKTUR_PROGRAMM, PAGE_SIZE, ROHLING, isAusserHaus } from "../shared/konstanten";
 import { type Opt, type RawItem, activeOptions, asOpts, compareNr, freshItems, link, modellLabel, parseNumber, str, useAllPages } from "../shared/daten";
-import { AddNew, ChoiceChips, ErrorText, FIELD_CLASS, FieldLabel, GroupedSelect, Hint, OptionSelect, PANEL_CLASS, PageHeader, PhotoPicker, STICKY_BOTTOM, SearchPick, TEXTAREA_CLASS, Tabs } from "../shared/ui";
+import { AddNew, ChoiceChips, ErrorText, FIELD_CLASS, FieldLabel, GroupedSelect, Hint, OptionSelect, PANEL_CLASS, PageHeader, PhotoPicker, STICKY_BOTTOM, SearchPick, TEXTAREA_CLASS, Tabs, LINE, useIsMobile } from "../shared/ui";
 
 const ds = datasource.define({ unikate: "unikate", edition: "edition", glasuren: "glasuren", kuenstler: "kuenstler", lagerorte: "lagerorte", partner: "partner", modelle: "modelle" });
 const glasurNeu = q.select({ name: "OuhBi" });
@@ -139,6 +139,31 @@ function SectionTitle({ title, hint }: { title: string; hint: string }) {
     <div>
       <h2 className="text-lg font-semibold">{title}</h2>
       <p className="text-sm text-muted-foreground">{hint}</p>
+    </div>
+  );
+}
+
+const WEITERE_HINWEIS = "Kann auch später im Bestand ergänzt werden.";
+
+// Am Handy eingeklappt, damit die Pflichtangaben und Speichern im Blick bleiben. Am Rechner immer offen (zweite Spalte).
+function WeitereAngaben({ inhalt, children }: { inhalt: string; children: React.ReactNode }) {
+  const isMobile = useIsMobile();
+  const [offen, setOffen] = useState(false);
+  if (!isMobile) {
+    return (
+      <div className={`space-y-6 ${SECOND_COLUMN}`}>
+        <SectionTitle title="Weitere Angaben" hint={WEITERE_HINWEIS} />
+        {children}
+      </div>
+    );
+  }
+  return (
+    <div className={`space-y-6 ${SECOND_COLUMN}`}>
+      <button type="button" aria-expanded={offen} onClick={() => setOffen((o) => !o)} className="w-full flex items-center justify-between gap-3 min-h-12 text-left">
+        <SectionTitle title="Weitere Angaben" hint={offen ? WEITERE_HINWEIS : `Optional: ${inhalt}`} />
+        <ChevronDown className={`w-5 h-5 shrink-0 text-muted-foreground transition-transform ${offen ? "rotate-180" : ""}`} aria-hidden />
+      </button>
+      {offen && children}
     </div>
   );
 }
@@ -531,8 +556,7 @@ export default function Block() {
                   )}
                 </div>
 
-                <div className={`space-y-6 ${SECOND_COLUMN}`}>
-                  <SectionTitle title="Weitere Angaben" hint="Kann auch später im Bestand ergänzt werden." />
+                <WeitereAngaben inhalt="Künstler:in, Glasur, Maße, Preis …">
 
                   <div className="grid sm:grid-cols-2 gap-6">
                     <div>
@@ -604,7 +628,7 @@ export default function Block() {
                       <Hint>Nur intern, erscheint nie auf der Website.</Hint>
                       <ErrorText>{errors.preis}</ErrorText>
                     </div>
-                    <label htmlFor="u-website" className="flex items-center justify-between gap-4 rounded-md border px-4 py-3 cursor-pointer self-start sm:mt-8">
+                    <label htmlFor="u-website" className={`flex items-center justify-between gap-4 rounded-md border ${LINE} px-4 py-3 cursor-pointer self-start sm:mt-8`}>
                       <span>
                         <span className="block text-base font-medium">Auf Website zeigen</span>
                         <span className="block text-sm text-muted-foreground">Nur für die spätere Website-Anbindung.</span>
@@ -623,7 +647,7 @@ export default function Block() {
                       className={TEXTAREA_CLASS}
                     />
                   </div>
-                </div>
+                </WeitereAngaben>
               </div>
             ) : (
               <div className={COLUMNS}>
@@ -676,7 +700,7 @@ export default function Block() {
                       <Button
                         type="button"
                         variant="outline"
-                        className="h-12 w-12"
+                        className={`h-12 w-12 ${LINE}`}
                         aria-label="Eins weniger"
                         onClick={() => setE("anzahl", Math.max(1, edition.anzahl - 1))}
                       >
@@ -692,7 +716,7 @@ export default function Block() {
                       <Button
                         type="button"
                         variant="outline"
-                        className="h-12 w-12"
+                        className={`h-12 w-12 ${LINE}`}
                         aria-label="Eins mehr"
                         onClick={() => setE("anzahl", edition.anzahl + 1)}
                       >
@@ -710,8 +734,7 @@ export default function Block() {
                 </div>
 
                 {!existingRow && (
-                  <div className={`space-y-6 ${SECOND_COLUMN}`}>
-                    <SectionTitle title="Weitere Angaben" hint="Kann auch später im Bestand ergänzt werden." />
+                  <WeitereAngaben inhalt="Lagerort, Foto, Notiz">
                     <div>
                       <FieldLabel htmlFor="e-lagerort">Lagerort</FieldLabel>
                       <OptionSelect
@@ -736,7 +759,7 @@ export default function Block() {
                         className={TEXTAREA_CLASS}
                       />
                     </div>
-                  </div>
+                  </WeitereAngaben>
                 )}
               </div>
             )}

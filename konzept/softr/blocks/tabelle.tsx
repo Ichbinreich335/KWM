@@ -165,10 +165,16 @@ ${footer ? `<tfoot><tr>${footer.map((v, i) => cell("td", v, columns[i])).join(""
 
 const DIALOG_CLASS = "w-[calc(100vw-2rem)] max-h-[90vh] overflow-y-auto rounded-lg p-4 sm:p-6 [&>button:last-child]:hidden";
 
+// Linienfarbe aller Bedienelemente (Feld, Auswahl, Knopf): eine Stufe kräftiger als Softrs Standard, damit Felder am Handy klar umrissen sind.
+const LINE = "border-neutral-300";
+
 // md:text-base hebt das md:text-sm der shadcn-Felder auf, damit Eingabe und Auswahlliste gleich groß schreiben.
-const FIELD_CLASS = "h-12 rounded-md text-base md:text-base";
+const FIELD_CLASS = `h-12 rounded-md text-base md:text-base ${LINE}`;
 
 const PANEL_CLASS = "rounded-lg border bg-card";
+
+// Gruppierung innerhalb einer Fläche (z. B. im Fenster): getönt statt umrandet, damit kein Kasten im Kasten entsteht.
+const INSET_CLASS = "rounded-lg bg-muted/60";
 
 // Am Handy eine Zeile zum seitlich Wischen statt mehrerer umbrochener Reihen, ab Tablet umbrechen.
 const SCROLL_ROW = "flex gap-2 py-0.5 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:flex-wrap sm:overflow-visible";
@@ -306,7 +312,7 @@ function PanelHeader({ title, description }: { title: string; description: strin
 function DoneButton() {
   return (
     <DialogClose asChild>
-      <Button variant="outline" className="w-full h-12 text-base">
+      <Button variant="outline" className={`w-full h-12 text-base ${LINE}`}>
         Fertig
       </Button>
     </DialogClose>
@@ -318,7 +324,7 @@ function ExportMenu({ onCsv, onPdf, disabled }: { onCsv: () => void; onPdf: () =
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" className="h-12 w-12 px-0 text-base sm:w-auto sm:px-4" disabled={disabled} aria-label="Exportieren">
+        <Button variant="outline" className={`h-12 w-12 px-0 text-base sm:w-auto sm:px-4 ${LINE}`} disabled={disabled} aria-label="Exportieren">
           <Download className="w-5 h-5 sm:mr-2" aria-hidden />
           <span className="hidden sm:inline">Exportieren</span>
           <ChevronDown className="hidden sm:block w-4 h-4 ml-1" aria-hidden />
@@ -781,7 +787,7 @@ function matchesQuick(r: Row, quick: Quick): boolean {
   });
 }
 
-const selectClass = "h-11 rounded-md border border-input bg-background px-2 text-base";
+const selectClass = `h-11 rounded-md border ${LINE} bg-background px-2 text-base`;
 
 function CheckList({ options, value, onChange }: { options: string[]; value: string[]; onChange: (v: string[]) => void }) {
   if (options.length === 0) return <p className="text-sm text-muted-foreground p-2">Keine Werte vorhanden.</p>;
@@ -805,7 +811,7 @@ function MultiPick({ options, value, onChange, label }: { options: string[]; val
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="outline" className="h-11 justify-start text-base font-normal min-w-40 max-w-full truncate" aria-label={`${label}: Werte wählen`}>
+        <Button variant="outline" className={`h-11 justify-start text-base font-normal min-w-40 max-w-full truncate ${LINE}`} aria-label={`${label}: Werte wählen`}>
           <span className="truncate">{text}</span>
         </Button>
       </PopoverTrigger>
@@ -1002,13 +1008,13 @@ function Pager({ page, total, onPage }: { page: number; total: number; onPage: (
   const to = Math.min(total, from + PAGE_ROWS - 1);
   return (
     <nav aria-label="Seiten" className="flex items-center justify-between gap-2">
-      <Button variant="outline" className="h-11 text-base" disabled={page === 0} onClick={() => onPage(page - 1)}>
+      <Button variant="outline" className={`h-11 text-base ${LINE}`} disabled={page === 0} onClick={() => onPage(page - 1)}>
         <ChevronLeft className="w-5 h-5 mr-1" aria-hidden /> Zurück
       </Button>
       <span className="text-sm text-muted-foreground tabular-nums">
         {zahl.format(from)}–{zahl.format(to)} von {zahl.format(total)}
       </span>
-      <Button variant="outline" className="h-11 text-base" disabled={page >= pages - 1} onClick={() => onPage(page + 1)}>
+      <Button variant="outline" className={`h-11 text-base ${LINE}`} disabled={page >= pages - 1} onClick={() => onPage(page + 1)}>
         Weiter <ChevronRight className="w-5 h-5 ml-1" aria-hidden />
       </Button>
     </nav>
@@ -1294,7 +1300,7 @@ export default function Block() {
           <div className="flex flex-wrap items-center gap-2 sm:ml-auto">
             <Popover>
               <PopoverTrigger asChild>
-                <Button variant="outline" className="h-11 text-base hidden sm:inline-flex">
+                <Button variant="outline" className={`h-11 text-base hidden sm:inline-flex ${LINE}`}>
                   <Columns3 className="w-5 h-5 mr-2" aria-hidden />
                   Spalten
                 </Button>
@@ -1322,7 +1328,7 @@ export default function Block() {
                 </option>
               ))}
             </select>
-            <Button variant="outline" className="h-11 text-base" onClick={() => setSaveOpen(true)}>
+            <Button variant="outline" className={`h-11 text-base ${LINE}`} onClick={() => setSaveOpen(true)}>
               <Bookmark className="w-5 h-5 mr-2" aria-hidden />
               Speichern
             </Button>
@@ -1336,7 +1342,7 @@ export default function Block() {
         </div>
 
         {filterOpen && (
-          <div className="rounded-lg border bg-muted/30 p-3 space-y-3">
+          <div className={`${INSET_CLASS} p-3 space-y-3`}>
             {conditions.length === 0 ? (
               <p className="text-base text-muted-foreground">Für Bedingungen wie „Preis ist leer“, „Verkauft am nach …“ oder „Rückgabe bis vor …“.</p>
             ) : (
@@ -1363,7 +1369,7 @@ export default function Block() {
                 />
               ))
             )}
-            <Button variant="outline" className="h-11 text-base" onClick={addCondition}>
+            <Button variant="outline" className={`h-11 text-base ${LINE}`} onClick={addCondition}>
               <Plus className="w-5 h-5 mr-1" aria-hidden />
               Bedingung hinzufügen
             </Button>
@@ -1378,7 +1384,7 @@ export default function Block() {
           <div className="space-y-2">
             <EmptyState text="Keine Einträge gefunden." />
             {anythingSet && (
-              <Button variant="outline" className="h-11 text-base" onClick={reset}>
+              <Button variant="outline" className={`h-11 text-base ${LINE}`} onClick={reset}>
                 Filter zurücksetzen
               </Button>
             )}
@@ -1413,10 +1419,10 @@ export default function Block() {
               {(scrollState.left || scrollState.right) && (
                 <div className="flex items-center justify-end gap-2">
                   <span className="text-sm text-muted-foreground mr-auto">Weitere Spalten: seitlich wischen oder Pfeile nutzen.</span>
-                  <Button variant="outline" className="h-11 w-11 p-0" aria-label="Spalten links zeigen" disabled={!scrollState.left} onClick={() => scrollBy(-SCROLL_STEP)}>
+                  <Button variant="outline" className={`h-11 w-11 p-0 ${LINE}`} aria-label="Spalten links zeigen" disabled={!scrollState.left} onClick={() => scrollBy(-SCROLL_STEP)}>
                     <ChevronLeft className="w-5 h-5" aria-hidden />
                   </Button>
-                  <Button variant="outline" className="h-11 w-11 p-0" aria-label="Spalten rechts zeigen" disabled={!scrollState.right} onClick={() => scrollBy(SCROLL_STEP)}>
+                  <Button variant="outline" className={`h-11 w-11 p-0 ${LINE}`} aria-label="Spalten rechts zeigen" disabled={!scrollState.right} onClick={() => scrollBy(SCROLL_STEP)}>
                     <ChevronRight className="w-5 h-5" aria-hidden />
                   </Button>
                 </div>

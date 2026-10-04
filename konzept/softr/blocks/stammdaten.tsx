@@ -92,32 +92,49 @@ function useAllPages(query: { hasNextPage?: boolean; isFetchingNextPage?: boolea
 
 const DIALOG_CLASS = "w-[calc(100vw-2rem)] max-h-[90vh] overflow-y-auto rounded-lg p-4 sm:p-6 [&>button:last-child]:hidden";
 
-// md:text-base hebt das md:text-sm der shadcn-Felder auf, damit Eingabe und Auswahlliste gleich groß schreiben.
-const FIELD_CLASS = "h-12 rounded-md text-base md:text-base";
+// Linienfarbe aller Bedienelemente (Feld, Auswahl, Knopf): eine Stufe kräftiger als Softrs Standard, damit Felder am Handy klar umrissen sind.
+const LINE = "border-neutral-300";
 
-const TEXTAREA_CLASS = "rounded-md text-base md:text-base";
+// md:text-base hebt das md:text-sm der shadcn-Felder auf, damit Eingabe und Auswahlliste gleich groß schreiben.
+const FIELD_CLASS = `h-12 rounded-md text-base md:text-base ${LINE}`;
+
+const TEXTAREA_CLASS = `rounded-md text-base md:text-base ${LINE}`;
 const PANEL_CLASS = "rounded-lg border bg-card";
+
+// Gewählt = gefüllt. Kein zusätzliches Symbol, damit der Knopf beim Antippen nicht breiter wird und nichts springt.
 const CHIP_BASE = "inline-flex items-center justify-center gap-2 min-h-11 px-3.5 rounded-md border text-base whitespace-nowrap transition-colors disabled:opacity-60";
-const CHIP_IDLE = "bg-background hover:bg-muted border-input";
+
+const CHIP_IDLE = `bg-background hover:bg-muted ${LINE}`;
 const CHIP_ACTIVE = "bg-primary text-primary-foreground border-primary";
 
-// Ein einzelner Auswahl-Knopf für Formulare. Gewählt: Hauptfarbe mit Haken, beim Status die Statusfarbe.
-function Chip({ active, onClick, children, disabled, role, activeClass }: { active: boolean; onClick: () => void; children: React.ReactNode; disabled?: boolean; role?: "radio"; activeClass?: string }) {
+// Ein einzelner Auswahl-Knopf. Gewählt: Hauptfarbe, beim Status die Statusfarbe.
+function Chip({ active, onClick, children, disabled, role, activeClass, className }: { active: boolean; onClick: () => void; children: React.ReactNode; disabled?: boolean; role?: "radio"; activeClass?: string; className?: string }) {
   const state = role === "radio" ? { "aria-checked": active } : { "aria-pressed": active };
   return (
-    <button type="button" role={role} {...state} disabled={disabled} onClick={onClick} className={`${CHIP_BASE} ${active ? activeClass ?? CHIP_ACTIVE : CHIP_IDLE}`}>
-      {active && <Check className="w-4 h-4" aria-hidden />}
+    <button type="button" role={role} {...state} disabled={disabled} onClick={onClick} className={`${CHIP_BASE} ${active ? `${activeClass ?? CHIP_ACTIVE} font-medium` : CHIP_IDLE} ${className ?? ""}`}>
       {children}
     </button>
   );
 }
 
-// Einfachauswahl als Knopfreihe, z. B. Status, Typ, Zustand. Wert ist das Label. statusColors färbt den gewählten Status.
+// Am Handy: bis zu dieser Länge passen drei Knöpfe nebeneinander, darüber zwei.
+const CHIP_LABEL_3_COLS = 10;
+
+// Ab Tablet: Mindestbreite je Knopf = längste Beschriftung plus Innenabstand, in Zeichenbreiten.
+const CHIP_PADDING_CH = 3;
+
+// Einfachauswahl als Raster gleich breiter Knöpfe, z. B. Status, Typ, Zustand. Wert ist das Label. statusColors färbt den gewählten Status.
 function ChoiceChips({ label, options, value, onChange, statusColors, disabled }: { label: string; options: Opt[]; value: string; onChange: (label: string) => void; statusColors?: boolean; disabled?: boolean }) {
+  const longest = Math.max(...options.map((o) => o.label.length), 0);
   return (
-    <div role="radiogroup" aria-label={label} className="flex flex-wrap gap-2">
+    <div
+      role="radiogroup"
+      aria-label={label}
+      className={`grid gap-2 ${longest > CHIP_LABEL_3_COLS ? "grid-cols-2" : "grid-cols-3"} sm:[grid-template-columns:repeat(auto-fill,minmax(var(--chip-min),1fr))]`}
+      style={{ "--chip-min": `${longest + CHIP_PADDING_CH}ch` } as React.CSSProperties}
+    >
       {options.map((o) => (
-        <Chip key={o.id} role="radio" active={value === o.label} activeClass={statusColors ? STATUS_ACTIVE[o.label] : undefined} disabled={disabled} onClick={() => onChange(o.label)}>
+        <Chip key={o.id} role="radio" active={value === o.label} activeClass={statusColors ? STATUS_ACTIVE[o.label] : undefined} disabled={disabled} onClick={() => onChange(o.label)} className="px-2">
           {o.label}
         </Chip>
       ))}
@@ -356,7 +373,7 @@ function PhotoPicker({ files, onChange, multiple, error }: { files: File[]; onCh
         <button
           type="button"
           onClick={() => inputRef.current?.click()}
-          className={`w-full h-40 rounded-lg border-2 border-dashed flex flex-col items-center justify-center gap-2 text-base hover:bg-muted ${error ? "border-destructive" : "border-input"}`}
+          className={`w-full h-40 rounded-lg border-2 border-dashed flex flex-col items-center justify-center gap-2 text-base hover:bg-muted ${error ? "border-destructive" : LINE}`}
         >
           <Camera className="w-8 h-8 text-muted-foreground" aria-hidden />
           <span className="font-medium">Foto aufnehmen oder auswählen</span>
@@ -378,7 +395,7 @@ function PhotoPicker({ files, onChange, multiple, error }: { files: File[]; onCh
             </div>
           ))}
           {multiple && (
-            <button type="button" onClick={() => inputRef.current?.click()} className="aspect-square rounded-md border-2 border-dashed border-input flex flex-col items-center justify-center gap-1 text-sm hover:bg-muted">
+            <button type="button" onClick={() => inputRef.current?.click()} className={`aspect-square rounded-md border-2 border-dashed ${LINE} flex flex-col items-center justify-center gap-1 text-sm hover:bg-muted`}>
               <Plus className="w-6 h-6" aria-hidden />
               Weiteres Foto
             </button>
@@ -575,7 +592,7 @@ function EntryDialog({ kat, entry, onClose }: { kat: Kategorie; entry: Entry | n
             </div>
           )}
           <div className="flex gap-3">
-            <Button variant="outline" className="h-12 flex-1 text-base" disabled={busy} onClick={onClose}>
+            <Button variant="outline" className={`h-12 flex-1 text-base ${LINE}`} disabled={busy} onClick={onClose}>
               Abbrechen
             </Button>
             <Button className="h-12 flex-1 text-base" disabled={busy || !name} onClick={save}>
@@ -610,7 +627,7 @@ function EntryDialog({ kat, entry, onClose }: { kat: Kategorie; entry: Entry | n
                 <div className="flex flex-wrap gap-3">
                   <Button
                     variant="outline"
-                    className="h-11 text-base"
+                    className={`h-11 text-base ${LINE}`}
                     disabled={busy}
                     onClick={() => act(() => kat.archive(entry.id, !entry.archiviert), entry.archiviert ? `„${entry.name}“ wiederhergestellt.` : `„${entry.name}“ archiviert.`)}
                   >

@@ -27,6 +27,7 @@ import {
   SearchPick,
   TEXTAREA_CLASS,
   Tabs,
+  LINE,
 } from "../shared/ui";
 
 const ds = datasource.define({
@@ -214,7 +215,7 @@ function EntryDialog({ kat, entry, onClose }: { kat: Kategorie; entry: Entry | n
             </div>
           )}
           <div className="flex gap-3">
-            <Button variant="outline" className="h-12 flex-1 text-base" disabled={busy} onClick={onClose}>
+            <Button variant="outline" className={`h-12 flex-1 text-base ${LINE}`} disabled={busy} onClick={onClose}>
               Abbrechen
             </Button>
             <Button className="h-12 flex-1 text-base" disabled={busy || !name} onClick={save}>
@@ -249,7 +250,7 @@ function EntryDialog({ kat, entry, onClose }: { kat: Kategorie; entry: Entry | n
                 <div className="flex flex-wrap gap-3">
                   <Button
                     variant="outline"
-                    className="h-11 text-base"
+                    className={`h-11 text-base ${LINE}`}
                     disabled={busy}
                     onClick={() => act(() => kat.archive(entry.id, !entry.archiviert), entry.archiviert ? `„${entry.name}“ wiederhergestellt.` : `„${entry.name}“ archiviert.`)}
                   >

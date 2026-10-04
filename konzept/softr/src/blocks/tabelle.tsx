@@ -12,7 +12,7 @@ import { ArrowDown, ArrowUp, Bookmark, ChevronDown, ChevronLeft, ChevronRight, C
 import { toast } from "sonner";
 import { PAGE_SIZE, VERKAUFT } from "../shared/konstanten";
 import { type Attachment, type RawItem, asAttachments, asOpts, downloadCsv, euro, formatDate, lookupValue, num, parseNumber, printTable, str, thumb, today, useAllPages, zahl } from "../shared/daten";
-import { DIALOG_CLASS, DoneButton, EmptyState, ErrorState, ExportMenu, FIELD_CLASS, ListRow, LoadingState, PANEL_CLASS, PageHeader, PanelHeader, SCROLL_ROW, SearchField, StatusBadge, Tabs, Thumb } from "../shared/ui";
+import { DIALOG_CLASS, DoneButton, EmptyState, ErrorState, ExportMenu, FIELD_CLASS, ListRow, LoadingState, PANEL_CLASS, PageHeader, PanelHeader, SCROLL_ROW, SearchField, StatusBadge, Tabs, Thumb, INSET_CLASS, LINE } from "../shared/ui";
 
 const ds = datasource.define({ unikate: "unikate", edition: "edition", ansichten: "ansichten" });
 
@@ -459,7 +459,7 @@ function matchesQuick(r: Row, quick: Quick): boolean {
   });
 }
 
-const selectClass = "h-11 rounded-md border border-input bg-background px-2 text-base";
+const selectClass = `h-11 rounded-md border ${LINE} bg-background px-2 text-base`;
 
 function CheckList({ options, value, onChange }: { options: string[]; value: string[]; onChange: (v: string[]) => void }) {
   if (options.length === 0) return <p className="text-sm text-muted-foreground p-2">Keine Werte vorhanden.</p>;
@@ -483,7 +483,7 @@ function MultiPick({ options, value, onChange, label }: { options: string[]; val
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="outline" className="h-11 justify-start text-base font-normal min-w-40 max-w-full truncate" aria-label={`${label}: Werte wählen`}>
+        <Button variant="outline" className={`h-11 justify-start text-base font-normal min-w-40 max-w-full truncate ${LINE}`} aria-label={`${label}: Werte wählen`}>
           <span className="truncate">{text}</span>
         </Button>
       </PopoverTrigger>
@@ -680,13 +680,13 @@ function Pager({ page, total, onPage }: { page: number; total: number; onPage: (
   const to = Math.min(total, from + PAGE_ROWS - 1);
   return (
     <nav aria-label="Seiten" className="flex items-center justify-between gap-2">
-      <Button variant="outline" className="h-11 text-base" disabled={page === 0} onClick={() => onPage(page - 1)}>
+      <Button variant="outline" className={`h-11 text-base ${LINE}`} disabled={page === 0} onClick={() => onPage(page - 1)}>
         <ChevronLeft className="w-5 h-5 mr-1" aria-hidden /> Zurück
       </Button>
       <span className="text-sm text-muted-foreground tabular-nums">
         {zahl.format(from)}–{zahl.format(to)} von {zahl.format(total)}
       </span>
-      <Button variant="outline" className="h-11 text-base" disabled={page >= pages - 1} onClick={() => onPage(page + 1)}>
+      <Button variant="outline" className={`h-11 text-base ${LINE}`} disabled={page >= pages - 1} onClick={() => onPage(page + 1)}>
         Weiter <ChevronRight className="w-5 h-5 ml-1" aria-hidden />
       </Button>
     </nav>
@@ -972,7 +972,7 @@ export default function Block() {
           <div className="flex flex-wrap items-center gap-2 sm:ml-auto">
             <Popover>
               <PopoverTrigger asChild>
-                <Button variant="outline" className="h-11 text-base hidden sm:inline-flex">
+                <Button variant="outline" className={`h-11 text-base hidden sm:inline-flex ${LINE}`}>
                   <Columns3 className="w-5 h-5 mr-2" aria-hidden />
                   Spalten
                 </Button>
@@ -1000,7 +1000,7 @@ export default function Block() {
                 </option>
               ))}
             </select>
-            <Button variant="outline" className="h-11 text-base" onClick={() => setSaveOpen(true)}>
+            <Button variant="outline" className={`h-11 text-base ${LINE}`} onClick={() => setSaveOpen(true)}>
               <Bookmark className="w-5 h-5 mr-2" aria-hidden />
               Speichern
             </Button>
@@ -1014,7 +1014,7 @@ export default function Block() {
         </div>
 
         {filterOpen && (
-          <div className="rounded-lg border bg-muted/30 p-3 space-y-3">
+          <div className={`${INSET_CLASS} p-3 space-y-3`}>
             {conditions.length === 0 ? (
               <p className="text-base text-muted-foreground">Für Bedingungen wie „Preis ist leer“, „Verkauft am nach …“ oder „Rückgabe bis vor …“.</p>
             ) : (
@@ -1041,7 +1041,7 @@ export default function Block() {
                 />
               ))
             )}
-            <Button variant="outline" className="h-11 text-base" onClick={addCondition}>
+            <Button variant="outline" className={`h-11 text-base ${LINE}`} onClick={addCondition}>
               <Plus className="w-5 h-5 mr-1" aria-hidden />
               Bedingung hinzufügen
             </Button>
@@ -1056,7 +1056,7 @@ export default function Block() {
           <div className="space-y-2">
             <EmptyState text="Keine Einträge gefunden." />
             {anythingSet && (
-              <Button variant="outline" className="h-11 text-base" onClick={reset}>
+              <Button variant="outline" className={`h-11 text-base ${LINE}`} onClick={reset}>
                 Filter zurücksetzen
               </Button>
             )}
@@ -1091,10 +1091,10 @@ export default function Block() {
               {(scrollState.left || scrollState.right) && (
                 <div className="flex items-center justify-end gap-2">
                   <span className="text-sm text-muted-foreground mr-auto">Weitere Spalten: seitlich wischen oder Pfeile nutzen.</span>
-                  <Button variant="outline" className="h-11 w-11 p-0" aria-label="Spalten links zeigen" disabled={!scrollState.left} onClick={() => scrollBy(-SCROLL_STEP)}>
+                  <Button variant="outline" className={`h-11 w-11 p-0 ${LINE}`} aria-label="Spalten links zeigen" disabled={!scrollState.left} onClick={() => scrollBy(-SCROLL_STEP)}>
                     <ChevronLeft className="w-5 h-5" aria-hidden />
                   </Button>
-                  <Button variant="outline" className="h-11 w-11 p-0" aria-label="Spalten rechts zeigen" disabled={!scrollState.right} onClick={() => scrollBy(SCROLL_STEP)}>
+                  <Button variant="outline" className={`h-11 w-11 p-0 ${LINE}`} aria-label="Spalten rechts zeigen" disabled={!scrollState.right} onClick={() => scrollBy(SCROLL_STEP)}>
                     <ChevronRight className="w-5 h-5" aria-hidden />
                   </Button>
                 </div>

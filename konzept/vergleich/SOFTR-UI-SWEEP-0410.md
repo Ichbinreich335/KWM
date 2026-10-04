@@ -90,3 +90,17 @@ Grundlage: Feedback des Admins zu den Screens vom 04.10. und der Skill `impeccab
 - **Tabelle am Handy:** Die Schnellfilter stehen in einer Wischzeile. Gespeicherte Ansichten und Speichern teilen sich eine Zeile, Export ist nur ein Symbol neben der Suche.
 - **Inventur-Leiste:** Sie klebt jetzt über Softrs Navigationsleiste und wird nicht mehr von ihr verdeckt.
 - **Prüfung:** Typprüfung grün. Lokaler Render-Test am Handy (Filter-Knopf, Blatt mit drei Auswahllisten, Zahl am Knopf, Zurücksetzen, Inventur im Kopf) und am Rechner (Auswahllisten in der Zeile, kein Filter-Knopf). Prüfsummen der hochgeladenen Blöcke stimmen. Die echte Vorschau ist von hier aus weiter gesperrt.
+
+## Runde 7: Politur und neue Übersicht (04.10.)
+
+- **Auswahlknöpfe** (Typ, Status, Zustand): Raster mit gleich breiten Knöpfen statt unterschiedlich langer Reihen. Am Handy 3 Spalten, bei langen Beschriftungen 2. Gewählt heißt gefüllt. Der Haken ist weg, deshalb springt beim Antippen nichts mehr.
+- **Linien** eine Stufe kräftiger (`border-neutral-300`, Konstante `LINE`) für Felder, Auswahllisten, Knöpfe und Chips. Flächen bleiben hell.
+- **Kein Kasten im Kasten:** Gruppen innerhalb eines Fensters sind getönt statt umrandet (`INSET_CLASS`), z. B. „Schnell ändern“ im Stück-Fenster und „Weitere Filter“ in der Tabelle.
+- **Erfassen am Handy:** „Weitere Angaben“ ist eingeklappt („Optional: Künstler:in, Glasur, Maße, Preis …“). Pflichtangaben und Speichern passen auf einen Bildschirm. Speichern sitzt rund 12 px über der Navigationsleiste.
+- **Übersicht neu:**
+  - Kennzahlen in einem Band statt fünf Kästen: Im Haus (davon reserviert, Wert), Außer Haus, Verkauft im Jahr (Umsatz), Editionsware (davon Rohlinge, Wert glasiert aus VK-Preis). Jede Zahl führt in den passenden Bestand.
+  - **Zu erledigen**, dringendstes zuerst: überfällige Rückgaben (rot, mit Partner), Rückgaben in 14 Tagen, Editionsposten unter 5 Stück, Verkäufe ohne Datum oder Preis. Die Datenpflege ist die letzte Zeile und klappt auf. Ist nichts offen, steht dort eine ruhige Bestätigung.
+  - **Zuletzt bearbeitet** als Bildleiste, am Handy zum Wischen.
+  - Außer Haus kompakter (Frist ohne Jahr). „Als Tabelle“ gibt es nur am Rechner.
+  - Editionsware je Modell zeigt 8 Modelle und lässt sich aufklappen. Bei 81 Katalogartikeln wäre die Liste sonst sehr lang.
+- **Sichtprüfung:** Nachbildung mit echtem Tailwind und shadcn-Stilen in Chromium, 390 px und 1440 px, mit Testfotos aus `keramik/`. Kein horizontales Scrollen, keine Konsolenfehler. Screens unter `konzept/vergleich/runde7/`. Die echte Softr-Vorschau ist von hier aus gesperrt. Schriften und Theme-Farben können dort leicht abweichen.

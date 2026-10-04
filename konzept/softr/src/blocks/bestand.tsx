@@ -62,6 +62,8 @@ import {
   Tabs,
   useAnsicht,
   useIsMobile,
+  INSET_CLASS,
+  LINE,
 } from "../shared/ui";
 
 const ds = datasource.define({ unikate: "unikate", edition: "edition", kuenstler: "kuenstler", glasuren: "glasuren", lagerorte: "lagerorte", partner: "partner" });
@@ -490,7 +492,7 @@ function UnikatDetail({ u, onClose, onSaved, stamm, typen, statusListe }: { u: U
         <div className="px-4 pb-8 space-y-6" lang="de">
           {!update.enabled && <StatusBadge text={u.status} />}
           {update.enabled && !editing && (
-            <section className="rounded-lg border p-4 space-y-4" aria-labelledby="schnell-titel">
+            <section className={`${INSET_CLASS} p-4 space-y-4`} aria-labelledby="schnell-titel">
               <h3 id="schnell-titel" className="text-base font-semibold">
                 Schnell ändern <span className="font-normal text-muted-foreground">· wird sofort gespeichert</span>
               </h3>
@@ -550,7 +552,7 @@ function UnikatDetail({ u, onClose, onSaved, stamm, typen, statusListe }: { u: U
                   <span className="text-sm">{undo.text} gespeichert</span>
                   <Button
                     variant="outline"
-                    className="h-11 text-base"
+                    className={`h-11 text-base ${LINE}`}
                     onClick={() => {
                       const fields = undo.fields;
                       setUndo(null);
@@ -653,7 +655,7 @@ function UnikatDetail({ u, onClose, onSaved, stamm, typen, statusListe }: { u: U
                   />
                   <ErrorText>{formError.preis}</ErrorText>
                 </div>
-                <label htmlFor="d-website" className="flex items-center justify-between gap-4 rounded-md border px-4 h-12 cursor-pointer self-end">
+                <label htmlFor="d-website" className={`flex items-center justify-between gap-4 rounded-md border ${LINE} px-4 h-12 cursor-pointer self-end`}>
                   <span className="text-base font-medium">Auf Website zeigen</span>
                   <Switch id="d-website" className="scale-125 data-[state=unchecked]:bg-zinc-300" checked={form.website} onCheckedChange={(v) => set("website", v)} />
                 </label>
@@ -697,7 +699,7 @@ function UnikatDetail({ u, onClose, onSaved, stamm, typen, statusListe }: { u: U
               <div className="flex gap-3">
                 <Button
                   variant="outline"
-                  className="h-12 flex-1 text-base"
+                  className={`h-12 flex-1 text-base ${LINE}`}
                   disabled={busy}
                   onClick={() => {
                     setForm(initial);
@@ -813,7 +815,7 @@ function InventurView({ rows, onApply, onClose }: { rows: Edition[]; onApply: (c
             </option>
           ))}
         </select>
-        <Button variant="outline" className="h-12 text-base" onClick={onClose}>
+        <Button variant="outline" className={`h-12 text-base ${LINE}`} onClick={onClose}>
           Inventur beenden
         </Button>
       </div>
@@ -895,7 +897,7 @@ function EditionRow({ e, busy, canEdit, onAdjust, onOpen }: { e: Edition; busy: 
       </div>
       <div className="flex items-center gap-1 shrink-0">
         {canEdit && (
-          <Button variant="outline" className="h-11 w-11 p-0" aria-label={`${e.modell}: eins weniger`} disabled={busy || e.anzahl <= 0} onClick={() => onAdjust(-1)}>
+          <Button variant="outline" className={`h-11 w-11 p-0 ${LINE}`} aria-label={`${e.modell}: eins weniger`} disabled={busy || e.anzahl <= 0} onClick={() => onAdjust(-1)}>
             <Minus className="w-5 h-5" aria-hidden />
           </Button>
         )}
@@ -903,7 +905,7 @@ function EditionRow({ e, busy, canEdit, onAdjust, onOpen }: { e: Edition; busy: 
           {e.anzahl}
         </span>
         {canEdit && (
-          <Button variant="outline" className="h-11 w-11 p-0" aria-label={`${e.modell}: eins mehr`} disabled={busy} onClick={() => onAdjust(1)}>
+          <Button variant="outline" className={`h-11 w-11 p-0 ${LINE}`} aria-label={`${e.modell}: eins mehr`} disabled={busy} onClick={() => onAdjust(1)}>
             <Plus className="w-5 h-5" aria-hidden />
           </Button>
         )}
@@ -939,7 +941,7 @@ function EditionDetail({
           <div>
             <FieldLabel htmlFor="ed-anzahl">Anzahl</FieldLabel>
             <div className="flex items-center gap-3">
-              <Button variant="outline" className="h-12 w-12" aria-label="Eins weniger" disabled={!canEdit} onClick={() => setAnzahl(String(Math.max(0, value - 1)))}>
+              <Button variant="outline" className={`h-12 w-12 ${LINE}`} aria-label="Eins weniger" disabled={!canEdit} onClick={() => setAnzahl(String(Math.max(0, value - 1)))}>
                 <Minus className="w-5 h-5" aria-hidden />
               </Button>
               <Input
@@ -950,7 +952,7 @@ function EditionDetail({
                 onChange={(ev) => setAnzahl(ev.target.value.replace(/\D/g, ""))}
                 className="h-12 w-24 rounded-md text-center text-lg md:text-lg"
               />
-              <Button variant="outline" className="h-12 w-12" aria-label="Eins mehr" disabled={!canEdit} onClick={() => setAnzahl(String(value + 1))}>
+              <Button variant="outline" className={`h-12 w-12 ${LINE}`} aria-label="Eins mehr" disabled={!canEdit} onClick={() => setAnzahl(String(value + 1))}>
                 <Plus className="w-5 h-5" aria-hidden />
               </Button>
             </div>
@@ -1210,7 +1212,7 @@ export default function Block() {
   const searchPlaceholder = isEdition ? "Nummer, Modell, Glasur, Ort" : "Name, Nummer, Glasur, Ort";
   const inventurButton =
     isEdition && !inventur && editionUpdate.enabled ? (
-      <Button variant="outline" className="h-12 text-base" onClick={() => setInventur(true)}>
+      <Button variant="outline" className={`h-12 text-base ${LINE}`} onClick={() => setInventur(true)}>
         <ClipboardList className="w-5 h-5 mr-2" aria-hidden /> Inventur
       </Button>
     ) : undefined;
@@ -1353,7 +1355,7 @@ export default function Block() {
             {filtered && (
               <Button
                 variant="outline"
-                className="h-11 text-base"
+                className={`h-11 text-base ${LINE}`}
                 onClick={() => {
                   setSearch("");
                   setTypFilter("");
@@ -1396,7 +1398,7 @@ export default function Block() {
             )}
             {visible.length > limit && (
               <div className="flex justify-center">
-                <Button variant="outline" className="h-12 text-base" onClick={() => setLimit((l) => l + LIST_STEP)}>
+                <Button variant="outline" className={`h-12 text-base ${LINE}`} onClick={() => setLimit((l) => l + LIST_STEP)}>
                   Weitere {Math.min(LIST_STEP, visible.length - limit)} anzeigen
                 </Button>
               </div>

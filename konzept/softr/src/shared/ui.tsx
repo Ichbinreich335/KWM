@@ -6,20 +6,24 @@ import { Input } from "@/components/ui/input";
 import { DialogClose, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
-import { AlertTriangle, Camera, Check, ChevronDown, ChevronRight, Download, FileSpreadsheet, ImageOff, LayoutGrid, List, Loader2, Plus, Printer, Search, SlidersHorizontal, X } from "lucide-react";
+import { AlertTriangle, Camera, ChevronDown, ChevronRight, Download, FileSpreadsheet, ImageOff, LayoutGrid, List, Loader2, Plus, Printer, Search, SlidersHorizontal, X } from "lucide-react";
 import { STATUS_ACTIVE, STATUS_BADGE } from "../shared/konstanten";
 import { type Attachment, type Opt, type ThumbSize, thumb } from "../shared/daten";
 
 export const DIALOG_CLASS = "w-[calc(100vw-2rem)] max-h-[90vh] overflow-y-auto rounded-lg p-4 sm:p-6 [&>button:last-child]:hidden";
+// Linienfarbe aller Bedienelemente (Feld, Auswahl, Knopf): eine Stufe kräftiger als Softrs Standard, damit Felder am Handy klar umrissen sind.
+export const LINE = "border-neutral-300";
 // md:text-base hebt das md:text-sm der shadcn-Felder auf, damit Eingabe und Auswahlliste gleich groß schreiben.
-export const FIELD_CLASS = "h-12 rounded-md text-base md:text-base";
-export const TEXTAREA_CLASS = "rounded-md text-base md:text-base";
-export const INPUT_CLASS = "w-full h-12 rounded-md border border-input bg-background px-3 text-base";
+export const FIELD_CLASS = `h-12 rounded-md text-base md:text-base ${LINE}`;
+export const TEXTAREA_CLASS = `rounded-md text-base md:text-base ${LINE}`;
+export const INPUT_CLASS = `w-full h-12 rounded-md border ${LINE} bg-background px-3 text-base`;
 export const PANEL_CLASS = "rounded-lg border bg-card";
+// Gruppierung innerhalb einer Fläche (z. B. im Fenster): getönt statt umrandet, damit kein Kasten im Kasten entsteht.
+export const INSET_CLASS = "rounded-lg bg-muted/60";
 // Am Handy eine Zeile zum seitlich Wischen statt mehrerer umbrochener Reihen, ab Tablet umbrechen.
 export const SCROLL_ROW = "flex gap-2 py-0.5 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:flex-wrap sm:overflow-visible";
-// Klebende Leisten am unteren Rand: am Handy über Softrs Navigationsleiste (ca. 80 px), ab Tablet am Rand.
-export const STICKY_BOTTOM = "bottom-[calc(5.5rem+env(safe-area-inset-bottom))] sm:bottom-4";
+// Klebende Leisten am unteren Rand: am Handy knapp über Softrs Navigationsleiste (ca. 56 px), ab Tablet am Rand.
+export const STICKY_BOTTOM = "bottom-[calc(4.25rem+env(safe-area-inset-bottom))] sm:bottom-4";
 
 const MOBILE_QUERY = "(max-width: 639px)";
 
@@ -36,27 +40,38 @@ export function useIsMobile(): boolean {
   return mobile;
 }
 
+// Gewählt = gefüllt. Kein zusätzliches Symbol, damit der Knopf beim Antippen nicht breiter wird und nichts springt.
 const CHIP_BASE = "inline-flex items-center justify-center gap-2 min-h-11 px-3.5 rounded-md border text-base whitespace-nowrap transition-colors disabled:opacity-60";
-const CHIP_IDLE = "bg-background hover:bg-muted border-input";
+const CHIP_IDLE = `bg-background hover:bg-muted ${LINE}`;
 const CHIP_ACTIVE = "bg-primary text-primary-foreground border-primary";
 
-// Ein einzelner Auswahl-Knopf für Formulare. Gewählt: Hauptfarbe mit Haken, beim Status die Statusfarbe.
-export function Chip({ active, onClick, children, disabled, role, activeClass }: { active: boolean; onClick: () => void; children: React.ReactNode; disabled?: boolean; role?: "radio"; activeClass?: string }) {
+// Ein einzelner Auswahl-Knopf. Gewählt: Hauptfarbe, beim Status die Statusfarbe.
+export function Chip({ active, onClick, children, disabled, role, activeClass, className }: { active: boolean; onClick: () => void; children: React.ReactNode; disabled?: boolean; role?: "radio"; activeClass?: string; className?: string }) {
   const state = role === "radio" ? { "aria-checked": active } : { "aria-pressed": active };
   return (
-    <button type="button" role={role} {...state} disabled={disabled} onClick={onClick} className={`${CHIP_BASE} ${active ? activeClass ?? CHIP_ACTIVE : CHIP_IDLE}`}>
-      {active && <Check className="w-4 h-4" aria-hidden />}
+    <button type="button" role={role} {...state} disabled={disabled} onClick={onClick} className={`${CHIP_BASE} ${active ? `${activeClass ?? CHIP_ACTIVE} font-medium` : CHIP_IDLE} ${className ?? ""}`}>
       {children}
     </button>
   );
 }
 
-// Einfachauswahl als Knopfreihe, z. B. Status, Typ, Zustand. Wert ist das Label. statusColors färbt den gewählten Status.
+// Am Handy: bis zu dieser Länge passen drei Knöpfe nebeneinander, darüber zwei.
+const CHIP_LABEL_3_COLS = 10;
+// Ab Tablet: Mindestbreite je Knopf = längste Beschriftung plus Innenabstand, in Zeichenbreiten.
+const CHIP_PADDING_CH = 3;
+
+// Einfachauswahl als Raster gleich breiter Knöpfe, z. B. Status, Typ, Zustand. Wert ist das Label. statusColors färbt den gewählten Status.
 export function ChoiceChips({ label, options, value, onChange, statusColors, disabled }: { label: string; options: Opt[]; value: string; onChange: (label: string) => void; statusColors?: boolean; disabled?: boolean }) {
+  const longest = Math.max(...options.map((o) => o.label.length), 0);
   return (
-    <div role="radiogroup" aria-label={label} className="flex flex-wrap gap-2">
+    <div
+      role="radiogroup"
+      aria-label={label}
+      className={`grid gap-2 ${longest > CHIP_LABEL_3_COLS ? "grid-cols-2" : "grid-cols-3"} sm:[grid-template-columns:repeat(auto-fill,minmax(var(--chip-min),1fr))]`}
+      style={{ "--chip-min": `${longest + CHIP_PADDING_CH}ch` } as React.CSSProperties}
+    >
       {options.map((o) => (
-        <Chip key={o.id} role="radio" active={value === o.label} activeClass={statusColors ? STATUS_ACTIVE[o.label] : undefined} disabled={disabled} onClick={() => onChange(o.label)}>
+        <Chip key={o.id} role="radio" active={value === o.label} activeClass={statusColors ? STATUS_ACTIVE[o.label] : undefined} disabled={disabled} onClick={() => onChange(o.label)} className="px-2">
           {o.label}
         </Chip>
       ))}
@@ -280,22 +295,6 @@ export function Section({ title, description, actions, children }: { title: stri
   );
 }
 
-// Kennzahl als Link. warn (rot) für Fristen, note (gelb) für fehlende Angaben, die die Zahl verfälschen.
-export function Tile({ label, value, sub, warn, note, href }: { label: string; value: string; sub?: string; warn?: string; note?: string; href: string }) {
-  return (
-    <a href={href} className={`group block h-full ${PANEL_CLASS} p-4 hover:border-primary/40 hover:bg-muted/30 transition-colors`}>
-      <p className="flex items-center justify-between gap-2 text-sm text-muted-foreground">
-        {label}
-        <ChevronRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" aria-hidden />
-      </p>
-      <p className="text-3xl font-semibold mt-1 tabular-nums">{value}</p>
-      {sub && <p className="text-sm text-muted-foreground mt-1">{sub}</p>}
-      {warn && <p className="text-sm text-red-800 mt-1">{warn}</p>}
-      {note && <p className="text-sm text-amber-800 mt-1">{note}</p>}
-    </a>
-  );
-}
-
 // Eine anklickbare Zeile mit Bild, Titel, Unterzeile und rechter Spalte. Für alle Listen.
 export function ListRow({ fotos, title, sub, meta, onClick, href }: { fotos?: Attachment[]; title: string; sub?: React.ReactNode; meta?: React.ReactNode; onClick?: () => void; href?: string }) {
   const inner = (
@@ -361,7 +360,7 @@ export function PanelHeader({ title, description }: { title: string; description
 export function DoneButton() {
   return (
     <DialogClose asChild>
-      <Button variant="outline" className="w-full h-12 text-base">
+      <Button variant="outline" className={`w-full h-12 text-base ${LINE}`}>
         Fertig
       </Button>
     </DialogClose>
@@ -443,7 +442,7 @@ export function PhotoPicker({ files, onChange, multiple, error }: { files: File[
         <button
           type="button"
           onClick={() => inputRef.current?.click()}
-          className={`w-full h-40 rounded-lg border-2 border-dashed flex flex-col items-center justify-center gap-2 text-base hover:bg-muted ${error ? "border-destructive" : "border-input"}`}
+          className={`w-full h-40 rounded-lg border-2 border-dashed flex flex-col items-center justify-center gap-2 text-base hover:bg-muted ${error ? "border-destructive" : LINE}`}
         >
           <Camera className="w-8 h-8 text-muted-foreground" aria-hidden />
           <span className="font-medium">Foto aufnehmen oder auswählen</span>
@@ -465,7 +464,7 @@ export function PhotoPicker({ files, onChange, multiple, error }: { files: File[
             </div>
           ))}
           {multiple && (
-            <button type="button" onClick={() => inputRef.current?.click()} className="aspect-square rounded-md border-2 border-dashed border-input flex flex-col items-center justify-center gap-1 text-sm hover:bg-muted">
+            <button type="button" onClick={() => inputRef.current?.click()} className={`aspect-square rounded-md border-2 border-dashed ${LINE} flex flex-col items-center justify-center gap-1 text-sm hover:bg-muted`}>
               <Plus className="w-6 h-6" aria-hidden />
               Weiteres Foto
             </button>
@@ -482,7 +481,7 @@ export function ExportMenu({ onCsv, onPdf, disabled }: { onCsv: () => void; onPd
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" className="h-12 w-12 px-0 text-base sm:w-auto sm:px-4" disabled={disabled} aria-label="Exportieren">
+        <Button variant="outline" className={`h-12 w-12 px-0 text-base sm:w-auto sm:px-4 ${LINE}`} disabled={disabled} aria-label="Exportieren">
           <Download className="w-5 h-5 sm:mr-2" aria-hidden />
           <span className="hidden sm:inline">Exportieren</span>
           <ChevronDown className="hidden sm:block w-4 h-4 ml-1" aria-hidden />
@@ -539,7 +538,7 @@ export function AnsichtToggle({ value, onChange }: { value: Ansicht; onChange: (
     </button>
   );
   return (
-    <div role="group" aria-label="Ansicht" className="inline-flex rounded-md border border-input overflow-hidden divide-x divide-input shrink-0">
+    <div role="group" aria-label="Ansicht" className={`inline-flex rounded-md border ${LINE} overflow-hidden divide-x divide-neutral-300 shrink-0`}>
       {item("liste", "Als Liste", <List className="w-5 h-5" aria-hidden />)}
       {item("kacheln", "Als Kacheln", <LayoutGrid className="w-5 h-5" aria-hidden />)}
     </div>

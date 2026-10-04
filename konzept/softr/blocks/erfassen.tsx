@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import { Camera, Check, Loader2, Minus, Plus, Search, X } from "lucide-react";
+import { Camera, Check, ChevronDown, Loader2, Minus, Plus, Search, X } from "lucide-react";
 import { toast } from "sonner";
 
 const PAGE_SIZE = 100;
@@ -97,37 +97,68 @@ function useAllPages(query: { hasNextPage?: boolean; isFetchingNextPage?: boolea
   }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 }
 
-// md:text-base hebt das md:text-sm der shadcn-Felder auf, damit Eingabe und Auswahlliste gleich groß schreiben.
-const FIELD_CLASS = "h-12 rounded-md text-base md:text-base";
+// Linienfarbe aller Bedienelemente (Feld, Auswahl, Knopf): eine Stufe kräftiger als Softrs Standard, damit Felder am Handy klar umrissen sind.
+const LINE = "border-neutral-300";
 
-const TEXTAREA_CLASS = "rounded-md text-base md:text-base";
-const INPUT_CLASS = "w-full h-12 rounded-md border border-input bg-background px-3 text-base";
+// md:text-base hebt das md:text-sm der shadcn-Felder auf, damit Eingabe und Auswahlliste gleich groß schreiben.
+const FIELD_CLASS = `h-12 rounded-md text-base md:text-base ${LINE}`;
+
+const TEXTAREA_CLASS = `rounded-md text-base md:text-base ${LINE}`;
+const INPUT_CLASS = `w-full h-12 rounded-md border ${LINE} bg-background px-3 text-base`;
 const PANEL_CLASS = "rounded-lg border bg-card";
 
-// Klebende Leisten am unteren Rand: am Handy über Softrs Navigationsleiste (ca. 80 px), ab Tablet am Rand.
-const STICKY_BOTTOM = "bottom-[calc(5.5rem+env(safe-area-inset-bottom))] sm:bottom-4";
+// Klebende Leisten am unteren Rand: am Handy knapp über Softrs Navigationsleiste (ca. 56 px), ab Tablet am Rand.
+const STICKY_BOTTOM = "bottom-[calc(4.25rem+env(safe-area-inset-bottom))] sm:bottom-4";
 
+const MOBILE_QUERY = "(max-width: 639px)";
+
+// Handy oder größer. Für Bedienelemente, die am Handy anders aufgebaut sind (Filter im Blatt von unten).
+function useIsMobile(): boolean {
+  const [mobile, setMobile] = useState(() => window.matchMedia?.(MOBILE_QUERY).matches ?? false);
+  useEffect(() => {
+    const media = window.matchMedia?.(MOBILE_QUERY);
+    if (!media) return;
+    const update = () => setMobile(media.matches);
+    media.addEventListener("change", update);
+    return () => media.removeEventListener("change", update);
+  }, []);
+  return mobile;
+}
+
+// Gewählt = gefüllt. Kein zusätzliches Symbol, damit der Knopf beim Antippen nicht breiter wird und nichts springt.
 const CHIP_BASE = "inline-flex items-center justify-center gap-2 min-h-11 px-3.5 rounded-md border text-base whitespace-nowrap transition-colors disabled:opacity-60";
-const CHIP_IDLE = "bg-background hover:bg-muted border-input";
+
+const CHIP_IDLE = `bg-background hover:bg-muted ${LINE}`;
 const CHIP_ACTIVE = "bg-primary text-primary-foreground border-primary";
 
-// Ein einzelner Auswahl-Knopf für Formulare. Gewählt: Hauptfarbe mit Haken, beim Status die Statusfarbe.
-function Chip({ active, onClick, children, disabled, role, activeClass }: { active: boolean; onClick: () => void; children: React.ReactNode; disabled?: boolean; role?: "radio"; activeClass?: string }) {
+// Ein einzelner Auswahl-Knopf. Gewählt: Hauptfarbe, beim Status die Statusfarbe.
+function Chip({ active, onClick, children, disabled, role, activeClass, className }: { active: boolean; onClick: () => void; children: React.ReactNode; disabled?: boolean; role?: "radio"; activeClass?: string; className?: string }) {
   const state = role === "radio" ? { "aria-checked": active } : { "aria-pressed": active };
   return (
-    <button type="button" role={role} {...state} disabled={disabled} onClick={onClick} className={`${CHIP_BASE} ${active ? activeClass ?? CHIP_ACTIVE : CHIP_IDLE}`}>
-      {active && <Check className="w-4 h-4" aria-hidden />}
+    <button type="button" role={role} {...state} disabled={disabled} onClick={onClick} className={`${CHIP_BASE} ${active ? `${activeClass ?? CHIP_ACTIVE} font-medium` : CHIP_IDLE} ${className ?? ""}`}>
       {children}
     </button>
   );
 }
 
-// Einfachauswahl als Knopfreihe, z. B. Status, Typ, Zustand. Wert ist das Label. statusColors färbt den gewählten Status.
+// Am Handy: bis zu dieser Länge passen drei Knöpfe nebeneinander, darüber zwei.
+const CHIP_LABEL_3_COLS = 10;
+
+// Ab Tablet: Mindestbreite je Knopf = längste Beschriftung plus Innenabstand, in Zeichenbreiten.
+const CHIP_PADDING_CH = 3;
+
+// Einfachauswahl als Raster gleich breiter Knöpfe, z. B. Status, Typ, Zustand. Wert ist das Label. statusColors färbt den gewählten Status.
 function ChoiceChips({ label, options, value, onChange, statusColors, disabled }: { label: string; options: Opt[]; value: string; onChange: (label: string) => void; statusColors?: boolean; disabled?: boolean }) {
+  const longest = Math.max(...options.map((o) => o.label.length), 0);
   return (
-    <div role="radiogroup" aria-label={label} className="flex flex-wrap gap-2">
+    <div
+      role="radiogroup"
+      aria-label={label}
+      className={`grid gap-2 ${longest > CHIP_LABEL_3_COLS ? "grid-cols-2" : "grid-cols-3"} sm:[grid-template-columns:repeat(auto-fill,minmax(var(--chip-min),1fr))]`}
+      style={{ "--chip-min": `${longest + CHIP_PADDING_CH}ch` } as React.CSSProperties}
+    >
       {options.map((o) => (
-        <Chip key={o.id} role="radio" active={value === o.label} activeClass={statusColors ? STATUS_ACTIVE[o.label] : undefined} disabled={disabled} onClick={() => onChange(o.label)}>
+        <Chip key={o.id} role="radio" active={value === o.label} activeClass={statusColors ? STATUS_ACTIVE[o.label] : undefined} disabled={disabled} onClick={() => onChange(o.label)} className="px-2">
           {o.label}
         </Chip>
       ))}
@@ -376,7 +407,7 @@ function PhotoPicker({ files, onChange, multiple, error }: { files: File[]; onCh
         <button
           type="button"
           onClick={() => inputRef.current?.click()}
-          className={`w-full h-40 rounded-lg border-2 border-dashed flex flex-col items-center justify-center gap-2 text-base hover:bg-muted ${error ? "border-destructive" : "border-input"}`}
+          className={`w-full h-40 rounded-lg border-2 border-dashed flex flex-col items-center justify-center gap-2 text-base hover:bg-muted ${error ? "border-destructive" : LINE}`}
         >
           <Camera className="w-8 h-8 text-muted-foreground" aria-hidden />
           <span className="font-medium">Foto aufnehmen oder auswählen</span>
@@ -398,7 +429,7 @@ function PhotoPicker({ files, onChange, multiple, error }: { files: File[]; onCh
             </div>
           ))}
           {multiple && (
-            <button type="button" onClick={() => inputRef.current?.click()} className="aspect-square rounded-md border-2 border-dashed border-input flex flex-col items-center justify-center gap-1 text-sm hover:bg-muted">
+            <button type="button" onClick={() => inputRef.current?.click()} className={`aspect-square rounded-md border-2 border-dashed ${LINE} flex flex-col items-center justify-center gap-1 text-sm hover:bg-muted`}>
               <Plus className="w-6 h-6" aria-hidden />
               Weiteres Foto
             </button>
@@ -527,6 +558,31 @@ function SectionTitle({ title, hint }: { title: string; hint: string }) {
     <div>
       <h2 className="text-lg font-semibold">{title}</h2>
       <p className="text-sm text-muted-foreground">{hint}</p>
+    </div>
+  );
+}
+
+const WEITERE_HINWEIS = "Kann auch später im Bestand ergänzt werden.";
+
+// Am Handy eingeklappt, damit die Pflichtangaben und Speichern im Blick bleiben. Am Rechner immer offen (zweite Spalte).
+function WeitereAngaben({ inhalt, children }: { inhalt: string; children: React.ReactNode }) {
+  const isMobile = useIsMobile();
+  const [offen, setOffen] = useState(false);
+  if (!isMobile) {
+    return (
+      <div className={`space-y-6 ${SECOND_COLUMN}`}>
+        <SectionTitle title="Weitere Angaben" hint={WEITERE_HINWEIS} />
+        {children}
+      </div>
+    );
+  }
+  return (
+    <div className={`space-y-6 ${SECOND_COLUMN}`}>
+      <button type="button" aria-expanded={offen} onClick={() => setOffen((o) => !o)} className="w-full flex items-center justify-between gap-3 min-h-12 text-left">
+        <SectionTitle title="Weitere Angaben" hint={offen ? WEITERE_HINWEIS : `Optional: ${inhalt}`} />
+        <ChevronDown className={`w-5 h-5 shrink-0 text-muted-foreground transition-transform ${offen ? "rotate-180" : ""}`} aria-hidden />
+      </button>
+      {offen && children}
     </div>
   );
 }
@@ -919,8 +975,7 @@ export default function Block() {
                   )}
                 </div>
 
-                <div className={`space-y-6 ${SECOND_COLUMN}`}>
-                  <SectionTitle title="Weitere Angaben" hint="Kann auch später im Bestand ergänzt werden." />
+                <WeitereAngaben inhalt="Künstler:in, Glasur, Maße, Preis …">
 
                   <div className="grid sm:grid-cols-2 gap-6">
                     <div>
@@ -992,7 +1047,7 @@ export default function Block() {
                       <Hint>Nur intern, erscheint nie auf der Website.</Hint>
                       <ErrorText>{errors.preis}</ErrorText>
                     </div>
-                    <label htmlFor="u-website" className="flex items-center justify-between gap-4 rounded-md border px-4 py-3 cursor-pointer self-start sm:mt-8">
+                    <label htmlFor="u-website" className={`flex items-center justify-between gap-4 rounded-md border ${LINE} px-4 py-3 cursor-pointer self-start sm:mt-8`}>
                       <span>
                         <span className="block text-base font-medium">Auf Website zeigen</span>
                         <span className="block text-sm text-muted-foreground">Nur für die spätere Website-Anbindung.</span>
@@ -1011,7 +1066,7 @@ export default function Block() {
                       className={TEXTAREA_CLASS}
                     />
                   </div>
-                </div>
+                </WeitereAngaben>
               </div>
             ) : (
               <div className={COLUMNS}>
@@ -1064,7 +1119,7 @@ export default function Block() {
                       <Button
                         type="button"
                         variant="outline"
-                        className="h-12 w-12"
+                        className={`h-12 w-12 ${LINE}`}
                         aria-label="Eins weniger"
                         onClick={() => setE("anzahl", Math.max(1, edition.anzahl - 1))}
                       >
@@ -1080,7 +1135,7 @@ export default function Block() {
                       <Button
                         type="button"
                         variant="outline"
-                        className="h-12 w-12"
+                        className={`h-12 w-12 ${LINE}`}
                         aria-label="Eins mehr"
                         onClick={() => setE("anzahl", edition.anzahl + 1)}
                       >
@@ -1098,8 +1153,7 @@ export default function Block() {
                 </div>
 
                 {!existingRow && (
-                  <div className={`space-y-6 ${SECOND_COLUMN}`}>
-                    <SectionTitle title="Weitere Angaben" hint="Kann auch später im Bestand ergänzt werden." />
+                  <WeitereAngaben inhalt="Lagerort, Foto, Notiz">
                     <div>
                       <FieldLabel htmlFor="e-lagerort">Lagerort</FieldLabel>
                       <OptionSelect
@@ -1124,7 +1178,7 @@ export default function Block() {
                         className={TEXTAREA_CLASS}
                       />
                     </div>
-                  </div>
+                  </WeitereAngaben>
                 )}
               </div>
             )}
