@@ -17,12 +17,6 @@
 }
 .zaesur__text {
   grid-column: 7 / 12;
-  margin: 0;
-  font-family: var(--f-display);
-  font-size: var(--t-statement);
-  line-height: var(--t-statement-lh);
-  letter-spacing: -0.015em;
-  text-wrap: balance;
 }
 .chapter--cont {
   padding-top: calc(var(--section) * 0.5);

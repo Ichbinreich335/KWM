@@ -7,12 +7,6 @@
 }
 .ms-intro__statement {
   grid-column: 1 / 8;
-  margin: 0;
-  font-family: var(--f-display);
-  font-size: var(--t-statement);
-  line-height: var(--t-statement-lh);
-  letter-spacing: -0.015em;
-  text-wrap: balance;
 }
 .ms-intro__text {
   grid-column: 9 / 13;
