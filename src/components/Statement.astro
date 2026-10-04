@@ -6,15 +6,15 @@ interface Props {
   quelle?: string;
   /** Id des Satzes, wenn ein Abschnitt per `aria-labelledby` darauf zeigt */
   textId?: string;
-  /** Zusätzliche Klassen für die Platzierung durch die Seite */
+  /** Zusätzliche Klassen für die Platzierung durch die Seite (am `blockquote`, ohne Quelle am `p`) */
   class?: string | undefined;
 }
 
 const { typ, quelle, textId, class: klasse } = Astro.props;
 ---
 
-<blockquote class:list={['statement', `statement--${typ}`, klasse]}>
-  <p id={textId} data-reveal="words">
+<blockquote class:list={['statement', klasse]}>
+  <p class:list={['statement__text', `statement--${typ}`]} id={textId} data-reveal="words">
     <slot />
   </p>
   {quelle && <footer data-reveal="fade">{quelle}</footer>}
@@ -24,7 +24,7 @@ const { typ, quelle, textId, class: klasse } = Astro.props;
   .statement {
     margin: 0;
   }
-  .statement p {
+  .statement__text {
     margin: 0;
     font-family: var(--f-display);
     font-size: var(--t-statement);
@@ -32,29 +32,28 @@ const { typ, quelle, textId, class: klasse } = Astro.props;
     text-wrap: balance;
   }
   .statement footer {
-    margin-top: var(--abstand);
     font-size: var(--t-meta);
     line-height: var(--t-meta-lh);
     color: var(--ink-2);
   }
   .statement--gross {
-    --abstand: 28px;
-  }
-  .statement--gross p {
     font-size: var(--t-display);
     line-height: var(--t-display-lh);
     letter-spacing: -0.025em;
   }
-  .statement--aussage {
-    --abstand: 22px;
+  .statement--gross:has(+ footer) {
+    margin-bottom: 28px;
   }
-  .statement--aussage p {
+  .statement--aussage {
     letter-spacing: -0.02em;
   }
-  .statement--regel {
-    --abstand: 18px;
+  .statement--aussage:has(+ footer) {
+    margin-bottom: 22px;
   }
-  .statement--regel p {
+  .statement--regel {
     letter-spacing: -0.015em;
+  }
+  .statement--regel:has(+ footer) {
+    margin-bottom: 18px;
   }
 </style>
