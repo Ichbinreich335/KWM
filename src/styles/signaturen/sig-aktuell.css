@@ -26,7 +26,7 @@
 }
 .aktuell__all {
   grid-column: 9 / 13;
-  justify-self: end;
+  justify-self: start;
 }
 
 .aktuell__list {
