@@ -675,7 +675,7 @@ body::after {
 
   .hero { min-height: 0; grid-template-rows: auto auto; }
   .hero__media { grid-column: 1 / -1; grid-row: 1; margin-inline: calc(var(--m) * -1); min-height: 0; height: 64svh; }
-  .hero__text { grid-column: 1 / -1; grid-row: 2; padding: 36px 0 16px; }
+  .hero__text { grid-column: 1 / -1; grid-row: 2; padding: 20px 0 16px; }
 
   .now__head .h2, .now__all { grid-column: 1 / -1; justify-self: start; }
   .now__head { row-gap: 12px; }

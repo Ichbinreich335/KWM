@@ -173,7 +173,6 @@ class Tile {
 
   // Maße neu aufnehmen: T = Dicke der Kachel (fest auf die größte Weite), L = Länge
   layout(horizontal, box, dpr) {
-    this.painted = false;
     const share = OPEN_GROW / (OPEN_GROW + OTHER_GROW * (BAND_COUNT - 1));
     this.horizontal = horizontal;
     this.dpr = dpr;
@@ -189,7 +188,6 @@ class Tile {
     this.rest = Math.max(this.L * REST_EDGE, horizontal ? 104 : 148);
     this.p0 = (this.L - this.rest) / (this.L - this.hi);
 
-    this.painted = true;
     const rand = random(this.glaze.seed * 977 + 13);
     this.bisc = offscreen(this.T, this.L, dpr);
     paintBiscuit(this.bisc.x, this.T, this.L, this.grain, rand);
@@ -220,7 +218,6 @@ class Tile {
   }
 
   draw() {
-    if (!this.painted) { this.dirty = false; return; }
     const { ctx, T, L, glaze, dpr } = this;
     this.visible = this.horizontal ? this.el.clientHeight : this.el.clientWidth;
     const e = this.L - this.p * (this.L - this.hi);

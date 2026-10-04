@@ -1,14 +1,10 @@
 // Lädt die generativen Elemente nur, wenn ihr Platz [data-sig] sichtbar ist.
 // Ausgeblendete Elemente (hidden) werden nicht geladen.
 const modules = {
-  profil: () => import('./sig-profil.js'),
-  drehen: () => import('./sig-drehen.js'),
   logo: () => import('./sig-logo.js'),
   farbskala: () => import('./sig-farbskala.js'),
   orte: () => import('./sig-orte.js'),
-  buehne: () => import('./sig-buehne.js'),
   feuer: () => import('./sig-feuer.js'),
-  komposition: () => import('./sig-komposition.js'),
   sticky: () => import('./sig-sticky.js'),
   aktuell: () => import('./sig-aktuell.js'),
   anfrage: () => import('./sig-anfrage.js'),

@@ -164,45 +164,6 @@ import { random, pickGlaze as pickFrom, renderBowlSprite } from './js/keramik.js
     if (!ticking) { ticking = true; requestAnimationFrame(onScroll); }
   }, { passive: true });
 
-  /* ---------- Horizontale Leisten: ziehen, scrollen, Fortschritt ---------- */
-  $$('[data-drag]').forEach((track) => {
-    const bar = track.closest('section')?.querySelector('[data-drag-progress]');
-    const progress = () => {
-      if (!bar) return;
-      const max = track.scrollWidth - track.clientWidth;
-      const visible = Math.min(1, track.clientWidth / track.scrollWidth);
-      const travel = max > 0 ? (track.scrollLeft / max) * (1 - visible) * 100 : 0;
-      bar.style.transform = `translateX(${travel}%) scaleX(${visible})`;
-    };
-    track.addEventListener('scroll', progress, { passive: true });
-    window.addEventListener('resize', progress, { passive: true });
-    window.addEventListener('load', progress);
-    progress();
-
-    let down = false, startX = 0, startLeft = 0, moved = false;
-    track.addEventListener('pointerdown', (e) => {
-      if (e.pointerType !== 'mouse' || e.button !== 0) return;
-      down = true; moved = false; startX = e.clientX; startLeft = track.scrollLeft;
-    });
-    window.addEventListener('pointermove', (e) => {
-      if (!down) return;
-      const dx = e.clientX - startX;
-      if (Math.abs(dx) > 4) { moved = true; track.classList.add('is-dragging'); }
-      if (moved) track.scrollLeft = startLeft - dx;
-    });
-    window.addEventListener('pointerup', () => {
-      if (!down) return;
-      down = false;
-      requestAnimationFrame(() => track.classList.remove('is-dragging'));
-    });
-    track.addEventListener('click', (e) => { if (moved) { e.preventDefault(); e.stopPropagation(); } }, true);
-    track.addEventListener('dragstart', (e) => e.preventDefault());
-    track.addEventListener('keydown', (e) => {
-      if (e.key === 'ArrowRight') track.scrollBy({ left: 360, behavior: 'smooth' });
-      if (e.key === 'ArrowLeft') track.scrollBy({ left: -360, behavior: 'smooth' });
-    });
-  });
-
   /* ---------- Sprungleiste der Unterseiten: aktuellen Abschnitt markieren ---------- */
   const subnav = $('.subnav');
   const subLinks = $$('.subnav a[href^="#"]');
