@@ -6,7 +6,7 @@ import { reducedMotion } from './keramik';
 const SCRUB_FACTOR = 0.14; // Nachlauf: Anteil der Restdistanz pro Frame
 const START_AT = 0.96; // Aufbau beginnt, wenn das Logo so tief im Fenster steht (Anteil Fensterhöhe)
 const SPAN = 0.62; // Scrollstrecke des Aufbaus (Anteil Fensterhöhe)
-const MAIN_PX = [2.4, 4]; // Strichstärke des Logos in Bildschirm-Pixeln (min, max)
+const MAIN_PX = [2.4, 4] as const; // Strichstärke des Logos in Bildschirm-Pixeln (min, max)
 const MAIN_PX_PER_WIDTH = 0.0068;
 
 const clamp = (v: number, a = 0, b = 1) => Math.min(b, Math.max(a, v));

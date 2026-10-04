@@ -20,7 +20,7 @@ export interface Schale {
   speckles: readonly (readonly [number, number, number])[];
 }
 
-export const GLAZES: readonly Glasur[] = [
+export const GLAZES: readonly [Glasur, ...Glasur[]] = [
   { name: 'Seladon', rim: '#C3D2C4', pool: '#7FA493', w: 16 },
   { name: 'Hellblau', rim: '#CBD9DD', pool: '#8DAFB9', w: 11 },
   { name: 'Weiß', rim: '#EEEAE1', pool: '#D3CCBE', w: 13 },
@@ -52,7 +52,7 @@ export function pickGlaze(rand: Rng): Glasur {
   const total = GLAZES.reduce((a, g) => a + g.w, 0);
   let r = rand() * total;
   for (const g of GLAZES) if ((r -= g.w) <= 0) return g;
-  return GLAZES[0] as Glasur; // Rückfall nach Rundungsfehlern; die Liste ist nicht leer
+  return GLAZES[0];
 }
 
 export const reducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -81,7 +81,7 @@ export const renderBowlSprite = (b: Schale, dpr: number) => {
   const cv = document.createElement('canvas');
   cv.width = cv.height = size;
   const c = cv.getContext('2d');
-  if (!c) throw new Error('Canvas 2D nicht verfügbar');
+  if (!c) return null;
   c.translate(size / 2, size / 2);
   const g = b.glaze;
 
