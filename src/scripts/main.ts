@@ -1,18 +1,40 @@
-import { random, pickGlaze as pickFrom, renderBowlSprite } from './keramik';
+import { random, pickGlaze as pickFrom, renderBowlSprite, type Schale } from './keramik';
+
+/** Schale im Kosmos: feste Eigenschaften, Lage im Ring und Animationszustand. */
+interface Bowl extends Schale {
+  i: number;
+  size: number;
+  jitter: number;
+  x: number;
+  y: number;
+  lift: number;
+  px: number;
+  py: number;
+  hx: number;
+  hy: number;
+  dist: number;
+  theta: number;
+  sprite: HTMLCanvasElement | null;
+  spriteHalf: number;
+}
 
 (() => {
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const $ = (s, c = document) => c.querySelector(s);
-  const $$ = (s, c = document) => [...c.querySelectorAll(s)];
+  // Der Typ-Parameter legt nur fest, welchen Elementtyp der Selektor liefert; er prüft ihn nicht (Standardweg von querySelector<T>)
+  const $ = <T extends Element = HTMLElement>(s: string, c: ParentNode = document): T | null => c.querySelector<T>(s);
+  const $$ = <T extends Element = HTMLElement>(s: string, c: ParentNode = document): T[] => [
+    ...c.querySelectorAll<T>(s),
+  ];
 
   /* ---------- Menü ---------- */
   const toggle = $('[data-menu-toggle]');
   const nav = $('.nav');
-  const setMenu = (open) => {
+  const setMenu = (open: boolean) => {
     if (!toggle) return;
     toggle.setAttribute('aria-expanded', String(open));
-    toggle.querySelector('.menu-toggle__label').textContent = open ? 'Schließen' : 'Menü';
-    nav.classList.toggle('is-open', open);
+    const label = toggle.querySelector('.menu-toggle__label');
+    if (label) label.textContent = open ? 'Schließen' : 'Menü';
+    nav?.classList.toggle('is-open', open);
     document.body.style.overflow = open ? 'hidden' : '';
   };
   toggle?.addEventListener('click', () => setMenu(toggle.getAttribute('aria-expanded') !== 'true'));
@@ -25,7 +47,7 @@ import { random, pickGlaze as pickFrom, renderBowlSprite } from './keramik';
 
   /* ---------- Wörter für die Zeilen-Einblendung aufteilen ---------- */
   $$('[data-reveal="words"]').forEach((el) => {
-    const text = el.textContent.trim();
+    const text = (el.textContent ?? '').trim();
     const words = text.split(/\s+/);
     const readable = document.createElement('span');
     readable.className = 'visually-hidden';
@@ -37,7 +59,7 @@ import { random, pickGlaze as pickFrom, renderBowlSprite } from './keramik';
       const inner = document.createElement('span');
       outer.className = 'w';
       outer.setAttribute('aria-hidden', 'true');
-      inner.style.setProperty('--i', i);
+      inner.style.setProperty('--i', String(i));
       inner.textContent = w;
       outer.appendChild(inner);
       el.append(outer, i < words.length - 1 ? ' ' : '');
@@ -89,7 +111,9 @@ import { random, pickGlaze as pickFrom, renderBowlSprite } from './keramik';
         return;
       }
       const line = innerHeight * READ_LINE;
-      const dotY = parseFloat(getComputedStyle(chronicle.firstElementChild, '::before').top) + 5.5;
+      const first = chronicle.firstElementChild;
+      if (!first) return;
+      const dotY = parseFloat(getComputedStyle(first, '::before').top) + 5.5;
       items.forEach((li) => {
         const box = li.getBoundingClientRect();
         li.classList.toggle('is-on', line >= box.top + dotY);
@@ -115,19 +139,21 @@ import { random, pickGlaze as pickFrom, renderBowlSprite } from './keramik';
 
   /* ---------- Lebensweg: Die Linie füllt sich beim Scrollen ---------- */
   const track = $('[data-journey-track]');
-  if (track && !reduced) {
-    const line = $('.journey', track);
+  const line = track && $('.journey', track);
+  if (track && line && !reduced) {
     const stops = $$('li', line);
     const END_AT = 0.35; // Linie ist voll, wenn der Strahl so weit oben im Bild steht (Anteil der Bildhöhe)
     const END_MOBILE = 0.7; // mobil senkrecht: voll, sobald das Ende des Strahls hier steht
-    const clamp01 = (v) => Math.min(1, Math.max(0, v));
+    const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
 
     // Wo die Mitte jedes Punktes auf der Linie liegt (0 bis 1), waagerecht oder senkrecht
-    let offsets = [];
+    let offsets: number[] = [];
     const measure = () => {
-      const vertical = stops[1].offsetTop > stops[0].offsetTop + 4;
+      const [first, second] = stops;
+      if (!first || !second) return false;
+      const vertical = second.offsetTop > first.offsetTop + 4;
       const rail = getComputedStyle(line, '::before');
-      const dot = getComputedStyle(stops[0], '::before');
+      const dot = getComputedStyle(first, '::before');
       const size = parseFloat(dot.width);
       const start = parseFloat(vertical ? rail.top : rail.left);
       const length = parseFloat(vertical ? rail.height : rail.width);
@@ -136,9 +162,9 @@ import { random, pickGlaze as pickFrom, renderBowlSprite } from './keramik';
       );
       return vertical;
     };
-    const setProgress = (p) => {
+    const setProgress = (p: number) => {
       line.style.setProperty('--p', Math.max(0, p).toFixed(4));
-      stops.forEach((li, i) => li.classList.toggle('is-on', p >= offsets[i]));
+      stops.forEach((li, i) => li.classList.toggle('is-on', p >= (offsets[i] ?? Infinity)));
     };
 
     let queued = 0;
@@ -194,7 +220,7 @@ import { random, pickGlaze as pickFrom, renderBowlSprite } from './keramik';
 
   /* ---------- Sprungleiste der Unterseiten: aktuellen Abschnitt markieren ---------- */
   const subnav = $('.subnav');
-  const subLinks = $$('.subnav a[href^="#"]');
+  const subLinks = $$<HTMLAnchorElement>('.subnav a[href^="#"]');
   if (subnav) {
     // Randausblendung, wenn die Leiste seitlich weiterläuft
     const fade = () => {
@@ -208,7 +234,9 @@ import { random, pickGlaze as pickFrom, renderBowlSprite } from './keramik';
     window.addEventListener('resize', fade, { passive: true });
     fade();
 
-    const byId = new Map(subLinks.map((a) => [a.getAttribute('href').slice(1), a]));
+    const byId = new Map(
+      subLinks.map((a): [string, HTMLAnchorElement] => [(a.getAttribute('href') ?? '').slice(1), a]),
+    );
     const sio = new IntersectionObserver(
       (entries) => {
         entries.forEach((e) => {
@@ -235,7 +263,9 @@ import { random, pickGlaze as pickFrom, renderBowlSprite } from './keramik';
   /* ---------- Kosmos: 99 Schalen von oben, im Ring um eine leere Mitte ---------- */
   $$('[data-cosmos]').forEach((stage) => {
     const canvas = $('canvas', stage);
+    if (!(canvas instanceof HTMLCanvasElement)) return;
     const ctx = canvas.getContext('2d');
+    if (!ctx) return;
     const readout = $('[data-cosmos-readout]', stage);
     const N = 99;
     const GOLDEN = Math.PI * (3 - Math.sqrt(5));
@@ -244,7 +274,7 @@ import { random, pickGlaze as pickFrom, renderBowlSprite } from './keramik';
     const pickGlaze = () => pickFrom(rand);
 
     // Feste Eigenschaften jeder Schale, unabhängig von der Bühnengröße
-    const bowls = Array.from({ length: N }, (_, i) => ({
+    const bowls = Array.from({ length: N }, (_, i): Bowl => ({
       i,
       glaze: pickGlaze(),
       size: 0.8 + rand() * 0.32,
@@ -258,6 +288,10 @@ import { random, pickGlaze as pickFrom, renderBowlSprite } from './keramik';
       lift: 0,
       px: 0,
       py: 0,
+      hx: 0,
+      hy: 0,
+      dist: 0,
+      theta: 0,
       sprite: null,
       spriteHalf: 0,
     }));
@@ -267,7 +301,7 @@ import { random, pickGlaze as pickFrom, renderBowlSprite } from './keramik';
       rot = 0,
       startedAt = 0,
       running = false;
-    let pointer = null,
+    let pointer: { x: number; y: number } | null = null,
       hovered = -1,
       lastT = 0;
 
@@ -298,6 +332,7 @@ import { random, pickGlaze as pickFrom, renderBowlSprite } from './keramik';
           for (let q = p + 1; q < N; q++) {
             const A = bowls[p],
               B = bowls[q];
+            if (!A || !B) continue;
             const dx = B.hx - A.hx,
               dy = B.hy - A.hy;
             const d = Math.hypot(dx, dy) || 0.01;
@@ -329,7 +364,7 @@ import { random, pickGlaze as pickFrom, renderBowlSprite } from './keramik';
       });
     };
 
-    const frame = (t) => {
+    const frame = (t: number) => {
       if (!running) return;
       const dt = Math.min(64, t - (lastT || t));
       lastT = t;
@@ -367,7 +402,7 @@ import { random, pickGlaze as pickFrom, renderBowlSprite } from './keramik';
         .sort((p, q) => p.lift - q.lift)
         .forEach((b) => {
           const appear = reduced ? 1 : Math.min(1, Math.max(0, (t - startedAt - b.i * 16) / 800));
-          if (appear <= 0) return;
+          if (appear <= 0 || !b.sprite) return;
           const e = 1 - (1 - appear) ** 3;
           const scale = (1 + (1 - e) * 0.18) * (1 + b.lift * 0.14);
           const half = b.spriteHalf * scale;
@@ -392,7 +427,7 @@ import { random, pickGlaze as pickFrom, renderBowlSprite } from './keramik';
       requestAnimationFrame(frame);
     };
 
-    const hit = (x, y) => {
+    const hit = (x: number, y: number) => {
       let best = -1,
         bestD = Infinity;
       bowls.forEach((b) => {
@@ -404,12 +439,13 @@ import { random, pickGlaze as pickFrom, renderBowlSprite } from './keramik';
       });
       return best;
     };
-    const setHover = (i) => {
+    const setHover = (i: number) => {
       hovered = i;
-      readout.textContent = i >= 0 ? `Schale ${i + 1} · ${bowls[i].glaze.name}` : '99 Schalen';
+      const bowl = bowls[i];
+      if (readout) readout.textContent = bowl ? `Schale ${i + 1} · ${bowl.glaze.name}` : '99 Schalen';
       canvas.style.cursor = i >= 0 ? 'pointer' : 'default';
     };
-    const track = (e) => {
+    const track = (e: PointerEvent) => {
       const r = canvas.getBoundingClientRect();
       pointer = { x: e.clientX - r.left, y: e.clientY - r.top };
       setHover(hit(pointer.x, pointer.y));
@@ -422,18 +458,19 @@ import { random, pickGlaze as pickFrom, renderBowlSprite } from './keramik';
     });
 
     layout();
-    let rz;
+    let rz: number | undefined;
     window.addEventListener(
       'resize',
       () => {
         clearTimeout(rz);
-        rz = setTimeout(layout, 150);
+        rz = window.setTimeout(layout, 150);
       },
       { passive: true },
     );
     new IntersectionObserver(
-      ([e]) => {
-        if (e.isIntersecting) start();
+      ([entry]) => {
+        if (!entry) return;
+        if (entry.isIntersecting) start();
         else running = false;
       },
       { threshold: 0.08 },
