@@ -40,8 +40,8 @@ Alle PRs sind Entwürfe und bauen aufeinander auf. Gemergt wird in dieser Reihen
    Danach misst ein Agent die Dichte am Handy, und du bekommst einen Vorschlag mit Vorher- und Nachher-Screens.
 2. **Bausteine, Teil 1 fertig**: danach der Zitat-Baustein, dann der PR.
 3. **Handy kürzer, als Vergleich**: eigene Vorschau neben dem sauberen Stand, Ziel etwa −25 % am Handy, Desktop bleibt; die Reise und alle starken Elemente bleiben. Dazu eine Vergleichsseite mit beiden Links und Screens.
-4. **Konzept-Vergleiche für Inhalte**: Ausstellung mit Flyer-Scan (drei Darstellungen), Galerien (Startseite oder eigene Unterseite), Portfolio aus der Lager-Datenbank (kuratiert, filterbar).
-5. **Bausteine, Teil 2 bis 5**: Karten, Listen, Aufklapper, Formular, Bilder; Daten-Dateien nur für das, was später in Sanity kommt (Ausstellungen samt Flyer und Bildern, Orte bzw. Galerien; Werke je nach Portfolio-Entscheidung).
+4. **Konzept-Vergleiche für Inhalte**: Ausstellung mit Flyer-Scan (drei Darstellungen), Galerien (Startseite oder eigene Unterseite).
+5. **Bausteine, Teil 2 bis 5**: Karten, Listen, Aufklapper, Formular, Bilder; Daten-Dateien nur für das, was später in Sanity kommt (Ausstellungen samt Flyer und Bildern, Orte bzw. Galerien; Werke später).
 6. **SEO und Sicherheit**: Sitemap, Vorschaubilder für Links, strukturierte Daten, Sicherheits-Header. `noindex` bleibt bis zum Go-live.
 
 ## Warum in Schritten und nicht alles beim Umzug
