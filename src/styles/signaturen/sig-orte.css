@@ -2,7 +2,7 @@
 .orte {
   background: var(--coal);
   color: var(--on-coal);
-  padding-block: clamp(64px, 8vw, 120px);
+  padding-block: var(--section);
   --ink-2: var(--on-coal-2);
   --hair: rgba(236, 234, 227, 0.22);
   --cover: var(--coal);
@@ -22,8 +22,6 @@
 }
 .orte__head .h2 {
   grid-column: 1 / 9;
-  font-size: var(--t-statement);
-  line-height: var(--t-statement-lh);
 }
 .orte__aside {
   grid-column: 9 / 13;
@@ -110,13 +108,10 @@
   letter-spacing: -0.01em;
   text-wrap: balance;
 }
-.orte__tile--m .orte__name {
+.orte__tile--m .orte__name,
+.orte__tile--xl .orte__name {
   font-size: var(--t-statement);
   line-height: var(--t-statement-lh);
-}
-.orte__tile--xl .orte__name {
-  font-size: var(--t-h2);
-  line-height: var(--t-h2-lh);
 }
 .orte__tile {
   cursor: pointer;
@@ -401,8 +396,8 @@
     line-height: var(--t-h3-lh);
   }
   .orte__tile--xl .orte__name {
-    font-size: var(--t-h2);
-    line-height: var(--t-h2-lh);
+    font-size: var(--t-statement);
+    line-height: var(--t-statement-lh);
   }
 }
 
