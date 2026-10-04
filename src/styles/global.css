@@ -894,10 +894,11 @@ body::after {
   padding-top: 12px;
 }
 
-/* Lebensweg: Zeitstrahl über die volle Breite, fünf Stationen auf den Spalten 1, 3, 5, 7, 9, Link auf Spalte 11 */
+/* Lebensweg: Zeitstrahl über die volle Breite, fünf gleich breite Stationen */
 .journey {
   --dot: 11px;
   --p: 1;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   position: relative;
   margin-top: 0;
   row-gap: 0;
@@ -921,7 +922,6 @@ body::after {
   background: var(--hair);
 }
 .journey li {
-  grid-column: span 2;
   position: relative;
   display: flex;
   flex-direction: column;
