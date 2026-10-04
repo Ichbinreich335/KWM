@@ -6,12 +6,12 @@ Stand: 04.10.2026, abends
 
 ## Jetzt gerade (Pause ab 04.10.2026, nachts)
 
-Laufende Agenten werden noch fertig, danach starte ich nichts Neues. Weiter geht es in der nächsten Sitzung mit „Als Nächstes“.
+Alle Agenten sind fertig, nichts läuft mehr. Weiter geht es in der nächsten Sitzung mit „Als Nächstes“.
 
 | Strang | Stand | Wo |
 |---|---|---|
-| **Feinschliff** (sichtbar) | Teil 1 (Porträt, Feuer, Schärfe) und Teil 2 (Korrekturen nach DESIGN.md) fertig und geprüft. Teil 3 (Raster, °C) läuft bzw. wartet auf Prüfung. Vorschau: https://phase-b3-feinschliff-kwm-redesign.entwicklung-7f3.workers.dev | Branch `phase-b3-feinschliff`, Ordner `../KWM-phase-b3`, Plan `konzept/PLAN-PHASE-B3.md` (im Branch) |
-| **Bausteine, Teil 1** (unsichtbar) | Seitenkopf, Sprungleiste, Abschnittskopf, Kapitelrahmen, Fließtext fertig und geprüft. Zitat-Baustein (alle großen Sätze, 6–7 Varianten) fertig, Prüfung steht aus. Danach PR. | Branch `phase-d1-geruest`, Ordner `../KWM-phase-d` |
+| **Feinschliff** (sichtbar) | Teil 1 (Porträt, Feuer, Schärfe) und Teil 2 (Korrekturen nach DESIGN.md) fertig und geprüft. Teil 3 (Raster, °C) fertig, Prüfung steht aus; offene Frage: beim Aufklappen einer Aktuell-Karte wachsen die Nachbarkarten mit. Vorschau: https://phase-b3-feinschliff-kwm-redesign.entwicklung-7f3.workers.dev | Branch `phase-b3-feinschliff`, Ordner `../KWM-phase-b3`, Plan `konzept/PLAN-PHASE-B3.md` (im Branch) |
+| **Bausteine, Teil 1** (unsichtbar) | Seitenkopf, Sprungleiste, Abschnittskopf, Kapitelrahmen, Fließtext fertig und geprüft. Zitat-Baustein (alle großen Sätze, 7 Varianten) fertig, Prüfung steht aus. Danach PR. Branch gepusht. | Branch `phase-d1-geruest`, Ordner `../KWM-phase-d` |
 
 ## Fertig (wartet auf deine Abnahme)
 
