@@ -42,7 +42,8 @@ export default function init(root) {
     const out = root.querySelector(`#${input.id}-fehler`);
     out.textContent = message;
     out.hidden = !message;
-    input.toggleAttribute('aria-invalid', Boolean(message));
+    if (message) input.setAttribute('aria-invalid', 'true');
+    else input.removeAttribute('aria-invalid');
   };
   const validate = (key) => {
     const message = checks[key](fields[key].value.trim());

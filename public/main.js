@@ -27,8 +27,11 @@ import { random, pickGlaze as pickFrom, renderBowlSprite } from './js/keramik.js
   $$('[data-reveal="words"]').forEach((el) => {
     const text = el.textContent.trim();
     const words = text.split(/\s+/);
-    el.setAttribute('aria-label', text);
+    const readable = document.createElement('span');
+    readable.className = 'visually-hidden';
+    readable.textContent = text;
     el.textContent = '';
+    el.append(readable);
     words.forEach((w, i) => {
       const outer = document.createElement('span');
       const inner = document.createElement('span');

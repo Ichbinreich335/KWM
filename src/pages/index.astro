@@ -1349,33 +1349,35 @@ import InquiryForm from '../components/InquiryForm.astro';
           />
           <figcaption>Vor dem ersten Brand · Foto: Haydar Koyupinar</figcaption>
         </figure>
-        <dl class="facts">
-          <div>
-            <dt>Masse</dt>
-            <dd>Westerwälder Steinzeug, auf der Töpferscheibe gedreht</dd>
-          </div>
-          <div>
-            <dt>Schrühbrand</dt>
-            <dd>Elektroofen, etwa 950 °C</dd>
-          </div>
-          <div>
-            <dt>Glasurbrand</dt>
-            <dd>Gasofen, ca. 1300 °C, reduzierende Atmosphäre</dd>
-          </div>
-          <div>
-            <dt>Programm</dt>
-            <dd>Vom Teller bis zum Krug, dazu die Edition mit Vasen, Pflanzgefäßen und Dosen</dd>
-          </div>
-          <div>
-            <dt>Gebrauch</dt>
-            <dd>Alle Stücke sind spülmaschinenfest</dd>
-          </div>
+        <div class="facts">
+          <dl class="facts__list">
+            <div>
+              <dt>Masse</dt>
+              <dd>Westerwälder Steinzeug, auf der Töpferscheibe gedreht</dd>
+            </div>
+            <div>
+              <dt>Schrühbrand</dt>
+              <dd>Elektroofen, etwa 950 °C</dd>
+            </div>
+            <div>
+              <dt>Glasurbrand</dt>
+              <dd>Gasofen, ca. 1300 °C, reduzierende Atmosphäre</dd>
+            </div>
+            <div>
+              <dt>Programm</dt>
+              <dd>Vom Teller bis zum Krug, dazu die Edition mit Vasen, Pflanzgefäßen und Dosen</dd>
+            </div>
+            <div>
+              <dt>Gebrauch</dt>
+              <dd>Alle Stücke sind spülmaschinenfest</dd>
+            </div>
+          </dl>
           <div class="facts__cta">
             <a class="button" href="/manufaktur">
               Zum Programm
             </a>
           </div>
-        </dl>
+        </div>
         <figure class="craft__media3" data-reveal="img">
           <img
             src="/img/kwm/kannen.webp"
@@ -1440,7 +1442,7 @@ import InquiryForm from '../components/InquiryForm.astro';
             Wischen
           </p>
         </div>
-        <ol class="chronicle__list" aria-label="Chronik der Werkstatt">
+        <ol class="chronicle__list" aria-label="Chronik der Werkstatt" tabindex="0">
           <li>
             <span class="chronicle__year">1924</span>
             <div class="chronicle__what">
