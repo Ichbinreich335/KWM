@@ -99,32 +99,14 @@ import { random, pickGlaze as pickFrom, renderBowlSprite } from './js/keramik.js
     }
   }
 
-  /* ---------- Lebensweg: Standard folgt dem Scrollen, Variante „zeichnen“ zeichnet sich einmal beim Sichtbarwerden ---------- */
+  /* ---------- Lebensweg: Die Linie füllt sich beim Scrollen ---------- */
   const track = $('[data-journey-track]');
   if (track && !reduced) {
     const line = $('.journey', track);
     const stops = $$('li', line);
-    const DRAW_MS = 1600;
-    const DRAW_EASE = [0.45, 0, 0.2, 1]; // ruhiger Anlauf, damit die Punkte hörbar nacheinander kommen
-    const SEEN = 0.3; // Anteil des Strahls im Bild, ab dem er sich zeichnet
-    const END_AT = 0.35; // Scroll-Variante: Linie ist voll, wenn der Strahl so weit oben im Bild steht (Anteil der Bildhöhe)
+    const END_AT = 0.35; // Linie ist voll, wenn der Strahl so weit oben im Bild steht (Anteil der Bildhöhe)
     const END_MOBILE = 0.7; // mobil senkrecht: voll, sobald das Ende des Strahls hier steht
     const clamp01 = (v) => Math.min(1, Math.max(0, v));
-
-    // Kubische Bézierkurve wie in CSS (cubic-bezier), per Bisektion gelöst
-    const bezier = ([x1, y1, x2, y2]) => {
-      const at = (t, a, b) => 3 * a * t * (1 - t) ** 2 + 3 * b * t * t * (1 - t) + t ** 3;
-      return (x) => {
-        let lo = 0;
-        let hi = 1;
-        for (let i = 0; i < 24; i += 1) {
-          const t = (lo + hi) / 2;
-          if (at(t, x1, x2) < x) lo = t; else hi = t;
-        }
-        return at((lo + hi) / 2, y1, y2);
-      };
-    };
-    const drawEase = bezier(DRAW_EASE);
 
     // Wo die Mitte jedes Punktes auf der Linie liegt (0 bis 1), waagerecht oder senkrecht
     let offsets = [];
@@ -143,69 +125,21 @@ import { random, pickGlaze as pickFrom, renderBowlSprite } from './js/keramik.js
       stops.forEach((li, i) => li.classList.toggle('is-on', p >= offsets[i]));
     };
 
-    const modes = {
-      zeichnen() {
-        let frame = 0;
-        const reset = () => { measure(); setProgress(-1); };
-        const draw = () => {
-          const t0 = performance.now();
-          const step = (now) => {
-            const k = Math.min(1, (now - t0) / DRAW_MS);
-            setProgress(drawEase(k));
-            frame = k < 1 ? requestAnimationFrame(step) : 0;
-          };
-          frame = requestAnimationFrame(step);
-        };
-        const seen = new IntersectionObserver(([entry]) => {
-          if (!entry.isIntersecting) return;
-          seen.disconnect();
-          draw();
-        }, { threshold: SEEN });
-        const relayout = () => { if (!frame) measure(); };
-        reset();
-        seen.observe(line);
-        window.addEventListener('resize', relayout, { passive: true });
-        return () => {
-          seen.disconnect();
-          cancelAnimationFrame(frame);
-          window.removeEventListener('resize', relayout);
-        };
-      },
-      scrollen() {
-        let queued = 0;
-        let vertical = measure();
-        const update = () => {
-          queued = 0;
-          const { top, height } = line.getBoundingClientRect();
-          const vh = window.innerHeight;
-          // Beginn, sobald der Strahl unten ins Bild kommt; voll bei 35 % von oben (mobil: wenn sein Ende bei 70 % steht)
-          const span = vertical ? vh * (1 - END_MOBILE) + height : vh * (1 - END_AT);
-          setProgress(clamp01((vh - top) / span));
-        };
-        const request = () => { if (!queued) queued = requestAnimationFrame(update); };
-        const relayout = () => { vertical = measure(); request(); };
-        update();
-        window.addEventListener('scroll', request, { passive: true });
-        window.addEventListener('resize', relayout, { passive: true });
-        return () => {
-          cancelAnimationFrame(queued);
-          window.removeEventListener('scroll', request);
-          window.removeEventListener('resize', relayout);
-        };
-      },
+    let queued = 0;
+    let vertical = measure();
+    const update = () => {
+      queued = 0;
+      const { top, height } = line.getBoundingClientRect();
+      const vh = window.innerHeight;
+      // Beginn, sobald der Strahl unten ins Bild kommt; voll bei 35 % von oben (mobil: wenn sein Ende bei 70 % steht)
+      const span = vertical ? vh * (1 - END_MOBILE) + height : vh * (1 - END_AT);
+      setProgress(clamp01((vh - top) / span));
     };
-
-    let mode = '';
-    let stop = () => {};
-    const select = () => {
-      const next = document.documentElement.dataset.lebensweg === 'zeichnen' ? 'zeichnen' : 'scrollen';
-      if (next === mode) return;
-      stop();
-      mode = next;
-      stop = modes[next]();
-    };
-    select();
-    document.addEventListener('kwm:varianten', select);
+    const request = () => { if (!queued) queued = requestAnimationFrame(update); };
+    const relayout = () => { vertical = measure(); request(); };
+    update();
+    window.addEventListener('scroll', request, { passive: true });
+    window.addEventListener('resize', relayout, { passive: true });
   }
 
   /* ---------- Scrollgebundene Bewegung: Einstiegsbild, Kopfzeile ---------- */
@@ -451,8 +385,6 @@ import { random, pickGlaze as pickFrom, renderBowlSprite } from './js/keramik.js
     layout();
     let rz;
     window.addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(layout, 150); }, { passive: true });
-    // Wird eine Fassung über das Entwurf-Panel eingeblendet, fehlt ihr noch die Größe
-    document.addEventListener('kwm:varianten', () => { if (!S) layout(); });
     new IntersectionObserver(([e]) => {
       if (e.isIntersecting) start(); else running = false;
     }, { threshold: 0.08 }).observe(stage);

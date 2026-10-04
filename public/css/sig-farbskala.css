@@ -67,11 +67,6 @@
 .scale:not(.is-live) .scale__band:hover .scale__sample { width: 96px; height: 96px; transform: scale(1); }
 .scale:not(.is-live) .scale__band:hover { flex-grow: 2.6; }
 
-/* Variante „Fläche“: ruhige Vollflächen in der gemessenen Glasurfarbe, ohne Scherben, Kante und Glanz */
-:root[data-farbskala="flaeche"] .scale { gap: 0; }
-:root[data-farbskala="flaeche"] .scale__cv { display: none; }
-:root[data-farbskala="flaeche"] .scale__sample { box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.6); }
-
 @media (max-width: 900px) {
   .scale { flex-direction: column; height: 580px; }
   .scale__band { min-height: 0; }

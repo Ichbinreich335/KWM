@@ -56,17 +56,10 @@ test('Hinweiszeile erscheint nur in ihrem Zeitraum (Entscheidung im Browser, nic
   await danach.close();
 });
 
-test('Kein Entwurf-Panel, feste Fassung auch mit früher gespeicherter Auswahl', async ({ page }) => {
-  await page.addInitScript(() =>
-    localStorage.setItem(
-      'kwm-entwurf',
-      JSON.stringify({ grund: 'creme', lebensweg: 'zeichnen', einstieg: 'wortbild' }),
-    ),
-  );
-  await page.goto('/?grund=porzellan&einstieg=wortbild');
-  await expect(page.locator('html')).toHaveAttribute('data-grund', 'galerie');
-  await expect(page.locator('html')).toHaveAttribute('data-lebensweg', 'scrollen');
+test('Kein Entwurf-Panel, feste Fassung der Startseite', async ({ page }) => {
+  await page.goto('/');
   await expect(page.locator('#top')).toBeVisible();
   await expect(page.locator('#einstieg')).toHaveCount(0);
+  await expect(page.locator('.komposition')).toHaveCount(0);
   await expect(page.getByRole('button', { name: /Entwurf/ })).toHaveCount(0);
 });

@@ -54,15 +54,12 @@
   --arrow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M1 8h13M9 3l5 5-5 5' fill='none' stroke='black' stroke-width='1.2'/%3E%3C/svg%3E");
 }
 
-/* Grundton-Varianten für den Farbtest (Entwurf): Galerie ist der Ausgangswert */
 @media (max-width: 900px) {
   :root { --t-mega: clamp(3rem, 15.5vw, 6rem); }
 }
-:root[data-grund="porzellan"] { --ground: #F0F0EC; --ground-2: #E4E4DF; --ground-3: #D9D9D3; }
-:root[data-grund="creme"] { --ground: #F3F1EC; --ground-2: #E8E5DE; --ground-3: #DDD8CE; --ink: #1B1815; --ink-2: #5A554D; }
 
 *, *::before, *::after { box-sizing: border-box; }
-/* Ausgeblendete Varianten bleiben aus, auch wenn eine Komponente display setzt */
+/* Ausgeblendete Elemente bleiben aus, auch wenn eine Komponente display setzt */
 [hidden] { display: none !important; }
 html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; scroll-padding-top: var(--head); }
 html:has(.subnav) { scroll-padding-top: calc(var(--head) + var(--subnav)); }

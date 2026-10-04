@@ -217,7 +217,6 @@ export default function init(el) {
     pal = { ink: get('--ink', '#1B1815'), ink2: get('--ink-2', '#5A554D'), ground: get('--ground-2', '#E8E5DE'), coal: get('--coal', '#121210') };
   };
   readPalette();
-  new MutationObserver(readPalette).observe(document.documentElement, { attributes: true, attributeFilter: ['data-grund'] });
 
   /* Größe und Anordnung */
   let W = 0, Hh = 0, dpr = 1, prof = null, disc = null, tex = null;

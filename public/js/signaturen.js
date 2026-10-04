@@ -1,5 +1,5 @@
 // Lädt die generativen Elemente nur, wenn ihr Platz [data-sig] sichtbar ist.
-// Ausgeblendete Varianten (hidden) werden geladen, sobald das Entwurf-Panel sie einblendet.
+// Ausgeblendete Elemente (hidden) werden nicht geladen.
 const modules = {
   profil: () => import('./sig-profil.js'),
   drehen: () => import('./sig-drehen.js'),
@@ -25,4 +25,3 @@ const run = () => {
 };
 
 run();
-document.addEventListener('kwm:varianten', run);

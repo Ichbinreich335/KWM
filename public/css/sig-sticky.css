@@ -1,4 +1,4 @@
-/* Signatur: sticky – Text bleibt beim Scrollen oben im Foto stehen, bis das Bild durch ist (Porträt und Feuer; Feuer-Variante: wandert).
+/* Signatur: sticky – Text bleibt beim Scrollen oben im Foto stehen, bis das Bild durch ist (Porträt und Feuer).
    Abschnitt ist höher als der Bildschirm, die Textebene klebt oben (100svh) und zieht am Ende mit dem Abschnitt weiter.
    Das Foto läuft normal mit; js/sig-sticky.js verschiebt es nur minimal gegenläufig (Parallax, ≤ 5 %). */
 .sticky-bild {
@@ -85,33 +85,11 @@
     radial-gradient(ellipse 80% 70% at 0% 0%, rgb(10 10 10 / 0.78) 0%, rgb(10 10 10 / 0) 100%),
     linear-gradient(90deg, rgb(10 10 10 / 0.66) 0%, rgb(10 10 10 / 0.56) 58%, rgb(10 10 10 / 0.2) 100%);
 }
-/* Variante „wandernd“: Textblock im Fluss, Mitte wandert gleichmäßig über das Bild (js/sig-sticky.js). Ohne JS steht er mittig. */
-[data-feuertext="wandernd"] .sticky-bild--feuer {
-  --sticky-h: 82svh;
-  --feuer-pad: clamp(24px, 6svh, 56px);
-  --feuer-y: 0px;
-  height: auto;
-}
-[data-feuertext="wandernd"] .sticky-bild--feuer .sticky-bild__pane {
-  position: relative;
-  height: auto;
-  min-height: var(--sticky-h);
-  padding-block: var(--feuer-pad);
-  align-content: center;
-}
-[data-feuertext="wandernd"] .sticky-bild--feuer.is-travel .sticky-bild__pane { align-content: start; }
-.sticky-bild--feuer.is-travel .sticky-bild__text { transform: translate3d(0, var(--feuer-y), 0); will-change: transform; }
-[data-feuertext="wandernd"] .sticky-bild--feuer .sticky-bild__media::after {
-  background: linear-gradient(90deg, rgb(10 10 10 / 0.74) 0%, rgb(10 10 10 / 0.64) 58%, rgb(10 10 10 / 0.2) 100%);
-}
 
 @media (max-width: 900px) {
   .sticky-bild { --sticky-h: 130svh; --sticky-text-from: 1; --sticky-text-to: -1; }
   .sticky-bild--feuer { --sticky-h: 150svh; --sticky-text-to: -1; }
   .sticky-bild--feuer .sticky-bild__media::after { background: rgb(10 10 10 / 0.66); }
-  [data-feuertext="wandernd"] .sticky-bild--feuer { --sticky-h: 78svh; }
-  [data-feuertext="wandernd"] .sticky-bild--feuer .sticky-bild__pane { padding-bottom: var(--feuer-pad); }
-  [data-feuertext="wandernd"] .sticky-bild--feuer .sticky-bild__media::after { background: rgb(10 10 10 / 0.66); }
   .sticky-bild--portrait { --sticky-h: 135svh; --sticky-text-from: 1; --sticky-text-to: -1; }
   .sticky-bild__media::after,
   .sticky-bild--portrait .sticky-bild__media::after { background: rgb(10 10 10 / 0.66); }
@@ -122,5 +100,5 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .sticky-bild__img, .sticky-bild--feuer.is-travel .sticky-bild__text { will-change: auto; }
+  .sticky-bild__img { will-change: auto; }
 }
