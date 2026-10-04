@@ -8,9 +8,8 @@ Stand: 04.10.2026, abends
 
 | Läuft | Was passiert | Wo |
 |---|---|---|
-| **Porträt und Feuer** (Feinschliff, Teil 1) | Am Handy stehen Porträt und Zitat untereinander, das Gesicht ist frei. Der Feuer-Text läuft bis unten mit. Porträt und Feuer werden schärfer. | Branch `phase-b3-feinschliff`, Ordner `../KWM-phase-b3` |
+| **Feinschliff, Teil 2** (kleine Korrekturen nach DESIGN.md) | Teil 1 ist fertig und geprüft: Porträt am Handy untereinander, Gesicht frei; Feuer-Text läuft bis unten mit; beide Bilder schärfer. Vorschau: `https://phase-b3-feinschliff-kwm-redesign.entwicklung-7f3.workers.dev` | Branch `phase-b3-feinschliff`, Ordner `../KWM-phase-b3` |
 | **Bausteine, Teil 1b** (Abschnittskopf, Kapitelkopf, Einleitung, Fließtext) | Seitenkopf und Sprungleiste sind fertig und geprüft. Jetzt folgen die nächsten vier Bausteine. | Branch `phase-d1-geruest`, Ordner `../KWM-phase-d` |
-| **Vergleich Hell/Dunkel** | Screens der Startseite in vier Fassungen (heute, Orte hell, ohne Grau, beides), nur zum Ansehen | `.shots/rhythmus/` |
 
 ## Fertig (wartet auf deine Abnahme)
 
@@ -25,6 +24,7 @@ Alle PRs sind Entwürfe und bauen aufeinander auf. Gemergt wird in dieser Reihen
 | ✓ | Skripte in TypeScript | Die Skripte sind typgeprüft und gebündelt. Effekte werden erst geladen, wenn sie ins Bild kommen. | nein | #8 |
 | ✓ | Bilder responsiv | Astro erzeugt für jedes Bild passende Größen. Das größte Bild ist 0,7 s früher da. | nein | #9 |
 | ✓ | Schriften | Die Schriften laufen über Astros Fonts API, mit Vorladen und angepassten Ersatzschriften. | nein | #10 |
+| ✓ | Vergleich Hell/Dunkel | Vier Fassungen der Startseite als Screens. Empfehlung: so lassen (siehe ADMIN-OFFEN). | – | `.shots/rhythmus/` |
 | ✓ | Visuelles Review | Die externe Kritik ist geprüft: 14 von 20 Punkten stimmen. Der Bericht liegt in `VISUELLES-REVIEW.md`. | – | – |
 
 ## Als Nächstes
