@@ -9,7 +9,17 @@ import '../styles/signaturen/signaturen.css';
 import { bildMetadaten } from '../data/bilder';
 
 // Die Glasurknöpfe tragen die gebaute Bild-URL in data-img (Doku: Bild-URL an den Client reichen).
-const glasurBild = async (src: string) => (await getImage({ src: bildMetadaten(src) })).src;
+const glasurBild = async (src: string) =>
+  (
+    await getImage({
+      src: bildMetadaten(src),
+      width: 100,
+      height: 100,
+      layout: 'constrained',
+      fit: 'fill',
+      position: 'center',
+    })
+  ).src;
 ---
 
 <BaseLayout
