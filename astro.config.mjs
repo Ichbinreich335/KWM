@@ -12,13 +12,14 @@ export default defineConfig({
   compressHTML: true,
   vite: {
     build: {
-      rollupOptions: {
+      rolldownOptions: {
         output: {
           // Eigene Chunks, damit die Reihenfolge Grundstile, Seiten-CSS, Signaturen im HTML erhalten bleibt
-          manualChunks(id) {
-            if (id.includes('/src/styles/signaturen/')) return 'signaturen';
-            if (/\/src\/styles\/(basis|global|pages|expander)\.css/.test(id)) return 'basis';
-            return undefined;
+          codeSplitting: {
+            groups: [
+              { name: 'signaturen', test: /\/src\/styles\/signaturen\// },
+              { name: 'basis', test: /\/src\/styles\/(basis|global|pages|expander)\.css/ },
+            ],
           },
         },
       },
