@@ -2,7 +2,7 @@
 
 Stand: 04.10.2026. Plan: [PLAN-ASTRO-UMBAU.md](PLAN-ASTRO-UMBAU.md), Abschnitt 7. Branch `astro-umbau` (von `design-v3`), Worktree `../KWM-astro`.
 
-**Kurz:** Alle 13 Seiten laufen als statische Astro-Seiten und sehen aus wie der Prototyp V3. 26 von 26 Ganzseiten-Screens stimmen mit dem Prototyp überein, und der gerenderte Text ist auf jeder Seite identisch. Die Leistung ist gleich oder minimal besser. Zwei Dinge muss der Admin tun: in Cloudflare den Build-Befehl setzen und die Vorschau abnehmen. Erst danach wird `prototyp/` gelöscht.
+**Kurz:** Alle 13 Seiten laufen als statische Astro-Seiten und sehen aus wie der Prototyp V3. 26 von 26 Ganzseiten-Screens stimmen mit dem Prototyp überein, und der gerenderte Text ist auf jeder Seite identisch. Die Leistung ist gleich oder minimal besser. Offen beim Admin: die Vorschau abnehmen (Build-Befehl ist gesetzt, siehe 1.). Der alte Prototyp ist archiviert (`archiv/`).
 
 **Vorschau:** https://astro-umbau-kwm-redesign.entwicklung-7f3.workers.dev (öffentlich, `noindex`)
 
@@ -10,8 +10,8 @@ Stand: 04.10.2026. Plan: [PLAN-ASTRO-UMBAU.md](PLAN-ASTRO-UMBAU.md), Abschnitt 7
 
 | # | Was | Warum | Wie |
 |---|---|---|---|
-| 1 | **Build-Befehl für Previews setzen** (Produktion erledigt am 04.10.2026) | Für die Produktion steht `npm run build` jetzt drin. Für die Vorschauen ist das Feld noch leer, sowohl in der Vorgabe für neue Branches als auch in der bestehenden Vorschau `astro-umbau`, die ihre Einstellungen eigens speichert. Automatische Vorschau-Builds scheitern deshalb weiter mit „dist does not exist“. | Dashboard → Workers & Pages → `kwm-redesign` → Settings → Build → Bereich Previews: **Build command** `npm run build`. Falls die Vorschau `astro-umbau` den Wert nicht übernimmt, dort ebenfalls setzen oder die Vorschau löschen, dann entsteht sie beim nächsten Push neu aus der Vorgabe. Optional Watch-Pfade wie unten. |
-| 2 | **Vorschau ansehen und Phase A abnehmen** | Erst nach der Abnahme wird der Prototyp gelöscht (Plan A8 Schritt 6). | Vorschau-URL oben. Danach Bescheid geben: Ich setze den Tag `prototyp-v3`, lösche `prototyp/` und stelle den Ausgangsstand für die Tests auf `main` um. |
+| 1 | **Build-Befehl: Rest bei der Vorschau `astro-umbau`** (Produktion und Vorgabe für neue Vorschauen sind seit 04.10.2026 gesetzt) | Die bestehende Vorschau `astro-umbau` hat ihre Einstellungen beim Anlegen kopiert, ihr Build-Befehl ist noch leer. Automatische Builds dieses Branches scheitern deshalb weiter mit „dist does not exist“. Die Vorschau-URL zeigt trotzdem den aktuellen Stand, weil ich sie nach jedem Stand per `npx wrangler preview` hochlade. | Dashboard → `kwm-redesign` → Previews → `astro-umbau` → Settings: Build command `npm run build`. Oder die Vorschau löschen, dann entsteht sie beim nächsten Push neu aus der Vorgabe. |
+| 2 | **Vorschau ansehen und Phase A abnehmen** | Nach der Abnahme wird der Ausgangsstand der Tests auf `main` umgestellt; der Prototyp bleibt im Archiv. | Vorschau-URL oben. Danach Bescheid geben: Ich setze den Tag `prototyp-v3` und stelle den Ausgangsstand für die Tests auf `main` um. Der Prototyp liegt im Archiv (`archiv/prototyp/`). |
 | 3 | optional: andere Branches | Vorschau-Builds von `design-v3`, `claude/softr-lager-app` usw. scheitern seit heute, weil `wrangler preview` einen `previews`-Block in `wrangler.jsonc` verlangt. In `astro-umbau` ist er ergänzt; nach dem Merge erben neue Branches ihn. | Nichts tun, falls diese Vorschauen nicht mehr gebraucht werden. |
 | 4 | optional (E6) | Vorschau-URLs sind öffentlich. | Cloudflare Access für die Previews einschalten (ein Schalter im Dashboard). |
 
@@ -69,7 +69,7 @@ Auf der Cloudflare-Vorschau (mobil, Median aus 3): Startseite Leistung 95, Barri
 
 ## 3. Offen
 
-- **Prototyp löschen** (A8 Schritt 6): wartet auf die Abnahme (Admin-Punkt 2). Dabei zuerst `prototyp/src/data/figures.json` nach `konzept/` verschieben und den Verweis in `konzept/AUFTRAG-ASTRO.md` (Phase 5, WordPress-Weiterleitungen) anpassen. Sonst wären die Quelldaten nur noch im Tag. Der Plan hatte das übersehen, die Endprüfung hat es gefunden.
+- ~~Prototyp löschen~~ → **archiviert statt gelöscht** (Admin-Entscheidung 04.10.2026): `prototyp/` liegt jetzt in `archiv/prototyp/`, die alten Entwurfs-Dokumente aus dem Hauptordner in `archiv/entwurf/` (siehe `archiv/README.md`). `figures.json` (Bilderliste der alten WordPress-Seite) ist nach `konzept/figures.json` gezogen, der Verweis in `AUFTRAG-ASTRO.md` ist angepasst. Das Einmal-Werkzeug `zu-astro.mjs` ist entfernt (steht in der Git-Historie). Der Prototyp baut aus dem Archiv unverändert und dient bis zur Abnahme als Ausgangsstand der Optik-Tests. Nach der Abnahme wird der Ausgangsstand auf `main` umgestellt (Plan A8 Schritt 6, ohne das Löschen).
 - ~~Alte Hilfsskripte in `.shots/`~~: erledigt (Admin-Entscheidung 04.10.2026). `folds`, `probe`, `states`, `sub-confirm` und `sheet` sind entfernt, weil sie ohne Funktion waren. Geblieben sind `shoot`, `segments`, `mobsheet`, `sub-mob`, `tile` und `inspo`.
 - **Vorschau per Workers Builds:** wartet auf den Build-Befehl (Admin-Punkt 1). Die Vorschau oben habe ich bis dahin lokal mit `npx wrangler preview` erzeugt, dem Befehl, den auch Workers Builds ausführt.
 - **Nach dem Merge** (A8 Schritt 7): Produktions-Build beobachten, Routen- und Verhaltenstests gegen die Produktions-URL.

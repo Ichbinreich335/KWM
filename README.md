@@ -51,7 +51,7 @@ src/data/             kontakt.ts (Telefon, Mail, Zeiten, Adresse), navigation.ts
 src/pages/            eine .astro-Datei pro Seite
 public/               CSS, JS, Schriften, Bilder, _headers, _redirects, robots.txt (aus dem Prototyp übernommen; wird in Phase C gebündelt)
 tests/                Playwright-Tests (siehe oben)
-konzept/              Konzepte, Pläne, Berichte
+konzept/              Konzepte, Pläne, Berichte; figures.json = Bilderliste der alten WordPress-Seite
 .shots/               Skripte für Screenshots zur Sichtprüfung (Bilder werden nicht eingecheckt)
-prototyp/             alter HTML-Prototyp (V1–V3), nur bis zur Abnahme von Phase A
+archiv/               abgeschlossene Stände: HTML-Prototyp (V1–V3), frühe Entwurfs-Dokumente
 ```

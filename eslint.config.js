@@ -7,7 +7,7 @@ export default [
       'dist/',
       '.astro/',
       'public/',
-      'prototyp/',
+      'archiv/',
       'konzept/',
       'keramik/',
       '.shots/',
