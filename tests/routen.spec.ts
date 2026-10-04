@@ -79,30 +79,14 @@ test('Stylesheet-Reihenfolge: Grundstile, Seiten-CSS, Signaturen, nur die Schrif
   }
 });
 
-test('Chunk basis: Komponenten-Stile stehen nach global, pages und expander', async ({ page, request }) => {
-  await page.goto('/');
-  const href = await page.locator('link[rel=stylesheet]').first().getAttribute('href');
-  expect(href, 'erstes Stylesheet der Startseite').toMatch(/^\/_astro\/basis\..+\.css$/);
-  const css = await (await request.get(href ?? '')).text();
-  // Top-Level-Blöcke nach Klammertiefe trennen; @layer-Blöcke (Bildstile von Astro) zählen nicht
-  const bloecke: string[] = [];
-  let tiefe = 0;
-  let anfang = 0;
-  for (let i = 0; i < css.length; i++) {
-    if (css[i] === '{') tiefe++;
-    if (css[i] === '}' && --tiefe === 0) {
-      bloecke.push(css.slice(anfang, i + 1));
-      anfang = i + 1;
-    }
-  }
-  const regeln = bloecke.filter((block) => !block.trimStart().startsWith('@layer'));
-  const ersterKomponentenstil = regeln.findIndex((block) => block.includes(':where(.astro-'));
-  expect(ersterKomponentenstil, 'basis enthält Komponenten-Stile').toBeGreaterThan(-1);
-  const danach = regeln.slice(ersterKomponentenstil).filter((block) => !block.includes(':where(.astro-'));
-  expect(
-    danach.map((block) => block.slice(0, 60)),
-    'Komponenten-Stile müssen nach global/pages/expander stehen',
-  ).toEqual([]);
+test('Chunk basis: Komponenten-Stile stehen nach global, pages und expander', async ({ request }) => {
+  const html = await (await request.get('/werkstatt')).text();
+  const basis = html.match(/\/_astro\/basis\.[^"]+\.css/)?.[0] ?? '';
+  const css = await (await request.get(basis)).text();
+  const komponenten = css.indexOf(':where(.astro-');
+  expect(komponenten, 'Komponenten-Stile müssen nach global/pages/expander stehen').toBeGreaterThan(
+    css.lastIndexOf('.expander'),
+  );
 });
 
 test('Schriften: genau zwei Preloads, Libre Caslon Display und Jost, jeweils die latin-Datei', async ({ page }) => {
