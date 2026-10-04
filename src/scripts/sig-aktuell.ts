@@ -53,8 +53,8 @@ export default function init(el: Element) {
     item.classList.toggle('is-open', open);
     if (!button) return;
     button.setAttribute('aria-expanded', String(open));
-    const label = button.querySelector('[data-label]');
-    if (label) label.textContent = open ? 'Weniger anzeigen' : 'Mehr zur Ausstellung';
+    const label = button.querySelector<HTMLElement>('[data-label]');
+    if (label) label.textContent = open ? 'Weniger anzeigen' : (label.dataset.label ?? '');
   };
 
   items.forEach((item) => {
