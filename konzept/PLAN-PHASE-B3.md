@@ -66,3 +66,27 @@ Der Admin empfindet die Startseite am Handy als voll, dicht und lang. Ein Sonnet
 ## Abschluss
 
 Endprüfung `code-review` (Opus) gegen `phase-c4-schriften`, Bericht `konzept/PHASE-B3-BERICHT.md` mit Vorher/Nachher-Screens, Draft-PR „Visueller Feinschliff“ (Basis `phase-c4-schriften`), `ADMIN-OFFEN.md` ergänzen.
+
+## Aufgabe B3-5: Handy kürzer – als Vergleich (Admin, 04.10.2026)
+
+Admin: Am Desktop ist die Startseite „wie eine Reise“, die Länge bleibt. Am Handy ist sie zu lang und zu dicht → kürzen, **ohne die Reise kaputt zu machen**. Visuell starke und interaktive Elemente bleiben: Einstieg, Aktuell (dunkel), Porträt, Orte, Ring der 99 Schalen, Farbskala, Feuer, Chronik. Grau seltener ist in Ordnung.
+
+**Vorgehen:** eigener Branch `phase-b3-mobil-kurz` von `phase-b3-feinschliff` nach B3-3 (sauberer Stand). Eigene Vorschau. Der Admin vergleicht beide Vorschauen und entscheidet; erst dann wird gemergt.
+
+**Messung vorher (390 px, Startseite 20.208 px):** Einstieg 1.032 · Aktuell 2.572 · Lede 955 · Young-Jae Lee 2.723 · Meisterstücke 1.849 · Orte 2.161 · Meditation 762 · 99 Schalen 937 · Manufaktur 2.623 · Feuer 1.266 · Chronik 751 · Besuch 1.440 · Fuß 1.138. Ziel: rund 15.000 px (−25 %). Kein Abschnitt fällt weg.
+
+**Grundsatz:** kürzen durch Verdichten und seitliches Wischen (Muster der Chronik), nicht durch engere Abstände – die Seite soll ruhiger werden, nicht gedrängter. Nur unter 900 px, Desktop bleibt pixelgleich (Optik 1440 ohne Update). Kein Text wird gelöscht; was am Handy entfällt, steht auf der verlinkten Unterseite. Schlank: CSS im bestehenden Medienblock, `display: none` nur für doppelte oder rein ergänzende Teile, keine neuen Skripte (Wischen per `overflow-x: auto` + `scroll-snap` wie die Chronik, deren Muster wiederverwenden).
+
+| Abschnitt | Am Handy | Ersparnis ca. |
+|---|---|---|
+| Aktuell | Spotlight bleibt wie heute; die drei weiteren Karten als Wischreihe (Karte ~80 % Breite, Bild 4:3, Hinweis „Wischen“ wie Chronik) | 1.200 |
+| Young-Jae Lee | Porträt-Zitat eine Stufe kleiner (`--t-quote` statt `--t-lede`); Lebensweg als Wischreihe statt fünf Stationen untereinander | 600 |
+| Meisterstücke | Satz „Alle Meisterstücke …“ am Handy ausblenden (steht auf der Unterseite); Raster zeigt 4 statt 6 Werke, Werkangaben nur Titel und Jahr | 700 |
+| Orte | Köln und München groß, die übrigen Städte als zweispaltige flache Kacheln (halbe Höhe); Öffnen-Verhalten unverändert | 900 |
+| 99 Schalen | Bühne ohne graue Fläche (auch Desktop, Admin: „Grau seltener“ – als einzige Desktop-Änderung, Optik 1440 gezielt aktualisieren); Wagner-Zitat am Handy ausblenden (die H2 wiederholt es) | 300 |
+| Manufaktur | Farbskala bleibt; zweites Foto (Krüge) am Handy ausblenden; Faktenliste auf Masse, Glasurbrand, Gebrauch | 700 |
+| übrige | große Zitate und Aussagen am Handy eine Stufe kleiner, falls nach den obigen Punkten noch zu wuchtig (am Screen entscheiden, Tokens nur im Medienblock) | 300 |
+
+**Prüfen:** Ganzseiten-Screens 390 und 768 vorher/nachher, Höhe je Abschnitt vorher/nachher (Skript `.superpowers/hoehen.mjs <url>`), Tastatur und Screenreader-Reihenfolge der Wischreihen (Fokus sichtbar, kein Inhalt nur per Wischen erreichbar ohne Hinweis), axe grün, Konsole sauber.
+
+**Vergleichsseite:** Der Controller baut eine Vergleichsseite (Artifact) mit beiden Vorschau-Links, Ganzseiten-Screens nebeneinander und den Höhen je Abschnitt.

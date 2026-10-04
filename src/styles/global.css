@@ -2111,7 +2111,7 @@ body::after {
   .cosmos__caption {
     display: block;
     text-align: center;
-    padding-top: 24px;
+    padding: 24px var(--m) 0;
   }
 
   .fire__head .h2,
