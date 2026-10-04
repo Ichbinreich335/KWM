@@ -10,4 +10,6 @@
   },
   // Vorschau-URL pro Branch (Worker Previews); laut Doku explizit setzen
   "preview_urls": true,
+  // Pflicht für `wrangler preview`; leer, weil die Vorschau keine eigenen Einstellungen braucht
+  "previews": {},
 }
