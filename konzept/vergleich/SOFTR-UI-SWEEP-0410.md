@@ -44,3 +44,12 @@ Grundlage: Feedback des Admins zu den Screens vom 04.10. und der Skill `impeccab
 - **Erfassen:** volle Seitenbreite wie die anderen Seiten. Am Desktop zwei Spalten (Pflichtangaben | Weitere Angaben), am Handy untereinander.
 - **Aufgeräumt (OK des Admins):** Testdatensätze U-2026-013 und U-2026-014 sowie der Block „Bestand – Admin-Bearbeitung“ gelöscht. Seiten `/old-home`, `/stueck`, `/alle-stuecke` und die Standard-Diagramme unter der Übersicht lassen sich per MCP nicht löschen, das geht nur in Studio.
 - **Offen für das Kundengespräch:** Wie Preise gepflegt werden. Ob Rohlinge erfasst werden und ob die Übersicht „in Arbeit“ bzw. „diese Woche neu“ zeigen soll.
+
+## Runde 3 nach Feedback des Admins (04.10.)
+
+- **Softr-Tabelle gegen eigene Tabelle:** Bei 200 bis 500 Unikaten und kombinierten Filtern bleibt die eigene Tabelle. Softrs Tabelle kann nur „Feld ist Wert“ filtern, keine leeren Felder, Datums- oder Zahlenbereiche, und keine gemeinsame Liste.
+- **Tabelle überarbeitet nach Vorbild der Softr-Tabelle:** Kopf mit Suche rechts, Reiter Alle | Unikate | Editionsware, Schnellfilter-Knöpfe je Feld, „Weitere Filter“ für Bedingungen, fertige shadcn-Bausteine `Table` und `Badge`, Seiten zu je 50 Einträgen. Spalten der anderen Art fallen im jeweiligen Reiter weg.
+- **Erfassen:** Fehler behoben, durch den ab 101 Editionszeilen doppelte Zeilen entstanden wären.
+- **Modelle:** Artikelnr. und VK-Preis (aus der Preisliste der Werkstatt) als Felder, in Stammdaten pflegbar, in der Tabelle sichtbar. Summe der Editionsware = Anzahl × VK-Preis.
+- **Typ „Übertopf“** statt „Obertopf“.
+- **Prüfung:** Typprüfung grün. Lokaler Render-Test mit Testdaten (153 Einträge, Seiten, Reiter, Filter, Zurücksetzen, Stammdaten-Dialog, Erfassen) ohne Fehler. Die Prüfung in der echten Vorschau steht weiter aus (Netzsperre `*.softr.app`).

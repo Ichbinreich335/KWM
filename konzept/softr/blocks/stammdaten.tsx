@@ -58,6 +58,13 @@ function str(v: unknown): string {
   return typeof v === "string" ? v : typeof v === "number" ? String(v) : "";
 }
 
+// Deutsche Zahleneingabe: „1.200“ = 1200, „12,50“ = 12.5.
+function parseNumber(s: string): number | null {
+  if (!s.trim()) return null;
+  const n = Number(s.trim().replace(/\./g, "").replace(",", "."));
+  return Number.isFinite(n) ? n : null;
+}
+
 function useAllPages(query: { hasNextPage?: boolean; isFetchingNextPage?: boolean; fetchNextPage: () => unknown }) {
   const { hasNextPage, isFetchingNextPage, fetchNextPage } = query;
   useEffect(() => {
@@ -314,7 +321,7 @@ const ds = datasource.define({
 
 const kuenstlerSelect = q.select({ name: "vqD0c", archiviert: "TOhYe" });
 const glasurSelect = q.select({ name: "OuhBi", archiviert: "jxxXN" });
-const modellSelect = q.select({ name: "eXo5w", typ: "gCX7K", masse: "h65qx", foto: "GbUfa", archiviert: "3tlrw" });
+const modellSelect = q.select({ name: "eXo5w", artikelnr: "BNpSN", typ: "gCX7K", masse: "h65qx", vk: "772dM", foto: "GbUfa", archiviert: "3tlrw" });
 const partnerSelect = q.select({ name: "a4yfc", art: "ZS9HU", ort: "RQRec", kontakt: "lnhez", zusammenarbeit: "uEfkz", notiz: "8pLh8", archiviert: "24Tn9" });
 const lagerortSelect = q.select({ name: "AoOjs", bereich: "5h1mS", archiviert: "kMBsy" });
 const unikatLinks = q.select({ kuenstler: "oDNBh", glasur: "ByeH3", lagerort: "EkVC3", galerie: "NfsXv" });
@@ -323,7 +330,7 @@ const editionLinks = q.select({ modell: "jxN6x", glasur: "pbGEk", lagerort: "T5i
 const SEARCH_FROM = 10;
 
 type KatKey = "kuenstler" | "glasuren" | "modelle" | "partner" | "lagerorte";
-type FieldDef = { key: string; label: string; kind: "text" | "textarea" | "chips"; required?: boolean; placeholder?: string; options?: Opt[] };
+type FieldDef = { key: string; label: string; kind: "text" | "textarea" | "chips" | "price"; required?: boolean; placeholder?: string; options?: Opt[] };
 type Entry = { id: string; name: string; values: Record<string, string>; fotos: Attachment[]; sub: string; archiviert: boolean };
 type Values = Record<string, string>;
 type Kategorie = {
@@ -345,7 +352,7 @@ type Kategorie = {
 function toEntry(item: RawItem, keys: string[], sub: (v: Values) => string, fotoKey?: string): Entry {
   const f = item.fields;
   const values: Values = {};
-  keys.forEach((k) => (values[k] = asOpts(f[k]).length ? firstLabel(f[k]) : str(f[k])));
+  keys.forEach((k) => (values[k] = asOpts(f[k]).length ? firstLabel(f[k]) : typeof f[k] === "number" ? zahl.format(f[k] as number) : str(f[k])));
   return { id: item.id, name: values.name ?? "", values, fotos: fotoKey ? asAttachments(f[fotoKey]) : [], sub: sub(values), archiviert: f.archiviert === true };
 }
 
@@ -358,7 +365,7 @@ function countLinks(items: RawItem[], keys: string[]): Map<string, number> {
 function EntryDialog({ kat, entry, onClose }: { kat: Kategorie; entry: Entry | null; onClose: () => void }) {
   const [values, setValues] = useState<Values>(() => Object.fromEntries(kat.fields.map((f) => [f.key, entry?.values[f.key] ?? ""])));
   const [files, setFiles] = useState<File[]>([]);
-  const [error, setError] = useState("");
+  const [error, setError] = useState<{ key: string; text: string } | null>(null);
   const [busy, setBusy] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const { uploadAsync } = useUpload();
@@ -381,11 +388,16 @@ function EntryDialog({ kat, entry, onClose }: { kat: Kategorie; entry: Entry | n
 
   async function save() {
     if (!name) {
-      setError("Bitte einen Namen eingeben.");
+      setError({ key: "name", text: "Bitte einen Namen eingeben." });
       return;
     }
     if (duplicate) {
-      setError(`„${duplicate.name}“ gibt es schon.`);
+      setError({ key: "name", text: `„${duplicate.name}“ gibt es schon.` });
+      return;
+    }
+    const badNumber = kat.fields.find((f) => f.kind === "price" && values[f.key].trim() && parseNumber(values[f.key]) === null);
+    if (badNumber) {
+      setError({ key: badNumber.key, text: "Bitte eine Zahl eingeben, z. B. 400 oder 12,50." });
       return;
     }
     setBusy(true);
@@ -424,17 +436,19 @@ function EntryDialog({ kat, entry, onClose }: { kat: Kategorie; entry: Entry | n
                 <Input
                   id={`f-${f.key}`}
                   value={values[f.key]}
+                  inputMode={f.kind === "price" ? "decimal" : undefined}
+                  aria-invalid={error?.key === f.key}
                   disabled={f.key === "name" && !!lockedReason}
                   placeholder={f.placeholder}
                   onChange={(e) => {
                     setValues((s) => ({ ...s, [f.key]: e.target.value }));
-                    setError("");
+                    setError(null);
                   }}
                   className={FIELD_CLASS}
                 />
               )}
               {f.key === "name" && lockedReason && <Hint>{lockedReason}</Hint>}
-              {f.key === "name" && <ErrorText>{error}</ErrorText>}
+              {error?.key === f.key && <ErrorText>{error.text}</ErrorText>}
             </div>
           ))}
           {kat.foto && (
@@ -597,17 +611,21 @@ export default function Block() {
       hint: "Formen der Editionsware. Erscheinen als Auswahl beim Erfassen von Editionsware.",
       fields: [
         { key: "name", label: "Name", kind: "text", required: true, placeholder: "z. B. Becher „Salbei“ 300 ml" },
+        { key: "artikelnr", label: "Artikelnr.", kind: "text", placeholder: "z. B. 2001" },
         { key: "typ", label: "Typ", kind: "chips", options: modellTypen },
         { key: "masse", label: "Maße", kind: "text", placeholder: "z. B. Ø 8 × H 10 cm" },
+        { key: "vk", label: "VK-Preis in €", kind: "price", placeholder: "z. B. 400" },
       ],
       foto: true,
-      entries: items(modellQuery).map((i) => toEntry(i, ["name", "typ", "masse"], (v) => [v.typ, v.masse].filter(Boolean).join(" · "), "foto")),
+      entries: items(modellQuery).map((i) =>
+        toEntry(i, ["name", "artikelnr", "typ", "masse", "vk"], (v) => [v.artikelnr && `Nr. ${v.artikelnr}`, v.typ, v.masse, v.vk && `${v.vk} €`].filter(Boolean).join(" · "), "foto"),
+      ),
       usage: (id) => stueck(usage("modell", id, "e"), "Editionsposten", "Editionsposten"),
       usageCount: (id) => usage("modell", id, "e"),
       archive: archiveVia(modellUpdate, modellQuery.refetch),
       remove: removeVia(modellDelete, modellQuery.refetch),
       save: (id, v, fotos) => {
-        const fields = { name: v.name, typ: v.typ || null, masse: v.masse.trim(), ...(fotos ? { foto: fotos } : {}) };
+        const fields = { name: v.name, artikelnr: v.artikelnr.trim(), typ: v.typ || null, masse: v.masse.trim(), vk: parseNumber(v.vk), ...(fotos ? { foto: fotos } : {}) };
         return run(id ? modellUpdate : modellCreate, id ? { recordId: id, fields } : fields, modellQuery.refetch);
       },
     },

@@ -403,7 +403,6 @@ const FIELD_NAMES: Record<string, string> = {
   glasur: "Glasur",
   anzahl: "Anzahl",
 };
-const MAX_EDITION_ROWS = 100;
 
 type Art = "unikat" | "edition";
 const ART_TABS: { key: Art; label: string }[] = [
@@ -584,12 +583,12 @@ export default function Block() {
     }
   }
 
-  const { data: editionData, refetch: refetchEdition } = useRecords({
-    from: ds.edition,
-    select: editionFields,
-    count: MAX_EDITION_ROWS,
-  });
-  const editionRows = editionData?.pages.flatMap((p) => p.items) ?? [];
+  // Alle Editionszeilen laden: Nur so findet die Prüfung „Gibt es diese Kombination schon?“
+  // jede Zeile und legt keine doppelte an.
+  const editionQuery = useRecords({ from: ds.edition, select: editionFields, count: PAGE_SIZE });
+  useAllPages(editionQuery);
+  const editionReady = editionQuery.status === "success" && !editionQuery.hasNextPage;
+  const editionRows = editionQuery.data?.pages.flatMap((p) => p.items) ?? [];
   const isGlasiert = edition.zustand !== ROHLING;
   const existingRow = edition.modell
     ? editionRows.find((r) => {
@@ -659,6 +658,10 @@ export default function Block() {
       });
       return;
     }
+    if (art === "edition" && !editionReady) {
+      toast.error("Der Editionsbestand lädt noch. Bitte gleich noch einmal speichern.");
+      return;
+    }
     setBusy(true);
     try {
       const fotos = await uploadFiles();
@@ -703,7 +706,7 @@ export default function Block() {
           } as never);
           setSaved({ art, recordId: (created as { id: string }).id, text: `${modell} · ${variante}: ${edition.anzahl} Stück angelegt.` });
         }
-        await refetchEdition();
+        await editionQuery.refetch();
       }
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Speichern hat nicht geklappt. Bitte erneut versuchen.");

@@ -29,6 +29,13 @@ Für die nächste Session. Zuerst `CLAUDE.md`, `konzept/SOFTR-AUFTRAG.md` und `k
 - **Neue Datenquellen:** Erfassen hat zusätzlich `lagerorte`, `partner`, `modelle`; Bestand zusätzlich `kuenstler`, `glasuren`, `lagerorte`, `partner`.
 - **Aktionsrechte:** Erfassen alle ADD, Tabelle ADD ansichten, Stammdaten alle ADD → LOGGED_IN_USERS. Nach jedem Hochladen neu setzen.
 - **Übersicht liegt jetzt auf `/`**, die alte Startseite auf `/old-home`.
+- **Runde 3 (04.10. nachmittags):**
+  - Entscheidung: eigene Blöcke bleiben (Bestand, Erfassen, Übersicht, Stammdaten, Tabelle). Softr-Standard-Tabelle getestet (Testblock auf `/alle-stuecke`, vom Admin angelegt), sie kann keine „ist leer“-, Datums- und Zahlenbedingungen und zeigt Unikate und Edition nicht gemeinsam.
+  - Tabelle: Reiter Alle | Unikate | Editionsware, Schnellfilter je Feld (mehrere Werte je Feld = oder, Felder = und), „Weitere Filter“ für Bedingungen, Seiten zu 50, shadcn `Table` und `Badge`. Gespeicherte Ansichten Version 3 (mit Reiter und Schnellfiltern), Version 2 wird weiter gelesen.
+  - Erfassen: lädt alle Editionszeilen (vorher max. 100). Speichern bei Editionsware wartet, bis alles geladen ist, sonst entstünde eine doppelte Zeile.
+  - Modelle: neue Felder „Artikelnr.“ `BNpSN` und „VK-Preis“ `772dM` (€, 2 Stellen), in Stammdaten pflegbar. Editionsbestand: Nachschlagefelder „Artikelnr.“ `Zzp1S` und „VK-Preis“ `kAyrB`.
+  - Typ „Obertopf“ → „Übertopf“ (Unikate `7g9jI`, Modelle `gCX7K`). **Achtung:** `database_update_field` vergibt beim Umbenennen einer Auswahl eine neue ID und leert die Datensätze mit dem alten Wert. Die zwei betroffenen Datensätze wurden sofort neu gesetzt. Künftig vorher die betroffenen Datensätze notieren.
+  - Offen fürs Kundengespräch: Zustände „Rohling/glasiert“ → „geschrüht/fertig“? Glasur bei Editionsware fest je Artikel? Preisliste (Foto 31.07.26) als Startbestand importieren (Handschrift unsicher, Freigabe nötig).
 
 ## Stand 03.10.2026 (gilt vor den Abschnitten darunter)
 - **Rechte:** Die Werkstatt darf **alle** Daten ändern, auch Preis, „Auf Website zeigen“ und Verkaufsdatum (Vorgabe Admin 03.10.). Eigene Nutzergruppen werden damit nicht mehr gebraucht. Alle Aktionen stehen auf „angemeldete Nutzer“.

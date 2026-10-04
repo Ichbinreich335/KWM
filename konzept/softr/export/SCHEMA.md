@@ -52,14 +52,17 @@ Datenbank-ID: `4a2f1f1d-3c1b-409a-8bf0-247d4ea8a943`. Export per Softr-MCP, nur 
 
 - Tabellen-ID: `AP1Orb2GOIv5yr`
 - Zweck: Modelle der Editionsware (Form, Typ, Maße, Foto). Der Editionsbestand verweist darauf. Primärfeld: Name.
-- Felder: 4, Datensätze: 5
+- Felder: 7, Datensätze: 5
 
 | Name | Feld-ID | Typ | Optionen | Pflicht / nur lesen |
 |---|---|---|---|---|
 | Name | `eXo5w` | SINGLE_LINE_TEXT | Text, einzeilig | weder Pflicht noch schreibgeschützt |
-| Typ | `gCX7K` | SELECT | Einfachauswahl: Teller \| Schale \| Becher \| Vase \| Karaffe \| Obertopf | weder Pflicht noch schreibgeschützt |
+| Typ | `gCX7K` | SELECT | Einfachauswahl: Teller \| Schale \| Becher \| Vase \| Karaffe \| Übertopf | weder Pflicht noch schreibgeschützt |
 | Maße | `h65qx` | SINGLE_LINE_TEXT | Text, einzeilig | weder Pflicht noch schreibgeschützt |
 | Foto | `GbUfa` | ATTACHMENT | Anhang, einzeln, Vorschau (Links laufen nach 2 Stunden ab) | weder Pflicht noch schreibgeschützt |
+| Archiviert | `3tlrw` | CHECKBOX | Archivierte fehlen in Auswahllisten | weder Pflicht noch schreibgeschützt |
+| Artikelnr. | `BNpSN` | SINGLE_LINE_TEXT | Artikelnummer der Preisliste, z. B. 2001, 2018a | weder Pflicht noch schreibgeschützt |
+| VK-Preis | `772dM` | CURRENCY | €, 2 Nachkommastellen, Verkaufspreis brutto laut Preisliste | weder Pflicht noch schreibgeschützt |
 
 ## Unikate
 
@@ -71,7 +74,7 @@ Datenbank-ID: `4a2f1f1d-3c1b-409a-8bf0-247d4ea8a943`. Export per Softr-MCP, nur 
 |---|---|---|---|---|
 | Name | `7IBVW` | SINGLE_LINE_TEXT | Text, einzeilig | weder Pflicht noch schreibgeschützt |
 | Nummer | `T63YN` | AUTONUMBER | Automatische Zählung (Zähler steht bei 14) | nur lesen |
-| Typ | `7g9jI` | SELECT | Einfachauswahl: Teller \| Schale \| Becher \| Vase \| Karaffe \| Obertopf \| Krug | weder Pflicht noch schreibgeschützt |
+| Typ | `7g9jI` | SELECT | Einfachauswahl: Teller \| Schale \| Becher \| Vase \| Karaffe \| Übertopf \| Krug | weder Pflicht noch schreibgeschützt |
 | Status | `SEUyZ` | SELECT | Einfachauswahl: verfügbar \| reserviert \| verkauft \| in Kommission \| ausgestellt | weder Pflicht noch schreibgeschützt |
 | Künstler:in | `oDNBh` | LINKED_RECORD | Zieltabelle: Künstler:innen (jT3tn7aJ7XSPSD), einfach, ohne Rückverweis | weder Pflicht noch schreibgeschützt |
 | Jahr | `ZIHrT` | NUMBER | 0 Nachkommastellen, Tausendertrennzeichen an | weder Pflicht noch schreibgeschützt |
@@ -110,7 +113,7 @@ Datenbank-ID: `4a2f1f1d-3c1b-409a-8bf0-247d4ea8a943`. Export per Softr-MCP, nur 
 | Notiz | `lyJky` | LONG_TEXT | Text, mehrzeilig | weder Pflicht noch schreibgeschützt |
 | Erfasst am | `0x7rU` | CREATED_AT | Datum + Zeit, automatisch | nur lesen |
 | Zuletzt geändert | `JZyKO` | UPDATED_AT | Datum + Zeit, bei jeder Änderung eines editierbaren Feldes | nur lesen |
-| Typ | `8Vs2H` | LOOKUP | Nachschlagefeld über Feld „Modell“ (jxN6x) auf Modelle.Typ (gCX7K), Ergebnis Einfachauswahl: Teller \| Schale \| Becher \| Vase \| Karaffe \| Obertopf | nur lesen |
+| Typ | `8Vs2H` | LOOKUP | Nachschlagefeld über Feld „Modell“ (jxN6x) auf Modelle.Typ (gCX7K), Ergebnis Einfachauswahl: Teller \| Schale \| Becher \| Vase \| Karaffe \| Übertopf | nur lesen |
 
 ## Ansichten
 

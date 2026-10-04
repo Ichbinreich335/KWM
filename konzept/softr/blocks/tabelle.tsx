@@ -5,9 +5,11 @@ import { useCurrentUser } from "@/lib/user";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Badge } from "@/components/ui/badge";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { AlertTriangle, ArrowDown, ArrowUp, Bookmark, ChevronLeft, ChevronRight, Columns3, Download, ImageOff, Loader2, Plus, Search, SlidersHorizontal, Trash2, X } from "lucide-react";
+import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { AlertTriangle, ArrowDown, ArrowUp, Bookmark, ChevronDown, ChevronLeft, ChevronRight, Columns3, Download, ImageOff, Loader2, Plus, Search, SlidersHorizontal, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
 
 const PAGE_SIZE = 100;
@@ -113,12 +115,47 @@ const FIELD_CLASS = "h-12 rounded-md text-base md:text-base";
 
 const PANEL_CLASS = "rounded-lg border bg-card";
 
+// Reiter: der einzige Umschalter der App (Erfassen, Bestand, Stammdaten). Unterstrichen, am Handy seitlich wischbar.
+function Tabs<K extends string>({ label, tabs, value, onChange }: { label: string; tabs: { key: K; label: string; count?: number }[]; value: K; onChange: (key: K) => void }) {
+  return (
+    <div role="tablist" aria-label={label} className="flex gap-1 overflow-x-auto border-b">
+      {tabs.map((t) => {
+        const active = value === t.key;
+        return (
+          <button
+            key={t.key}
+            type="button"
+            role="tab"
+            aria-selected={active}
+            onClick={() => onChange(t.key)}
+            className={`inline-flex items-center gap-1.5 min-h-11 px-3 -mb-px border-b-2 text-base whitespace-nowrap transition-colors ${
+              active ? "border-primary text-foreground font-medium" : "border-transparent text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            {t.label}
+            {t.count !== undefined && <span className="tabular-nums text-muted-foreground">{t.count}</span>}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
 function StatusBadge({ text }: { text: string }) {
   if (!text) return null;
   return (
     <span className={`inline-flex items-center rounded-md border px-2 py-0.5 text-sm font-medium whitespace-nowrap ${STATUS_BADGE[text] ?? "bg-muted text-foreground border-border"}`}>
       {text}
     </span>
+  );
+}
+
+function SearchField({ value, onChange, placeholder, label }: { value: string; onChange: (v: string) => void; placeholder: string; label: string }) {
+  return (
+    <div className="relative flex-1 min-w-0">
+      <Search className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" aria-hidden />
+      <Input type="search" aria-label={label} placeholder={placeholder} value={value} onChange={(e) => onChange(e.target.value)} className={`${FIELD_CLASS} pl-10`} />
+    </div>
   );
 }
 
@@ -222,7 +259,6 @@ const ds = datasource.define({ unikate: "unikate", edition: "edition", ansichten
 
 const unikatSelect = q.select({
   inv: "glG6V",
-  nummer: "T63YN",
   name: "7IBVW",
   typ: "7g9jI",
   status: "SEUyZ",
@@ -254,19 +290,26 @@ const editionSelect = q.select({
   notiz: "lyJky",
   erfasstAm: "0x7rU",
   geaendertAm: "JZyKO",
+  artikelnr: "Zzp1S",
+  vk: "kAyrB",
 });
 const ansichtSelect = q.select({ name: "8s5KL", definition: "rWGS9", von: "uPraE" });
 
-const VIEW_VERSION = 2;
+const VIEW_VERSION = 3;
 const SCROLL_STEP = 320;
+const PAGE_ROWS = 50;
 const UNIKAT = "Unikat";
 const EDITION = "Editionsware";
+const euroCent = new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR" });
+
+type ArtTab = "alle" | "unikat" | "edition";
+const ART_OF_TAB: Record<ArtTab, string | null> = { alle: null, unikat: UNIKAT, edition: EDITION };
 
 type Row = {
   id: string;
   art: string;
   inv: string;
-  nummer: number;
+  artikelnr: string;
   name: string;
   typ: string;
   status: string;
@@ -278,6 +321,7 @@ type Row = {
   lagerort: string;
   galerie: string;
   preis: number | null;
+  vk: number | null;
   website: boolean | null;
   bildnachweis: string;
   notiz: string;
@@ -304,6 +348,7 @@ type ColKey =
   | "lagerort"
   | "galerie"
   | "preis"
+  | "vk"
   | "website"
   | "notiz"
   | "erfasstAm"
@@ -311,30 +356,47 @@ type ColKey =
   | "verkauftAm"
   | "rueckgabe";
 type CellValue = string | number | boolean | string[] | null;
-type Col = { key: ColKey; label: string; type: FieldType; get: (r: Row) => CellValue; visible: boolean; align?: "right" };
+// only: Spalte gibt es nur bei Unikaten bzw. nur bei Editionsware. Im Reiter der anderen Art fällt sie weg.
+type Col = { key: ColKey; label: string; type: FieldType; get: (r: Row) => CellValue; visible: boolean; align?: "right"; only?: ArtTab };
 
 const COLUMNS: Col[] = [
-  { key: "art", label: "Art", type: "select", get: (r) => r.art, visible: false },
-  { key: "inv", label: "Inv.-Nr.", type: "text", get: (r) => r.inv || null, visible: true },
+  { key: "art", label: "Art", type: "select", get: (r) => r.art, visible: false, only: "alle" },
+  { key: "inv", label: "Nr.", type: "text", get: (r) => r.inv || r.artikelnr || null, visible: true },
   { key: "name", label: "Name / Modell", type: "text", get: (r) => r.name, visible: true },
   { key: "typ", label: "Typ", type: "select", get: (r) => r.typ || null, visible: true },
   { key: "status", label: "Status / Zustand", type: "select", get: (r) => r.status || null, visible: true },
-  { key: "anzahl", label: "Anzahl", type: "number", get: (r) => r.anzahl, visible: true, align: "right" },
-  { key: "preis", label: "Preis intern", type: "number", get: (r) => r.preis, visible: true, align: "right" },
+  { key: "anzahl", label: "Anzahl", type: "number", get: (r) => r.anzahl, visible: true, align: "right", only: "edition" },
+  { key: "preis", label: "Preis intern", type: "number", get: (r) => r.preis, visible: true, align: "right", only: "unikat" },
+  { key: "vk", label: "VK-Preis", type: "number", get: (r) => r.vk, visible: true, align: "right", only: "edition" },
   { key: "glasur", label: "Glasur", type: "multi", get: (r) => r.glasur, visible: true },
   { key: "lagerort", label: "Lagerort", type: "select", get: (r) => r.lagerort || null, visible: true },
-  { key: "kuenstler", label: "Künstler:in", type: "select", get: (r) => r.kuenstler || null, visible: false },
-  { key: "jahr", label: "Jahr", type: "number", get: (r) => r.jahr, visible: false, align: "right" },
-  { key: "masse", label: "Maße", type: "text", get: (r) => r.masse || null, visible: false },
-  { key: "galerie", label: "Partner", type: "select", get: (r) => r.galerie || null, visible: false },
-  { key: "website", label: "Auf Website", type: "bool", get: (r) => r.website, visible: false },
+  { key: "kuenstler", label: "Künstler:in", type: "select", get: (r) => r.kuenstler || null, visible: false, only: "unikat" },
+  { key: "jahr", label: "Jahr", type: "number", get: (r) => r.jahr, visible: false, align: "right", only: "unikat" },
+  { key: "masse", label: "Maße", type: "text", get: (r) => r.masse || null, visible: false, only: "unikat" },
+  { key: "galerie", label: "Partner", type: "select", get: (r) => r.galerie || null, visible: false, only: "unikat" },
+  { key: "website", label: "Auf Website", type: "bool", get: (r) => r.website, visible: false, only: "unikat" },
   { key: "notiz", label: "Notiz", type: "text", get: (r) => r.notiz || null, visible: false },
   { key: "erfasstAm", label: "Erfasst am", type: "date", get: (r) => r.erfasstAm.slice(0, 10) || null, visible: false },
   { key: "geaendertAm", label: "Geändert am", type: "date", get: (r) => r.geaendertAm.slice(0, 10) || null, visible: false },
-  { key: "verkauftAm", label: "Verkauft am", type: "date", get: (r) => r.verkauftAm.slice(0, 10) || null, visible: false },
-  { key: "rueckgabe", label: "Rückgabe bis", type: "date", get: (r) => r.rueckgabe.slice(0, 10) || null, visible: false },
+  { key: "verkauftAm", label: "Verkauft am", type: "date", get: (r) => r.verkauftAm.slice(0, 10) || null, visible: false, only: "unikat" },
+  { key: "rueckgabe", label: "Rückgabe bis", type: "date", get: (r) => r.rueckgabe.slice(0, 10) || null, visible: false, only: "unikat" },
 ];
+
+// „Art“ ist nur im Reiter „Alle“ sinnvoll, sonst gilt: Spalten der anderen Art fallen weg.
+function relevant(c: Col, tab: ArtTab): boolean {
+  if (c.only === "alle") return tab === "alle";
+  return !c.only || tab === "alle" || c.only === tab;
+}
+
+const QUICK_KEYS: ColKey[] = ["typ", "status", "kuenstler", "glasur", "lagerort", "galerie"];
+type Quick = Partial<Record<ColKey, string[]>>;
+
+function quickLabel(key: ColKey, tab: ArtTab): string {
+  if (key === "status") return tab === "unikat" ? "Status" : tab === "edition" ? "Zustand" : "Status / Zustand";
+  return COL_LABEL[key];
+}
 const COL = Object.fromEntries(COLUMNS.map((c) => [c.key, c])) as Record<ColKey, Col>;
+const COL_LABEL = Object.fromEntries(COLUMNS.map((c) => [c.key, c.label])) as Record<ColKey, string>;
 const DEFAULT_VISIBLE = COLUMNS.filter((c) => c.visible).map((c) => c.key);
 
 type Op =
@@ -404,10 +466,14 @@ const NO_VALUE: Op[] = ["empty", "notEmpty", "yes", "no"];
 type Condition = { id: string; field: ColKey; op: Op; value: string | string[] };
 type Conj = "und" | "oder";
 type Sort = { key: ColKey; dir: "asc" | "desc" } | null;
-type ViewDef = { v: number; conditions: Condition[]; conj: Conj; columns: ColKey[]; sort: Sort; search: string };
+type ViewDef = { v: number; tab: ArtTab; quick: Quick; conditions: Condition[]; conj: Conj; columns: ColKey[]; sort: Sort; search: string };
 
 function labels(v: unknown): string[] {
   return asOpts(v).map((o) => o.label);
+}
+// Nachschlagefelder liefern je nach Feld einen Wert oder eine Liste mit einem Wert.
+function lookupValue(v: unknown): unknown {
+  return Array.isArray(v) ? v[0] : v;
 }
 function newId(): string {
   return Math.random().toString(36).slice(2, 10);
@@ -422,7 +488,7 @@ function toUnikatRow(i: RawItem): Row {
     id: i.id,
     art: UNIKAT,
     inv: str(f.inv),
-    nummer: num(f.nummer) ?? 0,
+    artikelnr: "",
     name: str(f.name),
     typ: labels(f.typ)[0] ?? "",
     status: labels(f.status)[0] ?? "",
@@ -434,6 +500,7 @@ function toUnikatRow(i: RawItem): Row {
     lagerort: labels(f.lagerort)[0] ?? "",
     galerie: labels(f.galerie)[0] ?? "",
     preis: num(f.preis),
+    vk: null,
     website: f.website === true,
     bildnachweis: str(f.bildnachweis),
     notiz: str(f.notiz),
@@ -452,7 +519,7 @@ function toEditionRow(i: RawItem): Row {
     id: i.id,
     art: EDITION,
     inv: "",
-    nummer: 0,
+    artikelnr: str(lookupValue(f.artikelnr)),
     name: labels(f.modell)[0] ?? "",
     typ: labels(f.typ)[0] ?? "",
     status: labels(f.zustand)[0] ?? "",
@@ -464,6 +531,7 @@ function toEditionRow(i: RawItem): Row {
     lagerort: labels(f.lagerort)[0] ?? "",
     galerie: "",
     preis: null,
+    vk: num(lookupValue(f.vk)),
     website: null,
     bildnachweis: "",
     notiz: str(f.notiz),
@@ -518,7 +586,7 @@ function matches(r: Row, c: Condition): boolean {
 
 function matchesSearch(r: Row, term: string): boolean {
   if (!term) return true;
-  const hay = [r.art, r.inv, r.name, r.typ, r.status, r.kuenstler, r.lagerort, r.galerie, r.masse, r.notiz, ...r.glasur].join(" ").toLowerCase();
+  const hay = [r.art, r.inv, r.artikelnr, r.name, r.typ, r.status, r.kuenstler, r.lagerort, r.galerie, r.masse, r.notiz, ...r.glasur].join(" ").toLowerCase();
   return term
     .toLowerCase()
     .split(/\s+/)
@@ -527,15 +595,15 @@ function matchesSearch(r: Row, term: string): boolean {
 
 function compareRows(a: Row, b: Row, sort: NonNullable<Sort>): number {
   const col = COL[sort.key];
-  const va = sort.key === "inv" ? (a.nummer || null) : col.get(a);
-  const vb = sort.key === "inv" ? (b.nummer || null) : col.get(b);
+  const va = col.get(a);
+  const vb = col.get(b);
   if (isEmpty(va) && isEmpty(vb)) return 0;
   if (isEmpty(va)) return 1;
   if (isEmpty(vb)) return -1;
   const r =
     typeof va === "number" && typeof vb === "number"
       ? va - vb
-      : String(Array.isArray(va) ? va.join(", ") : va).localeCompare(String(Array.isArray(vb) ? vb.join(", ") : vb), "de");
+      : String(Array.isArray(va) ? va.join(", ") : va).localeCompare(String(Array.isArray(vb) ? vb.join(", ") : vb), "de", { numeric: true });
   return sort.dir === "asc" ? r : -r;
 }
 
@@ -543,6 +611,7 @@ function formatCell(col: Col, r: Row): string {
   const v = col.get(r);
   if (isEmpty(v)) return "";
   if (col.key === "preis" && typeof v === "number") return euro.format(v);
+  if (col.key === "vk" && typeof v === "number") return euroCent.format(v);
   if (col.type === "number" && typeof v === "number") return col.key === "jahr" ? String(v) : zahl.format(v);
   if (col.type === "bool") return v ? "ja" : "nein";
   if (col.type === "date" && typeof v === "string") return formatDate(v);
@@ -571,10 +640,11 @@ function legacyToConditions(def: Record<string, unknown>): Condition[] {
 function exportRows(rows: Row[]) {
   downloadCsv(
     `kwm-tabelle-${today()}.csv`,
-    ["Art", "Inventarnummer", "Name / Modell", "Typ", "Status / Zustand", "Anzahl", "Künstler:in", "Glasur", "Jahr", "Maße", "Lagerort", "Partner", "Preis intern (€)", "Auf Website", "Notiz", "Erfasst am", "Verkauft am"],
+    ["Art", "Inventarnummer", "Artikelnr.", "Name / Modell", "Typ", "Status / Zustand", "Anzahl", "Künstler:in", "Glasur", "Jahr", "Maße", "Lagerort", "Partner", "Preis intern (€)", "VK-Preis (€)", "Auf Website", "Notiz", "Erfasst am", "Verkauft am"],
     rows.map((r) => [
       r.art,
       r.inv,
+      r.artikelnr,
       r.name,
       r.typ,
       r.status,
@@ -586,6 +656,7 @@ function exportRows(rows: Row[]) {
       r.lagerort,
       r.galerie,
       r.preis === null ? "" : String(r.preis),
+      r.vk === null ? "" : String(r.vk),
       r.website === null ? "" : r.website ? "ja" : "nein",
       r.notiz,
       formatDate(r.erfasstAm),
@@ -594,35 +665,56 @@ function exportRows(rows: Row[]) {
   );
 }
 
-function initialConditions(): Condition[] {
+// Startzustand aus der Adresse, z. B. aus den Kacheln der Übersicht: ?status=…&partner=…&art=…&verkauftJahr=…
+type Start = { tab: ArtTab; quick: Quick; conditions: Condition[]; columns: ColKey[] };
+function startFromUrl(): Start {
   const params = new URLSearchParams(window.location.search);
-  const out: Condition[] = [];
   const list = (key: string) => (params.get(key) ?? "").split(",").map((v) => v.trim()).filter(Boolean);
-  const status = list("status");
   const art = list("art");
-  const partner = list("partner");
+  const tab: ArtTab = art.length === 1 && art[0] === UNIKAT ? "unikat" : art.length === 1 && art[0] === EDITION ? "edition" : "alle";
+  const quick: Quick = {};
+  if (list("status").length) quick.status = list("status");
+  if (list("partner").length) quick.galerie = list("partner");
+  const conditions: Condition[] = [];
   const verkauftJahr = Number(params.get("verkauftJahr"));
-  if (status.length) out.push({ id: newId(), field: "status", op: "anyOf", value: status });
-  if (art.length) out.push({ id: newId(), field: "art", op: "anyOf", value: art });
-  if (partner.length) out.push({ id: newId(), field: "galerie", op: "anyOf", value: partner });
   if (Number.isInteger(verkauftJahr) && verkauftJahr > 0) {
-    out.push({ id: newId(), field: "verkauftAm", op: "after", value: `${verkauftJahr - 1}-12-31` });
-    out.push({ id: newId(), field: "verkauftAm", op: "before", value: `${verkauftJahr + 1}-01-01` });
+    conditions.push({ id: newId(), field: "verkauftAm", op: "after", value: `${verkauftJahr - 1}-12-31` });
+    conditions.push({ id: newId(), field: "verkauftAm", op: "before", value: `${verkauftJahr + 1}-01-01` });
   }
-  return out;
+  const extra: ColKey[] = [];
+  if (quick.galerie || quick.status?.some((v) => v === "in Kommission" || v === "ausgestellt")) extra.push("galerie", "rueckgabe");
+  if (conditions.length) extra.push("verkauftAm");
+  return { tab, quick, conditions, columns: [...DEFAULT_VISIBLE, ...extra.filter((k) => !DEFAULT_VISIBLE.includes(k))] };
 }
 
-function initialColumns(): ColKey[] {
-  const conditions = initialConditions();
-  const has = (field: ColKey, values?: string[]) =>
-    conditions.some((c) => c.field === field && (!values || (Array.isArray(c.value) && c.value.some((v) => values.includes(v)))));
-  const extra: ColKey[] = [];
-  if (has("galerie") || has("status", ["in Kommission", "ausgestellt"])) extra.push("galerie", "rueckgabe");
-  if (has("verkauftAm")) extra.push("verkauftAm");
-  return [...DEFAULT_VISIBLE, ...extra.filter((k) => !DEFAULT_VISIBLE.includes(k))];
+function matchesQuick(r: Row, quick: Quick): boolean {
+  return QUICK_KEYS.every((key) => {
+    const wanted = quick[key];
+    if (!wanted?.length) return true;
+    const v = COL[key].get(r);
+    const values = Array.isArray(v) ? v : v === null ? [] : [String(v)];
+    return values.some((x) => wanted.includes(x));
+  });
 }
 
 const selectClass = "h-11 rounded-md border border-input bg-background px-2 text-base";
+
+function CheckList({ options, value, onChange }: { options: string[]; value: string[]; onChange: (v: string[]) => void }) {
+  if (options.length === 0) return <p className="text-sm text-muted-foreground p-2">Keine Werte vorhanden.</p>;
+  return (
+    <>
+      {options.map((o) => {
+        const checked = value.includes(o);
+        return (
+          <label key={o} className="flex items-center gap-3 min-h-11 px-2 rounded-md hover:bg-muted cursor-pointer">
+            <Checkbox checked={checked} onCheckedChange={() => onChange(checked ? value.filter((x) => x !== o) : [...value, o])} />
+            <span className="text-base">{o}</span>
+          </label>
+        );
+      })}
+    </>
+  );
+}
 
 function MultiPick({ options, value, onChange, label }: { options: string[]; value: string[]; onChange: (v: string[]) => void; label: string }) {
   const text = value.length === 0 ? "Wert wählen" : value.length <= 2 ? value.join(", ") : `${value.length} ausgewählt`;
@@ -634,18 +726,32 @@ function MultiPick({ options, value, onChange, label }: { options: string[]; val
         </Button>
       </PopoverTrigger>
       <PopoverContent align="start" className="w-64 max-h-80 overflow-y-auto p-2">
-        {options.length === 0 ? (
-          <p className="text-sm text-muted-foreground p-2">Keine Werte vorhanden.</p>
-        ) : (
-          options.map((o) => {
-            const checked = value.includes(o);
-            return (
-              <label key={o} className="flex items-center gap-3 min-h-11 px-2 rounded-md hover:bg-muted cursor-pointer">
-                <Checkbox checked={checked} onCheckedChange={() => onChange(checked ? value.filter((x) => x !== o) : [...value, o])} />
-                <span className="text-base">{o}</span>
-              </label>
-            );
-          })
+        <CheckList options={options} value={value} onChange={onChange} />
+      </PopoverContent>
+    </Popover>
+  );
+}
+
+// Schnellfilter wie in Softrs Tabellen: ein Knopf je Feld, mehrere Werte je Feld (oder), Felder untereinander (und).
+function QuickFilter({ label, options, value, onChange }: { label: string; options: string[]; value: string[]; onChange: (v: string[]) => void }) {
+  const active = value.length > 0;
+  return (
+    <Popover>
+      <PopoverTrigger asChild>
+        <Button variant={active ? "secondary" : "outline"} className={`h-11 text-base font-normal max-w-72 ${active ? "border border-foreground/20" : ""}`}>
+          <span className="truncate">
+            {label}
+            {active && <span className="font-medium">: {value.length === 1 ? value[0] : `${value.length} gewählt`}</span>}
+          </span>
+          <ChevronDown className="w-4 h-4 ml-1 shrink-0" aria-hidden />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent align="start" className="w-64 max-h-80 overflow-y-auto p-2">
+        <CheckList options={options} value={value} onChange={onChange} />
+        {active && (
+          <Button variant="ghost" className="w-full h-11 text-base mt-1" onClick={() => onChange([])}>
+            Auswahl aufheben
+          </Button>
         )}
       </PopoverContent>
     </Popover>
@@ -656,6 +762,7 @@ function ConditionRow({
   c,
   index,
   conj,
+  fields,
   onConj,
   onChange,
   onRemove,
@@ -664,6 +771,7 @@ function ConditionRow({
   c: Condition;
   index: number;
   conj: Conj;
+  fields: Col[];
   onConj: (c: Conj) => void;
   onChange: (c: Condition) => void;
   onRemove: () => void;
@@ -694,7 +802,7 @@ function ConditionRow({
         }}
         className={selectClass}
       >
-        {COLUMNS.map((x) => (
+        {(fields.includes(col) ? fields : [col, ...fields]).map((x) => (
           <option key={x.key} value={x.key}>
             {x.label}
           </option>
@@ -729,14 +837,15 @@ function ConditionRow({
 }
 
 function Detail({ r, onClose }: { r: Row; onClose: () => void }) {
-  const fields: [string, string][] = COLUMNS.filter((c) => c.key !== "name").map((c) => [c.label, formatCell(c, r)]);
+  const tab: ArtTab = r.art === UNIKAT ? "unikat" : "edition";
+  const fields: [string, string][] = COLUMNS.filter((c) => c.key !== "name" && relevant(c, tab)).map((c) => [c.key === "inv" ? (r.art === UNIKAT ? "Inv.-Nr." : "Artikelnr.") : c.label, formatCell(c, r)]);
   if (r.art === UNIKAT) fields.push(["Bildnachweis", r.bildnachweis], ["Erfasst von", r.erfasstVon]);
   const href = r.art === UNIKAT ? `/bestand?id=${r.id}` : "/bestand?tab=edition";
   const foto = r.fotos[0];
   return (
     <Dialog open onOpenChange={(o) => !o && onClose()}>
       <DialogContent className={`${DIALOG_CLASS} max-w-2xl`}>
-        <PanelHeader title={r.name || "Ohne Namen"} description={[r.art, r.inv, r.typ].filter(Boolean).join(" · ")} />
+        <PanelHeader title={r.name || "Ohne Namen"} description={[r.art, r.inv || r.artikelnr, r.typ].filter(Boolean).join(" · ")} />
         <div className="px-4 pb-8 space-y-5">
           {foto ? (
             <img src={thumb(foto, "large")} alt={r.name} className="w-full max-h-80 object-contain rounded-lg bg-muted" />
@@ -777,7 +886,7 @@ function SaveViewDialog({ open, onOpenChange, onSave, taken }: { open: boolean; 
           Name der Ansicht
         </label>
         <Input id="view-name" value={name} onChange={(e) => setName(e.target.value)} placeholder="z. B. Seladon im Schauraum" className={FIELD_CLASS} />
-        <p className="text-sm text-muted-foreground">Gespeichert werden Filter, Spalten, Sortierung und Suche. Alle Mitarbeitenden sehen die Ansicht.</p>
+        <p className="text-sm text-muted-foreground">Gespeichert werden Reiter, Filter, Spalten, Sortierung und Suche. Alle Mitarbeitenden sehen die Ansicht.</p>
         {duplicate && (
           <p role="alert" className="text-sm text-destructive">
             Diesen Namen gibt es schon. Bitte einen anderen wählen.
@@ -802,6 +911,26 @@ function SaveViewDialog({ open, onOpenChange, onSave, taken }: { open: boolean; 
   );
 }
 
+function Pager({ page, total, onPage }: { page: number; total: number; onPage: (p: number) => void }) {
+  const pages = Math.ceil(total / PAGE_ROWS);
+  if (pages <= 1) return null;
+  const from = page * PAGE_ROWS + 1;
+  const to = Math.min(total, from + PAGE_ROWS - 1);
+  return (
+    <nav aria-label="Seiten" className="flex items-center justify-between gap-2">
+      <Button variant="outline" className="h-11 text-base" disabled={page === 0} onClick={() => onPage(page - 1)}>
+        <ChevronLeft className="w-5 h-5 mr-1" aria-hidden /> Zurück
+      </Button>
+      <span className="text-sm text-muted-foreground tabular-nums">
+        {zahl.format(from)}–{zahl.format(to)} von {zahl.format(total)}
+      </span>
+      <Button variant="outline" className="h-11 text-base" disabled={page >= pages - 1} onClick={() => onPage(page + 1)}>
+        Weiter <ChevronRight className="w-5 h-5 ml-1" aria-hidden />
+      </Button>
+    </nav>
+  );
+}
+
 // Textspalte direkt nach einer rechtsbündigen Zahlenspalte bekommt Luft, sonst kleben Betrag und Text aneinander.
 function gapAfterNumber(cols: { align?: string }[], i: number): string {
   return i > 0 && cols[i - 1].align === "right" && cols[i].align !== "right" ? "pl-8" : "";
@@ -809,12 +938,16 @@ function gapAfterNumber(cols: { align?: string }[], i: number): string {
 
 export default function Block() {
   const user = useCurrentUser();
+  const [start] = useState(startFromUrl);
+  const [tab, setTab] = useState<ArtTab>(start.tab);
   const [search, setSearch] = useState("");
-  const [conditions, setConditions] = useState<Condition[]>(initialConditions);
+  const [quick, setQuick] = useState<Quick>(start.quick);
+  const [conditions, setConditions] = useState<Condition[]>(start.conditions);
   const [conj, setConj] = useState<Conj>("und");
-  const [filterOpen, setFilterOpen] = useState(() => initialConditions().length > 0);
-  const [columns, setColumns] = useState<ColKey[]>(initialColumns);
+  const [filterOpen, setFilterOpen] = useState(start.conditions.length > 0);
+  const [columns, setColumns] = useState<ColKey[]>(start.columns);
   const [sort, setSort] = useState<Sort>(null);
+  const [page, setPage] = useState(0);
   const [viewId, setViewId] = useState("");
   const [saveOpen, setSaveOpen] = useState(false);
   const [selected, setSelected] = useState<Row | null>(null);
@@ -839,9 +972,14 @@ export default function Block() {
     return { id: i.id, name: str(f.name), definition: str(f.definition) };
   });
 
+  const art = ART_OF_TAB[tab];
+  const tabRows = useMemo(() => (art ? rows.filter((r) => r.art === art) : rows), [rows, art]);
+  const tabColumns = COLUMNS.filter((c) => relevant(c, tab));
+  const quickKeys = QUICK_KEYS.filter((k) => relevant(COL[k], tab));
+
   const optionsFor = (key: ColKey): string[] => {
     const set = new Set<string>();
-    rows.forEach((r) => {
+    tabRows.forEach((r) => {
       const v = COL[key].get(r);
       (Array.isArray(v) ? v : v === null ? [] : [String(v)]).forEach((x) => x && set.add(x));
     });
@@ -849,70 +987,109 @@ export default function Block() {
   };
 
   const activeConditions = conditions.filter((c) => NO_VALUE.includes(c.op) || (Array.isArray(c.value) ? c.value.length > 0 : c.value.trim() !== ""));
+  const quickCount = quickKeys.filter((k) => quick[k]?.length).length;
   const visibleRows = useMemo(() => {
-    const out = rows.filter(
+    const out = tabRows.filter(
       (r) =>
         matchesSearch(r, search.trim()) &&
+        matchesQuick(r, quick) &&
         (activeConditions.length === 0 || (conj === "und" ? activeConditions.every((c) => matches(r, c)) : activeConditions.some((c) => matches(r, c)))),
     );
     return sort ? out.sort((a, b) => compareRows(a, b, sort)) : out.sort((a, b) => b.erfasstAm.localeCompare(a.erfasstAm));
-  }, [rows, search, activeConditions, conj, sort]);
+  }, [tabRows, search, quick, activeConditions, conj, sort]);
+  const lastPage = Math.max(0, Math.ceil(visibleRows.length / PAGE_ROWS) - 1);
+  const currentPage = Math.min(page, lastPage);
+  const pageRows = visibleRows.slice(currentPage * PAGE_ROWS, (currentPage + 1) * PAGE_ROWS);
 
-  const shown = COLUMNS.filter((c) => columns.includes(c.key));
-  const scrollRef = useRef<HTMLDivElement>(null);
+  const shown = tabColumns.filter((c) => columns.includes(c.key));
+  const tableBox = useRef<HTMLDivElement>(null);
   const [scrollState, setScrollState] = useState({ left: false, right: false });
+  const scroller = () => tableBox.current?.firstElementChild as HTMLElement | null | undefined;
   const updateScroll = () => {
-    const el = scrollRef.current;
-    if (el) setScrollState({ left: el.scrollLeft > 0, right: el.scrollLeft + el.clientWidth < el.scrollWidth - 1 });
+    const el = scroller();
+    if (!el) return;
+    const left = el.scrollLeft > 0;
+    const right = el.scrollLeft + el.clientWidth < el.scrollWidth - 1;
+    setScrollState((prev) => (prev.left === left && prev.right === right ? prev : { left, right }));
   };
-  useEffect(updateScroll, [visibleRows, columns]);
-  const scrollBy = (dx: number) => scrollRef.current?.scrollBy({ left: dx, behavior: "smooth" });
+  useEffect(() => {
+    const el = scroller();
+    updateScroll();
+    el?.addEventListener("scroll", updateScroll);
+    window.addEventListener("resize", updateScroll);
+    return () => {
+      el?.removeEventListener("scroll", updateScroll);
+      window.removeEventListener("resize", updateScroll);
+    };
+  });
+  const scrollBy = (dx: number) => scroller()?.scrollBy({ left: dx, behavior: "smooth" });
+
   const summeAnzahl = visibleRows.reduce((n, r) => n + r.anzahl, 0);
   // Preise verkaufter Stücke zählen nur mit, wenn ausschließlich Verkauftes gezeigt wird (dann ist die Summe der Umsatz).
   const nurVerkauft = visibleRows.length > 0 && visibleRows.every((r) => r.status === VERKAUFT);
   const ohneVerkauftePreise = !nurVerkauft && visibleRows.some((r) => r.status === VERKAUFT && r.preis !== null);
   const summePreis = visibleRows.filter((r) => nurVerkauft || r.status !== VERKAUFT).reduce((n, r) => n + (r.preis ?? 0), 0);
+  const summeVk = visibleRows.reduce((n, r) => n + (r.vk ?? 0) * r.anzahl, 0);
   const summeLabel = ohneVerkauftePreise ? "Summe (Preis ohne Verkauftes)" : "Summe";
-  const mitFotos = visibleRows.some((r) => r.fotos.length > 0);
+  const mitFotos = pageRows.some((r) => r.fotos.length > 0);
   const loading = unikateQuery.status === "pending" || editionQuery.status === "pending";
   const failed = unikateQuery.status === "error" || editionQuery.status === "error";
+  const anythingSet = quickCount > 0 || conditions.length > 0 || search !== "" || sort !== null;
+
+  // Jede Änderung an Filter, Suche oder Sortierung beginnt wieder auf Seite 1.
+  function changed() {
+    setPage(0);
+    setViewId("");
+  }
+
+  function switchTab(next: ArtTab) {
+    setTab(next);
+    setQuick((qq) => Object.fromEntries(Object.entries(qq).filter(([k]) => relevant(COL[k as ColKey], next))) as Quick);
+    setPage(0);
+  }
 
   function addCondition() {
     setConditions((cs) => [...cs, { id: newId(), field: "typ", op: "anyOf", value: [] }]);
     setFilterOpen(true);
-    setViewId("");
+    changed();
   }
 
   function toggleSort(key: ColKey) {
     setSort((s) => (!s || s.key !== key ? { key, dir: "asc" } : s.dir === "asc" ? { key, dir: "desc" } : null));
+    setPage(0);
   }
 
   function applyView(id: string) {
-    setViewId(id);
     const view = ansichten.find((v) => v.id === id);
     if (!view) return;
     try {
       const def = JSON.parse(view.definition) as Partial<ViewDef> & Record<string, unknown>;
-      if (def.v === VIEW_VERSION) {
+      if (def.v === VIEW_VERSION || def.v === 2) {
+        setTab(def.tab ?? "alle");
+        setQuick(def.quick ?? {});
         setConditions(def.conditions ?? []);
         setConj(def.conj ?? "und");
         setColumns(def.columns?.length ? def.columns : DEFAULT_VISIBLE);
         setSort(def.sort ?? null);
       } else {
+        setTab("alle");
+        setQuick({});
         setConditions(legacyToConditions(def));
         setConj("und");
         setColumns(DEFAULT_VISIBLE);
         setSort(null);
       }
       setSearch(typeof def.search === "string" ? def.search : "");
-      setFilterOpen(true);
+      setFilterOpen((def.conditions?.length ?? 0) > 0);
+      setPage(0);
+      setViewId(id);
     } catch {
       toast.error("Diese Ansicht ist beschädigt.");
     }
   }
 
   async function saveView(name: string) {
-    const def: ViewDef = { v: VIEW_VERSION, conditions, conj, columns, sort, search };
+    const def: ViewDef = { v: VIEW_VERSION, tab, quick, conditions, conj, columns, sort, search };
     try {
       const created = await createView.mutateAsync({ name, definition: JSON.stringify(def), von: user?.fullName || user?.email || "" } as never);
       await ansichtenQuery.refetch();
@@ -938,82 +1115,126 @@ export default function Block() {
   }
 
   function reset() {
+    setQuick({});
     setConditions([]);
     setSearch("");
     setSort(null);
     setColumns(DEFAULT_VISIBLE);
-    setViewId("");
+    setFilterOpen(false);
+    changed();
   }
+
+  const footerCell = (c: Col, i: number) =>
+    c.key === "anzahl" ? `${zahl.format(summeAnzahl)} Stück` : c.key === "preis" ? euro.format(summePreis) : c.key === "vk" ? euroCent.format(summeVk) : i === 0 ? summeLabel : "";
 
   return (
     <div className="w-full px-4 sm:px-6 pt-6 pb-28 sm:pb-8">
-      <div className="w-full space-y-4">
+      <div className="w-full space-y-4" lang="de">
         <PageHeader
           title="Tabelle"
-          description={`${zahl.format(visibleRows.length)} von ${zahl.format(rows.length)} Einträgen · Unikate und Editionsware`}
+          description={`${zahl.format(visibleRows.length)} von ${zahl.format(tabRows.length)} Einträgen`}
           actions={
-            <Button variant="outline" className="h-11 text-base" onClick={() => exportRows(visibleRows)} disabled={visibleRows.length === 0}>
-              <Download className="w-5 h-5 mr-2" aria-hidden />
-              CSV-Export
-            </Button>
+            <>
+              <div className="flex w-full sm:w-80">
+                <SearchField
+                  label="Suche"
+                  placeholder="Suchen: Name, Nummer, Glasur …"
+                  value={search}
+                  onChange={(v) => {
+                    setSearch(v);
+                    changed();
+                  }}
+                />
+              </div>
+              <Button variant="outline" className="h-12 text-base" onClick={() => exportRows(visibleRows)} disabled={visibleRows.length === 0}>
+                <Download className="w-5 h-5 mr-2" aria-hidden />
+                CSV-Export
+              </Button>
+            </>
           }
         />
 
+        <Tabs
+          label="Art"
+          tabs={[
+            { key: "alle" as ArtTab, label: "Alle", count: rows.length },
+            { key: "unikat" as ArtTab, label: "Unikate", count: rows.filter((r) => r.art === UNIKAT).length },
+            { key: "edition" as ArtTab, label: "Editionsware", count: rows.filter((r) => r.art === EDITION).length },
+          ]}
+          value={tab}
+          onChange={switchTab}
+        />
+
         <div className="flex flex-wrap items-center gap-2">
-          <div className="relative flex-1 min-w-56">
-            <Search className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" aria-hidden />
-            <Input type="search" aria-label="Suche" placeholder="In allen Feldern suchen" value={search} onChange={(e) => setSearch(e.target.value)} className="h-11 pl-10 rounded-md text-base md:text-base" />
-          </div>
-          <Button variant={activeConditions.length ? "default" : "outline"} className="h-11 text-base" onClick={() => (conditions.length ? setFilterOpen((o) => !o) : addCondition())} aria-expanded={filterOpen}>
+          {quickKeys.map((key) => (
+            <QuickFilter
+              key={key}
+              label={quickLabel(key, tab)}
+              options={optionsFor(key)}
+              value={quick[key] ?? []}
+              onChange={(v) => {
+                setQuick((qq) => ({ ...qq, [key]: v }));
+                changed();
+              }}
+            />
+          ))}
+          <Button variant={activeConditions.length ? "secondary" : "ghost"} className="h-11 text-base" onClick={() => (conditions.length ? setFilterOpen((o) => !o) : addCondition())} aria-expanded={filterOpen}>
             <SlidersHorizontal className="w-5 h-5 mr-2" aria-hidden />
-            Filter{activeConditions.length ? ` (${activeConditions.length})` : ""}
+            Weitere Filter{activeConditions.length ? ` (${activeConditions.length})` : ""}
           </Button>
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button variant="outline" className="h-11 text-base">
-                <Columns3 className="w-5 h-5 mr-2" aria-hidden />
-                Spalten
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent align="end" className="w-64 max-h-96 overflow-y-auto p-2">
-              {COLUMNS.map((c) => {
-                const checked = columns.includes(c.key);
-                return (
-                  <label key={c.key} className="flex items-center gap-3 min-h-11 px-2 rounded-md hover:bg-muted cursor-pointer">
-                    <Checkbox checked={checked} onCheckedChange={() => setColumns((cols) => (checked ? cols.filter((k) => k !== c.key) : COLUMNS.map((x) => x.key).filter((k) => k === c.key || cols.includes(k))))} />
-                    <span className="text-base">{c.label}</span>
-                  </label>
-                );
-              })}
-              <Button variant="ghost" className="w-full h-11 text-base mt-1" onClick={() => setColumns(DEFAULT_VISIBLE)}>
-                Standardspalten
-              </Button>
-            </PopoverContent>
-          </Popover>
-          <select aria-label="Gespeicherte Ansicht" value={viewId} onChange={(e) => (e.target.value ? applyView(e.target.value) : setViewId(""))} className={`${selectClass} max-w-60`}>
-            <option value="">Gespeicherte Ansichten</option>
-            {ansichten.map((v) => (
-              <option key={v.id} value={v.id}>
-                {v.name}
-              </option>
-            ))}
-          </select>
-          <Button variant="outline" className="h-11 text-base" onClick={() => setSaveOpen(true)}>
-            <Bookmark className="w-5 h-5 mr-2" aria-hidden />
-            Ansicht speichern
-          </Button>
-          {viewId && deleteView.enabled && (
-            <Button variant="ghost" className="h-11 text-base" onClick={removeView}>
-              <Trash2 className="w-4 h-4 mr-1" aria-hidden />
-              Ansicht entfernen
+          {anythingSet && (
+            <Button variant="ghost" className="h-11 text-base underline-offset-4 hover:underline" onClick={reset}>
+              Zurücksetzen
             </Button>
           )}
+          <div className="flex flex-wrap items-center gap-2 sm:ml-auto">
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="outline" className="h-11 text-base hidden sm:inline-flex">
+                  <Columns3 className="w-5 h-5 mr-2" aria-hidden />
+                  Spalten
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent align="end" className="w-64 max-h-96 overflow-y-auto p-2">
+                {tabColumns.map((c) => {
+                  const checked = columns.includes(c.key);
+                  return (
+                    <label key={c.key} className="flex items-center gap-3 min-h-11 px-2 rounded-md hover:bg-muted cursor-pointer">
+                      <Checkbox checked={checked} onCheckedChange={() => setColumns((cols) => (checked ? cols.filter((k) => k !== c.key) : COLUMNS.map((x) => x.key).filter((k) => k === c.key || cols.includes(k))))} />
+                      <span className="text-base">{c.label}</span>
+                    </label>
+                  );
+                })}
+                <Button variant="ghost" className="w-full h-11 text-base mt-1" onClick={() => setColumns(DEFAULT_VISIBLE)}>
+                  Standardspalten
+                </Button>
+              </PopoverContent>
+            </Popover>
+            <select aria-label="Gespeicherte Ansicht" value={viewId} onChange={(e) => (e.target.value ? applyView(e.target.value) : setViewId(""))} className={`${selectClass} max-w-60`}>
+              <option value="">Gespeicherte Ansichten</option>
+              {ansichten.map((v) => (
+                <option key={v.id} value={v.id}>
+                  {v.name}
+                </option>
+              ))}
+            </select>
+            <Button variant="outline" className="h-11 text-base" onClick={() => setSaveOpen(true)}>
+              <Bookmark className="w-5 h-5 mr-2" aria-hidden />
+              Speichern
+            </Button>
+            {viewId && deleteView.enabled && (
+              <Button variant="ghost" className="h-11 text-base" onClick={removeView}>
+                <Trash2 className="w-4 h-4 mr-1" aria-hidden />
+                Ansicht entfernen
+              </Button>
+            )}
+          </div>
         </div>
 
         {filterOpen && (
           <div className="rounded-lg border bg-muted/30 p-3 space-y-3">
             {conditions.length === 0 ? (
-              <p className="text-base text-muted-foreground">Noch keine Filter. Mit „Bedingung hinzufügen“ eingrenzen.</p>
+              <p className="text-base text-muted-foreground">Für Bedingungen wie „Preis ist leer“, „Verkauft am nach …“ oder „Rückgabe bis vor …“.</p>
             ) : (
               conditions.map((c, i) => (
                 <ConditionRow
@@ -1021,27 +1242,27 @@ export default function Block() {
                   c={c}
                   index={i}
                   conj={conj}
-                  onConj={setConj}
+                  fields={tabColumns}
+                  onConj={(next) => {
+                    setConj(next);
+                    changed();
+                  }}
                   optionsFor={optionsFor}
                   onChange={(next) => {
                     setConditions((cs) => cs.map((x) => (x.id === c.id ? next : x)));
-                    setViewId("");
+                    changed();
                   }}
-                  onRemove={() => setConditions((cs) => cs.filter((x) => x.id !== c.id))}
+                  onRemove={() => {
+                    setConditions((cs) => cs.filter((x) => x.id !== c.id));
+                    changed();
+                  }}
                 />
               ))
             )}
-            <div className="flex flex-wrap gap-2">
-              <Button variant="outline" className="h-11 text-base" onClick={addCondition}>
-                <Plus className="w-5 h-5 mr-1" aria-hidden />
-                Bedingung hinzufügen
-              </Button>
-              {(conditions.length > 0 || search || sort) && (
-                <Button variant="ghost" className="h-11 text-base" onClick={reset}>
-                  Alles zurücksetzen
-                </Button>
-              )}
-            </div>
+            <Button variant="outline" className="h-11 text-base" onClick={addCondition}>
+              <Plus className="w-5 h-5 mr-1" aria-hidden />
+              Bedingung hinzufügen
+            </Button>
           </div>
         )}
 
@@ -1049,38 +1270,42 @@ export default function Block() {
           <ErrorState text="Die Daten konnten nicht geladen werden. Bitte die Seite neu laden." />
         ) : loading ? (
           <LoadingState text="Tabelle wird geladen …" />
+        ) : visibleRows.length === 0 ? (
+          <div className="space-y-2">
+            <EmptyState text="Keine Einträge gefunden." />
+            {anythingSet && (
+              <Button variant="outline" className="h-11 text-base" onClick={reset}>
+                Filter zurücksetzen
+              </Button>
+            )}
+          </div>
         ) : (
           <>
-            <div className="sm:hidden space-y-2" lang="de">
-              {visibleRows.length === 0 ? (
-                <EmptyState text="Keine Einträge gefunden." />
-              ) : (
-                <ul className={`${PANEL_CLASS} px-3 divide-y`}>
-                  {visibleRows.map((r) => (
-                    <li key={`${r.art}-${r.id}`}>
-                      <ListRow
-                        fotos={r.fotos}
-                        title={r.name || "Ohne Namen"}
-                        sub={[r.inv, r.typ, r.galerie || r.lagerort].filter(Boolean).join(" · ")}
-                        meta={
-                          <span className="flex flex-col items-end gap-1">
-                            <StatusBadge text={r.status} />
-                            <span className="text-sm tabular-nums">{r.art === EDITION ? `${zahl.format(r.anzahl)} Stück` : r.preis !== null ? euro.format(r.preis) : ""}</span>
-                          </span>
-                        }
-                        onClick={() => setSelected(r)}
-                      />
-                    </li>
-                  ))}
-                </ul>
-              )}
-              {visibleRows.length > 0 && (
-                <p className="text-sm font-medium text-right">
-                  {summeLabel}: {zahl.format(summeAnzahl)} Stück · {euro.format(summePreis)}
-                </p>
-              )}
+            <div className="sm:hidden space-y-3">
+              <ul className={`${PANEL_CLASS} px-3 divide-y`}>
+                {pageRows.map((r) => (
+                  <li key={`${r.art}-${r.id}`}>
+                    <ListRow
+                      fotos={r.fotos}
+                      title={r.name || "Ohne Namen"}
+                      sub={[r.inv || r.artikelnr, r.typ, r.galerie || r.lagerort].filter(Boolean).join(" · ")}
+                      meta={
+                        <span className="flex flex-col items-end gap-1">
+                          <StatusBadge text={r.status} />
+                          <span className="text-sm tabular-nums">{r.art === EDITION ? `${zahl.format(r.anzahl)} Stück` : r.preis !== null ? euro.format(r.preis) : ""}</span>
+                        </span>
+                      }
+                      onClick={() => setSelected(r)}
+                    />
+                  </li>
+                ))}
+              </ul>
+              <Pager page={currentPage} total={visibleRows.length} onPage={setPage} />
+              <p className="text-sm font-medium text-right">
+                {summeLabel}: {zahl.format(summeAnzahl)} Stück · {euro.format(summePreis)}
+              </p>
             </div>
-            <div className="hidden sm:block space-y-2">
+            <div className="hidden sm:block space-y-3">
               {(scrollState.left || scrollState.right) && (
                 <div className="flex items-center justify-end gap-2">
                   <span className="text-sm text-muted-foreground mr-auto">Weitere Spalten: seitlich wischen oder Pfeile nutzen.</span>
@@ -1092,83 +1317,81 @@ export default function Block() {
                   </Button>
                 </div>
               )}
-              <div ref={scrollRef} onScroll={updateScroll} className="rounded-lg border overflow-auto max-h-[70vh] [scrollbar-width:auto] [scrollbar-color:#a1a1aa_#f4f4f5] [&::-webkit-scrollbar]:h-3 [&::-webkit-scrollbar]:w-3 [&::-webkit-scrollbar-track]:bg-zinc-100 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-400">
-                <table className="w-full text-sm">
-                  <thead className="bg-muted text-muted-foreground sticky top-0 z-10">
-                    <tr>
+              <div ref={tableBox} className="rounded-lg border bg-card">
+                <Table className="text-base">
+                  <TableHeader>
+                    <TableRow className="hover:bg-transparent">
                       {mitFotos && (
-                        <th scope="col" className="px-3 py-1 w-14">
+                        <TableHead className="w-14">
                           <span className="sr-only">Foto</span>
-                        </th>
+                        </TableHead>
                       )}
                       {shown.map((c, i) => {
                         const active = sort?.key === c.key;
                         return (
-                          <th key={c.key} scope="col" className={`px-3 py-1 font-medium whitespace-nowrap ${c.align === "right" ? "text-right" : "text-left"} ${gapAfterNumber(shown, i)}`} aria-sort={active ? (sort?.dir === "asc" ? "ascending" : "descending") : "none"}>
-                            <button type="button" onClick={() => toggleSort(c.key)} className="inline-flex items-center gap-1 min-h-11 min-w-11 hover:text-foreground">
+                          <TableHead key={c.key} className={`px-3 font-normal text-muted-foreground ${c.align === "right" ? "text-right" : ""} ${gapAfterNumber(shown, i)}`} aria-sort={active ? (sort?.dir === "asc" ? "ascending" : "descending") : "none"}>
+                            <button type="button" onClick={() => toggleSort(c.key)} className={`inline-flex items-center gap-1 min-h-11 hover:text-foreground ${active ? "text-foreground font-medium" : ""}`}>
                               {c.label}
                               {active && (sort?.dir === "asc" ? <ArrowUp className="w-4 h-4" aria-hidden /> : <ArrowDown className="w-4 h-4" aria-hidden />)}
                             </button>
-                          </th>
+                          </TableHead>
                         );
                       })}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {visibleRows.length === 0 ? (
-                      <tr>
-                        <td colSpan={shown.length + (mitFotos ? 1 : 0)} className="px-4 py-10 text-center text-base">
-                          Keine Einträge gefunden.{" "}
-                          <button type="button" className="underline min-h-11" onClick={reset}>
-                            Filter zurücksetzen
-                          </button>
-                        </td>
-                      </tr>
-                    ) : (
-                      visibleRows.map((r) => (
-                        <tr key={`${r.art}-${r.id}`} onClick={() => setSelected(r)} className="border-t cursor-pointer hover:bg-muted/40">
-                          {mitFotos && (
-                            <td className="px-3 py-1.5">
-                              <Thumb fotos={r.fotos} className="w-9 h-9 rounded-md" />
-                            </td>
-                          )}
-                          {shown.map((c, i) => (
-                            <td key={c.key} className={`px-3 py-1.5 ${gapAfterNumber(shown, i)} ${c.align === "right" ? "text-right tabular-nums whitespace-nowrap" : ""} ${c.key === "name" ? "font-medium min-w-44" : c.key === "notiz" ? "min-w-56" : "whitespace-nowrap"}`}>
-                              {c.key === "status" && r.status ? (
-                                <StatusBadge text={r.status} />
-                              ) : c.key === "name" ? (
-                                <button type="button" className="text-left hover:underline min-h-11" onClick={() => setSelected(r)}>
-                                  {r.name || "Ohne Namen"}
-                                </button>
-                              ) : (
-                                formatCell(c, r)
-                              )}
-                            </td>
-                          ))}
-                        </tr>
-                      ))
-                    )}
-                  </tbody>
-                  {visibleRows.length > 0 && (
-                    <tfoot className="bg-muted sticky bottom-0 shadow-[0_-1px_0_0_rgba(0,0,0,0.08)]">
-                      <tr className="border-t font-medium">
-                        {mitFotos && <td className="px-3 py-2" />}
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {pageRows.map((r) => (
+                      <TableRow key={`${r.art}-${r.id}`} onClick={() => setSelected(r)} className="cursor-pointer">
+                        {mitFotos && (
+                          <TableCell className="px-3 py-1.5">
+                            <Thumb fotos={r.fotos} className="w-9 h-9 rounded-md" />
+                          </TableCell>
+                        )}
                         {shown.map((c, i) => (
-                          <td key={c.key} className={`px-3 py-2 whitespace-nowrap ${gapAfterNumber(shown, i)} ${c.align === "right" ? "text-right tabular-nums" : ""}`}>
-                            {c.key === "anzahl" ? `${zahl.format(summeAnzahl)} Stück` : c.key === "preis" ? euro.format(summePreis) : i === 0 ? summeLabel : ""}
-                          </td>
+                          <TableCell key={c.key} className={`px-3 py-2 ${gapAfterNumber(shown, i)} ${c.align === "right" ? "text-right tabular-nums" : ""} ${c.key === "name" ? "font-medium min-w-44 whitespace-normal" : c.key === "notiz" ? "min-w-56 whitespace-normal" : ""}`}>
+                            {c.key === "status" && r.status ? (
+                              <StatusBadge text={r.status} />
+                            ) : c.key === "name" ? (
+                              <button type="button" className="text-left hover:underline min-h-11" onClick={() => setSelected(r)}>
+                                {r.name || "Ohne Namen"}
+                              </button>
+                            ) : c.key === "typ" && r.typ ? (
+                              <Badge variant="outline" className="text-sm font-normal">
+                                {r.typ}
+                              </Badge>
+                            ) : c.key === "glasur" && r.glasur.length ? (
+                              <span className="flex flex-wrap gap-1">
+                                {r.glasur.map((g) => (
+                                  <Badge key={g} variant="outline" className="text-sm font-normal">
+                                    {g}
+                                  </Badge>
+                                ))}
+                              </span>
+                            ) : (
+                              formatCell(c, r)
+                            )}
+                          </TableCell>
                         ))}
-                      </tr>
-                    </tfoot>
-                  )}
-                </table>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                  <TableFooter>
+                    <TableRow className="hover:bg-transparent">
+                      {mitFotos && <TableCell />}
+                      {shown.map((c, i) => (
+                        <TableCell key={c.key} className={`px-3 py-2 ${gapAfterNumber(shown, i)} ${c.align === "right" ? "text-right tabular-nums" : ""}`}>
+                          {footerCell(c, i)}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  </TableFooter>
+                </Table>
               </div>
+              <Pager page={currentPage} total={visibleRows.length} onPage={setPage} />
             </div>
           </>
         )}
-        <p className="text-sm text-muted-foreground">
-          Tipp: Spaltenkopf antippen zum Sortieren. Eintrag antippen für alle Angaben. Bearbeitet wird im Bestand.
-        </p>
+        <p className="text-sm text-muted-foreground">Tipp: Spaltenkopf antippen zum Sortieren. Eintrag antippen für alle Angaben. Bearbeitet wird im Bestand.</p>
       </div>
       <SaveViewDialog open={saveOpen} onOpenChange={setSaveOpen} onSave={saveView} taken={ansichten.map((v) => v.name)} />
       {selected && <Detail r={selected} onClose={() => setSelected(null)} />}
