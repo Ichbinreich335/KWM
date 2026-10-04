@@ -72,7 +72,7 @@ Kennzeichnung in diesem Abschnitt: [V] = heute (02.10.2026) vom externen Prüfer
 |---|---|---|---|
 | A | Astro-Gerüst 1:1 | `konzept/PLAN-ASTRO-UMBAU.md` §7 | fertig, Abnahme offen |
 | B | Varianten festschreiben (B-1), Fehler aus dem Audit beheben (B-2) | `konzept/PLAN-PHASE-B.md` | in Arbeit (Branch `phase-b-varianten`) |
-| C | Asset-Pipeline: CSS/JS gebündelt, TypeScript strict, Bilder über `astro:assets`, Schriften über die Fonts API | `PLAN-ASTRO-UMBAU.md` §9, Feinplanung folgt | offen |
+| C | Asset-Pipeline: CSS/JS gebündelt, TypeScript strict, Bilder über `astro:assets`, Schriften über die Fonts API | `konzept/PLAN-PHASE-C.md` | Feinplanung fertig, startet nach B-1 |
 | D | Komponenten-Bibliothek nach `DESIGN.md` §11, Inhalte als typisierte Daten in Sanity-Form | §10, Feinplanung folgt | offen |
 | E | Technisches SEO und Härtung (Sitemap, Canonical/OG, JSON-LD, Sicherheits-Header, CSP) | §11, Feinplanung folgt | offen |
 | 2–5 | Sanity, Formular-Worker, Einwilligung + GTM, Go-live | `konzept/AUFTRAG-ASTRO.md`, je eigener Plan | offen |
