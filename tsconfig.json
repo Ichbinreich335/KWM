@@ -11,6 +11,9 @@
     ".agents",
     ".claude",
     ".superpowers",
-    ".impeccable"
+    ".impeccable",
+    "test-results",
+    "playwright-report",
+    ".wrangler"
   ]
 }

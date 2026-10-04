@@ -25,5 +25,3 @@ export const seiten = [
   { name: 'datenschutz', prototyp: '/v3/datenschutz.html', astro: '/datenschutz' },
   { name: '404', prototyp: '/v3/404.html', astro: '/gibt-es-nicht' },
 ] as const;
-
-export type Seite = (typeof seiten)[number];

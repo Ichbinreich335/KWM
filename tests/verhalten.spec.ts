@@ -52,4 +52,6 @@ test('Hinweiszeile erscheint nur in ihrem Zeitraum (Entscheidung im Browser, nic
   await danach.clock.setFixedTime(tagDanach);
   await danach.goto('/');
   await expect(danach.locator('.aktuell__note').first()).toBeHidden();
+  await imZeitraum.close();
+  await danach.close();
 });

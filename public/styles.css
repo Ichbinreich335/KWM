@@ -533,7 +533,7 @@ body::after {
 .facts__list > div { padding: 14px 0; border-bottom: 1px solid var(--hair); }
 .facts dt { font-size: var(--t-meta); line-height: var(--t-meta-lh); letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-2); margin-bottom: 2px; }
 .facts dd { font-size: var(--t-small); line-height: var(--t-small-lh); }
-.facts .facts__cta { border-bottom: 0; padding-top: 28px; }
+.facts .facts__cta { padding-top: 28px; }
 
 /* Chronik: Erzählung statt Tabelle, Zeitstrahl in Spalte 6 bis 12, links der Einstieg bleibt stehen */
 .chronicle { --yr: var(--t-statement); --dot: 11px; padding-block: var(--section); background: var(--ground-2); }
