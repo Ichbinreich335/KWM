@@ -2,6 +2,13 @@
 
 Stand: 02.10.2026, **v3 nach externer Prüfung**. Abschnitt 0 ist maßgeblich und hat Vorrang vor älteren Aussagen weiter unten.
 
+> **Website-Umbau (Astro), aktueller Stand – zuerst lesen:** Die Arbeit läuft nicht in diesem Branch (`design-v3`), sondern im Worktree **`../KWM-astro`** (Branch `astro-umbau`) und den davon abgezweigten Worktrees. Maßgeblich sind dort:
+> 1. `konzept/UEBERGABE.md`, Abschnitt 0, „Website: Stand Astro-Umbau“: Branches, Arbeitsweise, alle Wünsche, Entscheidungen und Kritik des Admins
+> 2. `konzept/STAND.md`: was läuft, was als Nächstes kommt
+> 3. `konzept/ADMIN-OFFEN.md`: was der Admin tun, entscheiden oder abnehmen muss
+>
+> Lesen zum Beispiel mit `git show astro-umbau:konzept/UEBERGABE.md` oder direkt in `../KWM-astro/konzept/`. In `design-v3` gilt der Design-Freeze, hier wird nichts mehr geändert.
+
 ## 0. Aktueller Stand (v3, nach externer Prüfung) – Entscheidung: Softr-Test, Baserow Reserve
 
 **Noch nicht final.** Endgültig entschieden wird nach dem Test-Abend anhand der Kriterien unten.
