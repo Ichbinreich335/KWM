@@ -79,7 +79,7 @@ test('Stylesheet-Reihenfolge: Grundstile, Seiten-CSS, Signaturen, nur die Schrif
   }
 });
 
-test('Schriften: genau zwei Preloads, beide sind die latin-Datei (nicht latin-ext)', async ({ page }) => {
+test('Schriften: genau zwei Preloads, Libre Caslon Display und Jost, jeweils die latin-Datei', async ({ page }) => {
   const latin = 'U+0000-00FF';
   for (const seite of seiten) {
     await page.goto(seite.astro);
@@ -88,11 +88,16 @@ test('Schriften: genau zwei Preloads, beide sind die latin-Datei (nicht latin-ex
       .evaluateAll((links) => links.map((l) => new URL((l as HTMLLinkElement).href).pathname));
     expect(preloads.length, `${seite.name}: Anzahl Schrift-Preloads`).toBe(2);
     const css = (await page.locator('head style').allTextContents()).join('');
+    const familien: string[] = [];
     for (const pfad of preloads) {
       expect(pfad, seite.name).toMatch(/^\/_astro\/fonts\/.+\.woff2$/);
       const regel = css.split('@font-face{').find((r) => r.includes(`url("${pfad}")`));
       expect(regel, `${seite.name}: keine @font-face-Regel für ${pfad}`).toBeDefined();
       expect(regel, `${seite.name}: ${pfad} ist nicht die latin-Datei`).toContain(`unicode-range:${latin},`);
+      familien.push(/font-family:([^;]+);/.exec(regel ?? '')?.[1] ?? '');
     }
+    expect(preloads[0], `${seite.name}: beide Preloads zeigen auf dieselbe Datei`).not.toBe(preloads[1]);
+    expect(familien.filter((f) => /^"?Libre Caslon Display/.test(f)).length, `${seite.name}: ${familien}`).toBe(1);
+    expect(familien.filter((f) => /^"?Jost/.test(f)).length, `${seite.name}: ${familien}`).toBe(1);
   }
 });

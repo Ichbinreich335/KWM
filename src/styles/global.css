@@ -2195,6 +2195,7 @@ body::after {
   }
   .chronicle__hint::after {
     content: ' \2192';
+    font-family: system-ui, sans-serif;
   }
   .chronicle__list {
     grid-column: 1 / -1;
