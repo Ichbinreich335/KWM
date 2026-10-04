@@ -17,3 +17,9 @@ test('Geschützter Bindestrich in „Young‑Jae“ kommt als Zeichen an, nicht 
   expect(text).toContain('Young‑Jae');
   expect(text).not.toContain('&#8209;');
 });
+
+test('Anfrageformular übernimmt ?stueck= und springt zum Formular', async ({ page }) => {
+  await page.goto('/besuch?stueck=Teeschale%20%C3%A0%20la%20Lee#anfrage');
+  await expect(page.locator('#anfrage-stueck')).toHaveValue('Teeschale à la Lee');
+  await expect(page.locator('#anfrage')).toBeInViewport();
+});
