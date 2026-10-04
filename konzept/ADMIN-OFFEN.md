@@ -27,6 +27,7 @@ Stand: 04.10.2026 (abends)
 
 | Frage | Optionen | Meine Empfehlung |
 |---|---|---|
+| **Visueller Feinschliff (B-3), 10 Fragen** – Details, Messungen und Screens in `konzept/VISUELLES-REVIEW.md` (Abschnitt „Vorschlag Phase B-3“, Teil b) | 1 Porträt am Handy: Bild und Zitat untereinander statt Zitat über dem Gesicht · 2 Tablet zweispaltig · 3 weniger große Zitate (Meisterstücke-Satz streichen, Kosmos-Dopplung) · 4 1986 oder 1987 (Werkstatt fragen) · 5 Bildnachweise einheitlich „Titel · Foto: Name“, fehlende Namen liefern · 6 Bildgründe der Freisteller angleichen, höher aufgelöste Originale · 7 Bildwiederholungen tauschen, später Ortsfotos · 8 Orte am Handy verdichten · 9 Regel für gefüllte Buttons und Überschriften · 10 Datumsformat „2003–2005“, Chronik-Spalten | Meine Empfehlung steht je Frage im Bericht. Nicht übernommen, weil schon entschieden: Meditation und 99 Schalen zusammenlegen (E5), Orte auf hellen Grund (DESIGN.md §5). |
 | Leichtes Überschwingen der Punkte in Lebensweg und Chronik (`--ease-pop`) | Laut Kommentar im Code bewusst gewählt („Punkt füllt sich mit leichtem Überziehen“); ein Prüfwerkzeug meldet so etwas pauschal als „veraltet“. (a) so lassen, (b) ruhig auslaufen lassen ohne Überschwingen | (a), wenn es dir gefällt. Ansehen: Startseite, Abschnitt Lebensweg beim Scrollen |
 | Vorschauen der alten Branches (`design-v3`, `claude/softr-lager-app`, `claude/baserow-nachbau`, `design-v2` …) | Sie scheitern seit 04.10. an einer neuen Cloudflare-Pflichtangabe (`previews`-Block). (a) Angabe dort ergänzen, (b) ignorieren, (c) Branches später aufräumen | (b), solange sie nicht gebraucht werden; nach dem Merge erben neue Branches die Angabe |
 | Google Tag Manager vorziehen (Phase 4)? | Braucht GTM-Container-ID und Wahl des Einwilligungsbanners | Nach Phase B; Conversion „Anfrage gesendet“ ist erst mit dem Formular-Worker (Phase 3) sinnvoll |
@@ -34,6 +35,7 @@ Stand: 04.10.2026 (abends)
 
 ## Aufgefallen (zur Kenntnis)
 
+- Externe Kritik geprüft (Opus, eigene Playwright-Messungen): 14 von 20 Punkten stimmen ganz, 5 teilweise. Größter sichtbarer Befund, den die Kritik übersah: Porträt und Feuerbild werden stark hochskaliert und wirken weich (Handy ~20 % der nötigen Pixel). Die 10 Punkte ohne Entscheidungsbedarf setze ich als Phase B-3(a) um (nach D1, eigener PR). Bericht: `konzept/VISUELLES-REVIEW.md`.
 - Sichtbare Kleinigkeiten aus dem Fehler-Audit (Tippflächen „Zu diesem Stück anfragen“ 43 px statt 44 px u. a.) stehen in `konzept/ASTRO-BERICHT.md` Abschnitt 5 und werden in Phase B behoben.
 - GitHub meldete Sicherheitshinweise zu `undici` (steckt im Werkzeug Wrangler, nicht in der Website). Behoben durch Wrangler 4.147 im Branch `astro-umbau`; wirkt auf `main` mit dem Merge.
 
