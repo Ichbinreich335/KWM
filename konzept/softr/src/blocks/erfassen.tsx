@@ -3,7 +3,6 @@ import {
   datasource,
   q,
   useFieldOptions,
-  useLinkedRecords,
   useRecord,
   useRecordCreate,
   useRecordUpdate,
@@ -19,13 +18,18 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Check, Loader2, Minus, Plus } from "lucide-react";
 import { toast } from "sonner";
-import { AUSSER_HAUS_ORT, ROHLING, STATUS_ACTIVE, isAusserHaus } from "../shared/konstanten";
-import { type LinkedPages, type Opt, link, parseNumber, toOptions } from "../shared/daten";
-import { AddNew, Chip, ChoiceChips, ErrorText, FieldLabel, Hint, OptionSelect, PageHeader, PhotoPicker, TabChips } from "../shared/ui";
+import { AUSSER_HAUS_ORT, PAGE_SIZE, ROHLING, isAusserHaus } from "../shared/konstanten";
+import { type Opt, activeOptions, link, parseNumber, useAllPages } from "../shared/daten";
+import { AddNew, ChoiceChips, ErrorText, FIELD_CLASS, FieldLabel, Hint, OptionSelect, PANEL_CLASS, PageHeader, PhotoPicker, SearchPick, Segmented, TEXTAREA_CLASS } from "../shared/ui";
 
-const ds = datasource.define({ unikate: "unikate", edition: "edition", glasuren: "glasuren", kuenstler: "kuenstler" });
+const ds = datasource.define({ unikate: "unikate", edition: "edition", glasuren: "glasuren", kuenstler: "kuenstler", lagerorte: "lagerorte", partner: "partner", modelle: "modelle" });
 const glasurNeu = q.select({ name: "OuhBi" });
 const kuenstlerNeu = q.select({ name: "vqD0c" });
+const glasurListe = q.select({ name: "OuhBi", archiviert: "jxxXN" });
+const kuenstlerListe = q.select({ name: "vqD0c", archiviert: "TOhYe" });
+const lagerortListe = q.select({ name: "AoOjs", archiviert: "kMBsy" });
+const partnerListe = q.select({ name: "a4yfc", archiviert: "24Tn9" });
+const modellListe = q.select({ name: "eXo5w", archiviert: "3tlrw" });
 
 const unikatFields = q.select({
   name: "7IBVW",
@@ -141,7 +145,7 @@ function SuccessCard({ saved, onNext }: { saved: Saved; onNext: () => void }) {
   const inventarnummer = (data as { fields?: { inventarnummer?: string } } | undefined)?.fields?.inventarnummer;
 
   return (
-    <div className="rounded-xl border bg-card p-6 text-center space-y-4" role="status">
+    <div className={`${PANEL_CLASS} p-6 text-center space-y-4`} role="status">
       <div className="mx-auto w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center">
         <Check className="w-7 h-7 text-primary" aria-hidden />
       </div>
@@ -151,10 +155,10 @@ function SuccessCard({ saved, onNext }: { saved: Saved; onNext: () => void }) {
         {inventarnummer && <p className="text-base mt-1">Inventarnummer: <strong>{inventarnummer}</strong></p>}
       </div>
       <div className="flex flex-col sm:flex-row gap-3 justify-center">
-        <Button size="lg" className="h-12 text-base" onClick={onNext}>
+        <Button size="lg" className={FIELD_CLASS} onClick={onNext}>
           Nächstes Stück erfassen
         </Button>
-        <Button asChild size="lg" variant="outline" className="h-12 text-base">
+        <Button asChild size="lg" variant="outline" className={FIELD_CLASS}>
           <NavigationAction navigation={bestandLink}>Zum Bestand</NavigationAction>
         </Button>
       </div>
@@ -184,16 +188,22 @@ export default function Block() {
   const zustandOptions = useFieldOptions({ from: ds.edition, select: editionFields, field: "zustand" })
     .options as Opt[];
 
-  const kuenstlerQuery = useLinkedRecords({ from: ds.unikate, select: unikatFields, field: "kuenstler", sortOrder: "ASC" });
-  const glasurQuery = useLinkedRecords({ from: ds.unikate, select: unikatFields, field: "glasur", sortOrder: "ASC" });
-  const lagerortQuery = useLinkedRecords({ from: ds.unikate, select: unikatFields, field: "lagerort", sortOrder: "ASC" });
-  const galerieQuery = useLinkedRecords({ from: ds.unikate, select: unikatFields, field: "galerie", sortOrder: "ASC" });
-  const modellQuery = useLinkedRecords({ from: ds.edition, select: editionFields, field: "modell", sortOrder: "ASC" });
-  const kuenstlerOptions = toOptions(kuenstlerQuery.data as LinkedPages);
-  const glasurOptions = toOptions(glasurQuery.data as LinkedPages);
-  const lagerortOptions = toOptions(lagerortQuery.data as LinkedPages);
-  const galerieOptions = toOptions(galerieQuery.data as LinkedPages);
-  const modellOptions = toOptions(modellQuery.data as LinkedPages);
+  // Auswahllisten direkt aus den Stammdaten, damit archivierte Einträge wegfallen.
+  const kuenstlerQuery = useRecords({ from: ds.kuenstler, select: kuenstlerListe, count: PAGE_SIZE });
+  const glasurQuery = useRecords({ from: ds.glasuren, select: glasurListe, count: PAGE_SIZE });
+  const lagerortQuery = useRecords({ from: ds.lagerorte, select: lagerortListe, count: PAGE_SIZE });
+  const galerieQuery = useRecords({ from: ds.partner, select: partnerListe, count: PAGE_SIZE });
+  const modellQuery = useRecords({ from: ds.modelle, select: modellListe, count: PAGE_SIZE });
+  useAllPages(kuenstlerQuery);
+  useAllPages(glasurQuery);
+  useAllPages(lagerortQuery);
+  useAllPages(galerieQuery);
+  useAllPages(modellQuery);
+  const kuenstlerOptions = activeOptions(kuenstlerQuery.data);
+  const glasurOptions = activeOptions(glasurQuery.data);
+  const lagerortOptions = activeOptions(lagerortQuery.data);
+  const galerieOptions = activeOptions(galerieQuery.data);
+  const modellOptions = activeOptions(modellQuery.data);
   const [extraTypen, setExtraTypen] = useState<Opt[]>([]);
   const typChoices = [...typOptions, ...extraTypen.filter((t) => !typOptions.some((o) => o.label === t.label))];
   const createGlasur = useRecordCreate({ from: ds.glasuren, fields: glasurNeu });
@@ -205,18 +215,15 @@ export default function Block() {
     return true;
   }
 
-  async function addGlasur(name: string, target: Art): Promise<boolean> {
+  async function addGlasur(name: string): Promise<string | null> {
     try {
       const created = await createGlasur.mutateAsync({ name } as never);
-      const id = (created as { id: string }).id;
       await glasurQuery.refetch();
-      if (target === "unikat") setUnikat((s) => ({ ...s, glasur: [...s.glasur, id] }));
-      else setEdition((s) => ({ ...s, glasur: id }));
       toast.success(`Glasur „${name}“ angelegt.`);
-      return true;
+      return (created as { id: string }).id;
     } catch {
       toast.error("Glasur konnte nicht angelegt werden.");
-      return false;
+      return null;
     }
   }
 
@@ -372,7 +379,7 @@ export default function Block() {
 
   return (
     <div className="container pt-6 pb-28 sm:pb-8">
-      <div className="content max-w-2xl mx-auto">
+      <div className="content max-w-3xl">
         <div className="mb-5">
           <PageHeader title="Neues Stück erfassen" description="Felder mit * sind Pflicht. Alles andere kann später ergänzt werden." />
         </div>
@@ -381,9 +388,9 @@ export default function Block() {
           <SuccessCard saved={saved} onNext={reset} />
         ) : (
           <form ref={formRef} onSubmit={submit} noValidate className="space-y-6">
-            <TabChips
+            <Segmented
               label="Art des Stücks"
-              tabs={ART_TABS}
+              options={ART_TABS}
               value={art}
               onChange={(key) => {
                 setArt(key);
@@ -410,7 +417,7 @@ export default function Block() {
                     value={unikat.name}
                     onChange={(e) => setU("name", e.target.value)}
                     placeholder="z. B. Mondvase „Seladon“"
-                    className="h-12 text-base"
+                    className={FIELD_CLASS}
                     aria-invalid={!!errors.name}
                   />
                   <ErrorText>{errors.name}</ErrorText>
@@ -437,7 +444,7 @@ export default function Block() {
                       if (isAusserHaus(v) && ort) setU("lagerort", ort);
                       else if (unikat.lagerort === ort) setU("lagerort", "");
                     }}
-                    activeClasses={STATUS_ACTIVE}
+                    withDots
                   />
                   <ErrorText>{errors.status}</ErrorText>
                 </div>
@@ -466,6 +473,11 @@ export default function Block() {
                   </div>
                 )}
 
+                <div className="border-t pt-6">
+                  <h2 className="text-lg font-semibold">Weitere Angaben</h2>
+                  <p className="text-sm text-muted-foreground">Kann auch später im Bestand ergänzt werden.</p>
+                </div>
+
                 <div className="grid sm:grid-cols-2 gap-6">
                   <div>
                     <FieldLabel htmlFor="u-kuenstler">Künstler:in</FieldLabel>
@@ -487,27 +499,15 @@ export default function Block() {
                       inputMode="numeric"
                       value={unikat.jahr}
                       onChange={(e) => setU("jahr", e.target.value.replace(/\D/g, "").slice(0, 4))}
-                      className="h-12 text-base"
+                      className={FIELD_CLASS}
                     />
                   </div>
                 </div>
 
                 <div>
                   <FieldLabel>Glasur</FieldLabel>
-                  <div className="flex flex-wrap gap-2" role="group" aria-label="Glasur">
-                    {glasurOptions.map((g) => {
-                      const active = unikat.glasur.includes(g.id);
-                      return (
-                        <Chip key={g.id} active={active} onClick={() => setU("glasur", active ? unikat.glasur.filter((x) => x !== g.id) : [...unikat.glasur, g.id])}>
-                          {g.label}
-                        </Chip>
-                      );
-                    })}
-                  </div>
-                  <div className="mt-2">
-                    <AddNew label="Neue Glasur" placeholder="Name der Glasur" existing={glasurOptions} onAdd={(n) => addGlasur(n, "unikat")} />
-                  </div>
-                  <Hint>Mehrere möglich. Fehlt eine Glasur, mit „+ Neue Glasur“ anlegen.</Hint>
+                  <SearchPick label="Glasuren" createNoun="neue Glasur" options={glasurOptions} value={unikat.glasur} onChange={(ids) => setU("glasur", ids)} multiple onCreate={addGlasur} />
+                  <Hint>Mehrere möglich. Fehlt eine Glasur, den Namen ins Suchfeld schreiben und anlegen.</Hint>
                 </div>
 
                 <div className="grid sm:grid-cols-2 gap-6">
@@ -518,7 +518,7 @@ export default function Block() {
                       value={unikat.masse}
                       onChange={(e) => setU("masse", e.target.value)}
                       placeholder="z. B. Ø 24 × H 8 cm"
-                      className="h-12 text-base"
+                      className={FIELD_CLASS}
                     />
                   </div>
                   <div>
@@ -528,7 +528,7 @@ export default function Block() {
                       value={unikat.bildnachweis}
                       onChange={(e) => setU("bildnachweis", e.target.value)}
                       placeholder="z. B. Foto: Name der Fotografin"
-                      className="h-12 text-base"
+                      className={FIELD_CLASS}
                     />
                   </div>
                 </div>
@@ -542,13 +542,13 @@ export default function Block() {
                       value={unikat.preis}
                       onChange={(e) => setU("preis", e.target.value)}
                       placeholder="z. B. 480"
-                      className="h-12 text-base"
+                      className={FIELD_CLASS}
                       aria-invalid={!!errors.preis}
                     />
                     <Hint>Nur intern, erscheint nie auf der Website.</Hint>
                     <ErrorText>{errors.preis}</ErrorText>
                   </div>
-                  <label htmlFor="u-website" className="flex items-center justify-between gap-4 rounded-lg border p-4 min-h-12 cursor-pointer self-start sm:mt-8">
+                  <label htmlFor="u-website" className="flex items-center justify-between gap-4 rounded-md border px-4 py-3 cursor-pointer self-start sm:mt-8">
                     <span>
                       <span className="block text-base font-medium">Auf Website zeigen</span>
                       <span className="block text-sm text-muted-foreground">Nur für die spätere Website-Anbindung.</span>
@@ -564,7 +564,7 @@ export default function Block() {
                     value={unikat.notiz}
                     onChange={(e) => setU("notiz", e.target.value)}
                     rows={3}
-                    className="text-base"
+                    className={TEXTAREA_CLASS}
                   />
                 </div>
               </>
@@ -598,19 +598,8 @@ export default function Block() {
 
                 {isGlasiert && (
                   <div>
-                    <FieldLabel htmlFor="e-glasur" required>
-                      Glasur
-                    </FieldLabel>
-                    <OptionSelect
-                      id="e-glasur"
-                      value={edition.glasur}
-                      onChange={(v) => setE("glasur", v)}
-                      options={glasurOptions}
-                      placeholder="Glasur wählen"
-                    />
-                    <div className="mt-2">
-                      <AddNew label="Neue Glasur" placeholder="Name der Glasur" existing={glasurOptions} onAdd={(n) => addGlasur(n, "edition")} />
-                    </div>
+                    <FieldLabel required>Glasur</FieldLabel>
+                    <SearchPick label="Glasuren" createNoun="neue Glasur" options={glasurOptions} value={link(edition.glasur)} onChange={(ids) => setE("glasur", ids.at(-1) ?? "")} multiple={false} onCreate={addGlasur} />
                     <ErrorText>{errors.glasur}</ErrorText>
                   </div>
                 )}
@@ -634,7 +623,7 @@ export default function Block() {
                       inputMode="numeric"
                       value={String(edition.anzahl)}
                       onChange={(e) => setE("anzahl", Number(e.target.value.replace(/\D/g, "")) || 0)}
-                      className="h-12 w-24 text-center text-lg"
+                      className="h-12 w-24 rounded-md text-center text-lg md:text-lg"
                     />
                     <Button
                       type="button"
@@ -648,7 +637,7 @@ export default function Block() {
                   </div>
                   <ErrorText>{errors.anzahl}</ErrorText>
                   {existingRow && (
-                    <p className="mt-3 rounded-lg bg-muted p-3 text-base">
+                    <p className="mt-3 rounded-md bg-muted p-3 text-base">
                       Diese Kombination gibt es schon mit <strong>{existingCount} Stück</strong>. Beim Speichern wird
                       die Anzahl dort auf <strong>{existingCount + edition.anzahl}</strong> erhöht.
                     </p>
@@ -678,7 +667,7 @@ export default function Block() {
                         value={edition.notiz}
                         onChange={(e) => setE("notiz", e.target.value)}
                         rows={3}
-                        className="text-base"
+                        className={TEXTAREA_CLASS}
                       />
                     </div>
                   </>

@@ -19,15 +19,24 @@ const AUSGESTELLT = "ausgestellt";
 const ROHLING = "Rohling";
 const GLASIERT = "glasiert";
 
-// Ruhige Variante für Badges in Listen und Tabellen.
+// Farbe trägt nur den Status eines Unikats. Der Zustand der Editionsware (Rohling, glasiert) bleibt neutral.
 const STATUS_BADGE: Record<string, string> = {
-  [VERFUEGBAR]: "bg-emerald-100 text-emerald-800 border-emerald-200",
-  [RESERVIERT]: "bg-amber-100 text-amber-900 border-amber-200",
-  [VERKAUFT]: "bg-zinc-100 text-zinc-600 border-zinc-200",
-  [KOMMISSION]: "bg-sky-100 text-sky-800 border-sky-200",
-  [AUSGESTELLT]: "bg-violet-100 text-violet-800 border-violet-200",
-  [ROHLING]: "bg-stone-100 text-stone-700 border-stone-200",
-  [GLASIERT]: "bg-teal-50 text-teal-800 border-teal-200",
+  [VERFUEGBAR]: "bg-emerald-50 text-emerald-800 border-emerald-200",
+  [RESERVIERT]: "bg-amber-50 text-amber-900 border-amber-200",
+  [VERKAUFT]: "bg-zinc-100 text-zinc-700 border-zinc-200",
+  [KOMMISSION]: "bg-sky-50 text-sky-800 border-sky-200",
+  [AUSGESTELLT]: "bg-violet-50 text-violet-800 border-violet-200",
+  [ROHLING]: "bg-background text-muted-foreground border-border",
+  [GLASIERT]: "bg-muted text-foreground border-border",
+};
+
+// Farbpunkt je Status, in Auswahlknöpfen, Badges und Tabellenköpfen dieselbe Farbe.
+const STATUS_DOT: Record<string, string> = {
+  [VERFUEGBAR]: "bg-emerald-600",
+  [RESERVIERT]: "bg-amber-500",
+  [VERKAUFT]: "bg-zinc-400",
+  [KOMMISSION]: "bg-sky-600",
+  [AUSGESTELLT]: "bg-violet-600",
 };
 
 type Opt = { id: string; label: string };
@@ -106,12 +115,23 @@ function useAllPages(query: { hasNextPage?: boolean; isFetchingNextPage?: boolea
   }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 }
 
-const DIALOG_CLASS = "w-[calc(100vw-2rem)] max-h-[90vh] overflow-y-auto p-4 sm:p-6 [&>button:last-child]:hidden";
+const DIALOG_CLASS = "w-[calc(100vw-2rem)] max-h-[90vh] overflow-y-auto rounded-lg p-4 sm:p-6 [&>button:last-child]:hidden";
+
+// md:text-base hebt das md:text-sm der shadcn-Felder auf, damit Eingabe und Auswahlliste gleich groß schreiben.
+const FIELD_CLASS = "h-12 rounded-md text-base md:text-base";
+
+const PANEL_CLASS = "rounded-lg border bg-card";
+
+function StatusDot({ status }: { status: string }) {
+  const color = STATUS_DOT[status];
+  return color ? <span className={`inline-block w-2.5 h-2.5 rounded-full shrink-0 ${color}`} aria-hidden /> : null;
+}
 
 function StatusBadge({ text }: { text: string }) {
   if (!text) return null;
   return (
-    <span className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-sm font-medium whitespace-nowrap ${STATUS_BADGE[text] ?? "bg-muted text-foreground border-border"}`}>
+    <span className={`inline-flex items-center gap-1.5 rounded-md border px-2 py-0.5 text-sm font-medium whitespace-nowrap ${STATUS_BADGE[text] ?? "bg-muted text-foreground border-border"}`}>
+      <StatusDot status={text} />
       {text}
     </span>
   );
@@ -121,8 +141,8 @@ function Thumb({ fotos, size = "small", className = "w-12 h-12 rounded-md" }: { 
   const first = fotos[0];
   if (!first) {
     return (
-      <span className={`${className} shrink-0 bg-muted flex items-center justify-center text-muted-foreground`} aria-label="Kein Foto">
-        <ImageOff className="w-5 h-5" aria-hidden />
+      <span className={`${className} shrink-0 bg-muted flex items-center justify-center text-muted-foreground/60`} aria-label="Kein Foto">
+        <ImageOff className="w-4 h-4" aria-hidden />
       </span>
     );
   }
@@ -131,10 +151,10 @@ function Thumb({ fotos, size = "small", className = "w-12 h-12 rounded-md" }: { 
 
 function PageHeader({ title, description, actions }: { title: string; description?: string; actions?: React.ReactNode }) {
   return (
-    <div className="flex flex-wrap items-start justify-between gap-3">
+    <div className="flex flex-wrap items-end justify-between gap-x-4 gap-y-3">
       <div className="min-w-0">
         <h1 className="text-2xl font-semibold">{title}</h1>
-        {description && <p className="text-base text-muted-foreground">{description}</p>}
+        {description && <p className="text-base text-muted-foreground mt-0.5">{description}</p>}
       </div>
       {actions && <div className="flex flex-wrap gap-2">{actions}</div>}
     </div>
@@ -176,14 +196,14 @@ function LoadingState({ text }: { text: string }) {
 
 function ErrorState({ text }: { text: string }) {
   return (
-    <div role="alert" className="flex items-center gap-2 rounded-xl border border-destructive/40 bg-destructive/5 p-6 text-base">
+    <div role="alert" className="flex items-center gap-2 rounded-lg border border-destructive/40 bg-destructive/5 p-6 text-base">
       <AlertTriangle className="w-5 h-5 text-destructive shrink-0" aria-hidden /> {text}
     </div>
   );
 }
 
 function EmptyState({ text }: { text: string }) {
-  return <p className="rounded-lg border border-dashed px-4 py-6 text-center text-base text-muted-foreground">{text}</p>;
+  return <p className="rounded-lg bg-muted/50 px-4 py-6 text-center text-base text-muted-foreground">{text}</p>;
 }
 
 // Kopf jedes Fensters: Titel, Unterzeile, großer Schließen-Knopf.
@@ -734,9 +754,9 @@ function Detail({ r, onClose }: { r: Row; onClose: () => void }) {
         <PanelHeader title={r.name || "Ohne Namen"} description={[r.art, r.inv, r.typ].filter(Boolean).join(" · ")} />
         <div className="px-4 pb-8 space-y-5">
           {foto ? (
-            <img src={thumb(foto, "large")} alt={r.name} className="w-full max-h-80 object-contain rounded-xl bg-muted" />
+            <img src={thumb(foto, "large")} alt={r.name} className="w-full max-h-80 object-contain rounded-lg bg-muted" />
           ) : (
-            <div className="h-32 rounded-xl bg-muted flex items-center justify-center gap-2 text-muted-foreground">
+            <div className="h-32 rounded-lg bg-muted flex items-center justify-center gap-2 text-muted-foreground">
               <ImageOff className="w-5 h-5" aria-hidden /> Kein Foto
             </div>
           )}
@@ -771,7 +791,7 @@ function SaveViewDialog({ open, onOpenChange, onSave, taken }: { open: boolean; 
         <label htmlFor="view-name" className="text-base font-medium">
           Name der Ansicht
         </label>
-        <Input id="view-name" value={name} onChange={(e) => setName(e.target.value)} placeholder="z. B. Seladon im Schauraum" className="h-12 text-base" />
+        <Input id="view-name" value={name} onChange={(e) => setName(e.target.value)} placeholder="z. B. Seladon im Schauraum" className={FIELD_CLASS} />
         <p className="text-sm text-muted-foreground">Gespeichert werden Filter, Spalten, Sortierung und Suche. Alle Mitarbeitenden sehen die Ansicht.</p>
         {duplicate && (
           <p role="alert" className="text-sm text-destructive">
@@ -780,7 +800,7 @@ function SaveViewDialog({ open, onOpenChange, onSave, taken }: { open: boolean; 
         )}
         <DialogFooter>
           <Button
-            className="h-12 text-base"
+            className={FIELD_CLASS}
             disabled={!name.trim() || duplicate || busy}
             onClick={async () => {
               setBusy(true);
@@ -795,6 +815,11 @@ function SaveViewDialog({ open, onOpenChange, onSave, taken }: { open: boolean; 
       </DialogContent>
     </Dialog>
   );
+}
+
+// Textspalte direkt nach einer rechtsbündigen Zahlenspalte bekommt Luft, sonst kleben Betrag und Text aneinander.
+function gapAfterNumber(cols: { align?: string }[], i: number): string {
+  return i > 0 && cols[i - 1].align === "right" && cols[i].align !== "right" ? "pl-8" : "";
 }
 
 export default function Block() {
@@ -858,7 +883,12 @@ export default function Block() {
   useEffect(updateScroll, [visibleRows, columns]);
   const scrollBy = (dx: number) => scrollRef.current?.scrollBy({ left: dx, behavior: "smooth" });
   const summeAnzahl = visibleRows.reduce((n, r) => n + r.anzahl, 0);
-  const summePreis = visibleRows.reduce((n, r) => n + (r.preis ?? 0), 0);
+  // Preise verkaufter Stücke zählen nur mit, wenn ausschließlich Verkauftes gezeigt wird (dann ist die Summe der Umsatz).
+  const nurVerkauft = visibleRows.length > 0 && visibleRows.every((r) => r.status === VERKAUFT);
+  const ohneVerkauftePreise = !nurVerkauft && visibleRows.some((r) => r.status === VERKAUFT && r.preis !== null);
+  const summePreis = visibleRows.filter((r) => nurVerkauft || r.status !== VERKAUFT).reduce((n, r) => n + (r.preis ?? 0), 0);
+  const summeLabel = ohneVerkauftePreise ? "Summe (Preis ohne Verkauftes)" : "Summe";
+  const mitFotos = visibleRows.some((r) => r.fotos.length > 0);
   const loading = unikateQuery.status === "pending" || editionQuery.status === "pending";
   const failed = unikateQuery.status === "error" || editionQuery.status === "error";
 
@@ -947,7 +977,7 @@ export default function Block() {
         <div className="flex flex-wrap items-center gap-2">
           <div className="relative flex-1 min-w-56">
             <Search className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" aria-hidden />
-            <Input type="search" aria-label="Suche" placeholder="In allen Feldern suchen" value={search} onChange={(e) => setSearch(e.target.value)} className="h-11 pl-10 text-base" />
+            <Input type="search" aria-label="Suche" placeholder="In allen Feldern suchen" value={search} onChange={(e) => setSearch(e.target.value)} className="h-11 pl-10 rounded-md text-base md:text-base" />
           </div>
           <Button variant={activeConditions.length ? "default" : "outline"} className="h-11 text-base" onClick={() => (conditions.length ? setFilterOpen((o) => !o) : addCondition())} aria-expanded={filterOpen}>
             <SlidersHorizontal className="w-5 h-5 mr-2" aria-hidden />
@@ -996,7 +1026,7 @@ export default function Block() {
         </div>
 
         {filterOpen && (
-          <div className="rounded-xl border bg-muted/30 p-3 space-y-3">
+          <div className="rounded-lg border bg-muted/30 p-3 space-y-3">
             {conditions.length === 0 ? (
               <p className="text-base text-muted-foreground">Noch keine Filter. Mit „Bedingung hinzufügen“ eingrenzen.</p>
             ) : (
@@ -1040,7 +1070,7 @@ export default function Block() {
               {visibleRows.length === 0 ? (
                 <EmptyState text="Keine Einträge gefunden." />
               ) : (
-                <ul className="rounded-xl border bg-card px-3 divide-y">
+                <ul className={`${PANEL_CLASS} px-3 divide-y`}>
                   {visibleRows.map((r) => (
                     <li key={`${r.art}-${r.id}`}>
                       <ListRow
@@ -1061,7 +1091,7 @@ export default function Block() {
               )}
               {visibleRows.length > 0 && (
                 <p className="text-sm font-medium text-right">
-                  Summe: {zahl.format(summeAnzahl)} Stück · {euro.format(summePreis)}
+                  {summeLabel}: {zahl.format(summeAnzahl)} Stück · {euro.format(summePreis)}
                 </p>
               )}
             </div>
@@ -1077,17 +1107,19 @@ export default function Block() {
                   </Button>
                 </div>
               )}
-              <div ref={scrollRef} onScroll={updateScroll} className="rounded-xl border overflow-auto max-h-[70vh] [scrollbar-width:auto] [scrollbar-color:#a1a1aa_#f4f4f5] [&::-webkit-scrollbar]:h-3 [&::-webkit-scrollbar]:w-3 [&::-webkit-scrollbar-track]:bg-zinc-100 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-400">
+              <div ref={scrollRef} onScroll={updateScroll} className="rounded-lg border overflow-auto max-h-[70vh] [scrollbar-width:auto] [scrollbar-color:#a1a1aa_#f4f4f5] [&::-webkit-scrollbar]:h-3 [&::-webkit-scrollbar]:w-3 [&::-webkit-scrollbar-track]:bg-zinc-100 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-400">
                 <table className="w-full text-sm">
                   <thead className="bg-muted text-muted-foreground sticky top-0 z-10">
                     <tr>
-                      <th scope="col" className="px-2.5 py-1 w-14">
-                        <span className="sr-only">Foto</span>
-                      </th>
-                      {shown.map((c) => {
+                      {mitFotos && (
+                        <th scope="col" className="px-3 py-1 w-14">
+                          <span className="sr-only">Foto</span>
+                        </th>
+                      )}
+                      {shown.map((c, i) => {
                         const active = sort?.key === c.key;
                         return (
-                          <th key={c.key} scope="col" className={`px-2.5 py-1 font-medium whitespace-nowrap ${c.align === "right" ? "text-right" : "text-left"}`} aria-sort={active ? (sort?.dir === "asc" ? "ascending" : "descending") : "none"}>
+                          <th key={c.key} scope="col" className={`px-3 py-1 font-medium whitespace-nowrap ${c.align === "right" ? "text-right" : "text-left"} ${gapAfterNumber(shown, i)}`} aria-sort={active ? (sort?.dir === "asc" ? "ascending" : "descending") : "none"}>
                             <button type="button" onClick={() => toggleSort(c.key)} className="inline-flex items-center gap-1 min-h-11 min-w-11 hover:text-foreground">
                               {c.label}
                               {active && (sort?.dir === "asc" ? <ArrowUp className="w-4 h-4" aria-hidden /> : <ArrowDown className="w-4 h-4" aria-hidden />)}
@@ -1100,7 +1132,7 @@ export default function Block() {
                   <tbody>
                     {visibleRows.length === 0 ? (
                       <tr>
-                        <td colSpan={shown.length + 1} className="px-4 py-10 text-center text-base">
+                        <td colSpan={shown.length + (mitFotos ? 1 : 0)} className="px-4 py-10 text-center text-base">
                           Keine Einträge gefunden.{" "}
                           <button type="button" className="underline min-h-11" onClick={reset}>
                             Filter zurücksetzen
@@ -1110,11 +1142,13 @@ export default function Block() {
                     ) : (
                       visibleRows.map((r) => (
                         <tr key={`${r.art}-${r.id}`} onClick={() => setSelected(r)} className="border-t cursor-pointer hover:bg-muted/40">
-                          <td className="px-2.5 py-1.5">
-                            <Thumb fotos={r.fotos} className="w-9 h-9 rounded" />
-                          </td>
-                          {shown.map((c) => (
-                            <td key={c.key} className={`px-2.5 py-1.5 ${c.align === "right" ? "text-right tabular-nums whitespace-nowrap" : ""} ${c.key === "name" ? "font-medium min-w-44" : c.key === "notiz" ? "min-w-56" : "whitespace-nowrap"}`}>
+                          {mitFotos && (
+                            <td className="px-3 py-1.5">
+                              <Thumb fotos={r.fotos} className="w-9 h-9 rounded-md" />
+                            </td>
+                          )}
+                          {shown.map((c, i) => (
+                            <td key={c.key} className={`px-3 py-1.5 ${gapAfterNumber(shown, i)} ${c.align === "right" ? "text-right tabular-nums whitespace-nowrap" : ""} ${c.key === "name" ? "font-medium min-w-44" : c.key === "notiz" ? "min-w-56" : "whitespace-nowrap"}`}>
                               {c.key === "status" && r.status ? (
                                 <StatusBadge text={r.status} />
                               ) : c.key === "name" ? (
@@ -1133,10 +1167,10 @@ export default function Block() {
                   {visibleRows.length > 0 && (
                     <tfoot className="bg-muted sticky bottom-0 shadow-[0_-1px_0_0_rgba(0,0,0,0.08)]">
                       <tr className="border-t font-medium">
-                        <td className="px-2.5 py-2" />
+                        {mitFotos && <td className="px-3 py-2" />}
                         {shown.map((c, i) => (
-                          <td key={c.key} className={`px-2.5 py-2 whitespace-nowrap ${c.align === "right" ? "text-right tabular-nums" : ""}`}>
-                            {c.key === "anzahl" ? `${zahl.format(summeAnzahl)} Stück` : c.key === "preis" ? euro.format(summePreis) : i === 0 ? "Summe" : ""}
+                          <td key={c.key} className={`px-3 py-2 whitespace-nowrap ${gapAfterNumber(shown, i)} ${c.align === "right" ? "text-right tabular-nums" : ""}`}>
+                            {c.key === "anzahl" ? `${zahl.format(summeAnzahl)} Stück` : c.key === "preis" ? euro.format(summePreis) : i === 0 ? summeLabel : ""}
                           </td>
                         ))}
                       </tr>

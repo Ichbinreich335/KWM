@@ -45,6 +45,15 @@ export function toOptions(data: LinkedPages): Opt[] {
   return (data?.pages.flatMap((p) => p.items) ?? []).map((o) => ({ id: o.id, label: o.title }));
 }
 
+// Auswahlliste aus einer Stammdaten-Tabelle (Felder name, archiviert). Archivierte fallen weg,
+// außer sie sind am Datensatz schon gewählt, damit bestehende Angaben sichtbar bleiben.
+export function activeOptions(data: { pages: { items: unknown[] }[] } | undefined, keep: string[] = []): Opt[] {
+  return ((data?.pages.flatMap((p) => p.items) ?? []) as RawItem[])
+    .filter((i) => i.fields.archiviert !== true || keep.includes(i.id))
+    .map((i) => ({ id: i.id, label: str(i.fields.name) }))
+    .sort((a, b) => a.label.localeCompare(b.label, "de"));
+}
+
 export function link(id: string | undefined): string[] {
   return id ? [id] : [];
 }

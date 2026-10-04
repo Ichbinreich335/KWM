@@ -1,18 +1,18 @@
 import { useEffect, useMemo, useState } from "react";
-import { datasource, q, useFieldOptions, useLinkedRecords, useRecordUpdate, useRecords, useUpload } from "@/lib/datasource";
+import { datasource, q, useFieldOptions, useRecordUpdate, useRecords, useUpload } from "@/lib/datasource";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { ArrowRight, Check, Download, ImageOff, Loader2, Minus, Pencil, Plus, Search, Table2 } from "lucide-react";
+import { Check, Download, ImageOff, Loader2, Minus, Pencil, Plus, Table2 } from "lucide-react";
 import { toast } from "sonner";
-import { AUSSER_HAUS_ORT, GLASIERT, PAGE_SIZE, RESERVIERT, ROHLING, STATUS_ACTIVE, VERFUEGBAR, VERKAUFT, isAusserHaus } from "../shared/konstanten";
+import { AUSSER_HAUS_ORT, PAGE_SIZE, RESERVIERT, ROHLING, VERFUEGBAR, VERKAUFT, isAusserHaus } from "../shared/konstanten";
 import {
   type Attachment,
-  type LinkedPages,
   type Opt,
   type RawItem,
+  activeOptions,
   asAttachments,
   asOpts,
   downloadCsv,
@@ -23,32 +23,39 @@ import {
   parseNumber,
   str,
   thumb,
-  toOptions,
   today,
   useAllPages,
   zahl,
 } from "../shared/daten";
 import {
-  Chip,
   ChoiceChips,
   DIALOG_CLASS,
   DoneButton,
   EmptyState,
   ErrorState,
   ErrorText,
+  FIELD_CLASS,
   FieldLabel,
   INPUT_CLASS,
   ListRow,
   LoadingState,
   OptionSelect,
+  PANEL_CLASS,
   PageHeader,
   PanelHeader,
   PhotoPicker,
+  SearchField,
+  SearchPick,
+  Segmented,
   StatusBadge,
-  TabChips,
+  TEXTAREA_CLASS,
 } from "../shared/ui";
 
-const ds = datasource.define({ unikate: "unikate", edition: "edition" });
+const ds = datasource.define({ unikate: "unikate", edition: "edition", kuenstler: "kuenstler", glasuren: "glasuren", lagerorte: "lagerorte", partner: "partner" });
+const kuenstlerSelect = q.select({ name: "vqD0c", archiviert: "TOhYe" });
+const glasurSelect = q.select({ name: "OuhBi", archiviert: "jxxXN" });
+const lagerortSelect = q.select({ name: "AoOjs", archiviert: "kMBsy" });
+const partnerSelect = q.select({ name: "a4yfc", archiviert: "24Tn9" });
 
 const unikatSelect = q.select({
   nummer: "T63YN",
@@ -145,7 +152,10 @@ type Edition = {
   notiz: string;
 };
 
-type TabKey = "imhaus" | "kommission" | "verkauft" | "alle" | "edition";
+type Art = "unikat" | "edition";
+type TabKey = "imhaus" | "kommission" | "verkauft" | "alle";
+type StammData = { pages: { items: unknown[] }[] } | undefined;
+type Stamm = { lagerorte: StammData; partner: StammData; kuenstler: StammData; glasuren: StammData };
 type SortKey = "neu" | "name" | "nummer" | "preis" | "lagerort";
 
 // „kommission“ bleibt als Schlüssel, weil Links aus der Übersicht ihn verwenden.
@@ -154,6 +164,10 @@ const TABS: { key: TabKey; label: string; match?: (u: Unikat) => boolean }[] = [
   { key: "kommission", label: "Außer Haus", match: (u) => isAusserHaus(u.status) },
   { key: "verkauft", label: "Verkauft", match: (u) => u.status === VERKAUFT },
   { key: "alle", label: "Alle" },
+];
+
+const ARTEN: { key: Art; label: string }[] = [
+  { key: "unikat", label: "Unikate" },
   { key: "edition", label: "Editionsware" },
 ];
 
@@ -165,10 +179,11 @@ const SORTS: { key: SortKey; label: string }[] = [
   { key: "lagerort", label: "Lagerort" },
 ];
 
-const ZUSTAND_FILTER: Opt[] = [
-  { id: "", label: "Alle" },
-  { id: ROHLING, label: "Rohlinge" },
-  { id: GLASIERT, label: "Glasiert" },
+type ZustandKey = "alle" | "rohling" | "glasiert";
+const ZUSTAND_FILTER: { key: ZustandKey; label: string }[] = [
+  { key: "alle", label: "Alle" },
+  { key: "rohling", label: "Rohlinge" },
+  { key: "glasiert", label: "Glasiert" },
 ];
 
 function initialParam(name: string): string {
@@ -296,23 +311,21 @@ function UnikatDetail({
   u,
   onClose,
   onSaved,
-  lagerorte,
-  galerien,
-  kuenstler,
-  glasuren,
+  stamm,
   typen,
   statusListe,
 }: {
   u: Unikat;
   onClose: () => void;
   onSaved: () => Promise<unknown>;
-  lagerorte: Opt[];
-  galerien: Opt[];
-  kuenstler: Opt[];
-  glasuren: Opt[];
+  stamm: Stamm;
   typen: Opt[];
   statusListe: Opt[];
 }) {
+  const lagerorte = activeOptions(stamm.lagerorte, link(u.lagerort?.id));
+  const galerien = activeOptions(stamm.partner, link(u.galerie?.id));
+  const kuenstler = activeOptions(stamm.kuenstler, link(u.kuenstler?.id));
+  const glasuren = activeOptions(stamm.glasuren, u.glasur.map((g) => g.id));
   const initial: EditForm = {
     name: u.name,
     typ: u.typ,
@@ -446,13 +459,13 @@ function UnikatDetail({
         <div className="px-4 pb-8 space-y-6" lang="de">
           {!update.enabled && <StatusBadge text={u.status} />}
           {update.enabled && !editing && (
-            <section className="rounded-xl border p-4 space-y-4" aria-labelledby="schnell-titel">
+            <section className="rounded-lg border p-4 space-y-4" aria-labelledby="schnell-titel">
               <h3 id="schnell-titel" className="text-base font-semibold">
                 Schnell ändern <span className="font-normal text-muted-foreground">· wird sofort gespeichert</span>
               </h3>
               <div>
                 <FieldLabel>Status</FieldLabel>
-                <ChoiceChips label="Status" options={statusListe} value={u.status} onChange={changeStatus} activeClasses={STATUS_ACTIVE} disabled={busy} />
+                <ChoiceChips label="Status" options={statusListe} value={u.status} onChange={changeStatus} withDots disabled={busy} />
               </div>
               <div>
                 <FieldLabel htmlFor="d-lagerort">Lagerort</FieldLabel>
@@ -491,7 +504,7 @@ function UnikatDetail({
                         if (v === u.rueckgabe.slice(0, 10)) return;
                         quickSave({ rueckgabe: v || null }, `Rückgabe bis: ${v ? formatDate(v) : "offen"}`, { rueckgabe: u.rueckgabe ? u.rueckgabe.slice(0, 10) : null });
                       }}
-                      className="h-12 text-base"
+                      className={FIELD_CLASS}
                     />
                   </div>
                 </div>
@@ -524,7 +537,7 @@ function UnikatDetail({
             <>
               {photo ? (
                 <div className="space-y-2">
-                  <img src={thumb(photo, "large")} alt={u.name} className="w-full max-h-64 object-contain rounded-xl bg-muted" />
+                  <img src={thumb(photo, "large")} alt={u.name} className="w-full max-h-64 object-contain rounded-lg bg-muted" />
                   {u.fotos.length > 1 && (
                     <div className="flex gap-2 overflow-x-auto">
                       {u.fotos.map((a, i) => (
@@ -536,7 +549,7 @@ function UnikatDetail({
                   )}
                 </div>
               ) : (
-                <div className="h-24 rounded-xl bg-muted flex items-center justify-center gap-2 text-muted-foreground">
+                <div className="h-24 rounded-lg bg-muted flex items-center justify-center gap-2 text-muted-foreground">
                   <ImageOff className="w-5 h-5" aria-hidden /> Noch kein Foto
                 </div>
               )}
@@ -556,7 +569,7 @@ function UnikatDetail({
               )}
               <div className="flex flex-col gap-3">
                 {update.enabled && (
-                  <Button className="h-12 text-base" onClick={() => setEditing(true)}>
+                  <Button className={FIELD_CLASS} onClick={() => setEditing(true)}>
                     <Pencil className="w-5 h-5 mr-2" aria-hidden /> Alle Angaben bearbeiten
                   </Button>
                 )}
@@ -572,7 +585,7 @@ function UnikatDetail({
                 <FieldLabel htmlFor="d-name" required>
                   Name
                 </FieldLabel>
-                <Input id="d-name" value={form.name} onChange={(e) => set("name", e.target.value)} className="h-12 text-base" aria-invalid={!!formError.name} />
+                <Input id="d-name" value={form.name} onChange={(e) => set("name", e.target.value)} className={FIELD_CLASS} aria-invalid={!!formError.name} />
                 <ErrorText>{formError.name}</ErrorText>
               </div>
               <div>
@@ -582,10 +595,10 @@ function UnikatDetail({
               <div className="grid sm:grid-cols-2 gap-5">
                 <div>
                   <FieldLabel htmlFor="d-preis">Preis intern (€)</FieldLabel>
-                  <Input id="d-preis" inputMode="decimal" value={form.preis} onChange={(e) => set("preis", e.target.value)} placeholder="z. B. 480" className="h-12 text-base" aria-invalid={!!formError.preis} />
+                  <Input id="d-preis" inputMode="decimal" value={form.preis} onChange={(e) => set("preis", e.target.value)} placeholder="z. B. 480" className={FIELD_CLASS} aria-invalid={!!formError.preis} />
                   <ErrorText>{formError.preis}</ErrorText>
                 </div>
-                <label htmlFor="d-website" className="flex items-center justify-between gap-4 rounded-lg border p-4 min-h-12 cursor-pointer self-start sm:mt-8">
+                <label htmlFor="d-website" className="flex items-center justify-between gap-4 rounded-md border px-4 h-12 cursor-pointer self-end">
                   <span className="text-base font-medium">Auf Website zeigen</span>
                   <Switch id="d-website" className="scale-125 data-[state=unchecked]:bg-zinc-300" checked={form.website} onCheckedChange={(v) => set("website", v)} />
                 </label>
@@ -597,26 +610,17 @@ function UnikatDetail({
                 </div>
                 <div>
                   <FieldLabel htmlFor="d-jahr">Jahr</FieldLabel>
-                  <Input id="d-jahr" inputMode="numeric" value={form.jahr} onChange={(e) => set("jahr", e.target.value.replace(/\D/g, "").slice(0, 4))} className="h-12 text-base" />
+                  <Input id="d-jahr" inputMode="numeric" value={form.jahr} onChange={(e) => set("jahr", e.target.value.replace(/\D/g, "").slice(0, 4))} className={FIELD_CLASS} />
                 </div>
               </div>
               <div>
                 <FieldLabel>Glasur</FieldLabel>
-                <div className="flex flex-wrap gap-2" role="group" aria-label="Glasur">
-                  {glasuren.map((g) => {
-                    const active = form.glasurIds.includes(g.id);
-                    return (
-                      <Chip key={g.id} active={active} onClick={() => set("glasurIds", active ? form.glasurIds.filter((x) => x !== g.id) : [...form.glasurIds, g.id])}>
-                        {g.label}
-                      </Chip>
-                    );
-                  })}
-                </div>
+                <SearchPick label="Glasuren" createNoun="Glasur" options={glasuren} value={form.glasurIds} onChange={(ids) => set("glasurIds", ids)} multiple />
               </div>
               <div className="grid sm:grid-cols-2 gap-5">
                 <div>
                   <FieldLabel htmlFor="d-masse">Maße</FieldLabel>
-                  <Input id="d-masse" value={form.masse} onChange={(e) => set("masse", e.target.value)} placeholder="z. B. Ø 24 × H 8 cm" className="h-12 text-base" />
+                  <Input id="d-masse" value={form.masse} onChange={(e) => set("masse", e.target.value)} placeholder="z. B. Ø 24 × H 8 cm" className={FIELD_CLASS} />
                 </div>
                 <div>
                   <FieldLabel htmlFor="d-verkauft">Verkauft am</FieldLabel>
@@ -625,11 +629,11 @@ function UnikatDetail({
               </div>
               <div>
                 <FieldLabel htmlFor="d-bildnachweis">Bildnachweis</FieldLabel>
-                <Input id="d-bildnachweis" value={form.bildnachweis} onChange={(e) => set("bildnachweis", e.target.value)} className="h-12 text-base" />
+                <Input id="d-bildnachweis" value={form.bildnachweis} onChange={(e) => set("bildnachweis", e.target.value)} className={FIELD_CLASS} />
               </div>
               <div>
                 <FieldLabel htmlFor="d-notiz">Notiz</FieldLabel>
-                <Textarea id="d-notiz" rows={3} value={form.notiz} onChange={(e) => set("notiz", e.target.value)} className="text-base" />
+                <Textarea id="d-notiz" rows={3} value={form.notiz} onChange={(e) => set("notiz", e.target.value)} className={TEXTAREA_CLASS} />
               </div>
               <div>
                 <FieldLabel htmlFor="foto-input">Fotos hinzufügen</FieldLabel>
@@ -698,14 +702,14 @@ function EditionDetail({ e, onClose, onSave, lagerorte, canEdit }: { e: Edition;
       <DialogContent className={`${DIALOG_CLASS} max-w-lg`}>
         <PanelHeader title={e.modell} description={[e.typ, e.zustand, e.glasur].filter(Boolean).join(" · ")} />
         <div className="px-4 pb-8 space-y-6">
-          {e.fotos[0] && <img src={thumb(e.fotos[0], "large")} alt={e.modell} className="w-full max-h-72 object-contain rounded-xl bg-muted" />}
+          {e.fotos[0] && <img src={thumb(e.fotos[0], "large")} alt={e.modell} className="w-full max-h-72 object-contain rounded-lg bg-muted" />}
           <div>
             <FieldLabel htmlFor="ed-anzahl">Anzahl</FieldLabel>
             <div className="flex items-center gap-3">
               <Button variant="outline" className="h-12 w-12" aria-label="Eins weniger" disabled={!canEdit} onClick={() => setAnzahl(String(Math.max(0, value - 1)))}>
                 <Minus className="w-5 h-5" aria-hidden />
               </Button>
-              <Input id="ed-anzahl" inputMode="numeric" disabled={!canEdit} value={anzahl} onChange={(ev) => setAnzahl(ev.target.value.replace(/\D/g, ""))} className="h-12 w-24 text-center text-lg" />
+              <Input id="ed-anzahl" inputMode="numeric" disabled={!canEdit} value={anzahl} onChange={(ev) => setAnzahl(ev.target.value.replace(/\D/g, ""))} className="h-12 w-24 rounded-md text-center text-lg md:text-lg" />
               <Button variant="outline" className="h-12 w-12" aria-label="Eins mehr" disabled={!canEdit} onClick={() => setAnzahl(String(value + 1))}>
                 <Plus className="w-5 h-5" aria-hidden />
               </Button>
@@ -717,7 +721,7 @@ function EditionDetail({ e, onClose, onSave, lagerorte, canEdit }: { e: Edition;
           </div>
           <div>
             <FieldLabel htmlFor="ed-notiz">Notiz</FieldLabel>
-            <Textarea id="ed-notiz" rows={3} disabled={!canEdit} value={notiz} onChange={(ev) => setNotiz(ev.target.value)} className="text-base" />
+            <Textarea id="ed-notiz" rows={3} disabled={!canEdit} value={notiz} onChange={(ev) => setNotiz(ev.target.value)} className={TEXTAREA_CLASS} />
           </div>
           {canEdit && (
             <Button
@@ -740,60 +744,70 @@ function EditionDetail({ e, onClose, onSave, lagerorte, canEdit }: { e: Edition;
 }
 
 export default function Block() {
+  const [art, setArt] = useState<Art>(() => (initialParam("tab") === "edition" ? "edition" : "unikat"));
   const [tab, setTab] = useState<TabKey>(() => {
     const t = initialParam("tab");
     return TABS.some((x) => x.key === t) ? (t as TabKey) : "imhaus";
   });
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState(() => initialParam("q"));
   const [sort, setSort] = useState<SortKey>("neu");
-  const [typFilter, setTypFilter] = useState("");
+  const [typFilter, setTypFilter] = useState(() => initialParam("typ"));
+  const [kuenstlerFilter, setKuenstlerFilter] = useState("");
   const [selectedId, setSelectedId] = useState(() => initialParam("id"));
   const [editionId, setEditionId] = useState("");
-  const [zustandFilter, setZustandFilter] = useState("");
+  const [zustandFilter, setZustandFilter] = useState<ZustandKey>("alle");
   const [limit, setLimit] = useState(LIST_STEP);
   const [pendingEdition, setPendingEdition] = useState("");
 
   const unikateQuery = useRecords({ from: ds.unikate, select: unikatSelect, count: PAGE_SIZE });
   const editionQuery = useRecords({ from: ds.edition, select: editionSelect, count: PAGE_SIZE });
+  const kuenstlerQuery = useRecords({ from: ds.kuenstler, select: kuenstlerSelect, count: PAGE_SIZE });
+  const glasurQuery = useRecords({ from: ds.glasuren, select: glasurSelect, count: PAGE_SIZE });
+  const lagerortQuery = useRecords({ from: ds.lagerorte, select: lagerortSelect, count: PAGE_SIZE });
+  const partnerQuery = useRecords({ from: ds.partner, select: partnerSelect, count: PAGE_SIZE });
   useAllPages(unikateQuery);
   useAllPages(editionQuery);
+  useAllPages(kuenstlerQuery);
+  useAllPages(glasurQuery);
+  useAllPages(lagerortQuery);
+  useAllPages(partnerQuery);
 
   const editionUpdate = useRecordUpdate({ from: ds.edition, fields: editionUpdateFields });
   const typen = useFieldOptions({ from: ds.unikate, select: unikatSelect, field: "typ" }).options as Opt[];
   const statusListe = useFieldOptions({ from: ds.unikate, select: unikatSelect, field: "status" }).options as Opt[];
-  const lagerorte = toOptions(useLinkedRecords({ from: ds.unikate, select: unikatSelect, field: "lagerort", sortOrder: "ASC" }).data as LinkedPages);
-  const galerien = toOptions(useLinkedRecords({ from: ds.unikate, select: unikatSelect, field: "galerie", sortOrder: "ASC" }).data as LinkedPages);
-  const kuenstler = toOptions(useLinkedRecords({ from: ds.unikate, select: unikatSelect, field: "kuenstler", sortOrder: "ASC" }).data as LinkedPages);
-  const glasuren = toOptions(useLinkedRecords({ from: ds.unikate, select: unikatSelect, field: "glasur", sortOrder: "ASC" }).data as LinkedPages);
+  const stamm: Stamm = { lagerorte: lagerortQuery.data, partner: partnerQuery.data, kuenstler: kuenstlerQuery.data, glasuren: glasurQuery.data };
 
   const unikate = useMemo(() => (unikateQuery.data?.pages.flatMap((p) => p.items) ?? []).map((i) => toUnikat(i as RawItem)), [unikateQuery.data]);
   const editionen = useMemo(() => (editionQuery.data?.pages.flatMap((p) => p.items) ?? []).map((i) => toEdition(i as RawItem)), [editionQuery.data]);
+  // Filter nur mit Werten, die im Bestand vorkommen. So bleiben auch archivierte Künstler:innen auffindbar.
+  const kuenstlerImBestand = useMemo(
+    () => [...new Map<string, Opt>(unikate.flatMap((u) => (u.kuenstler ? [[u.kuenstler.id, u.kuenstler] as [string, Opt]] : []))).values()].sort((a, b) => a.label.localeCompare(b.label, "de")),
+    [unikate],
+  );
 
   const activeTab = TABS.find((t) => t.key === tab) ?? TABS[0];
   const term = search.trim();
   const visible = useMemo(
     () =>
       unikate
-        .filter((u) => (activeTab.match ? activeTab.match(u) : true) && (!typFilter || u.typ === typFilter) && matchesSearch(u, term))
+        .filter((u) => (activeTab.match ? activeTab.match(u) : true) && (!typFilter || u.typ === typFilter) && (!kuenstlerFilter || u.kuenstler?.id === kuenstlerFilter) && matchesSearch(u, term))
         .sort((a, b) => compare(a, b, sort)),
-    [unikate, activeTab, typFilter, term, sort],
+    [unikate, activeTab, typFilter, kuenstlerFilter, term, sort],
   );
   const visibleEdition = editionen
-    .filter((e) => (zustandFilter ? (zustandFilter === ROHLING ? e.zustand === ROHLING : e.zustand !== ROHLING) : true))
+    .filter((e) => (zustandFilter === "rohling" ? e.zustand === ROHLING : zustandFilter === "glasiert" ? e.zustand !== ROHLING : true))
     .filter((e) => !term || [e.modell, e.glasur, e.zustand, e.typ, e.lagerort?.label, e.notiz].join(" ").toLowerCase().includes(term.toLowerCase()))
     .sort((a, b) => a.modell.localeCompare(b.modell, "de") || a.zustand.localeCompare(b.zustand, "de"));
 
-  const tabs = useMemo(
-    () => TABS.map((t) => ({ key: t.key, label: t.label, count: t.key === "edition" ? editionen.length : unikate.filter((u) => (t.match ? t.match(u) : true)).length })),
-    [unikate, editionen],
-  );
+  const tabs = useMemo(() => TABS.map((t) => ({ key: t.key, label: t.label, count: unikate.filter((u) => (t.match ? t.match(u) : true)).length })), [unikate]);
 
   const selected = unikate.find((u) => u.id === selectedId);
   const selectedEdition = editionen.find((e) => e.id === editionId);
-  const isEdition = tab === "edition";
+  const isEdition = art === "edition";
   const loading = unikateQuery.status === "pending" || editionQuery.status === "pending";
   const failed = unikateQuery.status === "error" || editionQuery.status === "error";
   const stueckGesamt = visibleEdition.reduce((n, e) => n + e.anzahl, 0);
+  const filtered = !!(search || typFilter || kuenstlerFilter);
 
   async function adjustEdition(e: Edition, delta: number) {
     setPendingEdition(e.id);
@@ -831,44 +845,56 @@ export default function Block() {
 
   return (
     <div className="container pt-6 pb-28 sm:pb-8">
-      <div className="content space-y-5" lang="de">
+      <div className="content space-y-4" lang="de">
         <PageHeader
           title="Bestand"
-          description={isEdition ? `${zahl.format(visibleEdition.length)} Zeilen · ${zahl.format(stueckGesamt)} Stück` : `${zahl.format(visible.length)} von ${zahl.format(unikate.length)} Unikaten`}
+          description={isEdition ? `${zahl.format(stueckGesamt)} Stück in ${zahl.format(visibleEdition.length)} Posten` : `${zahl.format(visible.length)} von ${zahl.format(unikate.length)} Unikaten`}
           actions={
             <>
               <Button asChild variant="ghost" className="h-11 text-base">
                 <a href="/tabelle">
-                  <Table2 className="w-5 h-5 mr-2" aria-hidden /> Alles als Tabelle <ArrowRight className="w-4 h-4 ml-1" aria-hidden />
+                  <Table2 className="w-5 h-5 mr-2" aria-hidden /> Tabelle
                 </a>
               </Button>
               <Button variant="outline" className="h-11 text-base" onClick={() => (isEdition ? exportEdition(visibleEdition) : exportUnikate(visible))} disabled={isEdition ? visibleEdition.length === 0 : visible.length === 0}>
-                <Download className="w-5 h-5 mr-2" aria-hidden /> CSV-Export
+                <Download className="w-5 h-5 mr-2" aria-hidden /> CSV
               </Button>
             </>
           }
         />
 
-        <TabChips
-          label="Bestand"
-          tabs={tabs}
-          value={tab}
+        <Segmented
+          label="Art"
+          options={ARTEN}
+          value={art}
           onChange={(key) => {
-            setTab(key);
+            setArt(key);
+            setSearch("");
             setLimit(LIST_STEP);
           }}
         />
 
-        <div className="flex flex-col sm:flex-row gap-3">
-          <div className="relative flex-1">
-            <Search className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" aria-hidden />
-            <Input type="search" aria-label="Suche" placeholder={isEdition ? "Suchen: Modell, Glasur" : "Suchen: Name, Nummer, Glasur, Ort"} value={search} onChange={(e) => setSearch(e.target.value)} className="h-12 pl-10 text-base" />
+        {isEdition ? (
+          <div className="flex flex-col sm:flex-row gap-3">
+            <SearchField label="Suche" placeholder="Suchen: Modell, Glasur, Ort" value={search} onChange={setSearch} />
+            <Segmented label="Zustand" options={ZUSTAND_FILTER} value={zustandFilter} onChange={setZustandFilter} />
           </div>
-          {isEdition ? (
-            <ChoiceChips label="Zustand" options={ZUSTAND_FILTER} value={ZUSTAND_FILTER.find((z) => z.id === zustandFilter)?.label ?? "Alle"} onChange={(label) => setZustandFilter(ZUSTAND_FILTER.find((z) => z.label === label)?.id ?? "")} />
-          ) : (
-            <div className="grid grid-cols-2 gap-3 sm:flex">
-              <select aria-label="Typ" value={typFilter} onChange={(e) => setTypFilter(e.target.value)} className={`${INPUT_CLASS} sm:w-40`}>
+        ) : (
+          <>
+            <Segmented
+              label="Status"
+              options={tabs}
+              value={tab}
+              onChange={(key) => {
+                setTab(key);
+                setLimit(LIST_STEP);
+              }}
+            />
+            <div className="grid grid-cols-2 gap-3 lg:grid-cols-[minmax(0,1fr)_10rem_12rem_12rem]">
+              <div className="col-span-2 lg:col-span-1 flex">
+                <SearchField label="Suche" placeholder="Suchen: Name, Nummer, Glasur, Ort" value={search} onChange={setSearch} />
+              </div>
+              <select aria-label="Typ" value={typFilter} onChange={(e) => setTypFilter(e.target.value)} className={INPUT_CLASS}>
                 <option value="">Alle Typen</option>
                 {typen.map((t) => (
                   <option key={t.id} value={t.label}>
@@ -876,7 +902,15 @@ export default function Block() {
                   </option>
                 ))}
               </select>
-              <select aria-label="Sortierung" value={sort} onChange={(e) => setSort(e.target.value as SortKey)} className={`${INPUT_CLASS} sm:w-48`}>
+              <select aria-label="Künstler:in" value={kuenstlerFilter} onChange={(e) => setKuenstlerFilter(e.target.value)} className={INPUT_CLASS}>
+                <option value="">Alle Künstler:innen</option>
+                {kuenstlerImBestand.map((k) => (
+                  <option key={k.id} value={k.id}>
+                    {k.label}
+                  </option>
+                ))}
+              </select>
+              <select aria-label="Sortierung" value={sort} onChange={(e) => setSort(e.target.value as SortKey)} className={`${INPUT_CLASS} col-span-2 lg:col-span-1`}>
                 {SORTS.map((s) => (
                   <option key={s.key} value={s.key}>
                     {s.label}
@@ -884,8 +918,8 @@ export default function Block() {
                 ))}
               </select>
             </div>
-          )}
-        </div>
+          </>
+        )}
 
         {failed ? (
           <ErrorState text="Der Bestand konnte nicht geladen werden. Bitte die Seite neu laden." />
@@ -895,7 +929,7 @@ export default function Block() {
           visibleEdition.length === 0 ? (
             <EmptyState text="Keine Editionsware gefunden." />
           ) : (
-            <div className="rounded-xl border bg-card px-3 divide-y">
+            <div className={`${PANEL_CLASS} px-3 divide-y`}>
               {visibleEdition.map((e) => (
                 <EditionRow key={e.id} e={e} busy={pendingEdition === e.id} canEdit={editionUpdate.enabled} onAdjust={(d) => adjustEdition(e, d)} onOpen={() => setEditionId(e.id)} />
               ))}
@@ -903,14 +937,15 @@ export default function Block() {
           )
         ) : visible.length === 0 ? (
           <div className="space-y-3 text-center">
-            <EmptyState text="Keine Stücke gefunden." />
-            {(search || typFilter) && (
+            <EmptyState text={filtered ? "Keine Stücke zu Suche und Filter." : "Hier ist zurzeit kein Stück."} />
+            {filtered && (
               <Button
                 variant="outline"
                 className="h-11 text-base"
                 onClick={() => {
                   setSearch("");
                   setTypFilter("");
+                  setKuenstlerFilter("");
                 }}
               >
                 Suche und Filter zurücksetzen
@@ -919,13 +954,13 @@ export default function Block() {
           </div>
         ) : (
           <>
-            <ul className="rounded-xl border bg-card px-3 divide-y">
+            <ul className={`${PANEL_CLASS} px-3 divide-y`}>
               {visible.slice(0, limit).map((u) => (
                 <li key={u.id}>
                   <ListRow
                     fotos={u.fotos}
                     title={u.name || "Ohne Namen"}
-                    sub={[u.inv, u.typ, ortVon(u) || "Kein Lagerort"].filter(Boolean).join(" · ")}
+                    sub={[u.inv, u.kuenstler?.label, ortVon(u) || "Kein Lagerort"].filter(Boolean).join(" · ")}
                     meta={
                       <span className="flex flex-col items-end gap-1">
                         <StatusBadge text={u.status} />
@@ -948,21 +983,17 @@ export default function Block() {
         )}
       </div>
 
-      {selected && (
-        <UnikatDetail
-          key={selected.id}
-          u={selected}
-          onClose={() => setSelectedId("")}
-          onSaved={() => unikateQuery.refetch()}
-          lagerorte={lagerorte}
-          galerien={galerien}
-          kuenstler={kuenstler}
-          glasuren={glasuren}
-          typen={typen}
-          statusListe={statusListe}
+      {selected && <UnikatDetail key={selected.id} u={selected} onClose={() => setSelectedId("")} onSaved={() => unikateQuery.refetch()} stamm={stamm} typen={typen} statusListe={statusListe} />}
+      {selectedEdition && (
+        <EditionDetail
+          key={selectedEdition.id}
+          e={selectedEdition}
+          canEdit={editionUpdate.enabled}
+          onClose={() => setEditionId("")}
+          onSave={(fields) => saveEdition(selectedEdition, fields)}
+          lagerorte={activeOptions(stamm.lagerorte, link(selectedEdition.lagerort?.id))}
         />
       )}
-      {selectedEdition && <EditionDetail key={selectedEdition.id} e={selectedEdition} canEdit={editionUpdate.enabled} onClose={() => setEditionId("")} onSave={(fields) => saveEdition(selectedEdition, fields)} lagerorte={lagerorte} />}
     </div>
   );
 }

@@ -1,10 +1,10 @@
 import { useMemo, useState } from "react";
-import { datasource, q, useFieldOptions, useRecordCreate, useRecordUpdate, useRecords, useUpload } from "@/lib/datasource";
+import { datasource, q, useFieldOptions, useRecordCreate, useRecordDelete, useRecordUpdate, useRecords, useUpload } from "@/lib/datasource";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { Check, Loader2, Plus, Search } from "lucide-react";
+import { Archive, ArchiveRestore, Check, ChevronDown, Loader2, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { AUSSER_HAUS_ORT, PAGE_SIZE } from "../shared/konstanten";
 import { type Attachment, type Opt, type RawItem, asAttachments, asOpts, firstLabel, str, useAllPages, zahl } from "../shared/daten";
@@ -14,14 +14,18 @@ import {
   EmptyState,
   ErrorState,
   ErrorText,
+  FIELD_CLASS,
   FieldLabel,
   Hint,
   ListRow,
   LoadingState,
+  PANEL_CLASS,
   PageHeader,
   PanelHeader,
   PhotoPicker,
-  TabChips,
+  SearchField,
+  TEXTAREA_CLASS,
+  Tabs,
 } from "../shared/ui";
 
 const ds = datasource.define({
@@ -34,11 +38,11 @@ const ds = datasource.define({
   edition: "edition",
 });
 
-const kuenstlerSelect = q.select({ name: "vqD0c" });
-const glasurSelect = q.select({ name: "OuhBi" });
-const modellSelect = q.select({ name: "eXo5w", typ: "gCX7K", masse: "h65qx", foto: "GbUfa" });
-const partnerSelect = q.select({ name: "a4yfc", art: "ZS9HU", ort: "RQRec", kontakt: "lnhez", zusammenarbeit: "uEfkz", notiz: "8pLh8" });
-const lagerortSelect = q.select({ name: "AoOjs", bereich: "5h1mS" });
+const kuenstlerSelect = q.select({ name: "vqD0c", archiviert: "TOhYe" });
+const glasurSelect = q.select({ name: "OuhBi", archiviert: "jxxXN" });
+const modellSelect = q.select({ name: "eXo5w", typ: "gCX7K", masse: "h65qx", foto: "GbUfa", archiviert: "3tlrw" });
+const partnerSelect = q.select({ name: "a4yfc", art: "ZS9HU", ort: "RQRec", kontakt: "lnhez", zusammenarbeit: "uEfkz", notiz: "8pLh8", archiviert: "24Tn9" });
+const lagerortSelect = q.select({ name: "AoOjs", bereich: "5h1mS", archiviert: "kMBsy" });
 const unikatLinks = q.select({ kuenstler: "oDNBh", glasur: "ByeH3", lagerort: "EkVC3", galerie: "NfsXv" });
 const editionLinks = q.select({ modell: "jxN6x", glasur: "pbGEk", lagerort: "T5iQe" });
 
@@ -46,7 +50,7 @@ const SEARCH_FROM = 10;
 
 type KatKey = "kuenstler" | "glasuren" | "modelle" | "partner" | "lagerorte";
 type FieldDef = { key: string; label: string; kind: "text" | "textarea" | "chips"; required?: boolean; placeholder?: string; options?: Opt[] };
-type Entry = { id: string; name: string; values: Record<string, string>; fotos: Attachment[]; sub: string };
+type Entry = { id: string; name: string; values: Record<string, string>; fotos: Attachment[]; sub: string; archiviert: boolean };
 type Values = Record<string, string>;
 type Kategorie = {
   key: KatKey;
@@ -57,15 +61,18 @@ type Kategorie = {
   foto?: boolean;
   entries: Entry[];
   usage: (id: string) => string;
+  usageCount: (id: string) => number;
   locked?: (e: Entry) => string | undefined;
   save: (id: string | null, values: Values, fotos: Attachment[] | undefined) => Promise<void>;
+  archive: (id: string, archiviert: boolean) => Promise<void>;
+  remove: (id: string) => Promise<void>;
 };
 
 function toEntry(item: RawItem, keys: string[], sub: (v: Values) => string, fotoKey?: string): Entry {
   const f = item.fields;
   const values: Values = {};
   keys.forEach((k) => (values[k] = asOpts(f[k]).length ? firstLabel(f[k]) : str(f[k])));
-  return { id: item.id, name: values.name ?? "", values, fotos: fotoKey ? asAttachments(f[fotoKey]) : [], sub: sub(values) };
+  return { id: item.id, name: values.name ?? "", values, fotos: fotoKey ? asAttachments(f[fotoKey]) : [], sub: sub(values), archiviert: f.archiviert === true };
 }
 
 function countLinks(items: RawItem[], keys: string[]): Map<string, number> {
@@ -79,8 +86,22 @@ function EntryDialog({ kat, entry, onClose }: { kat: Kategorie; entry: Entry | n
   const [files, setFiles] = useState<File[]>([]);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
   const { uploadAsync } = useUpload();
   const lockedReason = entry ? kat.locked?.(entry) : undefined;
+  const inUse = entry ? kat.usageCount(entry.id) : 0;
+
+  async function act(job: () => Promise<void>, message: string) {
+    setBusy(true);
+    try {
+      await job();
+      toast.success(message);
+      onClose();
+    } catch {
+      toast.error("Das hat nicht geklappt. Bitte erneut versuchen.");
+      setBusy(false);
+    }
+  }
   const name = (values.name ?? "").trim();
   const duplicate = kat.entries.find((e) => e.id !== entry?.id && e.name.trim().toLowerCase() === name.toLowerCase());
 
@@ -124,7 +145,7 @@ function EntryDialog({ kat, entry, onClose }: { kat: Kategorie; entry: Entry | n
               {f.kind === "chips" ? (
                 <ChoiceChips label={f.label} options={f.options ?? []} value={values[f.key]} onChange={(v) => setValues((s) => ({ ...s, [f.key]: s[f.key] === v ? "" : v }))} />
               ) : f.kind === "textarea" ? (
-                <Textarea id={`f-${f.key}`} rows={3} value={values[f.key]} onChange={(e) => setValues((s) => ({ ...s, [f.key]: e.target.value }))} className="text-base" />
+                <Textarea id={`f-${f.key}`} rows={3} value={values[f.key]} onChange={(e) => setValues((s) => ({ ...s, [f.key]: e.target.value }))} className={TEXTAREA_CLASS} />
               ) : (
                 <Input
                   id={`f-${f.key}`}
@@ -135,7 +156,7 @@ function EntryDialog({ kat, entry, onClose }: { kat: Kategorie; entry: Entry | n
                     setValues((s) => ({ ...s, [f.key]: e.target.value }));
                     setError("");
                   }}
-                  className="h-12 text-base"
+                  className={FIELD_CLASS}
                 />
               )}
               {f.key === "name" && lockedReason && <Hint>{lockedReason}</Hint>}
@@ -145,7 +166,7 @@ function EntryDialog({ kat, entry, onClose }: { kat: Kategorie; entry: Entry | n
           {kat.foto && (
             <div>
               <FieldLabel htmlFor="foto-input">{entry?.fotos.length ? "Foto ersetzen" : "Foto"}</FieldLabel>
-              {entry?.fotos[0] && files.length === 0 && <img src={entry.fotos[0].url} alt={entry.name} className="w-full max-h-48 object-contain rounded-xl bg-muted mb-3" />}
+              {entry?.fotos[0] && files.length === 0 && <img src={entry.fotos[0].url} alt={entry.name} className="w-full max-h-48 object-contain rounded-lg bg-muted mb-3" />}
               <PhotoPicker files={files} onChange={setFiles} multiple={false} />
             </div>
           )}
@@ -158,7 +179,49 @@ function EntryDialog({ kat, entry, onClose }: { kat: Kategorie; entry: Entry | n
               {entry ? "Speichern" : "Anlegen"}
             </Button>
           </div>
-          <p className="text-sm text-muted-foreground">Löschen ist nicht vorgesehen, damit bestehende Stücke ihre Angaben behalten.</p>
+          {entry && !lockedReason && (
+            <section className="border-t pt-5 space-y-3" aria-label="Archivieren und Löschen">
+              {entry.archiviert ? (
+                <p className="text-sm text-muted-foreground">Archiviert: erscheint nicht in den Auswahllisten. Bestehende Stücke behalten die Angabe.</p>
+              ) : (
+                <p className="text-sm text-muted-foreground">
+                  {inUse > 0
+                    ? `Wird noch verwendet (${kat.usage(entry.id)}). Löschen geht erst, wenn nichts mehr darauf verweist. Archivieren blendet den Eintrag in den Auswahllisten aus.`
+                    : "Wird nirgends verwendet und kann gelöscht werden. Archivieren blendet ihn nur in den Auswahllisten aus."}
+                </p>
+              )}
+              {confirmDelete ? (
+                <div role="alert" className="rounded-md border border-destructive/40 bg-destructive/5 p-3 space-y-3">
+                  <p className="text-base">„{entry.name}“ endgültig löschen? Das lässt sich nicht rückgängig machen.</p>
+                  <div className="flex flex-wrap gap-3">
+                    <Button variant="destructive" className="h-11 text-base" disabled={busy} onClick={() => act(() => kat.remove(entry.id), `„${entry.name}“ gelöscht.`)}>
+                      Endgültig löschen
+                    </Button>
+                    <Button variant="ghost" className="h-11 text-base" disabled={busy} onClick={() => setConfirmDelete(false)}>
+                      Abbrechen
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex flex-wrap gap-3">
+                  <Button
+                    variant="outline"
+                    className="h-11 text-base"
+                    disabled={busy}
+                    onClick={() => act(() => kat.archive(entry.id, !entry.archiviert), entry.archiviert ? `„${entry.name}“ wiederhergestellt.` : `„${entry.name}“ archiviert.`)}
+                  >
+                    {entry.archiviert ? <ArchiveRestore className="w-5 h-5 mr-2" aria-hidden /> : <Archive className="w-5 h-5 mr-2" aria-hidden />}
+                    {entry.archiviert ? "Wiederherstellen" : "Archivieren"}
+                  </Button>
+                  {inUse === 0 && (
+                    <Button variant="ghost" className="h-11 text-base text-destructive hover:text-destructive" disabled={busy} onClick={() => setConfirmDelete(true)}>
+                      <Trash2 className="w-5 h-5 mr-2" aria-hidden /> Löschen
+                    </Button>
+                  )}
+                </div>
+              )}
+            </section>
+          )}
         </div>
       </DialogContent>
     </Dialog>
@@ -171,6 +234,7 @@ export default function Block() {
     return (["kuenstler", "glasuren", "modelle", "partner", "lagerorte"] as string[]).includes(t ?? "") ? (t as KatKey) : "kuenstler";
   });
   const [search, setSearch] = useState("");
+  const [showArchived, setShowArchived] = useState(false);
   const [dialog, setDialog] = useState<{ entry: Entry | null } | null>(null);
 
   const kuenstlerQuery = useRecords({ from: ds.kuenstler, select: kuenstlerSelect, count: PAGE_SIZE });
@@ -198,6 +262,11 @@ export default function Block() {
   const partnerUpdate = useRecordUpdate({ from: ds.partner, fields: partnerSelect });
   const lagerortCreate = useRecordCreate({ from: ds.lagerorte, fields: lagerortSelect });
   const lagerortUpdate = useRecordUpdate({ from: ds.lagerorte, fields: lagerortSelect });
+  const kuenstlerDelete = useRecordDelete({ from: ds.kuenstler });
+  const glasurDelete = useRecordDelete({ from: ds.glasuren });
+  const modellDelete = useRecordDelete({ from: ds.modelle });
+  const partnerDelete = useRecordDelete({ from: ds.partner });
+  const lagerortDelete = useRecordDelete({ from: ds.lagerorte });
 
   const modellTypen = useFieldOptions({ from: ds.modelle, select: modellSelect, field: "typ" }).options as Opt[];
   const partnerArten = useFieldOptions({ from: ds.partner, select: partnerSelect, field: "art" }).options as Opt[];
@@ -217,6 +286,8 @@ export default function Block() {
     await mutation.mutateAsync(payload as never);
     await refetch();
   }
+  const archiveVia = (mutation: { mutateAsync: (v: never) => Promise<unknown> }, refetch: () => unknown) => (id: string, archiviert: boolean) => run(mutation, { recordId: id, fields: { archiviert } }, refetch);
+  const removeVia = (mutation: { mutateAsync: (v: never) => Promise<unknown> }, refetch: () => unknown) => (id: string) => run(mutation, id, refetch);
 
   const kategorien: Kategorie[] = [
     {
@@ -227,6 +298,9 @@ export default function Block() {
       fields: [{ key: "name", label: "Name", kind: "text", required: true, placeholder: "Vor- und Nachname" }],
       entries: items(kuenstlerQuery).map((i) => toEntry(i, ["name"], () => "")),
       usage: (id) => `${stueck(usage("kuenstler", id, "u"), "Unikat", "Unikaten")}`,
+      usageCount: (id) => usage("kuenstler", id, "u"),
+      archive: archiveVia(kuenstlerUpdate, kuenstlerQuery.refetch),
+      remove: removeVia(kuenstlerDelete, kuenstlerQuery.refetch),
       save: (id, v) => run(id ? kuenstlerUpdate : kuenstlerCreate, id ? { recordId: id, fields: { name: v.name } } : { name: v.name }, kuenstlerQuery.refetch),
     },
     {
@@ -237,6 +311,9 @@ export default function Block() {
       fields: [{ key: "name", label: "Name", kind: "text", required: true, placeholder: "z. B. Seladon Nebel" }],
       entries: items(glasurQuery).map((i) => toEntry(i, ["name"], () => "")),
       usage: (id) => `${stueck(usage("glasur", id, "u"), "Unikat", "Unikaten")} · ${stueck(usage("glasur", id, "e"), "Editionsposten", "Editionsposten")}`,
+      usageCount: (id) => usage("glasur", id, "u") + usage("glasur", id, "e"),
+      archive: archiveVia(glasurUpdate, glasurQuery.refetch),
+      remove: removeVia(glasurDelete, glasurQuery.refetch),
       save: (id, v) => run(id ? glasurUpdate : glasurCreate, id ? { recordId: id, fields: { name: v.name } } : { name: v.name }, glasurQuery.refetch),
     },
     {
@@ -252,6 +329,9 @@ export default function Block() {
       foto: true,
       entries: items(modellQuery).map((i) => toEntry(i, ["name", "typ", "masse"], (v) => [v.typ, v.masse].filter(Boolean).join(" · "), "foto")),
       usage: (id) => stueck(usage("modell", id, "e"), "Editionsposten", "Editionsposten"),
+      usageCount: (id) => usage("modell", id, "e"),
+      archive: archiveVia(modellUpdate, modellQuery.refetch),
+      remove: removeVia(modellDelete, modellQuery.refetch),
       save: (id, v, fotos) => {
         const fields = { name: v.name, typ: v.typ || null, masse: v.masse.trim(), ...(fotos ? { foto: fotos } : {}) };
         return run(id ? modellUpdate : modellCreate, id ? { recordId: id, fields } : fields, modellQuery.refetch);
@@ -272,6 +352,9 @@ export default function Block() {
       ],
       entries: items(partnerQuery).map((i) => toEntry(i, ["name", "art", "ort", "kontakt", "zusammenarbeit", "notiz"], (v) => [v.art, v.ort, v.zusammenarbeit === "beendet" ? "beendet" : ""].filter(Boolean).join(" · "))),
       usage: (id) => `zurzeit ${stueck(usage("galerie", id, "u"), "Unikat", "Unikaten")}`,
+      usageCount: (id) => usage("galerie", id, "u"),
+      archive: archiveVia(partnerUpdate, partnerQuery.refetch),
+      remove: removeVia(partnerDelete, partnerQuery.refetch),
       save: (id, v) => {
         const fields = { name: v.name, art: v.art || null, ort: v.ort.trim(), zusammenarbeit: v.zusammenarbeit || null, kontakt: v.kontakt.trim(), notiz: v.notiz.trim() };
         return run(id ? partnerUpdate : partnerCreate, id ? { recordId: id, fields } : fields, partnerQuery.refetch);
@@ -288,67 +371,73 @@ export default function Block() {
       ],
       entries: items(lagerortQuery).map((i) => toEntry(i, ["name", "bereich"], (v) => v.bereich)),
       usage: (id) => `${stueck(usage("lagerort", id, "u"), "Unikat", "Unikaten")} · ${stueck(usage("lagerort", id, "e"), "Editionsposten", "Editionsposten")}`,
+      usageCount: (id) => usage("lagerort", id, "u") + usage("lagerort", id, "e"),
+      archive: archiveVia(lagerortUpdate, lagerortQuery.refetch),
+      remove: removeVia(lagerortDelete, lagerortQuery.refetch),
       locked: (e) => (e.name === AUSSER_HAUS_ORT ? "Diesen Namen setzen die Regeln für Stücke außer Haus. Er bleibt fest." : undefined),
       save: (id, v) => run(id ? lagerortUpdate : lagerortCreate, id ? { recordId: id, fields: { name: v.name, bereich: v.bereich || null } } : { name: v.name, bereich: v.bereich || null }, lagerortQuery.refetch),
     },
   ];
 
   const kat = kategorien.find((k) => k.key === tab) ?? kategorien[0];
-  const queries = [kuenstlerQuery, glasurQuery, modellQuery, partnerQuery, lagerortQuery];
-  const loading = queries.some((qq) => qq.status === "pending");
+  // Erst wenn alle Seiten von Unikaten und Editionsware da sind, stimmt die Verwendung. Sonst würde „Löschen“ zu früh angeboten.
+  const queries = [kuenstlerQuery, glasurQuery, modellQuery, partnerQuery, lagerortQuery, unikatQuery, editionQuery];
+  const loading = queries.some((qq) => qq.status === "pending" || qq.hasNextPage);
   const failed = queries.some((qq) => qq.status === "error");
   const term = search.trim().toLowerCase();
   const visible = kat.entries
     .filter((e) => !term || [e.name, e.sub].join(" ").toLowerCase().includes(term))
     .sort((a, b) => a.name.localeCompare(b.name, "de"));
+  const aktiv = visible.filter((e) => !e.archiviert);
+  const archiviert = visible.filter((e) => e.archiviert);
+  const rows = (list: Entry[]) => (
+    <ul className={`${PANEL_CLASS} px-3 divide-y`}>
+      {list.map((e) => (
+        <li key={e.id}>
+          <ListRow fotos={kat.foto ? e.fotos : undefined} title={e.name || "Ohne Namen"} sub={[e.sub, kat.usage(e.id)].filter(Boolean).join(" · ")} onClick={() => setDialog({ entry: e })} />
+        </li>
+      ))}
+    </ul>
+  );
 
   return (
     <div className="container pt-6 pb-28 sm:pb-8">
-      <div className="content space-y-5" lang="de">
-        <PageHeader
-          title="Stammdaten"
-          description="Die Auswahllisten für Erfassen und Bestand. Neue Einträge hier anlegen, Namen hier korrigieren."
-          actions={
-            <Button className="h-11 text-base" onClick={() => setDialog({ entry: null })}>
-              <Plus className="w-5 h-5 mr-2" aria-hidden /> {kat.singular} anlegen
-            </Button>
-          }
-        />
-        <TabChips
+      <div className="content space-y-4" lang="de">
+        <PageHeader title="Stammdaten" description="Die Auswahllisten für Erfassen und Bestand. Hier anlegen, korrigieren, archivieren." />
+        <Tabs
           label="Stammdaten"
-          tabs={kategorien.map((k) => ({ key: k.key, label: k.label, count: k.entries.length }))}
+          tabs={kategorien.map((k) => ({ key: k.key, label: k.label, count: k.entries.filter((e) => !e.archiviert).length }))}
           value={tab}
           onChange={(key) => {
             setTab(key);
             setSearch("");
+            setShowArchived(false);
           }}
         />
-        <p className="text-base text-muted-foreground">{kat.hint}</p>
-        {kat.entries.length > SEARCH_FROM && (
-          <div className="relative">
-            <Search className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" aria-hidden />
-            <Input type="search" aria-label="Suche" placeholder={`${kat.label} durchsuchen`} value={search} onChange={(e) => setSearch(e.target.value)} className="h-12 pl-10 text-base" />
-          </div>
-        )}
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <p className="text-base text-muted-foreground min-w-0 flex-1 basis-64">{kat.hint}</p>
+          <Button className="h-11 text-base" onClick={() => setDialog({ entry: null })}>
+            <Plus className="w-5 h-5 mr-2" aria-hidden /> {kat.singular} anlegen
+          </Button>
+        </div>
+        {kat.entries.length > SEARCH_FROM && <SearchField label="Suche" placeholder={`${kat.label} durchsuchen`} value={search} onChange={setSearch} />}
         {failed ? (
           <ErrorState text="Die Stammdaten konnten nicht geladen werden. Bitte die Seite neu laden." />
         ) : loading ? (
           <LoadingState text="Stammdaten werden geladen …" />
-        ) : visible.length === 0 ? (
-          <EmptyState text={term ? "Nichts gefunden." : `Noch keine ${kat.label}. Mit „${kat.singular} anlegen“ beginnen.`} />
         ) : (
-          <ul className="rounded-xl border bg-card px-3 divide-y">
-            {visible.map((e) => (
-              <li key={e.id}>
-                <ListRow
-                  fotos={kat.foto ? e.fotos : undefined}
-                  title={e.name || "Ohne Namen"}
-                  sub={[e.sub, kat.usage(e.id)].filter(Boolean).join(" · ")}
-                  onClick={() => setDialog({ entry: e })}
-                />
-              </li>
-            ))}
-          </ul>
+          <>
+            {aktiv.length === 0 ? <EmptyState text={term ? "Nichts gefunden." : `Noch keine ${kat.label}. Mit „${kat.singular} anlegen“ beginnen.`} /> : rows(aktiv)}
+            {archiviert.length > 0 && (
+              <div className="space-y-3">
+                <Button variant="ghost" className="h-11 px-2 text-base text-muted-foreground" aria-expanded={showArchived} onClick={() => setShowArchived((v) => !v)}>
+                  <ChevronDown className={`w-5 h-5 mr-1 transition-transform ${showArchived ? "rotate-180" : ""}`} aria-hidden />
+                  Archiviert ({zahl.format(archiviert.length)})
+                </Button>
+                {showArchived && rows(archiviert)}
+              </div>
+            )}
+          </>
         )}
       </div>
       {dialog && <EntryDialog key={dialog.entry?.id ?? "neu"} kat={kat} entry={dialog.entry} onClose={() => setDialog(null)} />}

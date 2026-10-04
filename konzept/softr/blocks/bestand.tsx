@@ -1,12 +1,12 @@
 // Generiert von konzept/softr/build.mjs aus src/blocks/bestand.tsx und src/shared/. Nicht von Hand ändern.
 import { useEffect, useMemo, useRef, useState } from "react";
-import { datasource, q, useFieldOptions, useLinkedRecords, useRecords, useRecordUpdate, useUpload } from "@/lib/datasource";
+import { datasource, q, useFieldOptions, useRecords, useRecordUpdate, useUpload } from "@/lib/datasource";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { AlertTriangle, ArrowRight, Camera, Check, ChevronRight, Download, ImageOff, Loader2, Minus, Pencil, Plus, Search, Table2, X } from "lucide-react";
+import { AlertTriangle, Camera, Check, ChevronRight, Download, ImageOff, Loader2, Minus, Pencil, Plus, Search, Table2, X } from "lucide-react";
 import { toast } from "sonner";
 
 const PAGE_SIZE = 100;
@@ -20,30 +20,29 @@ const GLASIERT = "glasiert";
 const AUSSER_HAUS_ORT = "Außer Haus";
 const isAusserHaus = (status: string) => status === KOMMISSION || status === AUSGESTELLT;
 
-// Ruhige Variante für Badges in Listen und Tabellen.
+// Farbe trägt nur den Status eines Unikats. Der Zustand der Editionsware (Rohling, glasiert) bleibt neutral.
 const STATUS_BADGE: Record<string, string> = {
-  [VERFUEGBAR]: "bg-emerald-100 text-emerald-800 border-emerald-200",
-  [RESERVIERT]: "bg-amber-100 text-amber-900 border-amber-200",
-  [VERKAUFT]: "bg-zinc-100 text-zinc-600 border-zinc-200",
-  [KOMMISSION]: "bg-sky-100 text-sky-800 border-sky-200",
-  [AUSGESTELLT]: "bg-violet-100 text-violet-800 border-violet-200",
-  [ROHLING]: "bg-stone-100 text-stone-700 border-stone-200",
-  [GLASIERT]: "bg-teal-50 text-teal-800 border-teal-200",
+  [VERFUEGBAR]: "bg-emerald-50 text-emerald-800 border-emerald-200",
+  [RESERVIERT]: "bg-amber-50 text-amber-900 border-amber-200",
+  [VERKAUFT]: "bg-zinc-100 text-zinc-700 border-zinc-200",
+  [KOMMISSION]: "bg-sky-50 text-sky-800 border-sky-200",
+  [AUSGESTELLT]: "bg-violet-50 text-violet-800 border-violet-200",
+  [ROHLING]: "bg-background text-muted-foreground border-border",
+  [GLASIERT]: "bg-muted text-foreground border-border",
 };
 
-// Kräftige Variante für den gewählten Auswahl-Knopf.
-const STATUS_ACTIVE: Record<string, string> = {
-  [VERFUEGBAR]: "bg-emerald-600 text-white border-emerald-600",
-  [RESERVIERT]: "bg-amber-400 text-amber-950 border-amber-400",
-  [VERKAUFT]: "bg-zinc-500 text-white border-zinc-500",
-  [KOMMISSION]: "bg-sky-600 text-white border-sky-600",
-  [AUSGESTELLT]: "bg-violet-700 text-white border-violet-700",
+// Farbpunkt je Status, in Auswahlknöpfen, Badges und Tabellenköpfen dieselbe Farbe.
+const STATUS_DOT: Record<string, string> = {
+  [VERFUEGBAR]: "bg-emerald-600",
+  [RESERVIERT]: "bg-amber-500",
+  [VERKAUFT]: "bg-zinc-400",
+  [KOMMISSION]: "bg-sky-600",
+  [AUSGESTELLT]: "bg-violet-600",
 };
 
 type Opt = { id: string; label: string };
 type Attachment = { id?: string; url: string; filename?: string; thumbnails?: { url: string; size: string }[] };
 type RawItem = { id: string; fields: Record<string, unknown> };
-type LinkedPages = { pages: { items: { id: string; title: string }[] }[] } | undefined;
 type ThumbSize = "small" | "medium" | "large";
 const euro = new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR", maximumFractionDigits: 0 });
 const zahl = new Intl.NumberFormat("de-DE");
@@ -75,8 +74,13 @@ function num(v: unknown): number | null {
   return typeof v === "number" && Number.isFinite(v) ? v : null;
 }
 
-function toOptions(data: LinkedPages): Opt[] {
-  return (data?.pages.flatMap((p) => p.items) ?? []).map((o) => ({ id: o.id, label: o.title }));
+// Auswahlliste aus einer Stammdaten-Tabelle (Felder name, archiviert). Archivierte fallen weg,
+// außer sie sind am Datensatz schon gewählt, damit bestehende Angaben sichtbar bleiben.
+function activeOptions(data: { pages: { items: unknown[] }[] } | undefined, keep: string[] = []): Opt[] {
+  return ((data?.pages.flatMap((p) => p.items) ?? []) as RawItem[])
+    .filter((i) => i.fields.archiviert !== true || keep.includes(i.id))
+    .map((i) => ({ id: i.id, label: str(i.fields.name) }))
+    .sort((a, b) => a.label.localeCompare(b.label, "de"));
 }
 
 function link(id: string | undefined): string[] {
@@ -125,57 +129,41 @@ function useAllPages(query: { hasNextPage?: boolean; isFetchingNextPage?: boolea
   }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 }
 
-const DIALOG_CLASS = "w-[calc(100vw-2rem)] max-h-[90vh] overflow-y-auto p-4 sm:p-6 [&>button:last-child]:hidden";
+const DIALOG_CLASS = "w-[calc(100vw-2rem)] max-h-[90vh] overflow-y-auto rounded-lg p-4 sm:p-6 [&>button:last-child]:hidden";
+
+// md:text-base hebt das md:text-sm der shadcn-Felder auf, damit Eingabe und Auswahlliste gleich groß schreiben.
+const FIELD_CLASS = "h-12 rounded-md text-base md:text-base";
+
+const TEXTAREA_CLASS = "rounded-md text-base md:text-base";
 const INPUT_CLASS = "w-full h-12 rounded-md border border-input bg-background px-3 text-base";
-const CHIP_BASE = "inline-flex items-center justify-center gap-1.5 min-h-11 px-4 rounded-full border text-base whitespace-nowrap transition-colors disabled:opacity-60";
+const PANEL_CLASS = "rounded-lg border bg-card";
+const CHIP_BASE = "inline-flex items-center justify-center gap-2 min-h-11 px-3.5 rounded-md border text-base whitespace-nowrap transition-colors disabled:opacity-60";
 const CHIP_IDLE = "bg-background hover:bg-muted border-input";
 const CHIP_ACTIVE = "bg-primary text-primary-foreground border-primary";
 
-// Ein einzelner Auswahl-Knopf. Grundlage für alle Auswahlen, Reiter und Filter.
-function Chip({
-  active,
-  onClick,
-  children,
-  disabled,
-  activeClass,
-  role,
-}: {
-  active: boolean;
-  onClick: () => void;
-  children: React.ReactNode;
-  disabled?: boolean;
-  activeClass?: string;
-  role?: "radio" | "tab";
-}) {
-  const state = role ? (role === "tab" ? { "aria-selected": active } : { "aria-checked": active }) : { "aria-pressed": active };
+function StatusDot({ status }: { status: string }) {
+  const color = STATUS_DOT[status];
+  return color ? <span className={`inline-block w-2.5 h-2.5 rounded-full shrink-0 ${color}`} aria-hidden /> : null;
+}
+
+// Ein einzelner Auswahl-Knopf für Formulare. Gewählt ist immer die Hauptfarbe mit Haken.
+function Chip({ active, onClick, children, disabled, role }: { active: boolean; onClick: () => void; children: React.ReactNode; disabled?: boolean; role?: "radio" }) {
+  const state = role === "radio" ? { "aria-checked": active } : { "aria-pressed": active };
   return (
-    <button type="button" role={role} {...state} disabled={disabled} onClick={onClick} className={`${CHIP_BASE} ${active ? activeClass ?? CHIP_ACTIVE : CHIP_IDLE}`}>
+    <button type="button" role={role} {...state} disabled={disabled} onClick={onClick} className={`${CHIP_BASE} ${active ? CHIP_ACTIVE : CHIP_IDLE}`}>
       {active && <Check className="w-4 h-4" aria-hidden />}
       {children}
     </button>
   );
 }
 
-// Einfachauswahl als Knopfreihe, z. B. Status, Typ, Zustand. Wert ist das Label.
-function ChoiceChips({
-  label,
-  options,
-  value,
-  onChange,
-  activeClasses,
-  disabled,
-}: {
-  label: string;
-  options: Opt[];
-  value: string;
-  onChange: (label: string) => void;
-  activeClasses?: Record<string, string>;
-  disabled?: boolean;
-}) {
+// Einfachauswahl als Knopfreihe, z. B. Status, Typ, Zustand. Wert ist das Label. withDots zeigt die Statusfarbe als Punkt.
+function ChoiceChips({ label, options, value, onChange, withDots, disabled }: { label: string; options: Opt[]; value: string; onChange: (label: string) => void; withDots?: boolean; disabled?: boolean }) {
   return (
     <div role="radiogroup" aria-label={label} className="flex flex-wrap gap-2">
       {options.map((o) => (
-        <Chip key={o.id} role="radio" active={value === o.label} activeClass={activeClasses?.[o.label]} disabled={disabled} onClick={() => onChange(o.label)}>
+        <Chip key={o.id} role="radio" active={value === o.label} disabled={disabled} onClick={() => onChange(o.label)}>
+          {withDots && value !== o.label && <StatusDot status={o.label} />}
           {o.label}
         </Chip>
       ))}
@@ -183,16 +171,30 @@ function ChoiceChips({
   );
 }
 
-// Reiter als Knopfreihe, am Handy seitlich wischbar.
-function TabChips<K extends string>({ label, tabs, value, onChange }: { label: string; tabs: { key: K; label: string; count?: number }[]; value: K; onChange: (key: K) => void }) {
+// Umschalter zwischen Ansichten derselben Seite (Unikat/Editionsware, Im Haus/Außer Haus …). Am Handy seitlich wischbar.
+function Segmented<K extends string>({ label, options, value, onChange }: { label: string; options: { key: K; label: string; count?: number }[]; value: K; onChange: (key: K) => void }) {
   return (
-    <div role="tablist" aria-label={label} className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1">
-      {tabs.map((t) => (
-        <Chip key={t.key} role="tab" active={value === t.key} onClick={() => onChange(t.key)}>
-          {t.label}
-          {t.count !== undefined && <span className={value === t.key ? "opacity-80" : "text-muted-foreground"}>{t.count}</span>}
-        </Chip>
-      ))}
+    <div className="max-w-full overflow-x-auto">
+      <div role="tablist" aria-label={label} className="inline-flex gap-1 rounded-md border bg-muted p-1">
+        {options.map((o) => {
+          const active = value === o.key;
+          return (
+            <button
+              key={o.key}
+              type="button"
+              role="tab"
+              aria-selected={active}
+              onClick={() => onChange(o.key)}
+              className={`inline-flex items-center gap-1.5 min-h-10 px-3.5 rounded-sm text-base whitespace-nowrap transition-colors ${
+                active ? "bg-background text-foreground font-medium shadow-sm" : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              {o.label}
+              {o.count !== undefined && <span className="tabular-nums text-muted-foreground">{o.count}</span>}
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 }
@@ -200,7 +202,8 @@ function TabChips<K extends string>({ label, tabs, value, onChange }: { label: s
 function StatusBadge({ text }: { text: string }) {
   if (!text) return null;
   return (
-    <span className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-sm font-medium whitespace-nowrap ${STATUS_BADGE[text] ?? "bg-muted text-foreground border-border"}`}>
+    <span className={`inline-flex items-center gap-1.5 rounded-md border px-2 py-0.5 text-sm font-medium whitespace-nowrap ${STATUS_BADGE[text] ?? "bg-muted text-foreground border-border"}`}>
+      <StatusDot status={text} />
       {text}
     </span>
   );
@@ -238,12 +241,86 @@ function OptionSelect({ id, value, onChange, options, placeholder, disabled }: {
   );
 }
 
+function SearchField({ value, onChange, placeholder, label }: { value: string; onChange: (v: string) => void; placeholder: string; label: string }) {
+  return (
+    <div className="relative flex-1 min-w-0">
+      <Search className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" aria-hidden />
+      <Input type="search" aria-label={label} placeholder={placeholder} value={value} onChange={(e) => onChange(e.target.value)} className={`${FIELD_CLASS} pl-10`} />
+    </div>
+  );
+}
+
+const PICK_VISIBLE = 12;
+
+// Durchsuchbare Auswahl aus einer wachsenden Liste (Glasuren). Gewählte stehen vorn, Suche filtert, Fehlendes lässt sich anlegen.
+function SearchPick({
+  label,
+  options,
+  value,
+  onChange,
+  multiple,
+  onCreate,
+  createNoun,
+}: {
+  label: string;
+  options: Opt[];
+  value: string[];
+  onChange: (ids: string[]) => void;
+  multiple: boolean;
+  onCreate?: (name: string) => Promise<string | null>;
+  createNoun: string;
+}) {
+  const [query, setQuery] = useState("");
+  const [busy, setBusy] = useState(false);
+  const term = query.trim().toLowerCase();
+  const selected = options.filter((o) => value.includes(o.id));
+  const matches = options.filter((o) => !value.includes(o.id) && (!term || o.label.toLowerCase().includes(term)));
+  const shown = [...selected, ...matches.slice(0, Math.max(0, PICK_VISIBLE - selected.length))];
+  const hidden = selected.length + matches.length - shown.length;
+  const exact = options.some((o) => o.label.toLowerCase() === term);
+  const toggle = (id: string) => onChange(value.includes(id) ? value.filter((x) => x !== id) : multiple ? [...value, id] : [id]);
+
+  return (
+    <div className="space-y-2">
+      {options.length > PICK_VISIBLE / 2 && <SearchField label={`${label} suchen`} placeholder={`${label} suchen`} value={query} onChange={setQuery} />}
+      <div role="group" aria-label={label} className="flex flex-wrap gap-2">
+        {shown.map((o) => (
+          <Chip key={o.id} active={value.includes(o.id)} onClick={() => toggle(o.id)}>
+            {o.label}
+          </Chip>
+        ))}
+      </div>
+      {hidden > 0 && <p className="text-sm text-muted-foreground">{hidden} weitere über die Suche</p>}
+      {term && matches.length === 0 && !exact && <p className="text-sm text-muted-foreground">Keine {label} mit „{query.trim()}“.</p>}
+      {onCreate && term && !exact && (
+        <Button
+          type="button"
+          variant="ghost"
+          className="h-11 px-2 text-base text-primary"
+          disabled={busy}
+          onClick={async () => {
+            setBusy(true);
+            const id = await onCreate(query.trim());
+            setBusy(false);
+            if (id) {
+              onChange(multiple ? [...value, id] : [id]);
+              setQuery("");
+            }
+          }}
+        >
+          {busy ? <Loader2 className="w-5 h-5 mr-1 animate-spin" aria-hidden /> : <Plus className="w-5 h-5 mr-1" aria-hidden />}„{query.trim()}“ als {createNoun} anlegen
+        </Button>
+      )}
+    </div>
+  );
+}
+
 function Thumb({ fotos, size = "small", className = "w-12 h-12 rounded-md" }: { fotos: Attachment[]; size?: ThumbSize; className?: string }) {
   const first = fotos[0];
   if (!first) {
     return (
-      <span className={`${className} shrink-0 bg-muted flex items-center justify-center text-muted-foreground`} aria-label="Kein Foto">
-        <ImageOff className="w-5 h-5" aria-hidden />
+      <span className={`${className} shrink-0 bg-muted flex items-center justify-center text-muted-foreground/60`} aria-label="Kein Foto">
+        <ImageOff className="w-4 h-4" aria-hidden />
       </span>
     );
   }
@@ -252,10 +329,10 @@ function Thumb({ fotos, size = "small", className = "w-12 h-12 rounded-md" }: { 
 
 function PageHeader({ title, description, actions }: { title: string; description?: string; actions?: React.ReactNode }) {
   return (
-    <div className="flex flex-wrap items-start justify-between gap-3">
+    <div className="flex flex-wrap items-end justify-between gap-x-4 gap-y-3">
       <div className="min-w-0">
         <h1 className="text-2xl font-semibold">{title}</h1>
-        {description && <p className="text-base text-muted-foreground">{description}</p>}
+        {description && <p className="text-base text-muted-foreground mt-0.5">{description}</p>}
       </div>
       {actions && <div className="flex flex-wrap gap-2">{actions}</div>}
     </div>
@@ -297,14 +374,14 @@ function LoadingState({ text }: { text: string }) {
 
 function ErrorState({ text }: { text: string }) {
   return (
-    <div role="alert" className="flex items-center gap-2 rounded-xl border border-destructive/40 bg-destructive/5 p-6 text-base">
+    <div role="alert" className="flex items-center gap-2 rounded-lg border border-destructive/40 bg-destructive/5 p-6 text-base">
       <AlertTriangle className="w-5 h-5 text-destructive shrink-0" aria-hidden /> {text}
     </div>
   );
 }
 
 function EmptyState({ text }: { text: string }) {
-  return <p className="rounded-lg border border-dashed px-4 py-6 text-center text-base text-muted-foreground">{text}</p>;
+  return <p className="rounded-lg bg-muted/50 px-4 py-6 text-center text-base text-muted-foreground">{text}</p>;
 }
 
 // Kopf jedes Fensters: Titel, Unterzeile, großer Schließen-Knopf.
@@ -335,17 +412,7 @@ function DoneButton() {
 }
 
 // Foto aufnehmen oder auswählen, mit Vorschau und Entfernen.
-function PhotoPicker({
-  files,
-  onChange,
-  multiple,
-  error,
-}: {
-  files: File[];
-  onChange: (f: File[]) => void;
-  multiple: boolean;
-  error?: string;
-}) {
+function PhotoPicker({ files, onChange, multiple, error }: { files: File[]; onChange: (f: File[]) => void; multiple: boolean; error?: string }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const previews = useMemo(() => files.map((f) => URL.createObjectURL(f)), [files]);
   useEffect(() => () => previews.forEach((u) => URL.revokeObjectURL(u)), [previews]);
@@ -369,9 +436,7 @@ function PhotoPicker({
         <button
           type="button"
           onClick={() => inputRef.current?.click()}
-          className={`w-full h-40 rounded-xl border-2 border-dashed flex flex-col items-center justify-center gap-2 text-base hover:bg-muted ${
-            error ? "border-destructive" : "border-input"
-          }`}
+          className={`w-full h-40 rounded-lg border-2 border-dashed flex flex-col items-center justify-center gap-2 text-base hover:bg-muted ${error ? "border-destructive" : "border-input"}`}
         >
           <Camera className="w-8 h-8 text-muted-foreground" aria-hidden />
           <span className="font-medium">Foto aufnehmen oder auswählen</span>
@@ -380,24 +445,20 @@ function PhotoPicker({
       ) : (
         <div className="grid grid-cols-3 gap-3">
           {previews.map((src, i) => (
-            <div key={src} className="relative aspect-square rounded-lg overflow-hidden border">
+            <div key={src} className="relative aspect-square rounded-md overflow-hidden border">
               <img src={src} alt={`Foto ${i + 1}`} className="w-full h-full object-cover" />
               <button
                 type="button"
                 aria-label={`Foto ${i + 1} entfernen`}
                 onClick={() => onChange(files.filter((_, j) => j !== i))}
-                className="absolute top-1 right-1 w-11 h-11 rounded-full bg-background/90 flex items-center justify-center"
+                className="absolute top-1 right-1 w-11 h-11 rounded-md bg-background/90 flex items-center justify-center"
               >
                 <X className="w-5 h-5" aria-hidden />
               </button>
             </div>
           ))}
           {multiple && (
-            <button
-              type="button"
-              onClick={() => inputRef.current?.click()}
-              className="aspect-square rounded-lg border-2 border-dashed border-input flex flex-col items-center justify-center gap-1 text-sm hover:bg-muted"
-            >
+            <button type="button" onClick={() => inputRef.current?.click()} className="aspect-square rounded-md border-2 border-dashed border-input flex flex-col items-center justify-center gap-1 text-sm hover:bg-muted">
               <Plus className="w-6 h-6" aria-hidden />
               Weiteres Foto
             </button>
@@ -409,7 +470,11 @@ function PhotoPicker({
   );
 }
 
-const ds = datasource.define({ unikate: "unikate", edition: "edition" });
+const ds = datasource.define({ unikate: "unikate", edition: "edition", kuenstler: "kuenstler", glasuren: "glasuren", lagerorte: "lagerorte", partner: "partner" });
+const kuenstlerSelect = q.select({ name: "vqD0c", archiviert: "TOhYe" });
+const glasurSelect = q.select({ name: "OuhBi", archiviert: "jxxXN" });
+const lagerortSelect = q.select({ name: "AoOjs", archiviert: "kMBsy" });
+const partnerSelect = q.select({ name: "a4yfc", archiviert: "24Tn9" });
 
 const unikatSelect = q.select({
   nummer: "T63YN",
@@ -506,7 +571,10 @@ type Edition = {
   notiz: string;
 };
 
-type TabKey = "imhaus" | "kommission" | "verkauft" | "alle" | "edition";
+type Art = "unikat" | "edition";
+type TabKey = "imhaus" | "kommission" | "verkauft" | "alle";
+type StammData = { pages: { items: unknown[] }[] } | undefined;
+type Stamm = { lagerorte: StammData; partner: StammData; kuenstler: StammData; glasuren: StammData };
 type SortKey = "neu" | "name" | "nummer" | "preis" | "lagerort";
 
 // „kommission“ bleibt als Schlüssel, weil Links aus der Übersicht ihn verwenden.
@@ -515,6 +583,10 @@ const TABS: { key: TabKey; label: string; match?: (u: Unikat) => boolean }[] = [
   { key: "kommission", label: "Außer Haus", match: (u) => isAusserHaus(u.status) },
   { key: "verkauft", label: "Verkauft", match: (u) => u.status === VERKAUFT },
   { key: "alle", label: "Alle" },
+];
+
+const ARTEN: { key: Art; label: string }[] = [
+  { key: "unikat", label: "Unikate" },
   { key: "edition", label: "Editionsware" },
 ];
 
@@ -526,10 +598,11 @@ const SORTS: { key: SortKey; label: string }[] = [
   { key: "lagerort", label: "Lagerort" },
 ];
 
-const ZUSTAND_FILTER: Opt[] = [
-  { id: "", label: "Alle" },
-  { id: ROHLING, label: "Rohlinge" },
-  { id: GLASIERT, label: "Glasiert" },
+type ZustandKey = "alle" | "rohling" | "glasiert";
+const ZUSTAND_FILTER: { key: ZustandKey; label: string }[] = [
+  { key: "alle", label: "Alle" },
+  { key: "rohling", label: "Rohlinge" },
+  { key: "glasiert", label: "Glasiert" },
 ];
 
 function initialParam(name: string): string {
@@ -657,23 +730,21 @@ function UnikatDetail({
   u,
   onClose,
   onSaved,
-  lagerorte,
-  galerien,
-  kuenstler,
-  glasuren,
+  stamm,
   typen,
   statusListe,
 }: {
   u: Unikat;
   onClose: () => void;
   onSaved: () => Promise<unknown>;
-  lagerorte: Opt[];
-  galerien: Opt[];
-  kuenstler: Opt[];
-  glasuren: Opt[];
+  stamm: Stamm;
   typen: Opt[];
   statusListe: Opt[];
 }) {
+  const lagerorte = activeOptions(stamm.lagerorte, link(u.lagerort?.id));
+  const galerien = activeOptions(stamm.partner, link(u.galerie?.id));
+  const kuenstler = activeOptions(stamm.kuenstler, link(u.kuenstler?.id));
+  const glasuren = activeOptions(stamm.glasuren, u.glasur.map((g) => g.id));
   const initial: EditForm = {
     name: u.name,
     typ: u.typ,
@@ -807,13 +878,13 @@ function UnikatDetail({
         <div className="px-4 pb-8 space-y-6" lang="de">
           {!update.enabled && <StatusBadge text={u.status} />}
           {update.enabled && !editing && (
-            <section className="rounded-xl border p-4 space-y-4" aria-labelledby="schnell-titel">
+            <section className="rounded-lg border p-4 space-y-4" aria-labelledby="schnell-titel">
               <h3 id="schnell-titel" className="text-base font-semibold">
                 Schnell ändern <span className="font-normal text-muted-foreground">· wird sofort gespeichert</span>
               </h3>
               <div>
                 <FieldLabel>Status</FieldLabel>
-                <ChoiceChips label="Status" options={statusListe} value={u.status} onChange={changeStatus} activeClasses={STATUS_ACTIVE} disabled={busy} />
+                <ChoiceChips label="Status" options={statusListe} value={u.status} onChange={changeStatus} withDots disabled={busy} />
               </div>
               <div>
                 <FieldLabel htmlFor="d-lagerort">Lagerort</FieldLabel>
@@ -852,7 +923,7 @@ function UnikatDetail({
                         if (v === u.rueckgabe.slice(0, 10)) return;
                         quickSave({ rueckgabe: v || null }, `Rückgabe bis: ${v ? formatDate(v) : "offen"}`, { rueckgabe: u.rueckgabe ? u.rueckgabe.slice(0, 10) : null });
                       }}
-                      className="h-12 text-base"
+                      className={FIELD_CLASS}
                     />
                   </div>
                 </div>
@@ -885,7 +956,7 @@ function UnikatDetail({
             <>
               {photo ? (
                 <div className="space-y-2">
-                  <img src={thumb(photo, "large")} alt={u.name} className="w-full max-h-64 object-contain rounded-xl bg-muted" />
+                  <img src={thumb(photo, "large")} alt={u.name} className="w-full max-h-64 object-contain rounded-lg bg-muted" />
                   {u.fotos.length > 1 && (
                     <div className="flex gap-2 overflow-x-auto">
                       {u.fotos.map((a, i) => (
@@ -897,7 +968,7 @@ function UnikatDetail({
                   )}
                 </div>
               ) : (
-                <div className="h-24 rounded-xl bg-muted flex items-center justify-center gap-2 text-muted-foreground">
+                <div className="h-24 rounded-lg bg-muted flex items-center justify-center gap-2 text-muted-foreground">
                   <ImageOff className="w-5 h-5" aria-hidden /> Noch kein Foto
                 </div>
               )}
@@ -917,7 +988,7 @@ function UnikatDetail({
               )}
               <div className="flex flex-col gap-3">
                 {update.enabled && (
-                  <Button className="h-12 text-base" onClick={() => setEditing(true)}>
+                  <Button className={FIELD_CLASS} onClick={() => setEditing(true)}>
                     <Pencil className="w-5 h-5 mr-2" aria-hidden /> Alle Angaben bearbeiten
                   </Button>
                 )}
@@ -933,7 +1004,7 @@ function UnikatDetail({
                 <FieldLabel htmlFor="d-name" required>
                   Name
                 </FieldLabel>
-                <Input id="d-name" value={form.name} onChange={(e) => set("name", e.target.value)} className="h-12 text-base" aria-invalid={!!formError.name} />
+                <Input id="d-name" value={form.name} onChange={(e) => set("name", e.target.value)} className={FIELD_CLASS} aria-invalid={!!formError.name} />
                 <ErrorText>{formError.name}</ErrorText>
               </div>
               <div>
@@ -943,10 +1014,10 @@ function UnikatDetail({
               <div className="grid sm:grid-cols-2 gap-5">
                 <div>
                   <FieldLabel htmlFor="d-preis">Preis intern (€)</FieldLabel>
-                  <Input id="d-preis" inputMode="decimal" value={form.preis} onChange={(e) => set("preis", e.target.value)} placeholder="z. B. 480" className="h-12 text-base" aria-invalid={!!formError.preis} />
+                  <Input id="d-preis" inputMode="decimal" value={form.preis} onChange={(e) => set("preis", e.target.value)} placeholder="z. B. 480" className={FIELD_CLASS} aria-invalid={!!formError.preis} />
                   <ErrorText>{formError.preis}</ErrorText>
                 </div>
-                <label htmlFor="d-website" className="flex items-center justify-between gap-4 rounded-lg border p-4 min-h-12 cursor-pointer self-start sm:mt-8">
+                <label htmlFor="d-website" className="flex items-center justify-between gap-4 rounded-md border px-4 h-12 cursor-pointer self-end">
                   <span className="text-base font-medium">Auf Website zeigen</span>
                   <Switch id="d-website" className="scale-125 data-[state=unchecked]:bg-zinc-300" checked={form.website} onCheckedChange={(v) => set("website", v)} />
                 </label>
@@ -958,26 +1029,17 @@ function UnikatDetail({
                 </div>
                 <div>
                   <FieldLabel htmlFor="d-jahr">Jahr</FieldLabel>
-                  <Input id="d-jahr" inputMode="numeric" value={form.jahr} onChange={(e) => set("jahr", e.target.value.replace(/\D/g, "").slice(0, 4))} className="h-12 text-base" />
+                  <Input id="d-jahr" inputMode="numeric" value={form.jahr} onChange={(e) => set("jahr", e.target.value.replace(/\D/g, "").slice(0, 4))} className={FIELD_CLASS} />
                 </div>
               </div>
               <div>
                 <FieldLabel>Glasur</FieldLabel>
-                <div className="flex flex-wrap gap-2" role="group" aria-label="Glasur">
-                  {glasuren.map((g) => {
-                    const active = form.glasurIds.includes(g.id);
-                    return (
-                      <Chip key={g.id} active={active} onClick={() => set("glasurIds", active ? form.glasurIds.filter((x) => x !== g.id) : [...form.glasurIds, g.id])}>
-                        {g.label}
-                      </Chip>
-                    );
-                  })}
-                </div>
+                <SearchPick label="Glasuren" createNoun="Glasur" options={glasuren} value={form.glasurIds} onChange={(ids) => set("glasurIds", ids)} multiple />
               </div>
               <div className="grid sm:grid-cols-2 gap-5">
                 <div>
                   <FieldLabel htmlFor="d-masse">Maße</FieldLabel>
-                  <Input id="d-masse" value={form.masse} onChange={(e) => set("masse", e.target.value)} placeholder="z. B. Ø 24 × H 8 cm" className="h-12 text-base" />
+                  <Input id="d-masse" value={form.masse} onChange={(e) => set("masse", e.target.value)} placeholder="z. B. Ø 24 × H 8 cm" className={FIELD_CLASS} />
                 </div>
                 <div>
                   <FieldLabel htmlFor="d-verkauft">Verkauft am</FieldLabel>
@@ -986,11 +1048,11 @@ function UnikatDetail({
               </div>
               <div>
                 <FieldLabel htmlFor="d-bildnachweis">Bildnachweis</FieldLabel>
-                <Input id="d-bildnachweis" value={form.bildnachweis} onChange={(e) => set("bildnachweis", e.target.value)} className="h-12 text-base" />
+                <Input id="d-bildnachweis" value={form.bildnachweis} onChange={(e) => set("bildnachweis", e.target.value)} className={FIELD_CLASS} />
               </div>
               <div>
                 <FieldLabel htmlFor="d-notiz">Notiz</FieldLabel>
-                <Textarea id="d-notiz" rows={3} value={form.notiz} onChange={(e) => set("notiz", e.target.value)} className="text-base" />
+                <Textarea id="d-notiz" rows={3} value={form.notiz} onChange={(e) => set("notiz", e.target.value)} className={TEXTAREA_CLASS} />
               </div>
               <div>
                 <FieldLabel htmlFor="foto-input">Fotos hinzufügen</FieldLabel>
@@ -1059,14 +1121,14 @@ function EditionDetail({ e, onClose, onSave, lagerorte, canEdit }: { e: Edition;
       <DialogContent className={`${DIALOG_CLASS} max-w-lg`}>
         <PanelHeader title={e.modell} description={[e.typ, e.zustand, e.glasur].filter(Boolean).join(" · ")} />
         <div className="px-4 pb-8 space-y-6">
-          {e.fotos[0] && <img src={thumb(e.fotos[0], "large")} alt={e.modell} className="w-full max-h-72 object-contain rounded-xl bg-muted" />}
+          {e.fotos[0] && <img src={thumb(e.fotos[0], "large")} alt={e.modell} className="w-full max-h-72 object-contain rounded-lg bg-muted" />}
           <div>
             <FieldLabel htmlFor="ed-anzahl">Anzahl</FieldLabel>
             <div className="flex items-center gap-3">
               <Button variant="outline" className="h-12 w-12" aria-label="Eins weniger" disabled={!canEdit} onClick={() => setAnzahl(String(Math.max(0, value - 1)))}>
                 <Minus className="w-5 h-5" aria-hidden />
               </Button>
-              <Input id="ed-anzahl" inputMode="numeric" disabled={!canEdit} value={anzahl} onChange={(ev) => setAnzahl(ev.target.value.replace(/\D/g, ""))} className="h-12 w-24 text-center text-lg" />
+              <Input id="ed-anzahl" inputMode="numeric" disabled={!canEdit} value={anzahl} onChange={(ev) => setAnzahl(ev.target.value.replace(/\D/g, ""))} className="h-12 w-24 rounded-md text-center text-lg md:text-lg" />
               <Button variant="outline" className="h-12 w-12" aria-label="Eins mehr" disabled={!canEdit} onClick={() => setAnzahl(String(value + 1))}>
                 <Plus className="w-5 h-5" aria-hidden />
               </Button>
@@ -1078,7 +1140,7 @@ function EditionDetail({ e, onClose, onSave, lagerorte, canEdit }: { e: Edition;
           </div>
           <div>
             <FieldLabel htmlFor="ed-notiz">Notiz</FieldLabel>
-            <Textarea id="ed-notiz" rows={3} disabled={!canEdit} value={notiz} onChange={(ev) => setNotiz(ev.target.value)} className="text-base" />
+            <Textarea id="ed-notiz" rows={3} disabled={!canEdit} value={notiz} onChange={(ev) => setNotiz(ev.target.value)} className={TEXTAREA_CLASS} />
           </div>
           {canEdit && (
             <Button
@@ -1101,60 +1163,70 @@ function EditionDetail({ e, onClose, onSave, lagerorte, canEdit }: { e: Edition;
 }
 
 export default function Block() {
+  const [art, setArt] = useState<Art>(() => (initialParam("tab") === "edition" ? "edition" : "unikat"));
   const [tab, setTab] = useState<TabKey>(() => {
     const t = initialParam("tab");
     return TABS.some((x) => x.key === t) ? (t as TabKey) : "imhaus";
   });
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState(() => initialParam("q"));
   const [sort, setSort] = useState<SortKey>("neu");
-  const [typFilter, setTypFilter] = useState("");
+  const [typFilter, setTypFilter] = useState(() => initialParam("typ"));
+  const [kuenstlerFilter, setKuenstlerFilter] = useState("");
   const [selectedId, setSelectedId] = useState(() => initialParam("id"));
   const [editionId, setEditionId] = useState("");
-  const [zustandFilter, setZustandFilter] = useState("");
+  const [zustandFilter, setZustandFilter] = useState<ZustandKey>("alle");
   const [limit, setLimit] = useState(LIST_STEP);
   const [pendingEdition, setPendingEdition] = useState("");
 
   const unikateQuery = useRecords({ from: ds.unikate, select: unikatSelect, count: PAGE_SIZE });
   const editionQuery = useRecords({ from: ds.edition, select: editionSelect, count: PAGE_SIZE });
+  const kuenstlerQuery = useRecords({ from: ds.kuenstler, select: kuenstlerSelect, count: PAGE_SIZE });
+  const glasurQuery = useRecords({ from: ds.glasuren, select: glasurSelect, count: PAGE_SIZE });
+  const lagerortQuery = useRecords({ from: ds.lagerorte, select: lagerortSelect, count: PAGE_SIZE });
+  const partnerQuery = useRecords({ from: ds.partner, select: partnerSelect, count: PAGE_SIZE });
   useAllPages(unikateQuery);
   useAllPages(editionQuery);
+  useAllPages(kuenstlerQuery);
+  useAllPages(glasurQuery);
+  useAllPages(lagerortQuery);
+  useAllPages(partnerQuery);
 
   const editionUpdate = useRecordUpdate({ from: ds.edition, fields: editionUpdateFields });
   const typen = useFieldOptions({ from: ds.unikate, select: unikatSelect, field: "typ" }).options as Opt[];
   const statusListe = useFieldOptions({ from: ds.unikate, select: unikatSelect, field: "status" }).options as Opt[];
-  const lagerorte = toOptions(useLinkedRecords({ from: ds.unikate, select: unikatSelect, field: "lagerort", sortOrder: "ASC" }).data as LinkedPages);
-  const galerien = toOptions(useLinkedRecords({ from: ds.unikate, select: unikatSelect, field: "galerie", sortOrder: "ASC" }).data as LinkedPages);
-  const kuenstler = toOptions(useLinkedRecords({ from: ds.unikate, select: unikatSelect, field: "kuenstler", sortOrder: "ASC" }).data as LinkedPages);
-  const glasuren = toOptions(useLinkedRecords({ from: ds.unikate, select: unikatSelect, field: "glasur", sortOrder: "ASC" }).data as LinkedPages);
+  const stamm: Stamm = { lagerorte: lagerortQuery.data, partner: partnerQuery.data, kuenstler: kuenstlerQuery.data, glasuren: glasurQuery.data };
 
   const unikate = useMemo(() => (unikateQuery.data?.pages.flatMap((p) => p.items) ?? []).map((i) => toUnikat(i as RawItem)), [unikateQuery.data]);
   const editionen = useMemo(() => (editionQuery.data?.pages.flatMap((p) => p.items) ?? []).map((i) => toEdition(i as RawItem)), [editionQuery.data]);
+  // Filter nur mit Werten, die im Bestand vorkommen. So bleiben auch archivierte Künstler:innen auffindbar.
+  const kuenstlerImBestand = useMemo(
+    () => [...new Map<string, Opt>(unikate.flatMap((u) => (u.kuenstler ? [[u.kuenstler.id, u.kuenstler] as [string, Opt]] : []))).values()].sort((a, b) => a.label.localeCompare(b.label, "de")),
+    [unikate],
+  );
 
   const activeTab = TABS.find((t) => t.key === tab) ?? TABS[0];
   const term = search.trim();
   const visible = useMemo(
     () =>
       unikate
-        .filter((u) => (activeTab.match ? activeTab.match(u) : true) && (!typFilter || u.typ === typFilter) && matchesSearch(u, term))
+        .filter((u) => (activeTab.match ? activeTab.match(u) : true) && (!typFilter || u.typ === typFilter) && (!kuenstlerFilter || u.kuenstler?.id === kuenstlerFilter) && matchesSearch(u, term))
         .sort((a, b) => compare(a, b, sort)),
-    [unikate, activeTab, typFilter, term, sort],
+    [unikate, activeTab, typFilter, kuenstlerFilter, term, sort],
   );
   const visibleEdition = editionen
-    .filter((e) => (zustandFilter ? (zustandFilter === ROHLING ? e.zustand === ROHLING : e.zustand !== ROHLING) : true))
+    .filter((e) => (zustandFilter === "rohling" ? e.zustand === ROHLING : zustandFilter === "glasiert" ? e.zustand !== ROHLING : true))
     .filter((e) => !term || [e.modell, e.glasur, e.zustand, e.typ, e.lagerort?.label, e.notiz].join(" ").toLowerCase().includes(term.toLowerCase()))
     .sort((a, b) => a.modell.localeCompare(b.modell, "de") || a.zustand.localeCompare(b.zustand, "de"));
 
-  const tabs = useMemo(
-    () => TABS.map((t) => ({ key: t.key, label: t.label, count: t.key === "edition" ? editionen.length : unikate.filter((u) => (t.match ? t.match(u) : true)).length })),
-    [unikate, editionen],
-  );
+  const tabs = useMemo(() => TABS.map((t) => ({ key: t.key, label: t.label, count: unikate.filter((u) => (t.match ? t.match(u) : true)).length })), [unikate]);
 
   const selected = unikate.find((u) => u.id === selectedId);
   const selectedEdition = editionen.find((e) => e.id === editionId);
-  const isEdition = tab === "edition";
+  const isEdition = art === "edition";
   const loading = unikateQuery.status === "pending" || editionQuery.status === "pending";
   const failed = unikateQuery.status === "error" || editionQuery.status === "error";
   const stueckGesamt = visibleEdition.reduce((n, e) => n + e.anzahl, 0);
+  const filtered = !!(search || typFilter || kuenstlerFilter);
 
   async function adjustEdition(e: Edition, delta: number) {
     setPendingEdition(e.id);
@@ -1192,44 +1264,56 @@ export default function Block() {
 
   return (
     <div className="container pt-6 pb-28 sm:pb-8">
-      <div className="content space-y-5" lang="de">
+      <div className="content space-y-4" lang="de">
         <PageHeader
           title="Bestand"
-          description={isEdition ? `${zahl.format(visibleEdition.length)} Zeilen · ${zahl.format(stueckGesamt)} Stück` : `${zahl.format(visible.length)} von ${zahl.format(unikate.length)} Unikaten`}
+          description={isEdition ? `${zahl.format(stueckGesamt)} Stück in ${zahl.format(visibleEdition.length)} Posten` : `${zahl.format(visible.length)} von ${zahl.format(unikate.length)} Unikaten`}
           actions={
             <>
               <Button asChild variant="ghost" className="h-11 text-base">
                 <a href="/tabelle">
-                  <Table2 className="w-5 h-5 mr-2" aria-hidden /> Alles als Tabelle <ArrowRight className="w-4 h-4 ml-1" aria-hidden />
+                  <Table2 className="w-5 h-5 mr-2" aria-hidden /> Tabelle
                 </a>
               </Button>
               <Button variant="outline" className="h-11 text-base" onClick={() => (isEdition ? exportEdition(visibleEdition) : exportUnikate(visible))} disabled={isEdition ? visibleEdition.length === 0 : visible.length === 0}>
-                <Download className="w-5 h-5 mr-2" aria-hidden /> CSV-Export
+                <Download className="w-5 h-5 mr-2" aria-hidden /> CSV
               </Button>
             </>
           }
         />
 
-        <TabChips
-          label="Bestand"
-          tabs={tabs}
-          value={tab}
+        <Segmented
+          label="Art"
+          options={ARTEN}
+          value={art}
           onChange={(key) => {
-            setTab(key);
+            setArt(key);
+            setSearch("");
             setLimit(LIST_STEP);
           }}
         />
 
-        <div className="flex flex-col sm:flex-row gap-3">
-          <div className="relative flex-1">
-            <Search className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" aria-hidden />
-            <Input type="search" aria-label="Suche" placeholder={isEdition ? "Suchen: Modell, Glasur" : "Suchen: Name, Nummer, Glasur, Ort"} value={search} onChange={(e) => setSearch(e.target.value)} className="h-12 pl-10 text-base" />
+        {isEdition ? (
+          <div className="flex flex-col sm:flex-row gap-3">
+            <SearchField label="Suche" placeholder="Suchen: Modell, Glasur, Ort" value={search} onChange={setSearch} />
+            <Segmented label="Zustand" options={ZUSTAND_FILTER} value={zustandFilter} onChange={setZustandFilter} />
           </div>
-          {isEdition ? (
-            <ChoiceChips label="Zustand" options={ZUSTAND_FILTER} value={ZUSTAND_FILTER.find((z) => z.id === zustandFilter)?.label ?? "Alle"} onChange={(label) => setZustandFilter(ZUSTAND_FILTER.find((z) => z.label === label)?.id ?? "")} />
-          ) : (
-            <div className="grid grid-cols-2 gap-3 sm:flex">
-              <select aria-label="Typ" value={typFilter} onChange={(e) => setTypFilter(e.target.value)} className={`${INPUT_CLASS} sm:w-40`}>
+        ) : (
+          <>
+            <Segmented
+              label="Status"
+              options={tabs}
+              value={tab}
+              onChange={(key) => {
+                setTab(key);
+                setLimit(LIST_STEP);
+              }}
+            />
+            <div className="grid grid-cols-2 gap-3 lg:grid-cols-[minmax(0,1fr)_10rem_12rem_12rem]">
+              <div className="col-span-2 lg:col-span-1 flex">
+                <SearchField label="Suche" placeholder="Suchen: Name, Nummer, Glasur, Ort" value={search} onChange={setSearch} />
+              </div>
+              <select aria-label="Typ" value={typFilter} onChange={(e) => setTypFilter(e.target.value)} className={INPUT_CLASS}>
                 <option value="">Alle Typen</option>
                 {typen.map((t) => (
                   <option key={t.id} value={t.label}>
@@ -1237,7 +1321,15 @@ export default function Block() {
                   </option>
                 ))}
               </select>
-              <select aria-label="Sortierung" value={sort} onChange={(e) => setSort(e.target.value as SortKey)} className={`${INPUT_CLASS} sm:w-48`}>
+              <select aria-label="Künstler:in" value={kuenstlerFilter} onChange={(e) => setKuenstlerFilter(e.target.value)} className={INPUT_CLASS}>
+                <option value="">Alle Künstler:innen</option>
+                {kuenstlerImBestand.map((k) => (
+                  <option key={k.id} value={k.id}>
+                    {k.label}
+                  </option>
+                ))}
+              </select>
+              <select aria-label="Sortierung" value={sort} onChange={(e) => setSort(e.target.value as SortKey)} className={`${INPUT_CLASS} col-span-2 lg:col-span-1`}>
                 {SORTS.map((s) => (
                   <option key={s.key} value={s.key}>
                     {s.label}
@@ -1245,8 +1337,8 @@ export default function Block() {
                 ))}
               </select>
             </div>
-          )}
-        </div>
+          </>
+        )}
 
         {failed ? (
           <ErrorState text="Der Bestand konnte nicht geladen werden. Bitte die Seite neu laden." />
@@ -1256,7 +1348,7 @@ export default function Block() {
           visibleEdition.length === 0 ? (
             <EmptyState text="Keine Editionsware gefunden." />
           ) : (
-            <div className="rounded-xl border bg-card px-3 divide-y">
+            <div className={`${PANEL_CLASS} px-3 divide-y`}>
               {visibleEdition.map((e) => (
                 <EditionRow key={e.id} e={e} busy={pendingEdition === e.id} canEdit={editionUpdate.enabled} onAdjust={(d) => adjustEdition(e, d)} onOpen={() => setEditionId(e.id)} />
               ))}
@@ -1264,14 +1356,15 @@ export default function Block() {
           )
         ) : visible.length === 0 ? (
           <div className="space-y-3 text-center">
-            <EmptyState text="Keine Stücke gefunden." />
-            {(search || typFilter) && (
+            <EmptyState text={filtered ? "Keine Stücke zu Suche und Filter." : "Hier ist zurzeit kein Stück."} />
+            {filtered && (
               <Button
                 variant="outline"
                 className="h-11 text-base"
                 onClick={() => {
                   setSearch("");
                   setTypFilter("");
+                  setKuenstlerFilter("");
                 }}
               >
                 Suche und Filter zurücksetzen
@@ -1280,13 +1373,13 @@ export default function Block() {
           </div>
         ) : (
           <>
-            <ul className="rounded-xl border bg-card px-3 divide-y">
+            <ul className={`${PANEL_CLASS} px-3 divide-y`}>
               {visible.slice(0, limit).map((u) => (
                 <li key={u.id}>
                   <ListRow
                     fotos={u.fotos}
                     title={u.name || "Ohne Namen"}
-                    sub={[u.inv, u.typ, ortVon(u) || "Kein Lagerort"].filter(Boolean).join(" · ")}
+                    sub={[u.inv, u.kuenstler?.label, ortVon(u) || "Kein Lagerort"].filter(Boolean).join(" · ")}
                     meta={
                       <span className="flex flex-col items-end gap-1">
                         <StatusBadge text={u.status} />
@@ -1309,21 +1402,17 @@ export default function Block() {
         )}
       </div>
 
-      {selected && (
-        <UnikatDetail
-          key={selected.id}
-          u={selected}
-          onClose={() => setSelectedId("")}
-          onSaved={() => unikateQuery.refetch()}
-          lagerorte={lagerorte}
-          galerien={galerien}
-          kuenstler={kuenstler}
-          glasuren={glasuren}
-          typen={typen}
-          statusListe={statusListe}
+      {selected && <UnikatDetail key={selected.id} u={selected} onClose={() => setSelectedId("")} onSaved={() => unikateQuery.refetch()} stamm={stamm} typen={typen} statusListe={statusListe} />}
+      {selectedEdition && (
+        <EditionDetail
+          key={selectedEdition.id}
+          e={selectedEdition}
+          canEdit={editionUpdate.enabled}
+          onClose={() => setEditionId("")}
+          onSave={(fields) => saveEdition(selectedEdition, fields)}
+          lagerorte={activeOptions(stamm.lagerorte, link(selectedEdition.lagerort?.id))}
         />
       )}
-      {selectedEdition && <EditionDetail key={selectedEdition.id} e={selectedEdition} canEdit={editionUpdate.enabled} onClose={() => setEditionId("")} onSave={(fields) => saveEdition(selectedEdition, fields)} lagerorte={lagerorte} />}
     </div>
   );
 }

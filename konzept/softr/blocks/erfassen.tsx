@@ -1,6 +1,6 @@
 // Generiert von konzept/softr/build.mjs aus src/blocks/erfassen.tsx und src/shared/. Nicht von Hand ändern.
 import { useEffect, useMemo, useRef, useState } from "react";
-import { datasource, q, useFieldOptions, useLinkedRecords, useRecord, useRecordCreate, useRecords, useRecordUpdate, useUpload } from "@/lib/datasource";
+import { datasource, q, useFieldOptions, useRecord, useRecordCreate, useRecords, useRecordUpdate, useUpload } from "@/lib/datasource";
 import { useNavigationSetting } from "@/lib/editable-settings";
 import { NavigationAction } from "@/components/navigation-action";
 import { useCurrentUser } from "@/lib/user";
@@ -8,9 +8,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import { Camera, Check, Loader2, Minus, Plus, X } from "lucide-react";
+import { Camera, Check, Loader2, Minus, Plus, Search, X } from "lucide-react";
 import { toast } from "sonner";
 
+const PAGE_SIZE = 100;
 const VERFUEGBAR = "verfügbar";
 const RESERVIERT = "reserviert";
 const VERKAUFT = "verkauft";
@@ -20,20 +21,29 @@ const ROHLING = "Rohling";
 const AUSSER_HAUS_ORT = "Außer Haus";
 const isAusserHaus = (status: string) => status === KOMMISSION || status === AUSGESTELLT;
 
-// Kräftige Variante für den gewählten Auswahl-Knopf.
-const STATUS_ACTIVE: Record<string, string> = {
-  [VERFUEGBAR]: "bg-emerald-600 text-white border-emerald-600",
-  [RESERVIERT]: "bg-amber-400 text-amber-950 border-amber-400",
-  [VERKAUFT]: "bg-zinc-500 text-white border-zinc-500",
-  [KOMMISSION]: "bg-sky-600 text-white border-sky-600",
-  [AUSGESTELLT]: "bg-violet-700 text-white border-violet-700",
+// Farbpunkt je Status, in Auswahlknöpfen, Badges und Tabellenköpfen dieselbe Farbe.
+const STATUS_DOT: Record<string, string> = {
+  [VERFUEGBAR]: "bg-emerald-600",
+  [RESERVIERT]: "bg-amber-500",
+  [VERKAUFT]: "bg-zinc-400",
+  [KOMMISSION]: "bg-sky-600",
+  [AUSGESTELLT]: "bg-violet-600",
 };
 
 type Opt = { id: string; label: string };
-type LinkedPages = { pages: { items: { id: string; title: string }[] }[] } | undefined;
+type RawItem = { id: string; fields: Record<string, unknown> };
 
-function toOptions(data: LinkedPages): Opt[] {
-  return (data?.pages.flatMap((p) => p.items) ?? []).map((o) => ({ id: o.id, label: o.title }));
+function str(v: unknown): string {
+  return typeof v === "string" ? v : typeof v === "number" ? String(v) : "";
+}
+
+// Auswahlliste aus einer Stammdaten-Tabelle (Felder name, archiviert). Archivierte fallen weg,
+// außer sie sind am Datensatz schon gewählt, damit bestehende Angaben sichtbar bleiben.
+function activeOptions(data: { pages: { items: unknown[] }[] } | undefined, keep: string[] = []): Opt[] {
+  return ((data?.pages.flatMap((p) => p.items) ?? []) as RawItem[])
+    .filter((i) => i.fields.archiviert !== true || keep.includes(i.id))
+    .map((i) => ({ id: i.id, label: str(i.fields.name) }))
+    .sort((a, b) => a.label.localeCompare(b.label, "de"));
 }
 
 function link(id: string | undefined): string[] {
@@ -47,56 +57,46 @@ function parseNumber(s: string): number | null {
   return Number.isFinite(n) ? n : null;
 }
 
+function useAllPages(query: { hasNextPage?: boolean; isFetchingNextPage?: boolean; fetchNextPage: () => unknown }) {
+  const { hasNextPage, isFetchingNextPage, fetchNextPage } = query;
+  useEffect(() => {
+    if (hasNextPage && !isFetchingNextPage) fetchNextPage();
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+}
+
+// md:text-base hebt das md:text-sm der shadcn-Felder auf, damit Eingabe und Auswahlliste gleich groß schreiben.
+const FIELD_CLASS = "h-12 rounded-md text-base md:text-base";
+
+const TEXTAREA_CLASS = "rounded-md text-base md:text-base";
 const INPUT_CLASS = "w-full h-12 rounded-md border border-input bg-background px-3 text-base";
-const CHIP_BASE = "inline-flex items-center justify-center gap-1.5 min-h-11 px-4 rounded-full border text-base whitespace-nowrap transition-colors disabled:opacity-60";
+const PANEL_CLASS = "rounded-lg border bg-card";
+const CHIP_BASE = "inline-flex items-center justify-center gap-2 min-h-11 px-3.5 rounded-md border text-base whitespace-nowrap transition-colors disabled:opacity-60";
 const CHIP_IDLE = "bg-background hover:bg-muted border-input";
 const CHIP_ACTIVE = "bg-primary text-primary-foreground border-primary";
 
-// Ein einzelner Auswahl-Knopf. Grundlage für alle Auswahlen, Reiter und Filter.
-function Chip({
-  active,
-  onClick,
-  children,
-  disabled,
-  activeClass,
-  role,
-}: {
-  active: boolean;
-  onClick: () => void;
-  children: React.ReactNode;
-  disabled?: boolean;
-  activeClass?: string;
-  role?: "radio" | "tab";
-}) {
-  const state = role ? (role === "tab" ? { "aria-selected": active } : { "aria-checked": active }) : { "aria-pressed": active };
+function StatusDot({ status }: { status: string }) {
+  const color = STATUS_DOT[status];
+  return color ? <span className={`inline-block w-2.5 h-2.5 rounded-full shrink-0 ${color}`} aria-hidden /> : null;
+}
+
+// Ein einzelner Auswahl-Knopf für Formulare. Gewählt ist immer die Hauptfarbe mit Haken.
+function Chip({ active, onClick, children, disabled, role }: { active: boolean; onClick: () => void; children: React.ReactNode; disabled?: boolean; role?: "radio" }) {
+  const state = role === "radio" ? { "aria-checked": active } : { "aria-pressed": active };
   return (
-    <button type="button" role={role} {...state} disabled={disabled} onClick={onClick} className={`${CHIP_BASE} ${active ? activeClass ?? CHIP_ACTIVE : CHIP_IDLE}`}>
+    <button type="button" role={role} {...state} disabled={disabled} onClick={onClick} className={`${CHIP_BASE} ${active ? CHIP_ACTIVE : CHIP_IDLE}`}>
       {active && <Check className="w-4 h-4" aria-hidden />}
       {children}
     </button>
   );
 }
 
-// Einfachauswahl als Knopfreihe, z. B. Status, Typ, Zustand. Wert ist das Label.
-function ChoiceChips({
-  label,
-  options,
-  value,
-  onChange,
-  activeClasses,
-  disabled,
-}: {
-  label: string;
-  options: Opt[];
-  value: string;
-  onChange: (label: string) => void;
-  activeClasses?: Record<string, string>;
-  disabled?: boolean;
-}) {
+// Einfachauswahl als Knopfreihe, z. B. Status, Typ, Zustand. Wert ist das Label. withDots zeigt die Statusfarbe als Punkt.
+function ChoiceChips({ label, options, value, onChange, withDots, disabled }: { label: string; options: Opt[]; value: string; onChange: (label: string) => void; withDots?: boolean; disabled?: boolean }) {
   return (
     <div role="radiogroup" aria-label={label} className="flex flex-wrap gap-2">
       {options.map((o) => (
-        <Chip key={o.id} role="radio" active={value === o.label} activeClass={activeClasses?.[o.label]} disabled={disabled} onClick={() => onChange(o.label)}>
+        <Chip key={o.id} role="radio" active={value === o.label} disabled={disabled} onClick={() => onChange(o.label)}>
+          {withDots && value !== o.label && <StatusDot status={o.label} />}
           {o.label}
         </Chip>
       ))}
@@ -104,16 +104,30 @@ function ChoiceChips({
   );
 }
 
-// Reiter als Knopfreihe, am Handy seitlich wischbar.
-function TabChips<K extends string>({ label, tabs, value, onChange }: { label: string; tabs: { key: K; label: string; count?: number }[]; value: K; onChange: (key: K) => void }) {
+// Umschalter zwischen Ansichten derselben Seite (Unikat/Editionsware, Im Haus/Außer Haus …). Am Handy seitlich wischbar.
+function Segmented<K extends string>({ label, options, value, onChange }: { label: string; options: { key: K; label: string; count?: number }[]; value: K; onChange: (key: K) => void }) {
   return (
-    <div role="tablist" aria-label={label} className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1">
-      {tabs.map((t) => (
-        <Chip key={t.key} role="tab" active={value === t.key} onClick={() => onChange(t.key)}>
-          {t.label}
-          {t.count !== undefined && <span className={value === t.key ? "opacity-80" : "text-muted-foreground"}>{t.count}</span>}
-        </Chip>
-      ))}
+    <div className="max-w-full overflow-x-auto">
+      <div role="tablist" aria-label={label} className="inline-flex gap-1 rounded-md border bg-muted p-1">
+        {options.map((o) => {
+          const active = value === o.key;
+          return (
+            <button
+              key={o.key}
+              type="button"
+              role="tab"
+              aria-selected={active}
+              onClick={() => onChange(o.key)}
+              className={`inline-flex items-center gap-1.5 min-h-10 px-3.5 rounded-sm text-base whitespace-nowrap transition-colors ${
+                active ? "bg-background text-foreground font-medium shadow-sm" : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              {o.label}
+              {o.count !== undefined && <span className="tabular-nums text-muted-foreground">{o.count}</span>}
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 }
@@ -154,12 +168,86 @@ function OptionSelect({ id, value, onChange, options, placeholder, disabled }: {
   );
 }
 
+function SearchField({ value, onChange, placeholder, label }: { value: string; onChange: (v: string) => void; placeholder: string; label: string }) {
+  return (
+    <div className="relative flex-1 min-w-0">
+      <Search className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" aria-hidden />
+      <Input type="search" aria-label={label} placeholder={placeholder} value={value} onChange={(e) => onChange(e.target.value)} className={`${FIELD_CLASS} pl-10`} />
+    </div>
+  );
+}
+
+const PICK_VISIBLE = 12;
+
+// Durchsuchbare Auswahl aus einer wachsenden Liste (Glasuren). Gewählte stehen vorn, Suche filtert, Fehlendes lässt sich anlegen.
+function SearchPick({
+  label,
+  options,
+  value,
+  onChange,
+  multiple,
+  onCreate,
+  createNoun,
+}: {
+  label: string;
+  options: Opt[];
+  value: string[];
+  onChange: (ids: string[]) => void;
+  multiple: boolean;
+  onCreate?: (name: string) => Promise<string | null>;
+  createNoun: string;
+}) {
+  const [query, setQuery] = useState("");
+  const [busy, setBusy] = useState(false);
+  const term = query.trim().toLowerCase();
+  const selected = options.filter((o) => value.includes(o.id));
+  const matches = options.filter((o) => !value.includes(o.id) && (!term || o.label.toLowerCase().includes(term)));
+  const shown = [...selected, ...matches.slice(0, Math.max(0, PICK_VISIBLE - selected.length))];
+  const hidden = selected.length + matches.length - shown.length;
+  const exact = options.some((o) => o.label.toLowerCase() === term);
+  const toggle = (id: string) => onChange(value.includes(id) ? value.filter((x) => x !== id) : multiple ? [...value, id] : [id]);
+
+  return (
+    <div className="space-y-2">
+      {options.length > PICK_VISIBLE / 2 && <SearchField label={`${label} suchen`} placeholder={`${label} suchen`} value={query} onChange={setQuery} />}
+      <div role="group" aria-label={label} className="flex flex-wrap gap-2">
+        {shown.map((o) => (
+          <Chip key={o.id} active={value.includes(o.id)} onClick={() => toggle(o.id)}>
+            {o.label}
+          </Chip>
+        ))}
+      </div>
+      {hidden > 0 && <p className="text-sm text-muted-foreground">{hidden} weitere über die Suche</p>}
+      {term && matches.length === 0 && !exact && <p className="text-sm text-muted-foreground">Keine {label} mit „{query.trim()}“.</p>}
+      {onCreate && term && !exact && (
+        <Button
+          type="button"
+          variant="ghost"
+          className="h-11 px-2 text-base text-primary"
+          disabled={busy}
+          onClick={async () => {
+            setBusy(true);
+            const id = await onCreate(query.trim());
+            setBusy(false);
+            if (id) {
+              onChange(multiple ? [...value, id] : [id]);
+              setQuery("");
+            }
+          }}
+        >
+          {busy ? <Loader2 className="w-5 h-5 mr-1 animate-spin" aria-hidden /> : <Plus className="w-5 h-5 mr-1" aria-hidden />}„{query.trim()}“ als {createNoun} anlegen
+        </Button>
+      )}
+    </div>
+  );
+}
+
 function PageHeader({ title, description, actions }: { title: string; description?: string; actions?: React.ReactNode }) {
   return (
-    <div className="flex flex-wrap items-start justify-between gap-3">
+    <div className="flex flex-wrap items-end justify-between gap-x-4 gap-y-3">
       <div className="min-w-0">
         <h1 className="text-2xl font-semibold">{title}</h1>
-        {description && <p className="text-base text-muted-foreground">{description}</p>}
+        {description && <p className="text-base text-muted-foreground mt-0.5">{description}</p>}
       </div>
       {actions && <div className="flex flex-wrap gap-2">{actions}</div>}
     </div>
@@ -175,17 +263,18 @@ function AddNew({ label, placeholder, existing, onAdd }: { label: string; placeh
   const duplicate = existing.find((o) => o.label.toLowerCase() === name.toLowerCase());
   if (!open) {
     return (
-      <button type="button" onClick={() => setOpen(true)} className="min-h-11 px-4 rounded-full border border-dashed border-input text-base text-muted-foreground hover:bg-muted">
-        + {label}
-      </button>
+      <Button type="button" variant="ghost" className="h-11 px-2 text-base text-primary" onClick={() => setOpen(true)}>
+        <Plus className="w-5 h-5 mr-1" aria-hidden />
+        {label}
+      </Button>
     );
   }
   return (
     <div className="flex flex-wrap items-center gap-2 w-full">
-      <Input autoFocus value={value} onChange={(e) => setValue(e.target.value)} placeholder={placeholder} aria-label={label} className="h-11 text-base flex-1 min-w-48" />
+      <Input autoFocus value={value} onChange={(e) => setValue(e.target.value)} placeholder={placeholder} aria-label={label} className={`${FIELD_CLASS} flex-1 min-w-48`} />
       <Button
         type="button"
-        className="h-11 text-base"
+        className="h-12 text-base"
         disabled={!name || !!duplicate || busy}
         onClick={async () => {
           setBusy(true);
@@ -199,7 +288,15 @@ function AddNew({ label, placeholder, existing, onAdd }: { label: string; placeh
       >
         Übernehmen
       </Button>
-      <Button type="button" variant="ghost" className="h-11 text-base" onClick={() => { setValue(""); setOpen(false); }}>
+      <Button
+        type="button"
+        variant="ghost"
+        className="h-12 text-base"
+        onClick={() => {
+          setValue("");
+          setOpen(false);
+        }}
+      >
         Abbrechen
       </Button>
       {duplicate && <p className="w-full text-sm text-muted-foreground">„{duplicate.label}“ gibt es schon. Bitte oben auswählen.</p>}
@@ -208,17 +305,7 @@ function AddNew({ label, placeholder, existing, onAdd }: { label: string; placeh
 }
 
 // Foto aufnehmen oder auswählen, mit Vorschau und Entfernen.
-function PhotoPicker({
-  files,
-  onChange,
-  multiple,
-  error,
-}: {
-  files: File[];
-  onChange: (f: File[]) => void;
-  multiple: boolean;
-  error?: string;
-}) {
+function PhotoPicker({ files, onChange, multiple, error }: { files: File[]; onChange: (f: File[]) => void; multiple: boolean; error?: string }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const previews = useMemo(() => files.map((f) => URL.createObjectURL(f)), [files]);
   useEffect(() => () => previews.forEach((u) => URL.revokeObjectURL(u)), [previews]);
@@ -242,9 +329,7 @@ function PhotoPicker({
         <button
           type="button"
           onClick={() => inputRef.current?.click()}
-          className={`w-full h-40 rounded-xl border-2 border-dashed flex flex-col items-center justify-center gap-2 text-base hover:bg-muted ${
-            error ? "border-destructive" : "border-input"
-          }`}
+          className={`w-full h-40 rounded-lg border-2 border-dashed flex flex-col items-center justify-center gap-2 text-base hover:bg-muted ${error ? "border-destructive" : "border-input"}`}
         >
           <Camera className="w-8 h-8 text-muted-foreground" aria-hidden />
           <span className="font-medium">Foto aufnehmen oder auswählen</span>
@@ -253,24 +338,20 @@ function PhotoPicker({
       ) : (
         <div className="grid grid-cols-3 gap-3">
           {previews.map((src, i) => (
-            <div key={src} className="relative aspect-square rounded-lg overflow-hidden border">
+            <div key={src} className="relative aspect-square rounded-md overflow-hidden border">
               <img src={src} alt={`Foto ${i + 1}`} className="w-full h-full object-cover" />
               <button
                 type="button"
                 aria-label={`Foto ${i + 1} entfernen`}
                 onClick={() => onChange(files.filter((_, j) => j !== i))}
-                className="absolute top-1 right-1 w-11 h-11 rounded-full bg-background/90 flex items-center justify-center"
+                className="absolute top-1 right-1 w-11 h-11 rounded-md bg-background/90 flex items-center justify-center"
               >
                 <X className="w-5 h-5" aria-hidden />
               </button>
             </div>
           ))}
           {multiple && (
-            <button
-              type="button"
-              onClick={() => inputRef.current?.click()}
-              className="aspect-square rounded-lg border-2 border-dashed border-input flex flex-col items-center justify-center gap-1 text-sm hover:bg-muted"
-            >
+            <button type="button" onClick={() => inputRef.current?.click()} className="aspect-square rounded-md border-2 border-dashed border-input flex flex-col items-center justify-center gap-1 text-sm hover:bg-muted">
               <Plus className="w-6 h-6" aria-hidden />
               Weiteres Foto
             </button>
@@ -282,9 +363,14 @@ function PhotoPicker({
   );
 }
 
-const ds = datasource.define({ unikate: "unikate", edition: "edition", glasuren: "glasuren", kuenstler: "kuenstler" });
+const ds = datasource.define({ unikate: "unikate", edition: "edition", glasuren: "glasuren", kuenstler: "kuenstler", lagerorte: "lagerorte", partner: "partner", modelle: "modelle" });
 const glasurNeu = q.select({ name: "OuhBi" });
 const kuenstlerNeu = q.select({ name: "vqD0c" });
+const glasurListe = q.select({ name: "OuhBi", archiviert: "jxxXN" });
+const kuenstlerListe = q.select({ name: "vqD0c", archiviert: "TOhYe" });
+const lagerortListe = q.select({ name: "AoOjs", archiviert: "kMBsy" });
+const partnerListe = q.select({ name: "a4yfc", archiviert: "24Tn9" });
+const modellListe = q.select({ name: "eXo5w", archiviert: "3tlrw" });
 
 const unikatFields = q.select({
   name: "7IBVW",
@@ -400,7 +486,7 @@ function SuccessCard({ saved, onNext }: { saved: Saved; onNext: () => void }) {
   const inventarnummer = (data as { fields?: { inventarnummer?: string } } | undefined)?.fields?.inventarnummer;
 
   return (
-    <div className="rounded-xl border bg-card p-6 text-center space-y-4" role="status">
+    <div className={`${PANEL_CLASS} p-6 text-center space-y-4`} role="status">
       <div className="mx-auto w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center">
         <Check className="w-7 h-7 text-primary" aria-hidden />
       </div>
@@ -410,10 +496,10 @@ function SuccessCard({ saved, onNext }: { saved: Saved; onNext: () => void }) {
         {inventarnummer && <p className="text-base mt-1">Inventarnummer: <strong>{inventarnummer}</strong></p>}
       </div>
       <div className="flex flex-col sm:flex-row gap-3 justify-center">
-        <Button size="lg" className="h-12 text-base" onClick={onNext}>
+        <Button size="lg" className={FIELD_CLASS} onClick={onNext}>
           Nächstes Stück erfassen
         </Button>
-        <Button asChild size="lg" variant="outline" className="h-12 text-base">
+        <Button asChild size="lg" variant="outline" className={FIELD_CLASS}>
           <NavigationAction navigation={bestandLink}>Zum Bestand</NavigationAction>
         </Button>
       </div>
@@ -443,16 +529,22 @@ export default function Block() {
   const zustandOptions = useFieldOptions({ from: ds.edition, select: editionFields, field: "zustand" })
     .options as Opt[];
 
-  const kuenstlerQuery = useLinkedRecords({ from: ds.unikate, select: unikatFields, field: "kuenstler", sortOrder: "ASC" });
-  const glasurQuery = useLinkedRecords({ from: ds.unikate, select: unikatFields, field: "glasur", sortOrder: "ASC" });
-  const lagerortQuery = useLinkedRecords({ from: ds.unikate, select: unikatFields, field: "lagerort", sortOrder: "ASC" });
-  const galerieQuery = useLinkedRecords({ from: ds.unikate, select: unikatFields, field: "galerie", sortOrder: "ASC" });
-  const modellQuery = useLinkedRecords({ from: ds.edition, select: editionFields, field: "modell", sortOrder: "ASC" });
-  const kuenstlerOptions = toOptions(kuenstlerQuery.data as LinkedPages);
-  const glasurOptions = toOptions(glasurQuery.data as LinkedPages);
-  const lagerortOptions = toOptions(lagerortQuery.data as LinkedPages);
-  const galerieOptions = toOptions(galerieQuery.data as LinkedPages);
-  const modellOptions = toOptions(modellQuery.data as LinkedPages);
+  // Auswahllisten direkt aus den Stammdaten, damit archivierte Einträge wegfallen.
+  const kuenstlerQuery = useRecords({ from: ds.kuenstler, select: kuenstlerListe, count: PAGE_SIZE });
+  const glasurQuery = useRecords({ from: ds.glasuren, select: glasurListe, count: PAGE_SIZE });
+  const lagerortQuery = useRecords({ from: ds.lagerorte, select: lagerortListe, count: PAGE_SIZE });
+  const galerieQuery = useRecords({ from: ds.partner, select: partnerListe, count: PAGE_SIZE });
+  const modellQuery = useRecords({ from: ds.modelle, select: modellListe, count: PAGE_SIZE });
+  useAllPages(kuenstlerQuery);
+  useAllPages(glasurQuery);
+  useAllPages(lagerortQuery);
+  useAllPages(galerieQuery);
+  useAllPages(modellQuery);
+  const kuenstlerOptions = activeOptions(kuenstlerQuery.data);
+  const glasurOptions = activeOptions(glasurQuery.data);
+  const lagerortOptions = activeOptions(lagerortQuery.data);
+  const galerieOptions = activeOptions(galerieQuery.data);
+  const modellOptions = activeOptions(modellQuery.data);
   const [extraTypen, setExtraTypen] = useState<Opt[]>([]);
   const typChoices = [...typOptions, ...extraTypen.filter((t) => !typOptions.some((o) => o.label === t.label))];
   const createGlasur = useRecordCreate({ from: ds.glasuren, fields: glasurNeu });
@@ -464,18 +556,15 @@ export default function Block() {
     return true;
   }
 
-  async function addGlasur(name: string, target: Art): Promise<boolean> {
+  async function addGlasur(name: string): Promise<string | null> {
     try {
       const created = await createGlasur.mutateAsync({ name } as never);
-      const id = (created as { id: string }).id;
       await glasurQuery.refetch();
-      if (target === "unikat") setUnikat((s) => ({ ...s, glasur: [...s.glasur, id] }));
-      else setEdition((s) => ({ ...s, glasur: id }));
       toast.success(`Glasur „${name}“ angelegt.`);
-      return true;
+      return (created as { id: string }).id;
     } catch {
       toast.error("Glasur konnte nicht angelegt werden.");
-      return false;
+      return null;
     }
   }
 
@@ -631,7 +720,7 @@ export default function Block() {
 
   return (
     <div className="container pt-6 pb-28 sm:pb-8">
-      <div className="content max-w-2xl mx-auto">
+      <div className="content max-w-3xl">
         <div className="mb-5">
           <PageHeader title="Neues Stück erfassen" description="Felder mit * sind Pflicht. Alles andere kann später ergänzt werden." />
         </div>
@@ -640,9 +729,9 @@ export default function Block() {
           <SuccessCard saved={saved} onNext={reset} />
         ) : (
           <form ref={formRef} onSubmit={submit} noValidate className="space-y-6">
-            <TabChips
+            <Segmented
               label="Art des Stücks"
-              tabs={ART_TABS}
+              options={ART_TABS}
               value={art}
               onChange={(key) => {
                 setArt(key);
@@ -669,7 +758,7 @@ export default function Block() {
                     value={unikat.name}
                     onChange={(e) => setU("name", e.target.value)}
                     placeholder="z. B. Mondvase „Seladon“"
-                    className="h-12 text-base"
+                    className={FIELD_CLASS}
                     aria-invalid={!!errors.name}
                   />
                   <ErrorText>{errors.name}</ErrorText>
@@ -696,7 +785,7 @@ export default function Block() {
                       if (isAusserHaus(v) && ort) setU("lagerort", ort);
                       else if (unikat.lagerort === ort) setU("lagerort", "");
                     }}
-                    activeClasses={STATUS_ACTIVE}
+                    withDots
                   />
                   <ErrorText>{errors.status}</ErrorText>
                 </div>
@@ -725,6 +814,11 @@ export default function Block() {
                   </div>
                 )}
 
+                <div className="border-t pt-6">
+                  <h2 className="text-lg font-semibold">Weitere Angaben</h2>
+                  <p className="text-sm text-muted-foreground">Kann auch später im Bestand ergänzt werden.</p>
+                </div>
+
                 <div className="grid sm:grid-cols-2 gap-6">
                   <div>
                     <FieldLabel htmlFor="u-kuenstler">Künstler:in</FieldLabel>
@@ -746,27 +840,15 @@ export default function Block() {
                       inputMode="numeric"
                       value={unikat.jahr}
                       onChange={(e) => setU("jahr", e.target.value.replace(/\D/g, "").slice(0, 4))}
-                      className="h-12 text-base"
+                      className={FIELD_CLASS}
                     />
                   </div>
                 </div>
 
                 <div>
                   <FieldLabel>Glasur</FieldLabel>
-                  <div className="flex flex-wrap gap-2" role="group" aria-label="Glasur">
-                    {glasurOptions.map((g) => {
-                      const active = unikat.glasur.includes(g.id);
-                      return (
-                        <Chip key={g.id} active={active} onClick={() => setU("glasur", active ? unikat.glasur.filter((x) => x !== g.id) : [...unikat.glasur, g.id])}>
-                          {g.label}
-                        </Chip>
-                      );
-                    })}
-                  </div>
-                  <div className="mt-2">
-                    <AddNew label="Neue Glasur" placeholder="Name der Glasur" existing={glasurOptions} onAdd={(n) => addGlasur(n, "unikat")} />
-                  </div>
-                  <Hint>Mehrere möglich. Fehlt eine Glasur, mit „+ Neue Glasur“ anlegen.</Hint>
+                  <SearchPick label="Glasuren" createNoun="neue Glasur" options={glasurOptions} value={unikat.glasur} onChange={(ids) => setU("glasur", ids)} multiple onCreate={addGlasur} />
+                  <Hint>Mehrere möglich. Fehlt eine Glasur, den Namen ins Suchfeld schreiben und anlegen.</Hint>
                 </div>
 
                 <div className="grid sm:grid-cols-2 gap-6">
@@ -777,7 +859,7 @@ export default function Block() {
                       value={unikat.masse}
                       onChange={(e) => setU("masse", e.target.value)}
                       placeholder="z. B. Ø 24 × H 8 cm"
-                      className="h-12 text-base"
+                      className={FIELD_CLASS}
                     />
                   </div>
                   <div>
@@ -787,7 +869,7 @@ export default function Block() {
                       value={unikat.bildnachweis}
                       onChange={(e) => setU("bildnachweis", e.target.value)}
                       placeholder="z. B. Foto: Name der Fotografin"
-                      className="h-12 text-base"
+                      className={FIELD_CLASS}
                     />
                   </div>
                 </div>
@@ -801,13 +883,13 @@ export default function Block() {
                       value={unikat.preis}
                       onChange={(e) => setU("preis", e.target.value)}
                       placeholder="z. B. 480"
-                      className="h-12 text-base"
+                      className={FIELD_CLASS}
                       aria-invalid={!!errors.preis}
                     />
                     <Hint>Nur intern, erscheint nie auf der Website.</Hint>
                     <ErrorText>{errors.preis}</ErrorText>
                   </div>
-                  <label htmlFor="u-website" className="flex items-center justify-between gap-4 rounded-lg border p-4 min-h-12 cursor-pointer self-start sm:mt-8">
+                  <label htmlFor="u-website" className="flex items-center justify-between gap-4 rounded-md border px-4 py-3 cursor-pointer self-start sm:mt-8">
                     <span>
                       <span className="block text-base font-medium">Auf Website zeigen</span>
                       <span className="block text-sm text-muted-foreground">Nur für die spätere Website-Anbindung.</span>
@@ -823,7 +905,7 @@ export default function Block() {
                     value={unikat.notiz}
                     onChange={(e) => setU("notiz", e.target.value)}
                     rows={3}
-                    className="text-base"
+                    className={TEXTAREA_CLASS}
                   />
                 </div>
               </>
@@ -857,19 +939,8 @@ export default function Block() {
 
                 {isGlasiert && (
                   <div>
-                    <FieldLabel htmlFor="e-glasur" required>
-                      Glasur
-                    </FieldLabel>
-                    <OptionSelect
-                      id="e-glasur"
-                      value={edition.glasur}
-                      onChange={(v) => setE("glasur", v)}
-                      options={glasurOptions}
-                      placeholder="Glasur wählen"
-                    />
-                    <div className="mt-2">
-                      <AddNew label="Neue Glasur" placeholder="Name der Glasur" existing={glasurOptions} onAdd={(n) => addGlasur(n, "edition")} />
-                    </div>
+                    <FieldLabel required>Glasur</FieldLabel>
+                    <SearchPick label="Glasuren" createNoun="neue Glasur" options={glasurOptions} value={link(edition.glasur)} onChange={(ids) => setE("glasur", ids.at(-1) ?? "")} multiple={false} onCreate={addGlasur} />
                     <ErrorText>{errors.glasur}</ErrorText>
                   </div>
                 )}
@@ -893,7 +964,7 @@ export default function Block() {
                       inputMode="numeric"
                       value={String(edition.anzahl)}
                       onChange={(e) => setE("anzahl", Number(e.target.value.replace(/\D/g, "")) || 0)}
-                      className="h-12 w-24 text-center text-lg"
+                      className="h-12 w-24 rounded-md text-center text-lg md:text-lg"
                     />
                     <Button
                       type="button"
@@ -907,7 +978,7 @@ export default function Block() {
                   </div>
                   <ErrorText>{errors.anzahl}</ErrorText>
                   {existingRow && (
-                    <p className="mt-3 rounded-lg bg-muted p-3 text-base">
+                    <p className="mt-3 rounded-md bg-muted p-3 text-base">
                       Diese Kombination gibt es schon mit <strong>{existingCount} Stück</strong>. Beim Speichern wird
                       die Anzahl dort auf <strong>{existingCount + edition.anzahl}</strong> erhöht.
                     </p>
@@ -937,7 +1008,7 @@ export default function Block() {
                         value={edition.notiz}
                         onChange={(e) => setE("notiz", e.target.value)}
                         rows={3}
-                        className="text-base"
+                        className={TEXTAREA_CLASS}
                       />
                     </div>
                   </>
