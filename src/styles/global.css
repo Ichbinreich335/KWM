@@ -635,14 +635,6 @@ body::after {
   padding-top: 20px;
   border-top: 1px solid var(--ink);
 }
-.works__statement {
-  margin: 0;
-  font-family: var(--f-display);
-  font-size: var(--t-statement);
-  line-height: var(--t-statement-lh);
-  letter-spacing: -0.01em;
-  text-wrap: balance;
-}
 .works__single-name {
   font-family: var(--f-display);
   font-size: var(--t-h3);
