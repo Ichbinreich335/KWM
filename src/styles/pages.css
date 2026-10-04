@@ -43,14 +43,6 @@
   padding-top: 10px;
 }
 
-/* Kapitel */
-.chapter {
-  padding-block: var(--section) 0;
-}
-.chapter:last-of-type,
-.chapter:has(+ .anfrage-band) {
-  padding-bottom: var(--section);
-}
 /* Die Linie des Kopfes ersetzt die obere Linie der folgenden Liste */
 .chapter__head + .grid > :is(.datelist, .texts, .pubs) {
   border-top: 0;
@@ -58,10 +50,6 @@
 .chapter__head + .pubs .pub {
   border-top: 0;
   padding-top: 0;
-}
-.chapter--anker {
-  margin-top: var(--section);
-  padding-bottom: var(--section);
 }
 
 /* Werk- und Produktkatalog */
@@ -309,10 +297,6 @@
   background: var(--ground-2);
   color: var(--ink);
   --cover: var(--ground-2);
-}
-.chapter--flaeche {
-  margin-top: var(--section);
-  padding-bottom: var(--section);
 }
 
 @media (max-width: 900px) {

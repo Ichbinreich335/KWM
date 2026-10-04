@@ -1,6 +1,6 @@
 ---
 import '../styles/basis.css';
-import SectionHead from '../components/SectionHead.astro';
+import ChapterHead from '../components/ChapterHead.astro';
 import Bild from '../components/Bild.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import InquiryBand from '../components/InquiryBand.astro';
@@ -47,11 +47,11 @@ import '../styles/signaturen/signaturen.css';
     />
 
     {/* Arbeitsweise */}
-    <section class="chapter" id="arbeitsweise" aria-labelledby="method-title">
-      <SectionHead titelId="method-title">
-        <Fragment slot="titel">Arbeitsweise</Fragment>
+    <ChapterHead id="arbeitsweise" titelId="method-title">
+      <Fragment slot="titel">Arbeitsweise</Fragment>
+      <Fragment slot="einleitung">
         Das Manufakturprogramm der Werkstatt – vor über zwanzig Jahren entwickelt, bis heute unverändert.
-      </SectionHead>
+      </Fragment>
       <div class="method grid">
         <figure class="method__media" data-reveal="img">
           <Bild
@@ -110,14 +110,14 @@ import '../styles/signaturen/signaturen.css';
           </div>
         </dl>
       </div>
-    </section>
+    </ChapterHead>
 
     {/* Glasurfarben */}
-    <section class="chapter" id="feuer" aria-labelledby="fire-title">
-      <SectionHead titelId="fire-title">
-        <Fragment slot="titel">Wie die Glasur ihre Farbe bekommt.</Fragment>
+    <ChapterHead id="feuer" titelId="fire-title">
+      <Fragment slot="titel">Wie die Glasur ihre Farbe bekommt.</Fragment>
+      <Fragment slot="einleitung">
         Ob ein Metalloxid gelb, grün oder rot färbt, entscheidet die Atmosphäre im Ofen.
-      </SectionHead>
+      </Fragment>
       <div class="fire-colors grid">
         <figure class="fire-colors__media" data-reveal="img">
           <Bild
@@ -153,7 +153,7 @@ import '../styles/signaturen/signaturen.css';
           </ul>
         </div>
       </div>
-    </section>
+    </ChapterHead>
 
     {/* Chronik */}
     <section class="chronicle" id="chronik" aria-labelledby="chron-title">
@@ -298,11 +298,11 @@ import '../styles/signaturen/signaturen.css';
     </section>
 
     {/* Team */}
-    <section class="chapter" id="team" aria-labelledby="team-title">
-      <SectionHead titelId="team-title">
-        <Fragment slot="titel">Team</Fragment>
+    <ChapterHead id="team" titelId="team-title">
+      <Fragment slot="titel">Team</Fragment>
+      <Fragment slot="einleitung">
         Die Menschen hinter dem Manufakturprogramm – manche seit Jahrzehnten in der Werkstatt.
-      </SectionHead>
+      </Fragment>
       <figure class="team-strip" data-reveal="img">
         <Bild
           src="/img/kwm/leiste-team.webp"
@@ -370,13 +370,11 @@ import '../styles/signaturen/signaturen.css';
           </dl>
         </article>
       </div>
-    </section>
+    </ChapterHead>
 
     {/* Auszeichnungen */}
-    <section class="chapter chapter--flaeche on-flaeche" id="auszeichnungen" aria-labelledby="awards-title">
-      <SectionHead titelId="awards-title">
-        <Fragment slot="titel">Auszeichnungen</Fragment>
-      </SectionHead>
+    <ChapterHead ton="flaeche" id="auszeichnungen" titelId="awards-title">
+      <Fragment slot="titel">Auszeichnungen</Fragment>
       <div class="grid">
         <ol class="datelist">
           <li class="datelist__row">
@@ -399,10 +397,10 @@ import '../styles/signaturen/signaturen.css';
           </li>
         </ol>
       </div>
-    </section>
+    </ChapterHead>
 
     {/* Zeche Zollverein */}
-    <section class="chapter" id="zollverein" aria-labelledby="place-title">
+    <ChapterHead id="zollverein" titelId="place-title">
       <div class="place grid">
         <div class="place__text">
           <h2 class="h2" id="place-title" data-reveal="words">
@@ -453,7 +451,7 @@ import '../styles/signaturen/signaturen.css';
           </div>
         </dl>
       </div>
-    </section>
+    </ChapterHead>
 
     <InquiryBand
       text="Fragen zur Werkstatt oder Interesse an Stücken aus unserem Programm? Wir senden Ihnen gerne weitere Informationen oder ein Angebot zu."

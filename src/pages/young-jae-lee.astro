@@ -1,6 +1,6 @@
 ---
 import '../styles/basis.css';
-import SectionHead from '../components/SectionHead.astro';
+import ChapterHead from '../components/ChapterHead.astro';
 import Bild from '../components/Bild.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import InquiryBand from '../components/InquiryBand.astro';
@@ -117,11 +117,9 @@ import '../styles/signaturen/signaturen.css';
     </section>
 
     {/* Biografie */}
-    <section class="chapter" id="biografie" aria-labelledby="bio-title">
-      <SectionHead titelId="bio-title">
-        <Fragment slot="titel">Biografie</Fragment>
-        Von Seoul über Wiesbaden, Sandhausen und Kassel nach Essen.
-      </SectionHead>
+    <ChapterHead id="biografie" titelId="bio-title">
+      <Fragment slot="titel">Biografie</Fragment>
+      <Fragment slot="einleitung">Von Seoul über Wiesbaden, Sandhausen und Kassel nach Essen.</Fragment>
       <div class="grid">
         <ol class="datelist">
           <li class="datelist__row">
@@ -172,14 +170,14 @@ import '../styles/signaturen/signaturen.css';
           </li>
         </ol>
       </div>
-    </section>
+    </ChapterHead>
 
     {/* Texte */}
-    <section class="chapter" id="texte" aria-labelledby="texts-title">
-      <SectionHead titelId="texts-title">
-        <Fragment slot="titel">Texte über Young-Jae Lee</Fragment>
+    <ChapterHead id="texte" titelId="texts-title">
+      <Fragment slot="titel">Texte über Young-Jae Lee</Fragment>
+      <Fragment slot="einleitung">
         Essays aus Katalogen und Büchern, vollständig zu lesen auf der bisherigen Website.
-      </SectionHead>
+      </Fragment>
       <div class="grid">
         <ol class="texts">
           <li class="texts__row">
@@ -289,7 +287,7 @@ import '../styles/signaturen/signaturen.css';
           </li>
         </ol>
       </div>
-    </section>
+    </ChapterHead>
 
     <figure class="plate" data-reveal="img">
       <Bild
@@ -304,11 +302,11 @@ import '../styles/signaturen/signaturen.css';
     </figure>
 
     {/* Ausstellungen */}
-    <section class="chapter" id="ausstellungen" aria-labelledby="exh-title">
-      <SectionHead titelId="exh-title">
-        <Fragment slot="titel">Ausstellungen</Fragment>
+    <ChapterHead id="ausstellungen" titelId="exh-title">
+      <Fragment slot="titel">Ausstellungen</Fragment>
+      <Fragment slot="einleitung">
         Eine Auswahl der letzten zehn Jahre. Ausstellungen seit 1980 in Europa, Korea, Japan und den USA.
-      </SectionHead>
+      </Fragment>
       <div class="grid">
         <ol class="datelist">
           <li class="datelist__row">
@@ -935,7 +933,7 @@ import '../styles/signaturen/signaturen.css';
           </div>
         </div>
       </div>
-    </section>
+    </ChapterHead>
 
     {/* Zitat als Zäsur */}
     <section class="pullquote on-flaeche grid" aria-label="Zitat von Thomas Wagner">
@@ -946,11 +944,11 @@ import '../styles/signaturen/signaturen.css';
     </section>
 
     {/* Sammlungen */}
-    <section class="chapter" id="sammlungen" aria-labelledby="coll-title">
-      <SectionHead titelId="coll-title">
-        <Fragment slot="titel">Werke in Sammlungen</Fragment>
+    <ChapterHead id="sammlungen" titelId="coll-title">
+      <Fragment slot="titel">Werke in Sammlungen</Fragment>
+      <Fragment slot="einleitung">
         Gefäße von Young-Jae Lee befinden sich in Museen und Sammlungen in Deutschland, Österreich, Israel und den USA.
-      </SectionHead>
+      </Fragment>
       <div class="grid">
         <ul class="museums">
           <li>Museum für Asiatische Kunst, Berlin</li>
@@ -973,13 +971,11 @@ import '../styles/signaturen/signaturen.css';
           <li>Österreichisches Museum für angewandte Kunst, Wien</li>
         </ul>
       </div>
-    </section>
+    </ChapterHead>
 
     {/* Auszeichnungen */}
-    <section class="chapter" id="auszeichnungen" aria-labelledby="awards-title">
-      <SectionHead titelId="awards-title">
-        <Fragment slot="titel">Auszeichnungen</Fragment>
-      </SectionHead>
+    <ChapterHead id="auszeichnungen" titelId="awards-title">
+      <Fragment slot="titel">Auszeichnungen</Fragment>
       <div class="grid">
         <ol class="datelist">
           <li class="datelist__row">
@@ -1003,14 +999,12 @@ import '../styles/signaturen/signaturen.css';
           </li>
         </ol>
       </div>
-    </section>
+    </ChapterHead>
 
     {/* Publikationen */}
-    <section class="chapter" id="publikationen" aria-labelledby="pubs-title">
-      <SectionHead titelId="pubs-title">
-        <Fragment slot="titel">Publikationen</Fragment>
-        Kataloge, Bücher und Artikel, 1981 bis 2020.
-      </SectionHead>
+    <ChapterHead id="publikationen" titelId="pubs-title">
+      <Fragment slot="titel">Publikationen</Fragment>
+      <Fragment slot="einleitung">Kataloge, Bücher und Artikel, 1981 bis 2020.</Fragment>
       <div class="grid">
         <ul class="pubs">
           <li>
@@ -1119,7 +1113,7 @@ import '../styles/signaturen/signaturen.css';
           </li>
         </ul>
       </div>
-    </section>
+    </ChapterHead>
 
     <InquiryBand text="Die Meisterstücke stammen alle aus der Hand Young‑Jae Lees, von ihr selbst gedreht, bemalt und glasiert.">
       <a class="link-arrow" href="/meisterstuecke">

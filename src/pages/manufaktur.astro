@@ -1,6 +1,6 @@
 ---
 import '../styles/basis.css';
-import SectionHead from '../components/SectionHead.astro';
+import ChapterHead from '../components/ChapterHead.astro';
 import { getImage } from 'astro:assets';
 import Bild from '../components/Bild.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
@@ -127,11 +127,11 @@ const glasurBild = async (src: string) =>
     />
 
     {/* Geschirr */}
-    <section class="chapter" id="geschirr" aria-labelledby="geschirr-title">
-      <SectionHead titelId="geschirr-title">
-        <Fragment slot="titel">Geschirr</Fragment>
+    <ChapterHead id="geschirr" titelId="geschirr-title">
+      <Fragment slot="titel">Geschirr</Fragment>
+      <Fragment slot="einleitung">
         Alle Teile eines Geschirrs, gleich welcher Farbe, lassen sich miteinander kombinieren – einzeln oder im Set.
-      </SectionHead>
+      </Fragment>
 
       <div class="ware grid">
         <h3 class="ware__title" data-reveal="fade">
@@ -401,7 +401,7 @@ const glasurBild = async (src: string) =>
           </figure>
         </div>
       </div>
-    </section>
+    </ChapterHead>
 
     {/* Zäsur: Regal der Werkstatt */}
     <section class="zaesur on-flaeche grid" aria-label="Handarbeit in der Werkstatt">
@@ -420,7 +420,7 @@ const glasurBild = async (src: string) =>
       </p>
     </section>
 
-    <section class="chapter chapter--cont" aria-label="Geschirr, Fortsetzung">
+    <ChapterHead class="chapter--cont" beschriftung="Geschirr, Fortsetzung">
       <div class="ware grid">
         <h3 class="ware__title" data-reveal="fade">
           Becher und Tassen
@@ -819,15 +819,15 @@ const glasurBild = async (src: string) =>
           </figure>
         </div>
       </div>
-    </section>
+    </ChapterHead>
 
     {/* Edition */}
-    <section class="chapter chapter--flaeche on-flaeche" id="edition" aria-labelledby="edition-title">
-      <SectionHead titelId="edition-title">
-        <Fragment slot="titel">Edition</Fragment>
+    <ChapterHead ton="flaeche" id="edition" titelId="edition-title">
+      <Fragment slot="titel">Edition</Fragment>
+      <Fragment slot="einleitung">
         In unserer Edition sind weitere ergänzende Geschirrstücke erhältlich, wie zum Beispiel Sushi- oder
         Plattenteller, sowie Pflanzengefäße und Vasen. Sie unterscheiden sich in der Farbgebung von unserem Geschirr.
-      </SectionHead>
+      </Fragment>
 
       <div class="ware grid">
         <h3 class="ware__title" data-reveal="fade">
@@ -1145,15 +1145,15 @@ const glasurBild = async (src: string) =>
           </div>
         </div>
       </div>
-    </section>
+    </ChapterHead>
 
     {/* Farben */}
-    <section class="chapter" id="farben" aria-labelledby="farben-title">
-      <SectionHead titelId="farben-title">
-        <Fragment slot="titel">Sechs Töne für das Geschirr.</Fragment>
+    <ChapterHead id="farben" titelId="farben-title">
+      <Fragment slot="titel">Sechs Töne für das Geschirr.</Fragment>
+      <Fragment slot="einleitung">
         Die Farben der Edition unterscheiden sich vom Geschirr und können je nach Brand unterschiedlich ausfallen.
         Wählen Sie eine Glasurprobe.
-      </SectionHead>
+      </Fragment>
 
       <div class="glaze grid" data-glaze>
         <div class="glaze__stage" data-glaze-stage aria-live="polite">
@@ -1324,15 +1324,15 @@ const glasurBild = async (src: string) =>
           </ul>
         </div>
       </div>
-    </section>
+    </ChapterHead>
 
     {/* Arbeitsweise */}
-    <section class="chapter" id="arbeitsweise" aria-labelledby="mf-aw-title">
-      <SectionHead titelId="mf-aw-title">
-        <Fragment slot="titel">Keiner Mode, keinem Zeitgeist unterworfen.</Fragment>
+    <ChapterHead id="arbeitsweise" titelId="mf-aw-title">
+      <Fragment slot="titel">Keiner Mode, keinem Zeitgeist unterworfen.</Fragment>
+      <Fragment slot="einleitung">
         Die Grundzüge des Manufakturprogramms haben sich bis heute nicht verändert. Mit der Edition wurde es um
         zusätzliche Stücke erweitert, darunter Vasen, Pflanzengefäße und Dosen.
-      </SectionHead>
+      </Fragment>
       <div class="grid">
         <dl class="datelist mf-facts">
           <div class="datelist__row" data-reveal="fade">
@@ -1365,7 +1365,7 @@ const glasurBild = async (src: string) =>
           </div>
         </dl>
       </div>
-    </section>
+    </ChapterHead>
 
     <InquiryBand
       text="Bei Interesse senden wir Ihnen gerne weitere Informationen oder ein Angebot zu."

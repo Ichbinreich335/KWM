@@ -1,6 +1,6 @@
 ---
 import '../styles/basis.css';
-import SectionHead from '../components/SectionHead.astro';
+import ChapterHead from '../components/ChapterHead.astro';
 import Bild from '../components/Bild.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import InquiryBand from '../components/InquiryBand.astro';
@@ -65,12 +65,12 @@ import '../styles/signaturen/signaturen.css';
     />
 
     {/* Schalen */}
-    <section class="chapter" id="schalen" aria-labelledby="schalen-title">
-      <SectionHead titelId="schalen-title">
-        <Fragment slot="titel">Schalen</Fragment>
+    <ChapterHead id="schalen" titelId="schalen-title">
+      <Fragment slot="titel">Schalen</Fragment>
+      <Fragment slot="einleitung">
         Spitz zulaufende Schalen in fünf Größen, gedreht zwischen 2003 und 2005, dazu eine große, weite Schale von 1994.
         Glasiert mit Feldspatglasuren, zum Teil mit Eichenasche.
-      </SectionHead>
+      </Fragment>
       <div class="catalog">
         <figure class="catalog__item catalog__item--half">
           <div class="catalog__frame" data-reveal="img">
@@ -307,14 +307,12 @@ import '../styles/signaturen/signaturen.css';
           </figcaption>
         </figure>
       </div>
-    </section>
+    </ChapterHead>
 
     {/* Arbeitsweise */}
-    <section class="chapter chapter--anker on-anker" id="arbeitsweise" aria-labelledby="aw-title">
-      <SectionHead titelId="aw-title">
-        <Fragment slot="titel">Östlich gedreht, westlich abgedreht.</Fragment>
-        Wie ein Meisterstück entsteht – von der Masse bis zum Holzbrand.
-      </SectionHead>
+    <ChapterHead ton="anker" id="arbeitsweise" titelId="aw-title">
+      <Fragment slot="titel">Östlich gedreht, westlich abgedreht.</Fragment>
+      <Fragment slot="einleitung">Wie ein Meisterstück entsteht – von der Masse bis zum Holzbrand.</Fragment>
       <div class="steps grid">
         <figure class="steps__media">
           <div data-reveal="img">
@@ -385,14 +383,14 @@ import '../styles/signaturen/signaturen.css';
           </div>
         </dl>
       </div>
-    </section>
+    </ChapterHead>
 
     {/* Kummen */}
-    <section class="chapter chapter--flaeche on-flaeche" id="kummen" aria-labelledby="kummen-title">
-      <SectionHead titelId="kummen-title">
-        <Fragment slot="titel">Kummen</Fragment>
+    <ChapterHead ton="flaeche" id="kummen" titelId="kummen-title">
+      <Fragment slot="titel">Kummen</Fragment>
+      <Fragment slot="einleitung">
         Drei Gefäße aus den Jahren 1987 bis 1995 – im Gasofen und im Holzofen gebrannt, eines auf weißer Engobe.
-      </SectionHead>
+      </Fragment>
       <div class="catalog">
         <figure class="catalog__item catalog__item--half">
           <div class="catalog__frame" data-reveal="img">
@@ -468,15 +466,15 @@ import '../styles/signaturen/signaturen.css';
           </figcaption>
         </figure>
       </div>
-    </section>
+    </ChapterHead>
 
     {/* Vasen */}
-    <section class="chapter" id="vasen" aria-labelledby="vasen-title">
-      <SectionHead titelId="vasen-title">
-        <Fragment slot="titel">Vasen</Fragment>
+    <ChapterHead id="vasen" titelId="vasen-title">
+      <Fragment slot="titel">Vasen</Fragment>
+      <Fragment slot="einleitung">
         Zylindervasen, im feuchten Zustand mit Engoben bemalt, eine Kugelvase aus dem Holzofen und die Serie der
         Spindelvasen von 2006/07.
-      </SectionHead>
+      </Fragment>
       <div class="catalog">
         <figure class="catalog__item catalog__item--band">
           <div class="catalog__frame" data-reveal="img">
@@ -776,7 +774,7 @@ import '../styles/signaturen/signaturen.css';
           </figcaption>
         </figure>
       </div>
-    </section>
+    </ChapterHead>
 
     <InquiryBand
       text="Fragen zu einem Meisterstück oder Interesse an einem Erwerb? Wir senden Ihnen gerne weitere Informationen oder ein Angebot zu."

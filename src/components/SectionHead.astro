@@ -9,7 +9,8 @@ interface Props {
 }
 
 const { typ = 'kapitel', titelId, rechtsKlasse } = Astro.props;
-const hatRechts = Astro.slots.has('default');
+// Auch ein weitergereichter, leerer Slot (Kapitel ohne Einleitung) zählt als nicht vorhanden
+const hatRechts = (await Astro.slots.render('default')).trim() !== '';
 ---
 
 <div class:list={[typ === 'start' ? 'sec-head' : 'chapter__head', 'grid']}>

@@ -1,6 +1,6 @@
 ---
 import '../styles/basis.css';
-import SectionHead from '../components/SectionHead.astro';
+import ChapterHead from '../components/ChapterHead.astro';
 import Bild from '../components/Bild.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import InquiryBand from '../components/InquiryBand.astro';
@@ -185,12 +185,12 @@ import '../styles/signaturen/signaturen.css';
     </div>
 
     {/* Vergangene Ausstellungen */}
-    <section class="chapter" id="vergangene" aria-labelledby="past-title">
-      <SectionHead titelId="past-title">
-        <Fragment slot="titel">Vergangene Ausstellungen</Fragment>
+    <ChapterHead id="vergangene" titelId="past-title">
+      <Fragment slot="titel">Vergangene Ausstellungen</Fragment>
+      <Fragment slot="einleitung">
         Von Kyoto bis Boston, von Breslau bis in die eigene Werkstatt: eine Auswahl der Ausstellungen seit 2016. Ein
         Jahr öffnen, um die Stationen zu sehen.
-      </SectionHead>
+      </Fragment>
 
       <div class="years">
         <div class="expander expander--row year" id="jahr-2026" data-expander>
@@ -772,14 +772,12 @@ import '../styles/signaturen/signaturen.css';
           </div>
         </div>
       </div>
-    </section>
+    </ChapterHead>
 
     {/* Veröffentlichungen */}
-    <section class="chapter" id="veroeffentlichungen" aria-labelledby="pub-title">
-      <SectionHead titelId="pub-title">
-        <Fragment slot="titel">Veröffentlichungen</Fragment>
-        Berichte und Gespräche über die Werkstatt.
-      </SectionHead>
+    <ChapterHead id="veroeffentlichungen" titelId="pub-title">
+      <Fragment slot="titel">Veröffentlichungen</Fragment>
+      <Fragment slot="einleitung">Berichte und Gespräche über die Werkstatt.</Fragment>
       <div class="pubs">
         <article class="pub" data-reveal="fade">
           <a href="https://urbanana.de/de/keramische-werkstatt-margaretenhoehe-der-ruf-des-bauhaus/">
@@ -798,7 +796,7 @@ import '../styles/signaturen/signaturen.css';
           </a>
         </article>
       </div>
-    </section>
+    </ChapterHead>
 
     <InquiryBand text="Die Werkstatt ist offen. Besuchen Sie uns oder schreiben Sie uns.">
       <a class="link-arrow" href="/besuch">
