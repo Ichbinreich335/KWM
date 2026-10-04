@@ -46,6 +46,22 @@
   align-content: start;
   row-gap: 20px;
 }
+/* Karten einer Reihe sind gleich hoch, der Auslöser steht unten auf einer Linie */
+.aktuell__item:not([data-spotlight]) {
+  align-self: stretch;
+  grid-template-rows: auto 1fr;
+}
+.aktuell__item:not([data-spotlight]) .aktuell__body {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.aktuell__item:not([data-spotlight]) .aktuell__place {
+  margin-bottom: 8px;
+}
+.aktuell__item:not([data-spotlight]) .aktuell__more {
+  margin-top: auto;
+}
 .aktuell__item[data-spotlight] {
   grid-column: 1 / -1;
   grid-template-columns: subgrid;
