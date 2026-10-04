@@ -3,7 +3,8 @@ import { random, reducedMotion } from './keramik';
 
 type Metal = 'eisen' | 'kupfer';
 type Atmo = 'ox' | 'red';
-type ZustandKey = `${Metal}-${Atmo}`;
+const ZUSTAND_KEYS = ['eisen-ox', 'eisen-red', 'kupfer-ox', 'kupfer-red'] as const;
+type ZustandKey = (typeof ZUSTAND_KEYS)[number];
 
 interface Auswahl {
   metal: Metal;
@@ -89,7 +90,7 @@ const STATES: Record<ZustandKey, Zustand> = {
     edge: '#5A1A1C',
   },
 };
-const KEY = (metal: Metal, atmo: Atmo): ZustandKey => `${metal}-${atmo === 'ox' ? 'ox' : 'red'}`;
+const KEY = (metal: Metal, atmo: Atmo): ZustandKey => `${metal}-${atmo}`;
 const BLEND_MS = 1300;
 const GLOW_CHASE_MS = 260;
 const SEED = 1924;
@@ -405,24 +406,24 @@ export default function init(el: Element) {
     canvas.setAttribute('aria-label', st.label);
   };
 
-  const glow = (ctx: CanvasRenderingContext2D, R: number, amount: number) => {
+  const glow = (c: CanvasRenderingContext2D, R: number, amount: number) => {
     if (amount <= 0.001) return;
-    ctx.save();
-    ctx.globalCompositeOperation = 'lighter';
+    c.save();
+    c.globalCompositeOperation = 'lighter';
     // Wärme vom Rand her, innen bleibt die Glasur sichtbar
-    const halo = ctx.createRadialGradient(0, 0, R * 0.3, 0, 0, R * 1.3);
+    const halo = c.createRadialGradient(0, 0, R * 0.3, 0, 0, R * 1.3);
     halo.addColorStop(0, 'rgba(255,110,40,0)');
     halo.addColorStop(0.55, `rgba(255,120,45,${0.14 * amount})`);
     halo.addColorStop(0.76, `rgba(255,150,60,${0.38 * amount})`);
     halo.addColorStop(0.82, `rgba(255,140,50,${0.38 * amount})`);
     halo.addColorStop(1, 'rgba(255,90,30,0)');
-    ctx.fillStyle = halo;
-    ctx.fillRect(-S / 2, -S / 2, S, S);
-    ctx.fillStyle = `rgba(255,95,25,${0.11 * amount})`;
-    ctx.beginPath();
-    ctx.arc(0, 0, R, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.restore();
+    c.fillStyle = halo;
+    c.fillRect(-S / 2, -S / 2, S, S);
+    c.fillStyle = `rgba(255,95,25,${0.11 * amount})`;
+    c.beginPath();
+    c.arc(0, 0, R, 0, Math.PI * 2);
+    c.fill();
+    c.restore();
   };
 
   // Schatten, Schale, darüber die Zielschale mit wachsender Deckkraft, dann das Glühen. Die Form ist in allen Lagen identisch.
@@ -507,7 +508,7 @@ export default function init(el: Element) {
     ctx = canvas.getContext('2d');
     if (!ctx) return;
     ctx.setTransform(dpr, 0, 0, dpr, (S * dpr) / 2, (S * dpr) / 2);
-    for (const k of Object.keys(sprites) as ZustandKey[]) delete sprites[k];
+    for (const k of ZUSTAND_KEYS) delete sprites[k];
     shadow = renderBowl(S, dpr, STATES['eisen-ox'], 'shadow');
     if (raf) {
       cancelAnimationFrame(raf);
@@ -519,9 +520,7 @@ export default function init(el: Element) {
     base = KEY(sel.metal, sel.atmo);
     paint();
     // die übrigen Endzustände in Leerlaufzeit vorrendern
-    (Object.keys(STATES) as ZustandKey[])
-      .filter((k) => k !== base)
-      .forEach((k, i) => setTimeout(() => bowl(k), 300 + i * 250));
+    ZUSTAND_KEYS.filter((k) => k !== base).forEach((k, i) => setTimeout(() => bowl(k), 300 + i * 250));
   };
 
   text();

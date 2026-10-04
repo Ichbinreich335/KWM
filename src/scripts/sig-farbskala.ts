@@ -205,7 +205,7 @@ function paintBody(
   }
 }
 
-// Pflichtattribut der Kachel: fehlt es, ist das Markup falsch (wie bisher bricht das Skript dann ab)
+// Farb-Attribute der Kachel: fehlt eines, ist das Markup falsch (wie bisher bricht das Skript dann ab)
 const datum = (d: DOMStringMap, key: string) => {
   const v = d[key];
   if (v === undefined) throw new TypeError(`data-${key} fehlt am Band`);
@@ -246,7 +246,7 @@ class Tile {
       grund: rgb(datum(d, 'grund')),
       dunkel: rgb(datum(d, 'dunkel')),
       hell: rgb(datum(d, 'hell')),
-      finish: datum(d, 'finish'),
+      finish: d.finish ?? '',
       layers: 'schichten' in d,
       seed: Number(d.seed),
     };
