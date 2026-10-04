@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { DialogClose, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { AlertTriangle, Camera, Check, ChevronRight, ImageOff, Loader2, Plus, Search, X } from "lucide-react";
-import { STATUS_BADGE, STATUS_DOT } from "../shared/konstanten";
+import { STATUS_ACTIVE, STATUS_BADGE } from "../shared/konstanten";
 import { type Attachment, type Opt, type ThumbSize, thumb } from "../shared/daten";
 
 export const DIALOG_CLASS = "w-[calc(100vw-2rem)] max-h-[90vh] overflow-y-auto rounded-lg p-4 sm:p-6 [&>button:last-child]:hidden";
@@ -19,29 +19,23 @@ const CHIP_BASE = "inline-flex items-center justify-center gap-2 min-h-11 px-3.5
 const CHIP_IDLE = "bg-background hover:bg-muted border-input";
 const CHIP_ACTIVE = "bg-primary text-primary-foreground border-primary";
 
-export function StatusDot({ status }: { status: string }) {
-  const color = STATUS_DOT[status];
-  return color ? <span className={`inline-block w-2.5 h-2.5 rounded-full shrink-0 ${color}`} aria-hidden /> : null;
-}
-
-// Ein einzelner Auswahl-Knopf für Formulare. Gewählt ist immer die Hauptfarbe mit Haken.
-export function Chip({ active, onClick, children, disabled, role }: { active: boolean; onClick: () => void; children: React.ReactNode; disabled?: boolean; role?: "radio" }) {
+// Ein einzelner Auswahl-Knopf für Formulare. Gewählt: Hauptfarbe mit Haken, beim Status die Statusfarbe.
+export function Chip({ active, onClick, children, disabled, role, activeClass }: { active: boolean; onClick: () => void; children: React.ReactNode; disabled?: boolean; role?: "radio"; activeClass?: string }) {
   const state = role === "radio" ? { "aria-checked": active } : { "aria-pressed": active };
   return (
-    <button type="button" role={role} {...state} disabled={disabled} onClick={onClick} className={`${CHIP_BASE} ${active ? CHIP_ACTIVE : CHIP_IDLE}`}>
+    <button type="button" role={role} {...state} disabled={disabled} onClick={onClick} className={`${CHIP_BASE} ${active ? activeClass ?? CHIP_ACTIVE : CHIP_IDLE}`}>
       {active && <Check className="w-4 h-4" aria-hidden />}
       {children}
     </button>
   );
 }
 
-// Einfachauswahl als Knopfreihe, z. B. Status, Typ, Zustand. Wert ist das Label. withDots zeigt die Statusfarbe als Punkt.
-export function ChoiceChips({ label, options, value, onChange, withDots, disabled }: { label: string; options: Opt[]; value: string; onChange: (label: string) => void; withDots?: boolean; disabled?: boolean }) {
+// Einfachauswahl als Knopfreihe, z. B. Status, Typ, Zustand. Wert ist das Label. statusColors färbt den gewählten Status.
+export function ChoiceChips({ label, options, value, onChange, statusColors, disabled }: { label: string; options: Opt[]; value: string; onChange: (label: string) => void; statusColors?: boolean; disabled?: boolean }) {
   return (
     <div role="radiogroup" aria-label={label} className="flex flex-wrap gap-2">
       {options.map((o) => (
-        <Chip key={o.id} role="radio" active={value === o.label} disabled={disabled} onClick={() => onChange(o.label)}>
-          {withDots && value !== o.label && <StatusDot status={o.label} />}
+        <Chip key={o.id} role="radio" active={value === o.label} activeClass={statusColors ? STATUS_ACTIVE[o.label] : undefined} disabled={disabled} onClick={() => onChange(o.label)}>
           {o.label}
         </Chip>
       ))}
@@ -49,35 +43,7 @@ export function ChoiceChips({ label, options, value, onChange, withDots, disable
   );
 }
 
-// Umschalter zwischen Ansichten derselben Seite (Unikat/Editionsware, Im Haus/Außer Haus …). Am Handy seitlich wischbar.
-export function Segmented<K extends string>({ label, options, value, onChange }: { label: string; options: { key: K; label: string; count?: number }[]; value: K; onChange: (key: K) => void }) {
-  return (
-    <div className="max-w-full overflow-x-auto">
-      <div role="tablist" aria-label={label} className="inline-flex gap-1 rounded-md border bg-muted p-1">
-        {options.map((o) => {
-          const active = value === o.key;
-          return (
-            <button
-              key={o.key}
-              type="button"
-              role="tab"
-              aria-selected={active}
-              onClick={() => onChange(o.key)}
-              className={`inline-flex items-center gap-1.5 min-h-10 px-3.5 rounded-sm text-base whitespace-nowrap transition-colors ${
-                active ? "bg-background text-foreground font-medium shadow-sm" : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              {o.label}
-              {o.count !== undefined && <span className="tabular-nums text-muted-foreground">{o.count}</span>}
-            </button>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
-
-// Reiter für getrennte Bereiche einer Seite (Stammdaten). Unterstrichen, am Handy seitlich wischbar.
+// Reiter: der einzige Umschalter der App (Erfassen, Bestand, Stammdaten). Unterstrichen, am Handy seitlich wischbar.
 export function Tabs<K extends string>({ label, tabs, value, onChange }: { label: string; tabs: { key: K; label: string; count?: number }[]; value: K; onChange: (key: K) => void }) {
   return (
     <div role="tablist" aria-label={label} className="flex gap-1 overflow-x-auto border-b">
@@ -106,8 +72,7 @@ export function Tabs<K extends string>({ label, tabs, value, onChange }: { label
 export function StatusBadge({ text }: { text: string }) {
   if (!text) return null;
   return (
-    <span className={`inline-flex items-center gap-1.5 rounded-md border px-2 py-0.5 text-sm font-medium whitespace-nowrap ${STATUS_BADGE[text] ?? "bg-muted text-foreground border-border"}`}>
-      <StatusDot status={text} />
+    <span className={`inline-flex items-center rounded-md border px-2 py-0.5 text-sm font-medium whitespace-nowrap ${STATUS_BADGE[text] ?? "bg-muted text-foreground border-border"}`}>
       {text}
     </span>
   );
@@ -158,9 +123,10 @@ export function SearchField({ value, onChange, placeholder, label }: { value: st
   );
 }
 
-const PICK_VISIBLE = 12;
+const SEARCH_FROM_OPTIONS = 6;
 
-// Durchsuchbare Auswahl aus einer wachsenden Liste (Glasuren). Gewählte stehen vorn, Suche filtert, Fehlendes lässt sich anlegen.
+// Durchsuchbare Auswahl aus einer wachsenden Liste (Glasuren). Die Reihenfolge bleibt beim Antippen gleich,
+// die Suche blendet nur aus (Gewähltes bleibt sichtbar). Fehlendes lässt sich aus dem Suchfeld anlegen.
 export function SearchPick({
   label,
   options,
@@ -181,16 +147,14 @@ export function SearchPick({
   const [query, setQuery] = useState("");
   const [busy, setBusy] = useState(false);
   const term = query.trim().toLowerCase();
-  const selected = options.filter((o) => value.includes(o.id));
-  const matches = options.filter((o) => !value.includes(o.id) && (!term || o.label.toLowerCase().includes(term)));
-  const shown = [...selected, ...matches.slice(0, Math.max(0, PICK_VISIBLE - selected.length))];
-  const hidden = selected.length + matches.length - shown.length;
+  const matches = options.filter((o) => !term || o.label.toLowerCase().includes(term));
+  const shown = options.filter((o) => value.includes(o.id) || matches.includes(o));
   const exact = options.some((o) => o.label.toLowerCase() === term);
   const toggle = (id: string) => onChange(value.includes(id) ? value.filter((x) => x !== id) : multiple ? [...value, id] : [id]);
 
   return (
     <div className="space-y-2">
-      {options.length > PICK_VISIBLE / 2 && <SearchField label={`${label} suchen`} placeholder={`${label} suchen`} value={query} onChange={setQuery} />}
+      {options.length > SEARCH_FROM_OPTIONS && <SearchField label={`${label} suchen`} placeholder={`${label} suchen`} value={query} onChange={setQuery} />}
       <div role="group" aria-label={label} className="flex flex-wrap gap-2">
         {shown.map((o) => (
           <Chip key={o.id} active={value.includes(o.id)} onClick={() => toggle(o.id)}>
@@ -198,7 +162,6 @@ export function SearchPick({
           </Chip>
         ))}
       </div>
-      {hidden > 0 && <p className="text-sm text-muted-foreground">{hidden} weitere über die Suche</p>}
       {term && matches.length === 0 && !exact && <p className="text-sm text-muted-foreground">Keine {label} mit „{query.trim()}“.</p>}
       {onCreate && term && !exact && (
         <Button

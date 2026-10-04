@@ -24,11 +24,11 @@ export const STATUS_BADGE: Record<string, string> = {
   [GLASIERT]: "bg-muted text-foreground border-border",
 };
 
-// Farbpunkt je Status, in Auswahlknöpfen, Badges und Tabellenköpfen dieselbe Farbe.
-export const STATUS_DOT: Record<string, string> = {
-  [VERFUEGBAR]: "bg-emerald-600",
-  [RESERVIERT]: "bg-amber-500",
-  [VERKAUFT]: "bg-zinc-400",
-  [KOMMISSION]: "bg-sky-600",
-  [AUSGESTELLT]: "bg-violet-600",
+// Kräftige Variante für den gewählten Status-Knopf. Weiße Schrift nur auf ausreichend dunklen Tönen.
+export const STATUS_ACTIVE: Record<string, string> = {
+  [VERFUEGBAR]: "bg-emerald-600 text-white border-emerald-600",
+  [RESERVIERT]: "bg-amber-400 text-amber-950 border-amber-400",
+  [VERKAUFT]: "bg-zinc-600 text-white border-zinc-600",
+  [KOMMISSION]: "bg-sky-600 text-white border-sky-600",
+  [AUSGESTELLT]: "bg-violet-700 text-white border-violet-700",
 };

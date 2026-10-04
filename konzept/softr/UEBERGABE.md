@@ -18,14 +18,13 @@ Für die nächste Session. Zuerst `CLAUDE.md`, `konzept/SOFTR-AUFTRAG.md` und `k
 |---|---|---|---|---|---|
 | `/erfassen` | `8cba05b9-7689-4bdf-a275-d6988ecdb8eb` | `erfassen.tsx` | `c2222c6c-2726-4590-9804-eef9c6d44ddb` | unikate, edition, glasuren, kuenstler | alle ADD → LOGGED_IN_USERS |
 | `/bestand` | `131c6c30-67d8-4939-87b8-b79f9bbe9bf6` | `bestand.tsx` | `cab355a2-0a7f-47a2-863a-41d2bbf7cae5` | unikate, edition | UPDATE → LOGGED_IN_USERS (Standard) |
-| `/bestand` | dito | `bestand-admin.tsx` | `ebff8c25-217d-417f-98cb-bc2f660e3b78` | unikate | **außer Betrieb** seit 03.10. (alle dürfen alles ändern), kann gelöscht werden |
 | `/tabelle` | `1c5c5fed-5ec8-40df-8b13-4ae96ced2fdd` | `tabelle.tsx` | `ad8e12f4-0372-492b-a713-87334990aa90` | unikate, edition, ansichten | ADD ansichten → LOGGED_IN_USERS |
 | `/uebersicht` | `16450fdc-1469-49fb-8785-acac62a5c953` | `uebersicht.tsx` | `c62602bd-dd73-44d6-9625-b59aec539939` | unikate, edition, partner | keine |
 | `/stammdaten` | `c8a4fadb-196f-4712-b649-816e0f1ebd5e` | `stammdaten.tsx` | `451b0d69-677c-4f15-9f15-87cae9021028` | kuenstler, glasuren, modelle, partner, lagerorte, unikate, edition | alle ADD → LOGGED_IN_USERS |
-| `/` (Home) | `089c7891-ebdd-44cf-b346-8d14a1a9a983` | `start-weiterleitung.tsx` | `9753e657-6e52-489f-9279-d9695beb5b1a` | keine | keine |
 
 ## Stand 04.10.2026 (gilt vor allem darunter)
-- **UI-Sweep** mit Skill `impeccable`: Bericht `konzept/vergleich/SOFTR-UI-SWEEP-0410.md`. Neue Bauteile `Segmented`, `Tabs`, `SearchPick`, `StatusDot` in `src/shared/ui.tsx`.
+- **UI-Sweep** mit Skill `impeccable`: Bericht `konzept/vergleich/SOFTR-UI-SWEEP-0410.md`. Einziger Umschalter sind die unterstrichenen `Tabs`; Status und Zustand im Bestand sind Auswahllisten in der Filterzeile. Gewählter Status trägt seine Farbe im Knopf (`STATUS_ACTIVE`). `SearchPick` behält die Reihenfolge.
+- **Aufgeräumt 04.10. (OK Admin):** Testdatensätze U-2026-013/014 und Block „Bestand – Admin-Bearbeitung“ gelöscht. Offen für Studio (per MCP nicht löschbar): Seiten `/old-home`, `/stueck`, `/alle-stuecke` und die drei Standard-Diagramme unter der Übersicht.
 - **Archiv in Stammdaten:** Feld „Archiviert“ in Künstler:innen `TOhYe`, Glasuren `jxxXN`, Modelle `3tlrw`, Partner `24Tn9`, Lagerorte `kMBsy`. Löschen nur ohne Verwendung.
 - **Neue Datenquellen:** Erfassen hat zusätzlich `lagerorte`, `partner`, `modelle`; Bestand zusätzlich `kuenstler`, `glasuren`, `lagerorte`, `partner`.
 - **Aktionsrechte:** Erfassen alle ADD, Tabelle ADD ansichten, Stammdaten alle ADD → LOGGED_IN_USERS. Nach jedem Hochladen neu setzen.

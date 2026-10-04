@@ -31,13 +31,13 @@ const STATUS_BADGE: Record<string, string> = {
   [GLASIERT]: "bg-muted text-foreground border-border",
 };
 
-// Farbpunkt je Status, in Auswahlknöpfen, Badges und Tabellenköpfen dieselbe Farbe.
-const STATUS_DOT: Record<string, string> = {
-  [VERFUEGBAR]: "bg-emerald-600",
-  [RESERVIERT]: "bg-amber-500",
-  [VERKAUFT]: "bg-zinc-400",
-  [KOMMISSION]: "bg-sky-600",
-  [AUSGESTELLT]: "bg-violet-600",
+// Kräftige Variante für den gewählten Status-Knopf. Weiße Schrift nur auf ausreichend dunklen Tönen.
+const STATUS_ACTIVE: Record<string, string> = {
+  [VERFUEGBAR]: "bg-emerald-600 text-white border-emerald-600",
+  [RESERVIERT]: "bg-amber-400 text-amber-950 border-amber-400",
+  [VERKAUFT]: "bg-zinc-600 text-white border-zinc-600",
+  [KOMMISSION]: "bg-sky-600 text-white border-sky-600",
+  [AUSGESTELLT]: "bg-violet-700 text-white border-violet-700",
 };
 
 type Opt = { id: string; label: string };
@@ -141,29 +141,23 @@ const CHIP_BASE = "inline-flex items-center justify-center gap-2 min-h-11 px-3.5
 const CHIP_IDLE = "bg-background hover:bg-muted border-input";
 const CHIP_ACTIVE = "bg-primary text-primary-foreground border-primary";
 
-function StatusDot({ status }: { status: string }) {
-  const color = STATUS_DOT[status];
-  return color ? <span className={`inline-block w-2.5 h-2.5 rounded-full shrink-0 ${color}`} aria-hidden /> : null;
-}
-
-// Ein einzelner Auswahl-Knopf für Formulare. Gewählt ist immer die Hauptfarbe mit Haken.
-function Chip({ active, onClick, children, disabled, role }: { active: boolean; onClick: () => void; children: React.ReactNode; disabled?: boolean; role?: "radio" }) {
+// Ein einzelner Auswahl-Knopf für Formulare. Gewählt: Hauptfarbe mit Haken, beim Status die Statusfarbe.
+function Chip({ active, onClick, children, disabled, role, activeClass }: { active: boolean; onClick: () => void; children: React.ReactNode; disabled?: boolean; role?: "radio"; activeClass?: string }) {
   const state = role === "radio" ? { "aria-checked": active } : { "aria-pressed": active };
   return (
-    <button type="button" role={role} {...state} disabled={disabled} onClick={onClick} className={`${CHIP_BASE} ${active ? CHIP_ACTIVE : CHIP_IDLE}`}>
+    <button type="button" role={role} {...state} disabled={disabled} onClick={onClick} className={`${CHIP_BASE} ${active ? activeClass ?? CHIP_ACTIVE : CHIP_IDLE}`}>
       {active && <Check className="w-4 h-4" aria-hidden />}
       {children}
     </button>
   );
 }
 
-// Einfachauswahl als Knopfreihe, z. B. Status, Typ, Zustand. Wert ist das Label. withDots zeigt die Statusfarbe als Punkt.
-function ChoiceChips({ label, options, value, onChange, withDots, disabled }: { label: string; options: Opt[]; value: string; onChange: (label: string) => void; withDots?: boolean; disabled?: boolean }) {
+// Einfachauswahl als Knopfreihe, z. B. Status, Typ, Zustand. Wert ist das Label. statusColors färbt den gewählten Status.
+function ChoiceChips({ label, options, value, onChange, statusColors, disabled }: { label: string; options: Opt[]; value: string; onChange: (label: string) => void; statusColors?: boolean; disabled?: boolean }) {
   return (
     <div role="radiogroup" aria-label={label} className="flex flex-wrap gap-2">
       {options.map((o) => (
-        <Chip key={o.id} role="radio" active={value === o.label} disabled={disabled} onClick={() => onChange(o.label)}>
-          {withDots && value !== o.label && <StatusDot status={o.label} />}
+        <Chip key={o.id} role="radio" active={value === o.label} activeClass={statusColors ? STATUS_ACTIVE[o.label] : undefined} disabled={disabled} onClick={() => onChange(o.label)}>
           {o.label}
         </Chip>
       ))}
@@ -171,30 +165,28 @@ function ChoiceChips({ label, options, value, onChange, withDots, disabled }: { 
   );
 }
 
-// Umschalter zwischen Ansichten derselben Seite (Unikat/Editionsware, Im Haus/Außer Haus …). Am Handy seitlich wischbar.
-function Segmented<K extends string>({ label, options, value, onChange }: { label: string; options: { key: K; label: string; count?: number }[]; value: K; onChange: (key: K) => void }) {
+// Reiter: der einzige Umschalter der App (Erfassen, Bestand, Stammdaten). Unterstrichen, am Handy seitlich wischbar.
+function Tabs<K extends string>({ label, tabs, value, onChange }: { label: string; tabs: { key: K; label: string; count?: number }[]; value: K; onChange: (key: K) => void }) {
   return (
-    <div className="max-w-full overflow-x-auto">
-      <div role="tablist" aria-label={label} className="inline-flex gap-1 rounded-md border bg-muted p-1">
-        {options.map((o) => {
-          const active = value === o.key;
-          return (
-            <button
-              key={o.key}
-              type="button"
-              role="tab"
-              aria-selected={active}
-              onClick={() => onChange(o.key)}
-              className={`inline-flex items-center gap-1.5 min-h-10 px-3.5 rounded-sm text-base whitespace-nowrap transition-colors ${
-                active ? "bg-background text-foreground font-medium shadow-sm" : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              {o.label}
-              {o.count !== undefined && <span className="tabular-nums text-muted-foreground">{o.count}</span>}
-            </button>
-          );
-        })}
-      </div>
+    <div role="tablist" aria-label={label} className="flex gap-1 overflow-x-auto border-b">
+      {tabs.map((t) => {
+        const active = value === t.key;
+        return (
+          <button
+            key={t.key}
+            type="button"
+            role="tab"
+            aria-selected={active}
+            onClick={() => onChange(t.key)}
+            className={`inline-flex items-center gap-1.5 min-h-11 px-3 -mb-px border-b-2 text-base whitespace-nowrap transition-colors ${
+              active ? "border-primary text-foreground font-medium" : "border-transparent text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            {t.label}
+            {t.count !== undefined && <span className="tabular-nums text-muted-foreground">{t.count}</span>}
+          </button>
+        );
+      })}
     </div>
   );
 }
@@ -202,8 +194,7 @@ function Segmented<K extends string>({ label, options, value, onChange }: { labe
 function StatusBadge({ text }: { text: string }) {
   if (!text) return null;
   return (
-    <span className={`inline-flex items-center gap-1.5 rounded-md border px-2 py-0.5 text-sm font-medium whitespace-nowrap ${STATUS_BADGE[text] ?? "bg-muted text-foreground border-border"}`}>
-      <StatusDot status={text} />
+    <span className={`inline-flex items-center rounded-md border px-2 py-0.5 text-sm font-medium whitespace-nowrap ${STATUS_BADGE[text] ?? "bg-muted text-foreground border-border"}`}>
       {text}
     </span>
   );
@@ -250,9 +241,10 @@ function SearchField({ value, onChange, placeholder, label }: { value: string; o
   );
 }
 
-const PICK_VISIBLE = 12;
+const SEARCH_FROM_OPTIONS = 6;
 
-// Durchsuchbare Auswahl aus einer wachsenden Liste (Glasuren). Gewählte stehen vorn, Suche filtert, Fehlendes lässt sich anlegen.
+// Durchsuchbare Auswahl aus einer wachsenden Liste (Glasuren). Die Reihenfolge bleibt beim Antippen gleich,
+// die Suche blendet nur aus (Gewähltes bleibt sichtbar). Fehlendes lässt sich aus dem Suchfeld anlegen.
 function SearchPick({
   label,
   options,
@@ -273,16 +265,14 @@ function SearchPick({
   const [query, setQuery] = useState("");
   const [busy, setBusy] = useState(false);
   const term = query.trim().toLowerCase();
-  const selected = options.filter((o) => value.includes(o.id));
-  const matches = options.filter((o) => !value.includes(o.id) && (!term || o.label.toLowerCase().includes(term)));
-  const shown = [...selected, ...matches.slice(0, Math.max(0, PICK_VISIBLE - selected.length))];
-  const hidden = selected.length + matches.length - shown.length;
+  const matches = options.filter((o) => !term || o.label.toLowerCase().includes(term));
+  const shown = options.filter((o) => value.includes(o.id) || matches.includes(o));
   const exact = options.some((o) => o.label.toLowerCase() === term);
   const toggle = (id: string) => onChange(value.includes(id) ? value.filter((x) => x !== id) : multiple ? [...value, id] : [id]);
 
   return (
     <div className="space-y-2">
-      {options.length > PICK_VISIBLE / 2 && <SearchField label={`${label} suchen`} placeholder={`${label} suchen`} value={query} onChange={setQuery} />}
+      {options.length > SEARCH_FROM_OPTIONS && <SearchField label={`${label} suchen`} placeholder={`${label} suchen`} value={query} onChange={setQuery} />}
       <div role="group" aria-label={label} className="flex flex-wrap gap-2">
         {shown.map((o) => (
           <Chip key={o.id} active={value.includes(o.id)} onClick={() => toggle(o.id)}>
@@ -290,7 +280,6 @@ function SearchPick({
           </Chip>
         ))}
       </div>
-      {hidden > 0 && <p className="text-sm text-muted-foreground">{hidden} weitere über die Suche</p>}
       {term && matches.length === 0 && !exact && <p className="text-sm text-muted-foreground">Keine {label} mit „{query.trim()}“.</p>}
       {onCreate && term && !exact && (
         <Button
@@ -582,12 +571,7 @@ const TABS: { key: TabKey; label: string; match?: (u: Unikat) => boolean }[] = [
   { key: "imhaus", label: "Im Haus", match: (u) => u.status === VERFUEGBAR || u.status === RESERVIERT },
   { key: "kommission", label: "Außer Haus", match: (u) => isAusserHaus(u.status) },
   { key: "verkauft", label: "Verkauft", match: (u) => u.status === VERKAUFT },
-  { key: "alle", label: "Alle" },
-];
-
-const ARTEN: { key: Art; label: string }[] = [
-  { key: "unikat", label: "Unikate" },
-  { key: "edition", label: "Editionsware" },
+  { key: "alle", label: "Alle Stücke" },
 ];
 
 const SORTS: { key: SortKey; label: string }[] = [
@@ -600,7 +584,7 @@ const SORTS: { key: SortKey; label: string }[] = [
 
 type ZustandKey = "alle" | "rohling" | "glasiert";
 const ZUSTAND_FILTER: { key: ZustandKey; label: string }[] = [
-  { key: "alle", label: "Alle" },
+  { key: "alle", label: "Alle Zustände" },
   { key: "rohling", label: "Rohlinge" },
   { key: "glasiert", label: "Glasiert" },
 ];
@@ -884,7 +868,7 @@ function UnikatDetail({
               </h3>
               <div>
                 <FieldLabel>Status</FieldLabel>
-                <ChoiceChips label="Status" options={statusListe} value={u.status} onChange={changeStatus} withDots disabled={busy} />
+                <ChoiceChips label="Status" options={statusListe} value={u.status} onChange={changeStatus} statusColors disabled={busy} />
               </div>
               <div>
                 <FieldLabel htmlFor="d-lagerort">Lagerort</FieldLabel>
@@ -1282,9 +1266,12 @@ export default function Block() {
           }
         />
 
-        <Segmented
+        <Tabs
           label="Art"
-          options={ARTEN}
+          tabs={[
+            { key: "unikat" as Art, label: "Unikate", count: unikate.length },
+            { key: "edition" as Art, label: "Editionsware", count: editionen.length },
+          ]}
           value={art}
           onChange={(key) => {
             setArt(key);
@@ -1294,25 +1281,39 @@ export default function Block() {
         />
 
         {isEdition ? (
-          <div className="flex flex-col sm:flex-row gap-3">
-            <SearchField label="Suche" placeholder="Suchen: Modell, Glasur, Ort" value={search} onChange={setSearch} />
-            <Segmented label="Zustand" options={ZUSTAND_FILTER} value={zustandFilter} onChange={setZustandFilter} />
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-[minmax(0,1fr)_12rem]">
+            <div className="flex">
+              <SearchField label="Suche" placeholder="Suchen: Modell, Glasur, Ort" value={search} onChange={setSearch} />
+            </div>
+            <select aria-label="Zustand" value={zustandFilter} onChange={(e) => setZustandFilter(e.target.value as ZustandKey)} className={INPUT_CLASS}>
+              {ZUSTAND_FILTER.map((z) => (
+                <option key={z.key} value={z.key}>
+                  {z.label}
+                </option>
+              ))}
+            </select>
           </div>
         ) : (
           <>
-            <Segmented
-              label="Status"
-              options={tabs}
-              value={tab}
-              onChange={(key) => {
-                setTab(key);
-                setLimit(LIST_STEP);
-              }}
-            />
-            <div className="grid grid-cols-2 gap-3 lg:grid-cols-[minmax(0,1fr)_10rem_12rem_12rem]">
+            <div className="grid grid-cols-2 gap-3 lg:grid-cols-[minmax(0,1fr)_11rem_10rem_12rem_11rem]">
               <div className="col-span-2 lg:col-span-1 flex">
                 <SearchField label="Suche" placeholder="Suchen: Name, Nummer, Glasur, Ort" value={search} onChange={setSearch} />
               </div>
+              <select
+                aria-label="Status"
+                value={tab}
+                onChange={(e) => {
+                  setTab(e.target.value as TabKey);
+                  setLimit(LIST_STEP);
+                }}
+                className={INPUT_CLASS}
+              >
+                {tabs.map((t) => (
+                  <option key={t.key} value={t.key}>
+                    {t.label} ({t.count})
+                  </option>
+                ))}
+              </select>
               <select aria-label="Typ" value={typFilter} onChange={(e) => setTypFilter(e.target.value)} className={INPUT_CLASS}>
                 <option value="">Alle Typen</option>
                 {typen.map((t) => (
@@ -1329,7 +1330,7 @@ export default function Block() {
                   </option>
                 ))}
               </select>
-              <select aria-label="Sortierung" value={sort} onChange={(e) => setSort(e.target.value as SortKey)} className={`${INPUT_CLASS} col-span-2 lg:col-span-1`}>
+              <select aria-label="Sortierung" value={sort} onChange={(e) => setSort(e.target.value as SortKey)} className={INPUT_CLASS}>
                 {SORTS.map((s) => (
                   <option key={s.key} value={s.key}>
                     {s.label}

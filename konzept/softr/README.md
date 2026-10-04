@@ -16,10 +16,8 @@ Die App läuft in Softr (`celestina80104.softr.app`, Studio: App „KWM Lager“
 | `src/blocks/erfassen.tsx` | `/erfassen` | Erfassen – Formular |
 | `src/blocks/bestand.tsx` | `/bestand` | Bestand – Reiter, Tabelle, Detail |
 | `src/blocks/tabelle.tsx` | `/tabelle` | Tabelle – alle Objekte frei filterbar |
-| `src/blocks/uebersicht.tsx` | `/uebersicht` | Übersicht – Dashboard |
+| `src/blocks/uebersicht.tsx` | `/` | Übersicht – Dashboard |
 | `src/blocks/stammdaten.tsx` | `/stammdaten` | Stammdaten – Künstler, Glasuren, Modelle, Partner, Lagerorte |
-| `blocks/start-weiterleitung.tsx` | `/` | Weiterleitung zur Übersicht (klein, ohne Bauteile) |
-| `blocks/bestand-admin.tsx` | `/bestand` | **Außer Betrieb** seit 03.10.2026, weil alle alles ändern dürfen. Kann in Studio gelöscht werden. |
 
 ## Ablauf bei einer Änderung
 

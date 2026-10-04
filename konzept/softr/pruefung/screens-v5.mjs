@@ -21,7 +21,7 @@ for (const [k, vp] of Object.entries(VIEWPORTS)) {
   await step('erfassen-glasur', async () => { await go('/erfassen'); await page.getByLabel('Glasuren suchen').first().fill('sel'); await shot('11-erfassen-glasur-suche', false); });
   await step('erfassen-edition', async () => { await go('/erfassen'); await page.getByRole('tab', { name: 'Editionsware' }).first().click(); await page.getByRole('radio', { name: /glasiert/ }).first().click(); await shot('12-erfassen-editionsware'); });
   await step('bestand', async () => { await go('/bestand'); await shot('20-bestand-im-haus'); });
-  await step('bestand-ausser', async () => { await go('/bestand'); await page.getByRole('tab', { name: /Außer Haus/ }).first().click(); await shot('21-bestand-ausser-haus'); });
+  await step('bestand-ausser', async () => { await go('/bestand'); await page.getByLabel('Status', { exact: true }).first().selectOption('kommission'); await shot('21-bestand-ausser-haus'); });
   await step('bestand-edition', async () => { await go('/bestand?tab=edition'); await shot('22-bestand-editionsware'); });
   await step('bestand-stueck', async () => { await go('/bestand?tab=alle'); await page.getByText('Becher „Rauch“').first().click(); await shot('23-bestand-stueck', false); });
   await step('bestand-bearbeiten', async () => { await go('/bestand?tab=alle'); await page.getByText('Becher „Rauch“').first().click(); await page.getByRole('button', { name: /Alle Angaben bearbeiten/ }).first().click(); await page.waitForTimeout(500); await shot('24-bestand-bearbeiten', false); });

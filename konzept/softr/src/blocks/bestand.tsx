@@ -46,9 +46,9 @@ import {
   PhotoPicker,
   SearchField,
   SearchPick,
-  Segmented,
   StatusBadge,
   TEXTAREA_CLASS,
+  Tabs,
 } from "../shared/ui";
 
 const ds = datasource.define({ unikate: "unikate", edition: "edition", kuenstler: "kuenstler", glasuren: "glasuren", lagerorte: "lagerorte", partner: "partner" });
@@ -163,12 +163,7 @@ const TABS: { key: TabKey; label: string; match?: (u: Unikat) => boolean }[] = [
   { key: "imhaus", label: "Im Haus", match: (u) => u.status === VERFUEGBAR || u.status === RESERVIERT },
   { key: "kommission", label: "Außer Haus", match: (u) => isAusserHaus(u.status) },
   { key: "verkauft", label: "Verkauft", match: (u) => u.status === VERKAUFT },
-  { key: "alle", label: "Alle" },
-];
-
-const ARTEN: { key: Art; label: string }[] = [
-  { key: "unikat", label: "Unikate" },
-  { key: "edition", label: "Editionsware" },
+  { key: "alle", label: "Alle Stücke" },
 ];
 
 const SORTS: { key: SortKey; label: string }[] = [
@@ -181,7 +176,7 @@ const SORTS: { key: SortKey; label: string }[] = [
 
 type ZustandKey = "alle" | "rohling" | "glasiert";
 const ZUSTAND_FILTER: { key: ZustandKey; label: string }[] = [
-  { key: "alle", label: "Alle" },
+  { key: "alle", label: "Alle Zustände" },
   { key: "rohling", label: "Rohlinge" },
   { key: "glasiert", label: "Glasiert" },
 ];
@@ -465,7 +460,7 @@ function UnikatDetail({
               </h3>
               <div>
                 <FieldLabel>Status</FieldLabel>
-                <ChoiceChips label="Status" options={statusListe} value={u.status} onChange={changeStatus} withDots disabled={busy} />
+                <ChoiceChips label="Status" options={statusListe} value={u.status} onChange={changeStatus} statusColors disabled={busy} />
               </div>
               <div>
                 <FieldLabel htmlFor="d-lagerort">Lagerort</FieldLabel>
@@ -863,9 +858,12 @@ export default function Block() {
           }
         />
 
-        <Segmented
+        <Tabs
           label="Art"
-          options={ARTEN}
+          tabs={[
+            { key: "unikat" as Art, label: "Unikate", count: unikate.length },
+            { key: "edition" as Art, label: "Editionsware", count: editionen.length },
+          ]}
           value={art}
           onChange={(key) => {
             setArt(key);
@@ -875,25 +873,39 @@ export default function Block() {
         />
 
         {isEdition ? (
-          <div className="flex flex-col sm:flex-row gap-3">
-            <SearchField label="Suche" placeholder="Suchen: Modell, Glasur, Ort" value={search} onChange={setSearch} />
-            <Segmented label="Zustand" options={ZUSTAND_FILTER} value={zustandFilter} onChange={setZustandFilter} />
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-[minmax(0,1fr)_12rem]">
+            <div className="flex">
+              <SearchField label="Suche" placeholder="Suchen: Modell, Glasur, Ort" value={search} onChange={setSearch} />
+            </div>
+            <select aria-label="Zustand" value={zustandFilter} onChange={(e) => setZustandFilter(e.target.value as ZustandKey)} className={INPUT_CLASS}>
+              {ZUSTAND_FILTER.map((z) => (
+                <option key={z.key} value={z.key}>
+                  {z.label}
+                </option>
+              ))}
+            </select>
           </div>
         ) : (
           <>
-            <Segmented
-              label="Status"
-              options={tabs}
-              value={tab}
-              onChange={(key) => {
-                setTab(key);
-                setLimit(LIST_STEP);
-              }}
-            />
-            <div className="grid grid-cols-2 gap-3 lg:grid-cols-[minmax(0,1fr)_10rem_12rem_12rem]">
+            <div className="grid grid-cols-2 gap-3 lg:grid-cols-[minmax(0,1fr)_11rem_10rem_12rem_11rem]">
               <div className="col-span-2 lg:col-span-1 flex">
                 <SearchField label="Suche" placeholder="Suchen: Name, Nummer, Glasur, Ort" value={search} onChange={setSearch} />
               </div>
+              <select
+                aria-label="Status"
+                value={tab}
+                onChange={(e) => {
+                  setTab(e.target.value as TabKey);
+                  setLimit(LIST_STEP);
+                }}
+                className={INPUT_CLASS}
+              >
+                {tabs.map((t) => (
+                  <option key={t.key} value={t.key}>
+                    {t.label} ({t.count})
+                  </option>
+                ))}
+              </select>
               <select aria-label="Typ" value={typFilter} onChange={(e) => setTypFilter(e.target.value)} className={INPUT_CLASS}>
                 <option value="">Alle Typen</option>
                 {typen.map((t) => (
@@ -910,7 +922,7 @@ export default function Block() {
                   </option>
                 ))}
               </select>
-              <select aria-label="Sortierung" value={sort} onChange={(e) => setSort(e.target.value as SortKey)} className={`${INPUT_CLASS} col-span-2 lg:col-span-1`}>
+              <select aria-label="Sortierung" value={sort} onChange={(e) => setSort(e.target.value as SortKey)} className={INPUT_CLASS}>
                 {SORTS.map((s) => (
                   <option key={s.key} value={s.key}>
                     {s.label}

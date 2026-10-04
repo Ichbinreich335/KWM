@@ -34,3 +34,13 @@ Grundlage: Feedback des Admins zu den Screens vom 04.10. und der Skill `impeccab
 
 - Vorschau öffnen und Übersicht, Bestand, Erfassen, Stammdaten am Handy und am Rechner ansehen. Oder eine neue Session starten, dann läuft die Playwright-Runde.
 - OK für Punkt 2 bis 4 oben.
+
+## Runde 2 nach Feedback des Admins (04.10.)
+
+- **Ein Umschalter:** Erfassen und Bestand nutzen dieselben unterstrichenen Reiter wie Stammdaten. Die grauen Segment-Knöpfe sind entfernt.
+- **Bestand:** eine Filterzeile statt zwei Knopfreihen. Status (Im Haus, Außer Haus, Verkauft, Alle Stücke) und bei Editionsware der Zustand sind Auswahllisten neben Suche, Typ, Künstler:in und Sortierung.
+- **Statusfarben im Knopf:** Der gewählte Status trägt wieder seine Farbe. Die Farbpunkte in Knöpfen und Badges sind entfernt.
+- **Glasur-Auswahl:** Antippen ändert die Reihenfolge nicht mehr. Die Suche blendet nur aus.
+- **Erfassen:** volle Seitenbreite wie die anderen Seiten. Am Desktop zwei Spalten (Pflichtangaben | Weitere Angaben), am Handy untereinander.
+- **Aufgeräumt (OK des Admins):** Testdatensätze U-2026-013 und U-2026-014 sowie der Block „Bestand – Admin-Bearbeitung“ gelöscht. Seiten `/old-home`, `/stueck`, `/alle-stuecke` und die Standard-Diagramme unter der Übersicht lassen sich per MCP nicht löschen, das geht nur in Studio.
+- **Offen für das Kundengespräch:** Wie Preise gepflegt werden. Ob Rohlinge erfasst werden und ob die Übersicht „in Arbeit“ bzw. „diese Woche neu“ zeigen soll.

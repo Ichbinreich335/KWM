@@ -30,15 +30,6 @@ const STATUS_BADGE: Record<string, string> = {
   [GLASIERT]: "bg-muted text-foreground border-border",
 };
 
-// Farbpunkt je Status, in Auswahlknöpfen, Badges und Tabellenköpfen dieselbe Farbe.
-const STATUS_DOT: Record<string, string> = {
-  [VERFUEGBAR]: "bg-emerald-600",
-  [RESERVIERT]: "bg-amber-500",
-  [VERKAUFT]: "bg-zinc-400",
-  [KOMMISSION]: "bg-sky-600",
-  [AUSGESTELLT]: "bg-violet-600",
-};
-
 type Opt = { id: string; label: string };
 type Attachment = { id?: string; url: string; filename?: string; thumbnails?: { url: string; size: string }[] };
 type RawItem = { id: string; fields: Record<string, unknown> };
@@ -122,16 +113,10 @@ const FIELD_CLASS = "h-12 rounded-md text-base md:text-base";
 
 const PANEL_CLASS = "rounded-lg border bg-card";
 
-function StatusDot({ status }: { status: string }) {
-  const color = STATUS_DOT[status];
-  return color ? <span className={`inline-block w-2.5 h-2.5 rounded-full shrink-0 ${color}`} aria-hidden /> : null;
-}
-
 function StatusBadge({ text }: { text: string }) {
   if (!text) return null;
   return (
-    <span className={`inline-flex items-center gap-1.5 rounded-md border px-2 py-0.5 text-sm font-medium whitespace-nowrap ${STATUS_BADGE[text] ?? "bg-muted text-foreground border-border"}`}>
-      <StatusDot status={text} />
+    <span className={`inline-flex items-center rounded-md border px-2 py-0.5 text-sm font-medium whitespace-nowrap ${STATUS_BADGE[text] ?? "bg-muted text-foreground border-border"}`}>
       {text}
     </span>
   );

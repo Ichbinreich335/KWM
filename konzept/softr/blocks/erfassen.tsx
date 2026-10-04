@@ -21,13 +21,13 @@ const ROHLING = "Rohling";
 const AUSSER_HAUS_ORT = "Außer Haus";
 const isAusserHaus = (status: string) => status === KOMMISSION || status === AUSGESTELLT;
 
-// Farbpunkt je Status, in Auswahlknöpfen, Badges und Tabellenköpfen dieselbe Farbe.
-const STATUS_DOT: Record<string, string> = {
-  [VERFUEGBAR]: "bg-emerald-600",
-  [RESERVIERT]: "bg-amber-500",
-  [VERKAUFT]: "bg-zinc-400",
-  [KOMMISSION]: "bg-sky-600",
-  [AUSGESTELLT]: "bg-violet-600",
+// Kräftige Variante für den gewählten Status-Knopf. Weiße Schrift nur auf ausreichend dunklen Tönen.
+const STATUS_ACTIVE: Record<string, string> = {
+  [VERFUEGBAR]: "bg-emerald-600 text-white border-emerald-600",
+  [RESERVIERT]: "bg-amber-400 text-amber-950 border-amber-400",
+  [VERKAUFT]: "bg-zinc-600 text-white border-zinc-600",
+  [KOMMISSION]: "bg-sky-600 text-white border-sky-600",
+  [AUSGESTELLT]: "bg-violet-700 text-white border-violet-700",
 };
 
 type Opt = { id: string; label: string };
@@ -74,29 +74,23 @@ const CHIP_BASE = "inline-flex items-center justify-center gap-2 min-h-11 px-3.5
 const CHIP_IDLE = "bg-background hover:bg-muted border-input";
 const CHIP_ACTIVE = "bg-primary text-primary-foreground border-primary";
 
-function StatusDot({ status }: { status: string }) {
-  const color = STATUS_DOT[status];
-  return color ? <span className={`inline-block w-2.5 h-2.5 rounded-full shrink-0 ${color}`} aria-hidden /> : null;
-}
-
-// Ein einzelner Auswahl-Knopf für Formulare. Gewählt ist immer die Hauptfarbe mit Haken.
-function Chip({ active, onClick, children, disabled, role }: { active: boolean; onClick: () => void; children: React.ReactNode; disabled?: boolean; role?: "radio" }) {
+// Ein einzelner Auswahl-Knopf für Formulare. Gewählt: Hauptfarbe mit Haken, beim Status die Statusfarbe.
+function Chip({ active, onClick, children, disabled, role, activeClass }: { active: boolean; onClick: () => void; children: React.ReactNode; disabled?: boolean; role?: "radio"; activeClass?: string }) {
   const state = role === "radio" ? { "aria-checked": active } : { "aria-pressed": active };
   return (
-    <button type="button" role={role} {...state} disabled={disabled} onClick={onClick} className={`${CHIP_BASE} ${active ? CHIP_ACTIVE : CHIP_IDLE}`}>
+    <button type="button" role={role} {...state} disabled={disabled} onClick={onClick} className={`${CHIP_BASE} ${active ? activeClass ?? CHIP_ACTIVE : CHIP_IDLE}`}>
       {active && <Check className="w-4 h-4" aria-hidden />}
       {children}
     </button>
   );
 }
 
-// Einfachauswahl als Knopfreihe, z. B. Status, Typ, Zustand. Wert ist das Label. withDots zeigt die Statusfarbe als Punkt.
-function ChoiceChips({ label, options, value, onChange, withDots, disabled }: { label: string; options: Opt[]; value: string; onChange: (label: string) => void; withDots?: boolean; disabled?: boolean }) {
+// Einfachauswahl als Knopfreihe, z. B. Status, Typ, Zustand. Wert ist das Label. statusColors färbt den gewählten Status.
+function ChoiceChips({ label, options, value, onChange, statusColors, disabled }: { label: string; options: Opt[]; value: string; onChange: (label: string) => void; statusColors?: boolean; disabled?: boolean }) {
   return (
     <div role="radiogroup" aria-label={label} className="flex flex-wrap gap-2">
       {options.map((o) => (
-        <Chip key={o.id} role="radio" active={value === o.label} disabled={disabled} onClick={() => onChange(o.label)}>
-          {withDots && value !== o.label && <StatusDot status={o.label} />}
+        <Chip key={o.id} role="radio" active={value === o.label} activeClass={statusColors ? STATUS_ACTIVE[o.label] : undefined} disabled={disabled} onClick={() => onChange(o.label)}>
           {o.label}
         </Chip>
       ))}
@@ -104,30 +98,28 @@ function ChoiceChips({ label, options, value, onChange, withDots, disabled }: { 
   );
 }
 
-// Umschalter zwischen Ansichten derselben Seite (Unikat/Editionsware, Im Haus/Außer Haus …). Am Handy seitlich wischbar.
-function Segmented<K extends string>({ label, options, value, onChange }: { label: string; options: { key: K; label: string; count?: number }[]; value: K; onChange: (key: K) => void }) {
+// Reiter: der einzige Umschalter der App (Erfassen, Bestand, Stammdaten). Unterstrichen, am Handy seitlich wischbar.
+function Tabs<K extends string>({ label, tabs, value, onChange }: { label: string; tabs: { key: K; label: string; count?: number }[]; value: K; onChange: (key: K) => void }) {
   return (
-    <div className="max-w-full overflow-x-auto">
-      <div role="tablist" aria-label={label} className="inline-flex gap-1 rounded-md border bg-muted p-1">
-        {options.map((o) => {
-          const active = value === o.key;
-          return (
-            <button
-              key={o.key}
-              type="button"
-              role="tab"
-              aria-selected={active}
-              onClick={() => onChange(o.key)}
-              className={`inline-flex items-center gap-1.5 min-h-10 px-3.5 rounded-sm text-base whitespace-nowrap transition-colors ${
-                active ? "bg-background text-foreground font-medium shadow-sm" : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              {o.label}
-              {o.count !== undefined && <span className="tabular-nums text-muted-foreground">{o.count}</span>}
-            </button>
-          );
-        })}
-      </div>
+    <div role="tablist" aria-label={label} className="flex gap-1 overflow-x-auto border-b">
+      {tabs.map((t) => {
+        const active = value === t.key;
+        return (
+          <button
+            key={t.key}
+            type="button"
+            role="tab"
+            aria-selected={active}
+            onClick={() => onChange(t.key)}
+            className={`inline-flex items-center gap-1.5 min-h-11 px-3 -mb-px border-b-2 text-base whitespace-nowrap transition-colors ${
+              active ? "border-primary text-foreground font-medium" : "border-transparent text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            {t.label}
+            {t.count !== undefined && <span className="tabular-nums text-muted-foreground">{t.count}</span>}
+          </button>
+        );
+      })}
     </div>
   );
 }
@@ -177,9 +169,10 @@ function SearchField({ value, onChange, placeholder, label }: { value: string; o
   );
 }
 
-const PICK_VISIBLE = 12;
+const SEARCH_FROM_OPTIONS = 6;
 
-// Durchsuchbare Auswahl aus einer wachsenden Liste (Glasuren). Gewählte stehen vorn, Suche filtert, Fehlendes lässt sich anlegen.
+// Durchsuchbare Auswahl aus einer wachsenden Liste (Glasuren). Die Reihenfolge bleibt beim Antippen gleich,
+// die Suche blendet nur aus (Gewähltes bleibt sichtbar). Fehlendes lässt sich aus dem Suchfeld anlegen.
 function SearchPick({
   label,
   options,
@@ -200,16 +193,14 @@ function SearchPick({
   const [query, setQuery] = useState("");
   const [busy, setBusy] = useState(false);
   const term = query.trim().toLowerCase();
-  const selected = options.filter((o) => value.includes(o.id));
-  const matches = options.filter((o) => !value.includes(o.id) && (!term || o.label.toLowerCase().includes(term)));
-  const shown = [...selected, ...matches.slice(0, Math.max(0, PICK_VISIBLE - selected.length))];
-  const hidden = selected.length + matches.length - shown.length;
+  const matches = options.filter((o) => !term || o.label.toLowerCase().includes(term));
+  const shown = options.filter((o) => value.includes(o.id) || matches.includes(o));
   const exact = options.some((o) => o.label.toLowerCase() === term);
   const toggle = (id: string) => onChange(value.includes(id) ? value.filter((x) => x !== id) : multiple ? [...value, id] : [id]);
 
   return (
     <div className="space-y-2">
-      {options.length > PICK_VISIBLE / 2 && <SearchField label={`${label} suchen`} placeholder={`${label} suchen`} value={query} onChange={setQuery} />}
+      {options.length > SEARCH_FROM_OPTIONS && <SearchField label={`${label} suchen`} placeholder={`${label} suchen`} value={query} onChange={setQuery} />}
       <div role="group" aria-label={label} className="flex flex-wrap gap-2">
         {shown.map((o) => (
           <Chip key={o.id} active={value.includes(o.id)} onClick={() => toggle(o.id)}>
@@ -217,7 +208,6 @@ function SearchPick({
           </Chip>
         ))}
       </div>
-      {hidden > 0 && <p className="text-sm text-muted-foreground">{hidden} weitere über die Suche</p>}
       {term && matches.length === 0 && !exact && <p className="text-sm text-muted-foreground">Keine {label} mit „{query.trim()}“.</p>}
       {onCreate && term && !exact && (
         <Button
@@ -472,6 +462,19 @@ const emptyEdition = (): EditionForm => ({
   notiz: "",
 });
 
+// Am Handy eine Spalte, ab Desktop Pflichtangaben links und Weitere Angaben rechts.
+const COLUMNS = "grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-12";
+const SECOND_COLUMN = "border-t pt-6 lg:border-t-0 lg:pt-0";
+
+function SectionTitle({ title, hint }: { title: string; hint: string }) {
+  return (
+    <div>
+      <h2 className="text-lg font-semibold">{title}</h2>
+      <p className="text-sm text-muted-foreground">{hint}</p>
+    </div>
+  );
+}
+
 function SuccessCard({ saved, onNext }: { saved: Saved; onNext: () => void }) {
   const bestandLink = useNavigationSetting({
     name: "bestand-link",
@@ -720,7 +723,7 @@ export default function Block() {
 
   return (
     <div className="container pt-6 pb-28 sm:pb-8">
-      <div className="content max-w-3xl">
+      <div className="content">
         <div className="mb-5">
           <PageHeader title="Neues Stück erfassen" description="Felder mit * sind Pflicht. Alles andere kann später ergänzt werden." />
         </div>
@@ -729,9 +732,9 @@ export default function Block() {
           <SuccessCard saved={saved} onNext={reset} />
         ) : (
           <form ref={formRef} onSubmit={submit} noValidate className="space-y-6">
-            <Segmented
+            <Tabs
               label="Art des Stücks"
-              options={ART_TABS}
+              tabs={ART_TABS}
               value={art}
               onChange={(key) => {
                 setArt(key);
@@ -741,252 +744,258 @@ export default function Block() {
             />
 
             {art === "unikat" ? (
-              <>
-                <div>
-                  <FieldLabel htmlFor="foto-input" required>
-                    Fotos
-                  </FieldLabel>
-                  <PhotoPicker files={files} onChange={changeFiles} multiple error={errors.fotos} />
-                </div>
-
-                <div>
-                  <FieldLabel htmlFor="u-name" required>
-                    Name
-                  </FieldLabel>
-                  <Input
-                    id="u-name"
-                    value={unikat.name}
-                    onChange={(e) => setU("name", e.target.value)}
-                    placeholder="z. B. Mondvase „Seladon“"
-                    className={FIELD_CLASS}
-                    aria-invalid={!!errors.name}
-                  />
-                  <ErrorText>{errors.name}</ErrorText>
-                </div>
-
-                <div>
-                  <FieldLabel required>Typ</FieldLabel>
-                  <ChoiceChips label="Typ" options={typChoices} value={unikat.typ} onChange={(v) => setU("typ", v)} />
-                  <div className="mt-2">
-                    <AddNew label="Neuer Typ" placeholder="z. B. Krug" existing={typChoices} onAdd={addTyp} />
-                  </div>
-                  <ErrorText>{errors.typ}</ErrorText>
-                </div>
-
-                <div>
-                  <FieldLabel required>Status</FieldLabel>
-                  <ChoiceChips
-                    label="Status"
-                    options={statusOptions}
-                    value={unikat.status}
-                    onChange={(v) => {
-                      setU("status", v);
-                      const ort = lagerortOptions.find((l) => l.label === AUSSER_HAUS_ORT)?.id;
-                      if (isAusserHaus(v) && ort) setU("lagerort", ort);
-                      else if (unikat.lagerort === ort) setU("lagerort", "");
-                    }}
-                    withDots
-                  />
-                  <ErrorText>{errors.status}</ErrorText>
-                </div>
-
-                <div>
-                  <FieldLabel htmlFor="u-lagerort">Lagerort</FieldLabel>
-                  <OptionSelect
-                    id="u-lagerort"
-                    value={unikat.lagerort}
-                    onChange={(v) => setU("lagerort", v)}
-                    options={lagerortOptions}
-                    placeholder="Bitte wählen"
-                  />
-                </div>
-
-                {isAusserHaus(unikat.status) && (
+              <div className={COLUMNS}>
+                <div className="space-y-6">
+                  <SectionTitle title="Pflichtangaben" hint="Reichen zum Speichern." />
                   <div>
-                    <FieldLabel htmlFor="u-galerie">Partner (Galerie, Museum …)</FieldLabel>
-                    <OptionSelect
-                      id="u-galerie"
-                      value={unikat.galerie}
-                      onChange={(v) => setU("galerie", v)}
-                      options={galerieOptions}
-                      placeholder="Partner wählen"
+                    <FieldLabel htmlFor="foto-input" required>
+                      Fotos
+                    </FieldLabel>
+                    <PhotoPicker files={files} onChange={changeFiles} multiple error={errors.fotos} />
+                  </div>
+
+                  <div>
+                    <FieldLabel htmlFor="u-name" required>
+                      Name
+                    </FieldLabel>
+                    <Input
+                      id="u-name"
+                      value={unikat.name}
+                      onChange={(e) => setU("name", e.target.value)}
+                      placeholder="z. B. Mondvase „Seladon“"
+                      className={FIELD_CLASS}
+                      aria-invalid={!!errors.name}
                     />
+                    <ErrorText>{errors.name}</ErrorText>
                   </div>
-                )}
 
-                <div className="border-t pt-6">
-                  <h2 className="text-lg font-semibold">Weitere Angaben</h2>
-                  <p className="text-sm text-muted-foreground">Kann auch später im Bestand ergänzt werden.</p>
-                </div>
-
-                <div className="grid sm:grid-cols-2 gap-6">
                   <div>
-                    <FieldLabel htmlFor="u-kuenstler">Künstler:in</FieldLabel>
+                    <FieldLabel required>Typ</FieldLabel>
+                    <ChoiceChips label="Typ" options={typChoices} value={unikat.typ} onChange={(v) => setU("typ", v)} />
+                    <div className="mt-2">
+                      <AddNew label="Neuer Typ" placeholder="z. B. Krug" existing={typChoices} onAdd={addTyp} />
+                    </div>
+                    <ErrorText>{errors.typ}</ErrorText>
+                  </div>
+
+                  <div>
+                    <FieldLabel required>Status</FieldLabel>
+                    <ChoiceChips
+                      label="Status"
+                      options={statusOptions}
+                      value={unikat.status}
+                      onChange={(v) => {
+                        setU("status", v);
+                        const ort = lagerortOptions.find((l) => l.label === AUSSER_HAUS_ORT)?.id;
+                        if (isAusserHaus(v) && ort) setU("lagerort", ort);
+                        else if (unikat.lagerort === ort) setU("lagerort", "");
+                      }}
+                      statusColors
+                    />
+                    <ErrorText>{errors.status}</ErrorText>
+                  </div>
+
+                  <div>
+                    <FieldLabel htmlFor="u-lagerort">Lagerort</FieldLabel>
                     <OptionSelect
-                      id="u-kuenstler"
-                      value={unikat.kuenstler}
-                      onChange={(v) => setU("kuenstler", v)}
-                      options={kuenstlerOptions}
+                      id="u-lagerort"
+                      value={unikat.lagerort}
+                      onChange={(v) => setU("lagerort", v)}
+                      options={lagerortOptions}
                       placeholder="Bitte wählen"
                     />
-                    <div className="mt-2">
-                      <AddNew label="Neue:r Künstler:in" placeholder="Vor- und Nachname" existing={kuenstlerOptions} onAdd={addKuenstler} />
+                  </div>
+
+                  {isAusserHaus(unikat.status) && (
+                    <div>
+                      <FieldLabel htmlFor="u-galerie">Partner (Galerie, Museum …)</FieldLabel>
+                      <OptionSelect
+                        id="u-galerie"
+                        value={unikat.galerie}
+                        onChange={(v) => setU("galerie", v)}
+                        options={galerieOptions}
+                        placeholder="Partner wählen"
+                      />
                     </div>
-                  </div>
-                  <div>
-                    <FieldLabel htmlFor="u-jahr">Jahr</FieldLabel>
-                    <Input
-                      id="u-jahr"
-                      inputMode="numeric"
-                      value={unikat.jahr}
-                      onChange={(e) => setU("jahr", e.target.value.replace(/\D/g, "").slice(0, 4))}
-                      className={FIELD_CLASS}
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <FieldLabel>Glasur</FieldLabel>
-                  <SearchPick label="Glasuren" createNoun="neue Glasur" options={glasurOptions} value={unikat.glasur} onChange={(ids) => setU("glasur", ids)} multiple onCreate={addGlasur} />
-                  <Hint>Mehrere möglich. Fehlt eine Glasur, den Namen ins Suchfeld schreiben und anlegen.</Hint>
-                </div>
-
-                <div className="grid sm:grid-cols-2 gap-6">
-                  <div>
-                    <FieldLabel htmlFor="u-masse">Maße</FieldLabel>
-                    <Input
-                      id="u-masse"
-                      value={unikat.masse}
-                      onChange={(e) => setU("masse", e.target.value)}
-                      placeholder="z. B. Ø 24 × H 8 cm"
-                      className={FIELD_CLASS}
-                    />
-                  </div>
-                  <div>
-                    <FieldLabel htmlFor="u-bildnachweis">Bildnachweis</FieldLabel>
-                    <Input
-                      id="u-bildnachweis"
-                      value={unikat.bildnachweis}
-                      onChange={(e) => setU("bildnachweis", e.target.value)}
-                      placeholder="z. B. Foto: Name der Fotografin"
-                      className={FIELD_CLASS}
-                    />
-                  </div>
-                </div>
-
-                <div className="grid sm:grid-cols-2 gap-6">
-                  <div>
-                    <FieldLabel htmlFor="u-preis">Preis intern (€)</FieldLabel>
-                    <Input
-                      id="u-preis"
-                      inputMode="decimal"
-                      value={unikat.preis}
-                      onChange={(e) => setU("preis", e.target.value)}
-                      placeholder="z. B. 480"
-                      className={FIELD_CLASS}
-                      aria-invalid={!!errors.preis}
-                    />
-                    <Hint>Nur intern, erscheint nie auf der Website.</Hint>
-                    <ErrorText>{errors.preis}</ErrorText>
-                  </div>
-                  <label htmlFor="u-website" className="flex items-center justify-between gap-4 rounded-md border px-4 py-3 cursor-pointer self-start sm:mt-8">
-                    <span>
-                      <span className="block text-base font-medium">Auf Website zeigen</span>
-                      <span className="block text-sm text-muted-foreground">Nur für die spätere Website-Anbindung.</span>
-                    </span>
-                    <Switch id="u-website" className="scale-125 data-[state=unchecked]:bg-zinc-300" checked={unikat.website} onCheckedChange={(v) => setU("website", v)} />
-                  </label>
-                </div>
-
-                <div>
-                  <FieldLabel htmlFor="u-notiz">Notiz</FieldLabel>
-                  <Textarea
-                    id="u-notiz"
-                    value={unikat.notiz}
-                    onChange={(e) => setU("notiz", e.target.value)}
-                    rows={3}
-                    className={TEXTAREA_CLASS}
-                  />
-                </div>
-              </>
-            ) : (
-              <>
-                <div>
-                  <FieldLabel htmlFor="e-modell" required>
-                    Modell
-                  </FieldLabel>
-                  <OptionSelect
-                    id="e-modell"
-                    value={edition.modell}
-                    onChange={(v) => setE("modell", v)}
-                    options={modellOptions}
-                    placeholder="Modell wählen"
-                  />
-                  <Hint>Neue Modelle unter „Stammdaten“ anlegen.</Hint>
-                  <ErrorText>{errors.modell}</ErrorText>
-                </div>
-
-                <div>
-                  <FieldLabel required>Zustand</FieldLabel>
-                  <ChoiceChips
-                    label="Zustand"
-                    options={zustandOptions}
-                    value={edition.zustand}
-                    onChange={(v) => setE("zustand", v)}
-                  />
-                  <ErrorText>{errors.zustand}</ErrorText>
-                </div>
-
-                {isGlasiert && (
-                  <div>
-                    <FieldLabel required>Glasur</FieldLabel>
-                    <SearchPick label="Glasuren" createNoun="neue Glasur" options={glasurOptions} value={link(edition.glasur)} onChange={(ids) => setE("glasur", ids.at(-1) ?? "")} multiple={false} onCreate={addGlasur} />
-                    <ErrorText>{errors.glasur}</ErrorText>
-                  </div>
-                )}
-
-                <div>
-                  <FieldLabel htmlFor="e-anzahl" required>
-                    Anzahl
-                  </FieldLabel>
-                  <div className="flex items-center gap-3">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      className="h-12 w-12"
-                      aria-label="Eins weniger"
-                      onClick={() => setE("anzahl", Math.max(1, edition.anzahl - 1))}
-                    >
-                      <Minus className="w-5 h-5" aria-hidden />
-                    </Button>
-                    <Input
-                      id="e-anzahl"
-                      inputMode="numeric"
-                      value={String(edition.anzahl)}
-                      onChange={(e) => setE("anzahl", Number(e.target.value.replace(/\D/g, "")) || 0)}
-                      className="h-12 w-24 rounded-md text-center text-lg md:text-lg"
-                    />
-                    <Button
-                      type="button"
-                      variant="outline"
-                      className="h-12 w-12"
-                      aria-label="Eins mehr"
-                      onClick={() => setE("anzahl", edition.anzahl + 1)}
-                    >
-                      <Plus className="w-5 h-5" aria-hidden />
-                    </Button>
-                  </div>
-                  <ErrorText>{errors.anzahl}</ErrorText>
-                  {existingRow && (
-                    <p className="mt-3 rounded-md bg-muted p-3 text-base">
-                      Diese Kombination gibt es schon mit <strong>{existingCount} Stück</strong>. Beim Speichern wird
-                      die Anzahl dort auf <strong>{existingCount + edition.anzahl}</strong> erhöht.
-                    </p>
                   )}
                 </div>
 
+                <div className={`space-y-6 ${SECOND_COLUMN}`}>
+                  <SectionTitle title="Weitere Angaben" hint="Kann auch später im Bestand ergänzt werden." />
+
+                  <div className="grid sm:grid-cols-2 gap-6">
+                    <div>
+                      <FieldLabel htmlFor="u-kuenstler">Künstler:in</FieldLabel>
+                      <OptionSelect
+                        id="u-kuenstler"
+                        value={unikat.kuenstler}
+                        onChange={(v) => setU("kuenstler", v)}
+                        options={kuenstlerOptions}
+                        placeholder="Bitte wählen"
+                      />
+                      <div className="mt-2">
+                        <AddNew label="Neue:r Künstler:in" placeholder="Vor- und Nachname" existing={kuenstlerOptions} onAdd={addKuenstler} />
+                      </div>
+                    </div>
+                    <div>
+                      <FieldLabel htmlFor="u-jahr">Jahr</FieldLabel>
+                      <Input
+                        id="u-jahr"
+                        inputMode="numeric"
+                        value={unikat.jahr}
+                        onChange={(e) => setU("jahr", e.target.value.replace(/\D/g, "").slice(0, 4))}
+                        className={FIELD_CLASS}
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <FieldLabel>Glasur</FieldLabel>
+                    <SearchPick label="Glasuren" createNoun="neue Glasur" options={glasurOptions} value={unikat.glasur} onChange={(ids) => setU("glasur", ids)} multiple onCreate={addGlasur} />
+                    <Hint>Mehrere möglich. Fehlt eine Glasur, den Namen ins Suchfeld schreiben und anlegen.</Hint>
+                  </div>
+
+                  <div className="grid sm:grid-cols-2 gap-6">
+                    <div>
+                      <FieldLabel htmlFor="u-masse">Maße</FieldLabel>
+                      <Input
+                        id="u-masse"
+                        value={unikat.masse}
+                        onChange={(e) => setU("masse", e.target.value)}
+                        placeholder="z. B. Ø 24 × H 8 cm"
+                        className={FIELD_CLASS}
+                      />
+                    </div>
+                    <div>
+                      <FieldLabel htmlFor="u-bildnachweis">Bildnachweis</FieldLabel>
+                      <Input
+                        id="u-bildnachweis"
+                        value={unikat.bildnachweis}
+                        onChange={(e) => setU("bildnachweis", e.target.value)}
+                        placeholder="z. B. Foto: Name der Fotografin"
+                        className={FIELD_CLASS}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid sm:grid-cols-2 gap-6">
+                    <div>
+                      <FieldLabel htmlFor="u-preis">Preis intern (€)</FieldLabel>
+                      <Input
+                        id="u-preis"
+                        inputMode="decimal"
+                        value={unikat.preis}
+                        onChange={(e) => setU("preis", e.target.value)}
+                        placeholder="z. B. 480"
+                        className={FIELD_CLASS}
+                        aria-invalid={!!errors.preis}
+                      />
+                      <Hint>Nur intern, erscheint nie auf der Website.</Hint>
+                      <ErrorText>{errors.preis}</ErrorText>
+                    </div>
+                    <label htmlFor="u-website" className="flex items-center justify-between gap-4 rounded-md border px-4 py-3 cursor-pointer self-start sm:mt-8">
+                      <span>
+                        <span className="block text-base font-medium">Auf Website zeigen</span>
+                        <span className="block text-sm text-muted-foreground">Nur für die spätere Website-Anbindung.</span>
+                      </span>
+                      <Switch id="u-website" className="scale-125 data-[state=unchecked]:bg-zinc-300" checked={unikat.website} onCheckedChange={(v) => setU("website", v)} />
+                    </label>
+                  </div>
+
+                  <div>
+                    <FieldLabel htmlFor="u-notiz">Notiz</FieldLabel>
+                    <Textarea
+                      id="u-notiz"
+                      value={unikat.notiz}
+                      onChange={(e) => setU("notiz", e.target.value)}
+                      rows={3}
+                      className={TEXTAREA_CLASS}
+                    />
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className={COLUMNS}>
+                <div className="space-y-6">
+                  <SectionTitle title="Pflichtangaben" hint="Reichen zum Speichern." />
+                  <div>
+                    <FieldLabel htmlFor="e-modell" required>
+                      Modell
+                    </FieldLabel>
+                    <OptionSelect
+                      id="e-modell"
+                      value={edition.modell}
+                      onChange={(v) => setE("modell", v)}
+                      options={modellOptions}
+                      placeholder="Modell wählen"
+                    />
+                    <Hint>Neue Modelle unter „Stammdaten“ anlegen.</Hint>
+                    <ErrorText>{errors.modell}</ErrorText>
+                  </div>
+
+                  <div>
+                    <FieldLabel required>Zustand</FieldLabel>
+                    <ChoiceChips
+                      label="Zustand"
+                      options={zustandOptions}
+                      value={edition.zustand}
+                      onChange={(v) => setE("zustand", v)}
+                    />
+                    <ErrorText>{errors.zustand}</ErrorText>
+                  </div>
+
+                  {isGlasiert && (
+                    <div>
+                      <FieldLabel required>Glasur</FieldLabel>
+                      <SearchPick label="Glasuren" createNoun="neue Glasur" options={glasurOptions} value={link(edition.glasur)} onChange={(ids) => setE("glasur", ids.at(-1) ?? "")} multiple={false} onCreate={addGlasur} />
+                      <ErrorText>{errors.glasur}</ErrorText>
+                    </div>
+                  )}
+
+                  <div>
+                    <FieldLabel htmlFor="e-anzahl" required>
+                      Anzahl
+                    </FieldLabel>
+                    <div className="flex items-center gap-3">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="h-12 w-12"
+                        aria-label="Eins weniger"
+                        onClick={() => setE("anzahl", Math.max(1, edition.anzahl - 1))}
+                      >
+                        <Minus className="w-5 h-5" aria-hidden />
+                      </Button>
+                      <Input
+                        id="e-anzahl"
+                        inputMode="numeric"
+                        value={String(edition.anzahl)}
+                        onChange={(e) => setE("anzahl", Number(e.target.value.replace(/\D/g, "")) || 0)}
+                        className="h-12 w-24 rounded-md text-center text-lg md:text-lg"
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="h-12 w-12"
+                        aria-label="Eins mehr"
+                        onClick={() => setE("anzahl", edition.anzahl + 1)}
+                      >
+                        <Plus className="w-5 h-5" aria-hidden />
+                      </Button>
+                    </div>
+                    <ErrorText>{errors.anzahl}</ErrorText>
+                    {existingRow && (
+                      <p className="mt-3 rounded-md bg-muted p-3 text-base">
+                        Diese Kombination gibt es schon mit <strong>{existingCount} Stück</strong>. Beim Speichern wird
+                        die Anzahl dort auf <strong>{existingCount + edition.anzahl}</strong> erhöht.
+                      </p>
+                    )}
+                  </div>
+                </div>
+
                 {!existingRow && (
-                  <>
+                  <div className={`space-y-6 ${SECOND_COLUMN}`}>
+                    <SectionTitle title="Weitere Angaben" hint="Kann auch später im Bestand ergänzt werden." />
                     <div>
                       <FieldLabel htmlFor="e-lagerort">Lagerort</FieldLabel>
                       <OptionSelect
@@ -1011,9 +1020,9 @@ export default function Block() {
                         className={TEXTAREA_CLASS}
                       />
                     </div>
-                  </>
+                  </div>
                 )}
-              </>
+              </div>
             )}
 
             {Object.keys(errors).length > 0 && (
@@ -1022,7 +1031,7 @@ export default function Block() {
               </p>
             )}
             {canCreate ? (
-              <Button type="submit" size="lg" className="w-full h-14 text-lg" disabled={busy}>
+              <Button type="submit" size="lg" className="w-full h-14 rounded-md text-lg" disabled={busy}>
                 {busy ? (
                   <>
                     <Loader2 className="w-5 h-5 mr-2 animate-spin" aria-hidden /> Wird gespeichert …
