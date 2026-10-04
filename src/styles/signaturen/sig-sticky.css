@@ -126,7 +126,8 @@
 }
 .sticky-bild--feuer .sticky-bild__pane {
   align-content: start;
-  padding-top: calc(var(--head) + var(--head-gap));
+  height: auto;
+  padding-block: calc(var(--head) + var(--head-gap)) var(--head-gap);
   box-sizing: border-box;
 }
 .sticky-bild--feuer .sticky-bild__lede {
@@ -180,10 +181,6 @@
   .sticky-bild__pane {
     align-content: end;
     padding-bottom: clamp(48px, 12svh, 96px);
-  }
-  .sticky-bild--feuer .sticky-bild__pane {
-    align-content: start;
-    padding-bottom: 0;
   }
 }
 
