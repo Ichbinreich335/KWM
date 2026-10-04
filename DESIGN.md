@@ -257,8 +257,8 @@ Jede wiederverwendbare Komponente hat einen künftigen Astro-Namen (`src/compone
 | `SectionHead` | Abschnittskopf: Überschrift links, Begleittext oder Link rechts, Haarlinie darunter | Abschnitt (H2), Begleittext (Aside) | hell, Fläche, Anker | `.sec-head` (`styles.css`, Startseite), `.chapter__head` (`css/pages.css`, Unterseiten): beides wird eine Komponente |
 | `ChapterHead` | Kapitel einer Unterseite mit Einleitung (`.chapter__intro`) | Abschnitt, Begleittext | hell, Fläche, Anker | `css/pages.css` (`.chapter`), alle Unterseiten |
 | `Statement` | Zitat oder Aussage groß, mit Quelle | Aussage oder Seitentitel (`pullquote`), Meta (Quelle) | hell, Fläche, Anker; `--bild` (`.zaesur`: Bild links, Satz rechts) | `.pullquote`, `.stance__quote`, `.zaesur`, `.catalog__quote`, `.mf-intro__rule`, `.med__quote`, `.statement` |
-| `Lede` | Einleitender Absatz einer Seite oder eines Abschnitts | Lede, Begleittext (Spalten) | hell | `.lede` (Startseite), `.page-hero__lede`, `.prose` |
-| `Prose` | Fließtext mit Quelle, begrenzte Zeilenlänge | Fließtext, Meta (Quelle) | hell, Anker | `css/pages.css` (`.prose`), `.legal__body` (Rechtsseiten), `.stance__text` |
+| `Lede` | Einleitender Absatz einer Seite oder eines Abschnitts | Lede, Begleittext (Spalten) | hell | `.lede` (nur Startseite, noch keine Komponente: erst bei einer zweiten Verwendung), `.page-hero__lede` (bleibt Teil von `PageHero`) |
+| `Prose` | Fließtext mit Quelle, begrenzte Zeilenlänge | Fließtext, Meta (Quelle) | hell, Anker | `.legal__body` (Rechtsseiten, `src/components/Prose.astro`); `.stance__text` bleibt Seiten-CSS |
 
 ### Einträge und Kacheln
 
