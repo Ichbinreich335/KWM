@@ -48,3 +48,26 @@ Die gelöschte Datei `sig-profil.css` enthielt eine Regel, die versehentlich auc
 ## Was der Admin tun muss
 
 Nichts zusätzlich. PR B-1 baut auf PR #4 auf und wird nach dessen Merge auf `main` umgestellt. Abnahme gemeinsam mit Phase A möglich: Die Vorschau dieses Branches sieht identisch aus.
+
+---
+
+# Phase B-2 – Fehler aus dem Audit behoben
+
+Branch `phase-b-fehler` (von `phase-b-varianten`). Quelle: Fehlerliste in `ASTRO-BERICHT.md` Abschnitt 5. Bewusste, sichtbare Korrekturen, jede auf die Fundstelle begrenzt.
+
+| Prio | Fundstelle | Korrektur | Commit |
+|---|---|---|---|
+| P2 | Meisterstücke: „Zu diesem Stück anfragen“ (24×), 43,56 px hoch | Tippfläche 44 px (`min-height`, `inline-flex`); optisch gleich, Seite am Handy insgesamt ~10 px länger | `c1e6ce4` |
+| P3 | Seitenmenü „Rechtliches“ (5 Seiten): kurze Einträge wie „AGB“ 31 px breit | `min-width: 44px`; optisch gleich | `8c48bc9` |
+| P3 | Startseite, Farbskala: `transition: width, height` am Vorschaubild | War schon wirkungslos (Farbskala animiert per `transform`), entfernt | `8472095` |
+| – | Startseite, Farbskala: Hover-Größen 132 px / mobil 44 px (gefunden in der Endprüfung) | **Echter Fehler:** Am Handy schrumpfte die Glasurprobe beim zweiten Tippen (Lösen) ohne Übergang auf etwa 18 px statt auf ihre Ausgangsgröße. Die Regeln gehörten zu keiner gewählten Fassung und sind entfernt; die Probe kehrt jetzt in die Ausgangsgröße zurück | `ec69d1b` |
+| – | Meisterstücke: Klasse `tap` an den Anfrage-Links | trug nichts mehr bei (komplett überschrieben), entfernt | `764da02` |
+
+**Bewusst nicht geändert:**
+- Orte (`sig-orte.css`, Übergang über `margin-top`): `translate` würde nur optisch verschieben; im geschlossenen Zustand blieben die Folgeinhalte 2 px tiefer. Start- und Endzustand wären nicht mehr identisch, also bleibt es.
+- Leichtes Überschwingen der Punkte (`--ease-pop`): Gestaltungsfrage an den Admin (`ADMIN-OFFEN.md`).
+- Links im Fließtext unter 44 px Höhe: nach WCAG 2.5.8 ausgenommen.
+
+**Prüfung:** `npm test` 76/76; einziger aktualisierter Optik-Screen: Meisterstücke mobil (nur die 24 Knöpfe, Differenzbild geprüft, Ausschnitt vorher/nachher optisch gleich). Tippflächen-Messung danach: nur noch Fließtext-Links und der bekannte Fehlalarm der Orte-Kacheln (ganze Kachel ist Klickfläche). Barrierefreiheit 26/26, `npm run check` grün. Endprüfung Standards/Spezifikation (Opus) mit einer Korrekturrunde.
+
+Hinweis zu den Referenz-Screens: Sie liegen nicht im Repo (`tests/__screens__/` ist ausgeschlossen). Nach dem Merge von Phase A wird der Ausgangsstand ohnehin aus `main` neu erzeugt; ab dann ist B-2 Teil davon.
