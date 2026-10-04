@@ -1,0 +1,41 @@
+---
+---
+
+<div class="legal__body">
+  <slot />
+</div>
+
+<style>
+  .legal__body {
+    max-width: 68ch;
+    font-size: var(--t-body);
+    line-height: var(--t-body-lh);
+  }
+  .legal__body :global(h2) {
+    font-family: var(--f-display);
+    font-weight: 400;
+    font-size: var(--t-h3);
+    line-height: var(--t-h3-lh);
+    letter-spacing: -0.01em;
+    margin: 2.2em 0 0.7em;
+    text-wrap: balance;
+    scroll-margin-top: calc(var(--head) + 24px);
+  }
+  .legal__body > :global(:first-child),
+  .legal__body :global(h2:first-child) {
+    margin-top: 0;
+  }
+  .legal__body :global(p) {
+    text-wrap: pretty;
+  }
+  .legal__body :global(a) {
+    text-underline-offset: 0.2em;
+  }
+
+  @media (max-width: 900px) {
+    .legal__body {
+      font-size: var(--t-small);
+      line-height: var(--t-small-lh);
+    }
+  }
+</style>

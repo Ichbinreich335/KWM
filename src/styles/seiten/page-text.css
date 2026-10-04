@@ -60,29 +60,6 @@
 
 .legal__body {
   grid-column: 4 / 11;
-  max-width: 68ch;
-  font-size: var(--t-body);
-  line-height: var(--t-body-lh);
-}
-.legal__body h2 {
-  font-family: var(--f-display);
-  font-weight: 400;
-  font-size: var(--t-h3);
-  line-height: var(--t-h3-lh);
-  letter-spacing: -0.01em;
-  margin: 2.2em 0 0.7em;
-  text-wrap: balance;
-  scroll-margin-top: calc(var(--head) + 24px);
-}
-.legal__body > :first-child,
-.legal__body h2:first-child {
-  margin-top: 0;
-}
-.legal__body p {
-  text-wrap: pretty;
-}
-.legal__body a {
-  text-underline-offset: 0.2em;
 }
 .legal__meta {
   color: var(--ink-2);
@@ -147,8 +124,6 @@
   }
   .legal__body {
     grid-column: 1 / -1;
-    font-size: var(--t-small);
-    line-height: var(--t-small-lh);
   }
   .pay-text {
     grid-template-columns: 1fr;

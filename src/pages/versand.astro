@@ -3,6 +3,7 @@ import '../styles/basis.css';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import InquiryBand from '../components/InquiryBand.astro';
 import PageHero from '../components/PageHero.astro';
+import Prose from '../components/Prose.astro';
 import '../styles/seiten/page-text.css';
 import '../styles/signaturen/signaturen.css';
 ---
@@ -43,13 +44,13 @@ import '../styles/signaturen/signaturen.css';
           </ul>
         </nav>
       </aside>
-      <div class="legal__body">
+      <Prose>
         <p>
           Die Verpackungs- und Transportkosten richten sich nach Anzahl und Gewicht der zu versendenden Pakete. Bei
           Auslandslieferungen kommen ggfs. Kosten für die Zollabfertigung hinzu. <br />
           Die Kosten für die Einfuhr werden von den Zollbehörden direkt an den Kunden erhoben.
         </p>
-      </div>
+      </Prose>
     </div>
 
     <InquiryBand text="Möchten Sie wissen, was der Versand eines Stücks kostet? Nennen Sie uns das Stück und Ihr Ziel." />

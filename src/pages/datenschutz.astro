@@ -2,6 +2,7 @@
 import '../styles/basis.css';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PageHero from '../components/PageHero.astro';
+import Prose from '../components/Prose.astro';
 import '../styles/seiten/page-text.css';
 import '../styles/signaturen/signaturen.css';
 ---
@@ -45,7 +46,7 @@ import '../styles/signaturen/signaturen.css';
           </ul>
         </nav>
       </aside>
-      <div class="legal__body">
+      <Prose>
         <div class="legal__notice" role="note">
           <p class="legal__notice-title">Text folgt</p>
           <p>Die Datenschutzerklärung wird von der Werkstatt geliefert und hier veröffentlicht, sobald sie vorliegt.</p>
@@ -65,7 +66,7 @@ import '../styles/signaturen/signaturen.css';
           Bis zur neuen Erklärung gelten die bisherigen Datenschutzhinweise im{' '}
           <a href="/impressum#datenschutz-ihr-gutes-recht-unsere-verpflichtung">Impressum</a>.
         </p>
-      </div>
+      </Prose>
     </div>
   </main>
 </BaseLayout>

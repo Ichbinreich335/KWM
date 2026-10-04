@@ -4,6 +4,7 @@ import Bild from '../components/Bild.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import InquiryBand from '../components/InquiryBand.astro';
 import PageHero from '../components/PageHero.astro';
+import Prose from '../components/Prose.astro';
 import '../styles/seiten/page-text.css';
 import '../styles/signaturen/signaturen.css';
 ---
@@ -44,7 +45,7 @@ import '../styles/signaturen/signaturen.css';
           </ul>
         </nav>
       </aside>
-      <div class="legal__body">
+      <Prose>
         <div class="pay-text">
           <section class="pay-text__item" aria-labelledby="zahl-bank">
             <h2 id="zahl-bank">Banküberweisung</h2>
@@ -70,7 +71,7 @@ import '../styles/signaturen/signaturen.css';
             </figure>
           </section>
         </div>
-      </div>
+      </Prose>
     </div>
 
     <InquiryBand text="Fragen zur Zahlung? Wir helfen gern weiter." />

@@ -109,21 +109,7 @@
   margin-top: 0;
 }
 
-/* Fließtext */
-.prose {
-  grid-column: 3 / 11;
-  max-width: 68ch;
-  font-family: var(--f-text);
-  font-size: var(--t-body);
-  line-height: var(--t-body-lh);
-}
-.prose p {
-  margin-bottom: 1.1em;
-  text-wrap: pretty;
-}
-.prose--narrow {
-  grid-column: 4 / 10;
-}
+/* Quelle unter einem Zitat */
 .prose__source {
   font-family: var(--f-sans);
   font-size: var(--t-meta);
@@ -313,10 +299,6 @@
   .catalog__item--wide,
   .catalog__item--half,
   .catalog__quote {
-    grid-column: 1 / -1;
-  }
-  .prose,
-  .prose--narrow {
     grid-column: 1 / -1;
   }
   .datelist__year {

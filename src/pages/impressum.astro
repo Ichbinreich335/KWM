@@ -2,6 +2,7 @@
 import '../styles/basis.css';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PageHero from '../components/PageHero.astro';
+import Prose from '../components/Prose.astro';
 import '../styles/seiten/page-text.css';
 import '../styles/signaturen/signaturen.css';
 ---
@@ -94,7 +95,7 @@ import '../styles/signaturen/signaturen.css';
           </ol>
         </nav>
       </aside>
-      <div class="legal__body">
+      <Prose>
         <p>
           Keramische Werkstatt Margaretenhöhe GmbH, Bullmannaue 19, 45327 Essen
           <br />
@@ -341,7 +342,7 @@ import '../styles/signaturen/signaturen.css';
           Eine Übermittlung an Drittstaaten ist nicht geplant.
         </p>
         <p>© Keramische Werkstatt Margaretenhöhe GmbH, Stand: 01.10.2026</p>
-      </div>
+      </Prose>
     </div>
   </main>
 </BaseLayout>
