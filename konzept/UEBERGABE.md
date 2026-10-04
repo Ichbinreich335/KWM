@@ -62,20 +62,80 @@ Kennzeichnung in diesem Abschnitt: [V] = heute (02.10.2026) vom externen Prüfer
   - Das Risiko, dass jemand Ansichten oder Felder verstellt, fangen Snapshots ab.
 - Erst wenn beides scheitert → Eigenbau auf Cloudflare (D1, R2, Access).
 
-### Website: Stand Astro-Umbau (04.10.2026)
-- **Phase A fertig, wartet auf Abnahme:** Die V3-Website läuft 1:1 als statische Astro-Seite (Branch `astro-umbau`, Draft-PR #4, Vorschau `https://astro-umbau-kwm-redesign.entwicklung-7f3.workers.dev`). Bericht: `konzept/ASTRO-BERICHT.md`. Das Entwurf-Panel ist schon entfernt. Der alte Prototyp liegt in `archiv/`.
-- **Was der Admin tun oder abnehmen muss:** immer aktuell in `konzept/ADMIN-OFFEN.md`.
-- **Arbeitsweise (Admin, 04.10.2026):** Opus plant jede Phase fein und orchestriert; Sonnet-Subagents führen aus; Opus nur für sehr schwere Fälle und die Endprüfung. Pro Phase ein Branch mit Draft-PR und Vorschau; der Admin nimmt gesammelt ab.
-- **Phasen:**
+### Website: Stand Astro-Umbau (Stand 04.10.2026, nachts)
 
-| Phase | Inhalt | Plan | Stand |
+**Einstieg für eine neue Session:** erst diesen Abschnitt lesen, dann `konzept/STAND.md` (was läuft, was als Nächstes kommt) und `konzept/ADMIN-OFFEN.md` (was der Admin tun, entscheiden oder abnehmen muss). Beide Dateien liegen im Branch `astro-umbau` (Worktree `../KWM-astro`) und werden bei jedem Schritt aktualisiert.
+
+**Branches und Worktrees** (alle PRs sind Entwürfe; gemergt wird von oben nach unten):
+
+```
+main
+ └── astro-umbau            PR #4   Umzug auf Astro 1:1                ../KWM-astro   (Pläne, STAND, ADMIN-OFFEN)
+      └── phase-b-varianten PR #5   Varianten festgelegt               ../KWM-phase-b
+           └── phase-b-fehler PR #6 Fehler aus dem Audit
+                └── phase-c1-css … phase-c4-schriften  PR #7–#10 CSS, TypeScript, Bilder, Schriften   ../KWM-phase-c
+                     ├── phase-b3-feinschliff  (PR folgt) sichtbarer Feinschliff   ../KWM-phase-b3, Testport 8798
+                     └── phase-d1-geruest      (PR folgt) Bausteine Teil 1, unsichtbar   ../KWM-phase-d, Testport 8797
+```
+- `phase-b3-feinschliff` und `phase-d1-geruest` laufen **parallel** vom selben Stand. Deshalb fehlen in der Bausteine-Vorschau die sichtbaren Korrekturen, zum Beispiel die größere Orte-Überschrift. Das ist gewollt.
+- Merge-Reihenfolge: zuerst Feinschliff, dann die Bausteine darauf rebasen. Zwei Konflikte sind bekannt: `.works__statement` (im Feinschliff Display, in den Bausteinen als Statement-Typ `aussage-text` verschoben; beim Rebase `typ="aussage"`) und `index.astro`.
+- Vorschau je Branch: `https://<branch>-kwm-redesign.entwicklung-7f3.workers.dev`.
+- Prototyp-Server für Textvergleiche: Port 4392 (`npm run prototyp`).
+- Optik-Referenzen (`tests/__screens__/`) sind gitignored und liegen je Worktree. Der aktuellste Stand nach den Feinschliff-Updates liegt in `../KWM-phase-b3/tests/__screens__/`.
+- SDD-Ledger mit allen Entscheidungen (Rulings): `<worktree>/.superpowers/sdd/<PLAN>/progress.md`, gitignored. Nach einer Unterbrechung gelten Ledger und `git log` mehr als die eigene Erinnerung.
+
+**Phasen:**
+
+| Schritt | Inhalt | Plan | Stand |
 |---|---|---|---|
-| A | Astro-Gerüst 1:1 | `konzept/PLAN-ASTRO-UMBAU.md` §7 | fertig, Abnahme offen |
-| B | Varianten festschreiben (B-1), Fehler aus dem Audit beheben (B-2) | `konzept/PLAN-PHASE-B.md` | fertig: PR #5 (B-1) und #6 (B-2), Abnahme offen |
-| C | Asset-Pipeline: CSS/JS gebündelt, TypeScript strict, Bilder über `astro:assets`, Schriften über die Fonts API | `konzept/PLAN-PHASE-C.md` | fertig: PR #7–#10, Abnahme offen; gestapelt auf B-2 |
-| D | Komponenten-Bibliothek nach `DESIGN.md` §11, Inhalte als typisierte Daten in Sanity-Form | `konzept/PLAN-PHASE-D.md` | D1 in Arbeit (Branch `phase-d1-geruest`, gestapelt auf C4) |
-| E | Technisches SEO und Härtung (Sitemap, Canonical/OG, JSON-LD, Sicherheits-Header, CSP) | `konzept/PLAN-PHASE-E.md` | Feinplanung fertig; E1–E3 nach B möglich, E4 nach C2 |
-| 2–5 | Sanity, Formular-Worker, Einwilligung + GTM, Go-live | `konzept/AUFTRAG-ASTRO.md`, je eigener Plan | offen |
+| A | Astro-Gerüst 1:1 | `konzept/PLAN-ASTRO-UMBAU.md` §7 | fertig, Abnahme offen (PR #4) |
+| B-1/B-2 | Varianten festgelegt, Fehler aus dem Audit | `konzept/PLAN-PHASE-B.md` | fertig, Abnahme offen (PR #5, #6) |
+| C | CSS/JS gebündelt, TypeScript strict, Bilder über `astro:assets`, Schriften über die Fonts API | `konzept/PLAN-PHASE-C.md` | fertig, Abnahme offen (PR #7–#10) |
+| B-3 Feinschliff | sichtbare Korrekturen aus dem visuellen Review | `konzept/PLAN-PHASE-B3.md` (im Branch `phase-b3-feinschliff`) | Teil 1–3 fertig; Prüfung von Teil 3 offen; Handy-Kürzung (B3-5) an einem anderen Tag |
+| D | Bausteine (Komponenten) nach `DESIGN.md` §11 | `konzept/PLAN-PHASE-D.md` | D1 fertig (SubNav, PageHero, SectionHead, ChapterHead, Prose, Statement); Prüfung des Statement-Bausteins offen, dann PR |
+| E | Sitemap, Canonical/OG, JSON-LD, Sicherheits-Header, CSP | `konzept/PLAN-PHASE-E.md` | geplant |
+| 2–5 | Sanity, Formular-Worker, Einwilligung + GTM, Go-live | `konzept/AUFTRAG-ASTRO.md` | offen |
+
+**Arbeitsweise (Wünsche des Admins, verbindlich):**
+- **Rollen:** Opus plant und orchestriert. Sonnet-Subagents bauen. **Aufgaben-Reviews und Nachprüfungen auf Sonnet**, Opus nur für die Endprüfung je PR und echte Architekturfragen. Ausführung nach `superpowers:subagent-driven-development`, mit Brief, Bericht, Review-Paket und Ruling im Ledger.
+- **Der Admin ist oft weg:** umkehrbare Schritte selbst entscheiden und im Ledger festhalten, nicht warten. Blocker, Fehler und Abnahmen in `ADMIN-OFFEN.md`. Nicht umkehrbare Schritte, Löschen, Kosten und Live-Schaltung vorlegen.
+- **Schlank** und nah an der Astro-Doku und an Best Practices (vorher den MCP `astro-docs` fragen): kleinste Lösung, keine Abstraktionen auf Vorrat, kurze Tests.
+- **Immer visuell prüfen:** nach jeder sichtbaren Änderung Playwright-Screens Desktop und Handy (bei Bildabschnitten auch 768 px und Scroll-Serien), selbst ansehen, erst dann weitergeben.
+- **Lighthouse sparsam:** nur bei echtem Einfluss auf die Ladezeit.
+- **Nichts löschen, archivieren** (`archiv/`). Hilfsskripte ohne Funktion entfernen.
+- **Entscheiden per Vergleich:** Varianten auf eigenem Branch mit eigener Vorschau, dazu eine Vergleichsseite mit Links, Screens und Messwerten. Erst nach der Entscheidung mergen.
+- **Nicht nachplappern:** Wird eine Regel kritisiert, zum Beispiel aus DESIGN.md, selbst prüfen, ob sie trägt, und das am Bild zeigen.
+- **Überblick:** `STAND.md` kurz halten und Klartext-Namen statt Phasenkürzeln verwenden.
+- **Einheitlichkeit ist das Ziel von Astro:** Jedes wiederkehrende Element gibt es nur einmal als Baustein. Fehler wie „dasselbe Zitat in zwei Schriften“ sollen unmöglich sein. Deshalb deckt `Statement` alle großen Sätze ab.
+
+**Gestalterische Entscheidungen und Kritik (04.10.2026):**
+- Die externe Kritik ist geprüft: `konzept/VISUELLES-REVIEW.md` (14 von 20 Punkten stimmen ganz, 5 teilweise). Nicht übernommen werden „Meditation und 99 Schalen zusammenlegen“ (E5) und „Orte auf hellen Grund“.
+- **Hell/Dunkel:** bleibt, wie es ist. Aktuell dunkel und Orte dunkel gefallen dem Admin. Grau seltener: Die Bühne der 99 Schalen kommt auf hellen Grund, die Chronik bleibt grau. Vergleichs-Screens: `../KWM-astro/.shots/rhythmus/`.
+- **Länge:** Am Desktop ist die Startseite „wie eine Reise“, die Länge bleibt. Am Handy ist sie zu lang und zu dicht und wird gekürzt (an einem anderen Tag, als Vergleich, Plan B3-5).
+  - Die Reise und alle starken und interaktiven Elemente bleiben.
+  - Orte mit Aufklappen bleibt und wird nur behutsam verdichtet.
+  - Am Handy ruhig untereinander statt kurzer Scroll-Effekte.
+- **Porträt:** Am Handy stehen Bild und Zitat untereinander, das Gesicht ist frei (erledigt). **Offen:** Bei schmalem Desktop-Fenster bzw. geteiltem Bildschirm (etwa 900–1100 px) zeigt das Porträt nur Regale, das Gesicht ist abgeschnitten. Lösung: die Fassung „untereinander“ auch für hochformatige Fenster.
+- **Feuer:** Der Text haftet bis unten ans Bild (erledigt).
+- **Zitate:** Es sind zu viele große Serifensätze. Angleichen über den Statement-Baustein (eine Zeile je Stelle), reduzieren nach Entscheidung des Admins (`ADMIN-OFFEN.md`).
+- **Offen aus dem Feinschliff:** Beim Aufklappen einer Aktuell-Karte wachsen die Nachbarkarten mit, weil die Karten gleich hoch sind.
+
+**Inhalte und Sanity (Admin, 04.10.2026):**
+- **In Sanity:** Ausstellungen mit allen Daten, Texten, Bildern und dem **Flyer-Scan**, außerdem Galerien bzw. Orte zum Pflegen. Chronik, Lebensweg, Glasuren und Manufaktur bleiben im Code.
+- **Per Vergleich zu entscheiden:**
+  - Darstellung des Flyer-Scans: Bild im Detail, Vorschau mit Vergrößern oder PDF-Link.
+  - Galerien: nur bei den Orten auf der Startseite oder auf einer eigenen Unterseite.
+- **Portfolio-Seite** aus der Lager-Datenbank: vorerst nicht bauen.
+- Weiter gilt: keine Preise, kein Bestand, keine Lagerorte, keine Verfügbarkeit auf der Website.
+
+**Als Nächstes:** siehe `konzept/STAND.md`, Abschnitt „Als Nächstes“. Kurz:
+1. Porträt im schmalen Fenster
+2. Prüfungen von Feinschliff Teil 3 und Statement-Baustein, dann die zwei PRs
+3. Handy-Kürzung als Vergleich (anderer Tag)
+4. Zitate angleichen
+5. Konzept-Vergleiche Flyer und Galerien
+6. Bausteine Teil 2–5
+7. SEO
 
 ### Sonstiges
 - Die MCP-Server stehen in `.mcp.json` (Astro, Cloudflare, Sanity, Softr). In dieser Cloud-Umgebung blockiert das Netzwerk sie. Lokal oder nach einer Freigabe der Domains funktionieren sie.
