@@ -398,7 +398,12 @@ const ds = datasource.define({
   lagerorte: "lagerorte",
   unikate: "unikate",
   edition: "edition",
+  ansichten: "ansichten",
 });
+const ansichtZaehler = q.select({ name: "8s5KL" });
+// Grenze im Free-Plan von Softr (Einträge je Datenbank, vorsichtig angesetzt). Bei Planwechsel anpassen.
+const DATENSATZ_GRENZE = 1000;
+const GRENZE_WARNUNG = 0.8;
 
 const kuenstlerSelect = q.select({ name: "vqD0c", archiviert: "TOhYe" });
 const glasurSelect = q.select({ name: "OuhBi", archiviert: "jxxXN" });
@@ -438,6 +443,23 @@ function toEntry(item: RawItem, keys: string[], sub: (v: Values) => string, foto
   const values: Values = {};
   keys.forEach((k) => (values[k] = asOpts(f[k]).length ? firstLabel(f[k]) : typeof f[k] === "number" ? zahl.format(f[k] as number) : str(f[k])));
   return { id: item.id, name: values.name ?? "", values, fotos: fotoKey ? asAttachments(f[fotoKey]) : [], sub: sub(values), archiviert: f.archiviert === true };
+}
+
+// Dezenter Hinweis für den Admin: wie voll die Datenbank im Free-Plan ist.
+function Speicherstand({ eintraege }: { eintraege: number }) {
+  const anteil = eintraege / DATENSATZ_GRENZE;
+  const knapp = anteil >= GRENZE_WARNUNG;
+  return (
+    <div className="pt-6 flex items-center gap-3 text-sm text-muted-foreground" title="Alle Einträge der Datenbank: Stücke, Editionsware, Stammdaten und gespeicherte Ansichten">
+      <div className="h-1.5 w-24 rounded-full bg-muted overflow-hidden" aria-hidden>
+        <div className={`h-full ${knapp ? "bg-amber-500" : "bg-muted-foreground/40"}`} style={{ width: `${Math.min(100, Math.round(anteil * 100))}%` }} />
+      </div>
+      <span className={knapp ? "text-amber-800" : ""}>
+        Datenbank: {zahl.format(eintraege)} von {zahl.format(DATENSATZ_GRENZE)} Einträgen (Free-Plan)
+        {knapp && " – bald voll, Plan prüfen"}
+      </span>
+    </div>
+  );
 }
 
 function countLinks(items: RawItem[], keys: string[]): Map<string, number> {
@@ -626,6 +648,8 @@ export default function Block() {
   const lagerortQuery = useRecords({ from: ds.lagerorte, select: lagerortSelect, count: PAGE_SIZE });
   const unikatQuery = useRecords({ from: ds.unikate, select: unikatLinks, count: PAGE_SIZE });
   const editionQuery = useRecords({ from: ds.edition, select: editionLinks, count: PAGE_SIZE });
+  const ansichtQuery = useRecords({ from: ds.ansichten, select: ansichtZaehler, count: PAGE_SIZE });
+  useAllPages(ansichtQuery);
   useAllPages(kuenstlerQuery);
   useAllPages(glasurQuery);
   useAllPages(modellQuery);
@@ -881,6 +905,7 @@ export default function Block() {
                 {showArchived && rows(archiviert)}
               </div>
             )}
+            <Speicherstand eintraege={[...queries, ansichtQuery].reduce((n, qq) => n + (qq.data?.pages.flatMap((p) => p.items).length ?? 0), 0)} />
           </>
         )}
       </div>

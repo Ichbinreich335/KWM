@@ -1,11 +1,12 @@
 import { useMemo } from "react";
 import { datasource, q, useRecords } from "@/lib/datasource";
-import { ChevronRight } from "lucide-react";
+import { ChevronDown, ChevronRight } from "lucide-react";
 import { AUSGESTELLT, KOMMISSION, PAGE_SIZE, RESERVIERT, ROHLING, VERFUEGBAR, VERKAUFT, isAusserHaus } from "../shared/konstanten";
 import { type Attachment, type RawItem, asAttachments, asOpts, firstLabel, formatDate, euro, lookupValue, modellLabel, num, str, useAllPages, zahl } from "../shared/daten";
-import { EmptyState, ErrorState, ListRow, LoadingState, PageHeader, Section, Tile } from "../shared/ui";
+import { EmptyState, ErrorState, ListRow, LoadingState, PANEL_CLASS, PageHeader, Section, Tile } from "../shared/ui";
 
-const ds = datasource.define({ unikate: "unikate", edition: "edition", partner: "partner" });
+const ds = datasource.define({ unikate: "unikate", edition: "edition", partner: "partner", modelle: "modelle" });
+const modellSelect = q.select({ name: "eXo5w", artikelnr: "BNpSN", vk: "772dM", archiviert: "3tlrw" });
 
 const unikatSelect = q.select({
   inv: "glG6V",
@@ -64,6 +65,47 @@ type Edition = {
   geaendertAm: string;
 };
 type CountRow = { label: string; href: string; values: number[] };
+type Pruefpunkt = { label: string; items: { id: string; label: string; href: string }[] };
+
+const PRUEF_SICHTBAR = 8;
+
+// Datenpflege: Lücken, die keine Regel verhindern kann (vergessenes Foto, fehlender Preis). Eingeklappt, damit sie nicht drängelt.
+function Datenpflege({ punkte }: { punkte: Pruefpunkt[] }) {
+  const offen = punkte.reduce((n, p) => n + p.items.length, 0);
+  if (offen === 0) return null;
+  return (
+    <details className={`${PANEL_CLASS} group`}>
+      <summary className="flex items-center justify-between gap-3 cursor-pointer list-none px-4 min-h-14 [&::-webkit-details-marker]:hidden">
+        <span className="text-base">
+          <span className="font-semibold">Datenpflege</span>
+          <span className="text-muted-foreground"> · {zahl.format(offen)} offene {offen === 1 ? "Angabe" : "Angaben"}</span>
+        </span>
+        <ChevronDown className="w-5 h-5 text-muted-foreground transition-transform group-open:rotate-180" aria-hidden />
+      </summary>
+      <div className="px-4 pb-4 space-y-4 border-t pt-4">
+        {punkte
+          .filter((p) => p.items.length > 0)
+          .map((p) => (
+            <div key={p.label}>
+              <p className="text-sm font-medium">
+                {p.label} <span className="text-muted-foreground tabular-nums">{zahl.format(p.items.length)}</span>
+              </p>
+              <ul className="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-sm">
+                {p.items.slice(0, PRUEF_SICHTBAR).map((i) => (
+                  <li key={i.id}>
+                    <a href={i.href} className="inline-flex min-h-8 items-center text-muted-foreground underline-offset-4 hover:text-foreground hover:underline">
+                      {i.label}
+                    </a>
+                  </li>
+                ))}
+                {p.items.length > PRUEF_SICHTBAR && <li className="text-muted-foreground">und {zahl.format(p.items.length - PRUEF_SICHTBAR)} weitere</li>}
+              </ul>
+            </div>
+          ))}
+      </div>
+    </details>
+  );
+}
 
 function fristStatus(iso: string): "ueberfaellig" | "bald" | "ok" | "" {
   if (!iso) return "";
@@ -136,8 +178,10 @@ export default function Block() {
   const unikateQuery = useRecords({ from: ds.unikate, select: unikatSelect, count: PAGE_SIZE });
   const editionQuery = useRecords({ from: ds.edition, select: editionSelect, count: PAGE_SIZE });
   const partnerQuery = useRecords({ from: ds.partner, select: partnerSelect, count: PAGE_SIZE });
+  const modellQuery = useRecords({ from: ds.modelle, select: modellSelect, count: PAGE_SIZE });
   useAllPages(unikateQuery);
   useAllPages(editionQuery);
+  useAllPages(modellQuery);
 
   const unikate = useMemo<Unikat[]>(
     () =>
@@ -281,6 +325,31 @@ export default function Block() {
     .filter(Boolean)
     .join(" · ");
 
+  const pruefpunkte: Pruefpunkt[] = [
+    {
+      label: "Unikate ohne Foto",
+      items: unikate.filter((u) => u.status !== VERKAUFT && u.fotos.length === 0).map((u) => ({ id: u.id, label: u.name || u.inv, href: `/bestand?id=${u.id}` })),
+    },
+    {
+      label: "Unikate ohne Preis",
+      items: unikate.filter((u) => u.status !== VERKAUFT && u.preis === null).map((u) => ({ id: u.id, label: u.name || u.inv, href: `/bestand?id=${u.id}` })),
+    },
+    {
+      label: "Außer Haus ohne Partner",
+      items: unikate.filter((u) => isAusserHaus(u.status) && !u.galerieId).map((u) => ({ id: u.id, label: u.name || u.inv, href: `/bestand?id=${u.id}` })),
+    },
+    {
+      label: "Editionsposten mit 0 Stück",
+      items: editionen.filter((e) => e.anzahl === 0).map((e) => ({ id: e.id, label: [e.modell, e.zustand, e.glasur].filter(Boolean).join(" · "), href: `/bestand?tab=edition&q=${encodeURIComponent(e.modell)}` })),
+    },
+    {
+      label: "Modelle ohne VK-Preis",
+      items: ((modellQuery.data?.pages.flatMap((p) => p.items) ?? []) as RawItem[])
+        .filter((i) => i.fields.archiviert !== true && num(i.fields.vk) === null)
+        .map((i) => ({ id: i.id, label: modellLabel(str(i.fields.artikelnr), str(i.fields.name)), href: "/stammdaten?tab=modelle" })),
+    },
+  ];
+
   return (
     <div className="container pt-6 pb-28 sm:pb-8">
       <div className="content space-y-6" lang="de">
@@ -388,6 +457,8 @@ export default function Block() {
                 )}
               </Section>
             </div>
+
+            <Datenpflege punkte={pruefpunkte} />
           </>
         )}
       </div>

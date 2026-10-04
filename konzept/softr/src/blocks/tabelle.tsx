@@ -8,11 +8,11 @@ import { Badge } from "@/components/ui/badge";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { ArrowDown, ArrowUp, Bookmark, ChevronDown, ChevronLeft, ChevronRight, Columns3, Download, ImageOff, Plus, SlidersHorizontal, Trash2, X } from "lucide-react";
+import { ArrowDown, ArrowUp, Bookmark, ChevronDown, ChevronLeft, ChevronRight, Columns3, ImageOff, Plus, SlidersHorizontal, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
 import { PAGE_SIZE, VERKAUFT } from "../shared/konstanten";
-import { type Attachment, type RawItem, asAttachments, asOpts, downloadCsv, euro, formatDate, lookupValue, num, parseNumber, str, thumb, today, useAllPages, zahl } from "../shared/daten";
-import { DIALOG_CLASS, DoneButton, EmptyState, ErrorState, FIELD_CLASS, ListRow, LoadingState, PANEL_CLASS, PageHeader, PanelHeader, SearchField, StatusBadge, Tabs, Thumb } from "../shared/ui";
+import { type Attachment, type RawItem, asAttachments, asOpts, downloadCsv, euro, formatDate, lookupValue, num, parseNumber, printTable, str, thumb, today, useAllPages, zahl } from "../shared/daten";
+import { DIALOG_CLASS, DoneButton, EmptyState, ErrorState, ExportMenu, FIELD_CLASS, ListRow, LoadingState, PANEL_CLASS, PageHeader, PanelHeader, SearchField, StatusBadge, Tabs, Thumb } from "../shared/ui";
 
 const ds = datasource.define({ unikate: "unikate", edition: "edition", ansichten: "ansichten" });
 
@@ -886,8 +886,29 @@ export default function Block() {
     changed();
   }
 
+  // Untertitel der Druckansicht: was gerade gefiltert ist, damit eine Liste für sich verständlich bleibt.
+  function filterBeschreibung(): string {
+    const teile: string[] = [tab === "alle" ? "Unikate und Editionsware" : tab === "unikat" ? "Unikate" : "Editionsware"];
+    quickKeys.forEach((k) => quick[k]?.length && teile.push(`${quickLabel(k, tab)}: ${quick[k]?.join(", ")}`));
+    if (search.trim()) teile.push(`Suche „${search.trim()}“`);
+    if (activeConditions.length) teile.push(`${activeConditions.length} weitere Bedingung${activeConditions.length === 1 ? "" : "en"}`);
+    return teile.join(" · ");
+  }
+
+  function exportPdf() {
+    const partner = quick.galerie?.length === 1 ? quick.galerie[0] : "";
+    const ok = printTable({
+      title: partner ? `Liste ${partner}` : "Bestandsliste",
+      subtitle: filterBeschreibung(),
+      columns: shown.map((c) => ({ label: c.label, align: c.align })),
+      rows: visibleRows.map((r) => shown.map((c) => formatCell(c, r))),
+      footer: shown.map((c, i) => footerCell(c, i)),
+    });
+    if (!ok) toast.error("Der Browser hat das Druckfenster blockiert. Bitte Pop-ups für diese Seite erlauben.");
+  }
+
   const footerCell = (c: Col, i: number) =>
-    c.key === "anzahl" ? `${zahl.format(summeAnzahl)} Stück` : c.key === "preis" ? euro.format(summePreis) : c.key === "vk" ? euroCent.format(summeVk) : i === 0 ? summeLabel : "";
+    c.key === "anzahl" ? `${zahl.format(summeAnzahl)} Stück` : c.key === "preis" ? euro.format(summePreis) : c.key === "vk" ? (summeVk ? euroCent.format(summeVk) : "") : i === 0 ? summeLabel : "";
 
   return (
     <div className="w-full px-4 sm:px-6 pt-6 pb-28 sm:pb-8">
@@ -908,10 +929,7 @@ export default function Block() {
                   }}
                 />
               </div>
-              <Button variant="outline" className="h-12 text-base" onClick={() => exportRows(visibleRows)} disabled={visibleRows.length === 0}>
-                <Download className="w-5 h-5 mr-2" aria-hidden />
-                CSV-Export
-              </Button>
+              <ExportMenu onCsv={() => exportRows(visibleRows)} onPdf={exportPdf} disabled={visibleRows.length === 0} />
             </>
           }
         />

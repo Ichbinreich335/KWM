@@ -129,3 +129,52 @@ export function useAllPages(query: { hasNextPage?: boolean; isFetchingNextPage?:
     if (hasNextPage && !isFetchingNextPage) fetchNextPage();
   }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 }
+
+function escapeHtml(v: string): string {
+  return v.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+
+export type PrintColumn = { label: string; align?: "right" };
+
+// Druckansicht in einem eigenen Fenster, unabhängig von Navigation und Layout der App.
+// Im Druckdialog „Als PDF sichern“ wählen. false: Das Fenster wurde vom Browser blockiert.
+export function printTable({ title, subtitle, columns, rows, footer }: { title: string; subtitle: string; columns: PrintColumn[]; rows: string[][]; footer?: string[] }): boolean {
+  const win = window.open("", "_blank");
+  if (!win) return false;
+  const cell = (tag: "th" | "td", v: string, c: PrintColumn) => `<${tag}${c.align === "right" ? ' class="r"' : ""}>${escapeHtml(v)}</${tag}>`;
+  const stand = new Date().toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" });
+  win.document.write(`<!doctype html><html lang="de"><head><meta charset="utf-8"><title>${escapeHtml(title)}</title>
+<style>
+  @page { size: A4; margin: 14mm 12mm; }
+  body { font: 10pt/1.35 system-ui, -apple-system, "Segoe UI", sans-serif; color: #111; margin: 0; }
+  header { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 1.5pt solid #111; padding-bottom: 6pt; margin-bottom: 10pt; }
+  h1 { font-size: 15pt; margin: 0; }
+  .sub { color: #555; margin-top: 2pt; }
+  .firma { text-align: right; color: #555; font-size: 9pt; }
+  table { width: 100%; border-collapse: collapse; }
+  th { text-align: left; font-weight: 600; border-bottom: 1pt solid #111; padding: 4pt 6pt; }
+  td { border-bottom: 0.5pt solid #ccc; padding: 4pt 6pt; vertical-align: top; }
+  tfoot td { border-top: 1pt solid #111; border-bottom: none; font-weight: 600; }
+  .r { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  tr { break-inside: avoid; }
+  thead { display: table-header-group; }
+</style></head><body>
+<header><div><h1>${escapeHtml(title)}</h1><div class="sub">${escapeHtml(subtitle)}</div></div>
+<div class="firma">Keramische Werkstatt Margaretenhöhe<br>Stand ${stand} · ${rows.length} Einträge</div></header>
+<table><thead><tr>${columns.map((c) => cell("th", c.label, c)).join("")}</tr></thead>
+<tbody>${rows.map((r) => `<tr>${r.map((v, i) => cell("td", v, columns[i])).join("")}</tr>`).join("")}</tbody>
+${footer ? `<tfoot><tr>${footer.map((v, i) => cell("td", v, columns[i])).join("")}</tr></tfoot>` : ""}
+</table></body></html>`);
+  win.document.close();
+  win.focus();
+  // Je nach Browser kommt „load“ oder nicht; gedruckt wird genau einmal.
+  let printed = false;
+  const go = () => {
+    if (printed) return;
+    printed = true;
+    win.print();
+  };
+  win.onload = go;
+  window.setTimeout(go, 400);
+  return true;
+}

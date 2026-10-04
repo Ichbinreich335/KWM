@@ -9,8 +9,9 @@ import { Badge } from "@/components/ui/badge";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { AlertTriangle, ArrowDown, ArrowUp, Bookmark, ChevronDown, ChevronLeft, ChevronRight, Columns3, Download, ImageOff, Loader2, Plus, Search, SlidersHorizontal, Trash2, X } from "lucide-react";
+import { AlertTriangle, ArrowDown, ArrowUp, Bookmark, ChevronDown, ChevronLeft, ChevronRight, Columns3, Download, FileSpreadsheet, ImageOff, Loader2, Plus, Printer, Search, SlidersHorizontal, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 const PAGE_SIZE = 100;
 const VERFUEGBAR = "verfügbar";
@@ -111,6 +112,55 @@ function useAllPages(query: { hasNextPage?: boolean; isFetchingNextPage?: boolea
   useEffect(() => {
     if (hasNextPage && !isFetchingNextPage) fetchNextPage();
   }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+}
+
+function escapeHtml(v: string): string {
+  return v.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+
+type PrintColumn = { label: string; align?: "right" };
+
+// Druckansicht in einem eigenen Fenster, unabhängig von Navigation und Layout der App.
+// Im Druckdialog „Als PDF sichern“ wählen. false: Das Fenster wurde vom Browser blockiert.
+function printTable({ title, subtitle, columns, rows, footer }: { title: string; subtitle: string; columns: PrintColumn[]; rows: string[][]; footer?: string[] }): boolean {
+  const win = window.open("", "_blank");
+  if (!win) return false;
+  const cell = (tag: "th" | "td", v: string, c: PrintColumn) => `<${tag}${c.align === "right" ? ' class="r"' : ""}>${escapeHtml(v)}</${tag}>`;
+  const stand = new Date().toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" });
+  win.document.write(`<!doctype html><html lang="de"><head><meta charset="utf-8"><title>${escapeHtml(title)}</title>
+<style>
+  @page { size: A4; margin: 14mm 12mm; }
+  body { font: 10pt/1.35 system-ui, -apple-system, "Segoe UI", sans-serif; color: #111; margin: 0; }
+  header { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 1.5pt solid #111; padding-bottom: 6pt; margin-bottom: 10pt; }
+  h1 { font-size: 15pt; margin: 0; }
+  .sub { color: #555; margin-top: 2pt; }
+  .firma { text-align: right; color: #555; font-size: 9pt; }
+  table { width: 100%; border-collapse: collapse; }
+  th { text-align: left; font-weight: 600; border-bottom: 1pt solid #111; padding: 4pt 6pt; }
+  td { border-bottom: 0.5pt solid #ccc; padding: 4pt 6pt; vertical-align: top; }
+  tfoot td { border-top: 1pt solid #111; border-bottom: none; font-weight: 600; }
+  .r { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  tr { break-inside: avoid; }
+  thead { display: table-header-group; }
+</style></head><body>
+<header><div><h1>${escapeHtml(title)}</h1><div class="sub">${escapeHtml(subtitle)}</div></div>
+<div class="firma">Keramische Werkstatt Margaretenhöhe<br>Stand ${stand} · ${rows.length} Einträge</div></header>
+<table><thead><tr>${columns.map((c) => cell("th", c.label, c)).join("")}</tr></thead>
+<tbody>${rows.map((r) => `<tr>${r.map((v, i) => cell("td", v, columns[i])).join("")}</tr>`).join("")}</tbody>
+${footer ? `<tfoot><tr>${footer.map((v, i) => cell("td", v, columns[i])).join("")}</tr></tfoot>` : ""}
+</table></body></html>`);
+  win.document.close();
+  win.focus();
+  // Je nach Browser kommt „load“ oder nicht; gedruckt wird genau einmal.
+  let printed = false;
+  const go = () => {
+    if (printed) return;
+    printed = true;
+    win.print();
+  };
+  win.onload = go;
+  window.setTimeout(go, 400);
+  return true;
 }
 
 const DIALOG_CLASS = "w-[calc(100vw-2rem)] max-h-[90vh] overflow-y-auto rounded-lg p-4 sm:p-6 [&>button:last-child]:hidden";
@@ -257,6 +307,29 @@ function DoneButton() {
         Fertig
       </Button>
     </DialogClose>
+  );
+}
+
+// Export einer Liste: Excel-taugliche CSV-Datei oder Druckansicht (dort „Als PDF sichern“).
+function ExportMenu({ onCsv, onPdf, disabled }: { onCsv: () => void; onPdf: () => void; disabled?: boolean }) {
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="outline" className="h-12 text-base" disabled={disabled}>
+          <Download className="w-5 h-5 mr-2" aria-hidden />
+          Exportieren
+          <ChevronDown className="w-4 h-4 ml-1" aria-hidden />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-56">
+        <DropdownMenuItem className="min-h-11 text-base gap-2" onSelect={onCsv}>
+          <FileSpreadsheet className="w-5 h-5" aria-hidden /> Excel (CSV-Datei)
+        </DropdownMenuItem>
+        <DropdownMenuItem className="min-h-11 text-base gap-2" onSelect={onPdf}>
+          <Printer className="w-5 h-5" aria-hidden /> PDF / Drucken
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
 
@@ -1132,8 +1205,29 @@ export default function Block() {
     changed();
   }
 
+  // Untertitel der Druckansicht: was gerade gefiltert ist, damit eine Liste für sich verständlich bleibt.
+  function filterBeschreibung(): string {
+    const teile: string[] = [tab === "alle" ? "Unikate und Editionsware" : tab === "unikat" ? "Unikate" : "Editionsware"];
+    quickKeys.forEach((k) => quick[k]?.length && teile.push(`${quickLabel(k, tab)}: ${quick[k]?.join(", ")}`));
+    if (search.trim()) teile.push(`Suche „${search.trim()}“`);
+    if (activeConditions.length) teile.push(`${activeConditions.length} weitere Bedingung${activeConditions.length === 1 ? "" : "en"}`);
+    return teile.join(" · ");
+  }
+
+  function exportPdf() {
+    const partner = quick.galerie?.length === 1 ? quick.galerie[0] : "";
+    const ok = printTable({
+      title: partner ? `Liste ${partner}` : "Bestandsliste",
+      subtitle: filterBeschreibung(),
+      columns: shown.map((c) => ({ label: c.label, align: c.align })),
+      rows: visibleRows.map((r) => shown.map((c) => formatCell(c, r))),
+      footer: shown.map((c, i) => footerCell(c, i)),
+    });
+    if (!ok) toast.error("Der Browser hat das Druckfenster blockiert. Bitte Pop-ups für diese Seite erlauben.");
+  }
+
   const footerCell = (c: Col, i: number) =>
-    c.key === "anzahl" ? `${zahl.format(summeAnzahl)} Stück` : c.key === "preis" ? euro.format(summePreis) : c.key === "vk" ? euroCent.format(summeVk) : i === 0 ? summeLabel : "";
+    c.key === "anzahl" ? `${zahl.format(summeAnzahl)} Stück` : c.key === "preis" ? euro.format(summePreis) : c.key === "vk" ? (summeVk ? euroCent.format(summeVk) : "") : i === 0 ? summeLabel : "";
 
   return (
     <div className="w-full px-4 sm:px-6 pt-6 pb-28 sm:pb-8">
@@ -1154,10 +1248,7 @@ export default function Block() {
                   }}
                 />
               </div>
-              <Button variant="outline" className="h-12 text-base" onClick={() => exportRows(visibleRows)} disabled={visibleRows.length === 0}>
-                <Download className="w-5 h-5 mr-2" aria-hidden />
-                CSV-Export
-              </Button>
+              <ExportMenu onCsv={() => exportRows(visibleRows)} onPdf={exportPdf} disabled={visibleRows.length === 0} />
             </>
           }
         />

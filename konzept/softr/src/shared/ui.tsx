@@ -4,7 +4,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { DialogClose, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { AlertTriangle, Camera, Check, ChevronRight, ImageOff, Loader2, Plus, Search, X } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { AlertTriangle, Camera, Check, ChevronDown, ChevronRight, Download, FileSpreadsheet, ImageOff, LayoutGrid, List, Loader2, Plus, Printer, Search, X } from "lucide-react";
 import { STATUS_ACTIVE, STATUS_BADGE } from "../shared/konstanten";
 import { type Attachment, type Opt, type ThumbSize, thumb } from "../shared/daten";
 
@@ -452,6 +453,75 @@ export function PhotoPicker({ files, onChange, multiple, error }: { files: File[
         </div>
       )}
       <ErrorText>{error}</ErrorText>
+    </div>
+  );
+}
+
+// Export einer Liste: Excel-taugliche CSV-Datei oder Druckansicht (dort „Als PDF sichern“).
+export function ExportMenu({ onCsv, onPdf, disabled }: { onCsv: () => void; onPdf: () => void; disabled?: boolean }) {
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="outline" className="h-12 text-base" disabled={disabled}>
+          <Download className="w-5 h-5 mr-2" aria-hidden />
+          Exportieren
+          <ChevronDown className="w-4 h-4 ml-1" aria-hidden />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-56">
+        <DropdownMenuItem className="min-h-11 text-base gap-2" onSelect={onCsv}>
+          <FileSpreadsheet className="w-5 h-5" aria-hidden /> Excel (CSV-Datei)
+        </DropdownMenuItem>
+        <DropdownMenuItem className="min-h-11 text-base gap-2" onSelect={onPdf}>
+          <Printer className="w-5 h-5" aria-hidden /> PDF / Drucken
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+
+export type Ansicht = "liste" | "kacheln";
+const ANSICHT_KEY = "kwm-ansicht";
+
+// Liste oder Kacheln. Am Handy sind Kacheln Standard, am Rechner die Liste. Die Wahl merkt sich das Gerät.
+export function useAnsicht(): [Ansicht, (a: Ansicht) => void] {
+  const [ansicht, setAnsicht] = useState<Ansicht>(() => {
+    try {
+      const saved = window.localStorage.getItem(ANSICHT_KEY);
+      if (saved === "liste" || saved === "kacheln") return saved;
+    } catch {
+      // Speicher gesperrt (privates Fenster): Standard nach Bildschirmbreite.
+    }
+    return window.matchMedia?.("(max-width: 639px)").matches ? "kacheln" : "liste";
+  });
+  const choose = (a: Ansicht) => {
+    setAnsicht(a);
+    try {
+      window.localStorage.setItem(ANSICHT_KEY, a);
+    } catch {
+      // Wahl gilt dann nur bis zum Neuladen.
+    }
+  };
+  return [ansicht, choose];
+}
+
+export function AnsichtToggle({ value, onChange }: { value: Ansicht; onChange: (a: Ansicht) => void }) {
+  const item = (key: Ansicht, label: string, icon: React.ReactNode) => (
+    <button
+      type="button"
+      aria-pressed={value === key}
+      aria-label={label}
+      title={label}
+      onClick={() => onChange(key)}
+      className={`inline-flex items-center justify-center h-11 w-11 transition-colors ${value === key ? "bg-muted text-foreground" : "text-muted-foreground hover:text-foreground"}`}
+    >
+      {icon}
+    </button>
+  );
+  return (
+    <div role="group" aria-label="Ansicht" className="inline-flex rounded-md border border-input overflow-hidden divide-x divide-input shrink-0">
+      {item("liste", "Als Liste", <List className="w-5 h-5" aria-hidden />)}
+      {item("kacheln", "Als Kacheln", <LayoutGrid className="w-5 h-5" aria-hidden />)}
     </div>
   );
 }

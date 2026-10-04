@@ -6,8 +6,9 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { AlertTriangle, Camera, Check, ChevronRight, Download, ImageOff, Loader2, Minus, Pencil, Plus, Search, Table2, X } from "lucide-react";
+import { AlertTriangle, Camera, Check, ChevronDown, ChevronRight, ClipboardList, Download, FileSpreadsheet, ImageOff, Images, LayoutGrid, List, Loader2, Minus, Pencil, Plus, Printer, Search, Star, Table2, X } from "lucide-react";
 import { toast } from "sonner";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 const PAGE_SIZE = 100;
 const VERFUEGBAR = "verfügbar";
@@ -155,6 +156,55 @@ function useAllPages(query: { hasNextPage?: boolean; isFetchingNextPage?: boolea
   useEffect(() => {
     if (hasNextPage && !isFetchingNextPage) fetchNextPage();
   }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+}
+
+function escapeHtml(v: string): string {
+  return v.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+
+type PrintColumn = { label: string; align?: "right" };
+
+// Druckansicht in einem eigenen Fenster, unabhängig von Navigation und Layout der App.
+// Im Druckdialog „Als PDF sichern“ wählen. false: Das Fenster wurde vom Browser blockiert.
+function printTable({ title, subtitle, columns, rows, footer }: { title: string; subtitle: string; columns: PrintColumn[]; rows: string[][]; footer?: string[] }): boolean {
+  const win = window.open("", "_blank");
+  if (!win) return false;
+  const cell = (tag: "th" | "td", v: string, c: PrintColumn) => `<${tag}${c.align === "right" ? ' class="r"' : ""}>${escapeHtml(v)}</${tag}>`;
+  const stand = new Date().toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" });
+  win.document.write(`<!doctype html><html lang="de"><head><meta charset="utf-8"><title>${escapeHtml(title)}</title>
+<style>
+  @page { size: A4; margin: 14mm 12mm; }
+  body { font: 10pt/1.35 system-ui, -apple-system, "Segoe UI", sans-serif; color: #111; margin: 0; }
+  header { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 1.5pt solid #111; padding-bottom: 6pt; margin-bottom: 10pt; }
+  h1 { font-size: 15pt; margin: 0; }
+  .sub { color: #555; margin-top: 2pt; }
+  .firma { text-align: right; color: #555; font-size: 9pt; }
+  table { width: 100%; border-collapse: collapse; }
+  th { text-align: left; font-weight: 600; border-bottom: 1pt solid #111; padding: 4pt 6pt; }
+  td { border-bottom: 0.5pt solid #ccc; padding: 4pt 6pt; vertical-align: top; }
+  tfoot td { border-top: 1pt solid #111; border-bottom: none; font-weight: 600; }
+  .r { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  tr { break-inside: avoid; }
+  thead { display: table-header-group; }
+</style></head><body>
+<header><div><h1>${escapeHtml(title)}</h1><div class="sub">${escapeHtml(subtitle)}</div></div>
+<div class="firma">Keramische Werkstatt Margaretenhöhe<br>Stand ${stand} · ${rows.length} Einträge</div></header>
+<table><thead><tr>${columns.map((c) => cell("th", c.label, c)).join("")}</tr></thead>
+<tbody>${rows.map((r) => `<tr>${r.map((v, i) => cell("td", v, columns[i])).join("")}</tr>`).join("")}</tbody>
+${footer ? `<tfoot><tr>${footer.map((v, i) => cell("td", v, columns[i])).join("")}</tr></tfoot>` : ""}
+</table></body></html>`);
+  win.document.close();
+  win.focus();
+  // Je nach Browser kommt „load“ oder nicht; gedruckt wird genau einmal.
+  let printed = false;
+  const go = () => {
+    if (printed) return;
+    printed = true;
+    win.print();
+  };
+  win.onload = go;
+  window.setTimeout(go, 400);
+  return true;
 }
 
 const DIALOG_CLASS = "w-[calc(100vw-2rem)] max-h-[90vh] overflow-y-auto rounded-lg p-4 sm:p-6 [&>button:last-child]:hidden";
@@ -501,6 +551,75 @@ function PhotoPicker({ files, onChange, multiple, error }: { files: File[]; onCh
   );
 }
 
+// Export einer Liste: Excel-taugliche CSV-Datei oder Druckansicht (dort „Als PDF sichern“).
+function ExportMenu({ onCsv, onPdf, disabled }: { onCsv: () => void; onPdf: () => void; disabled?: boolean }) {
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="outline" className="h-12 text-base" disabled={disabled}>
+          <Download className="w-5 h-5 mr-2" aria-hidden />
+          Exportieren
+          <ChevronDown className="w-4 h-4 ml-1" aria-hidden />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-56">
+        <DropdownMenuItem className="min-h-11 text-base gap-2" onSelect={onCsv}>
+          <FileSpreadsheet className="w-5 h-5" aria-hidden /> Excel (CSV-Datei)
+        </DropdownMenuItem>
+        <DropdownMenuItem className="min-h-11 text-base gap-2" onSelect={onPdf}>
+          <Printer className="w-5 h-5" aria-hidden /> PDF / Drucken
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+
+type Ansicht = "liste" | "kacheln";
+const ANSICHT_KEY = "kwm-ansicht";
+
+// Liste oder Kacheln. Am Handy sind Kacheln Standard, am Rechner die Liste. Die Wahl merkt sich das Gerät.
+function useAnsicht(): [Ansicht, (a: Ansicht) => void] {
+  const [ansicht, setAnsicht] = useState<Ansicht>(() => {
+    try {
+      const saved = window.localStorage.getItem(ANSICHT_KEY);
+      if (saved === "liste" || saved === "kacheln") return saved;
+    } catch {
+      // Speicher gesperrt (privates Fenster): Standard nach Bildschirmbreite.
+    }
+    return window.matchMedia?.("(max-width: 639px)").matches ? "kacheln" : "liste";
+  });
+  const choose = (a: Ansicht) => {
+    setAnsicht(a);
+    try {
+      window.localStorage.setItem(ANSICHT_KEY, a);
+    } catch {
+      // Wahl gilt dann nur bis zum Neuladen.
+    }
+  };
+  return [ansicht, choose];
+}
+
+function AnsichtToggle({ value, onChange }: { value: Ansicht; onChange: (a: Ansicht) => void }) {
+  const item = (key: Ansicht, label: string, icon: React.ReactNode) => (
+    <button
+      type="button"
+      aria-pressed={value === key}
+      aria-label={label}
+      title={label}
+      onClick={() => onChange(key)}
+      className={`inline-flex items-center justify-center h-11 w-11 transition-colors ${value === key ? "bg-muted text-foreground" : "text-muted-foreground hover:text-foreground"}`}
+    >
+      {icon}
+    </button>
+  );
+  return (
+    <div role="group" aria-label="Ansicht" className="inline-flex rounded-md border border-input overflow-hidden divide-x divide-input shrink-0">
+      {item("liste", "Als Liste", <List className="w-5 h-5" aria-hidden />)}
+      {item("kacheln", "Als Kacheln", <LayoutGrid className="w-5 h-5" aria-hidden />)}
+    </div>
+  );
+}
+
 const ds = datasource.define({ unikate: "unikate", edition: "edition", kuenstler: "kuenstler", glasuren: "glasuren", lagerorte: "lagerorte", partner: "partner" });
 const kuenstlerSelect = q.select({ name: "vqD0c", archiviert: "TOhYe" });
 const glasurSelect = q.select({ name: "OuhBi", archiviert: "jxxXN" });
@@ -737,6 +856,25 @@ function exportUnikate(list: Unikat[]) {
   );
 }
 
+function printUnikate(list: Unikat[], untertitel: string): boolean {
+  return printTable({
+    title: "Unikate",
+    subtitle: untertitel,
+    columns: [{ label: "Inv.-Nr." }, { label: "Name" }, { label: "Typ" }, { label: "Status" }, { label: "Künstler:in" }, { label: "Ort / Partner" }, { label: "Preis", align: "right" }],
+    rows: list.map((u) => [u.inv, u.name, u.typ, u.status, u.kuenstler?.label ?? "", ortVon(u), u.preis === null ? "" : euro.format(u.preis)]),
+  });
+}
+
+function printEdition(list: Edition[], untertitel: string): boolean {
+  return printTable({
+    title: "Editionsware",
+    subtitle: untertitel,
+    columns: [{ label: "Modell" }, { label: "Zustand" }, { label: "Glasur" }, { label: "Lagerort" }, { label: "Anzahl", align: "right" }],
+    rows: list.map((e) => [e.modell, e.zustand, e.glasur, e.lagerort?.label ?? "", zahl.format(e.anzahl)]),
+    footer: ["Summe", "", "", "", zahl.format(list.reduce((n, e) => n + e.anzahl, 0))],
+  });
+}
+
 function exportEdition(list: Edition[]) {
   downloadCsv(
     `editionsbestand-${today()}.csv`,
@@ -759,25 +897,14 @@ type EditForm = {
   notiz: string;
 };
 
-function UnikatDetail({
-  u,
-  onClose,
-  onSaved,
-  stamm,
-  typen,
-  statusListe,
-}: {
-  u: Unikat;
-  onClose: () => void;
-  onSaved: () => Promise<unknown>;
-  stamm: Stamm;
-  typen: Opt[];
-  statusListe: Opt[];
-}) {
+function UnikatDetail({ u, onClose, onSaved, stamm, typen, statusListe }: { u: Unikat; onClose: () => void; onSaved: () => Promise<unknown>; stamm: Stamm; typen: Opt[]; statusListe: Opt[] }) {
   const lagerorte = activeOptions(stamm.lagerorte, link(u.lagerort?.id));
   const galerien = activeOptions(stamm.partner, link(u.galerie?.id));
   const kuenstler = activeOptions(stamm.kuenstler, link(u.kuenstler?.id));
-  const glasuren = activeOptions(stamm.glasuren, u.glasur.map((g) => g.id));
+  const glasuren = activeOptions(
+    stamm.glasuren,
+    u.glasur.map((g) => g.id),
+  );
   const initial: EditForm = {
     name: u.name,
     typ: u.typ,
@@ -825,6 +952,13 @@ function UnikatDetail({
     }
   }
 
+  // Das erste Foto ist das Hauptbild. Umsortieren ändert nur die Reihenfolge, kein Foto geht verloren.
+  function makeMainPhoto(index: number) {
+    const fotos = [u.fotos[index], ...u.fotos.filter((_, i) => i !== index)].map((a) => ({ id: a.id, url: a.url, filename: a.filename }));
+    setPhotoIndex(0);
+    quickSave({ fotos }, "Hauptbild geändert");
+  }
+
   // Dieselben Regeln laufen zusätzlich als Softr-Workflow auf der Datenbank. Hier sorgen sie für sofortige Anzeige und „Rückgängig“.
   function changeStatus(status: string) {
     if (status === u.status || busy) return;
@@ -861,7 +995,8 @@ function UnikatDetail({
       if (newFiles.length) {
         const results = await uploadAsync(newFiles);
         if (results.some((r) => r.status !== "completed")) throw new Error("Foto konnte nicht hochgeladen werden.");
-        fotos = [...results.map((r) => ({ url: r.url as string, filename: r.file.name })), ...u.fotos.map((a) => ({ id: a.id, url: a.url, filename: a.filename }))];
+        // Neue Fotos hinten anhängen: Das erste Foto ist das Hauptbild und bleibt es.
+        fotos = [...u.fotos.map((a) => ({ id: a.id, url: a.url, filename: a.filename })), ...results.map((r) => ({ url: r.url as string, filename: r.file.name }))];
       }
       await update.mutateAsync({
         recordId: u.id,
@@ -990,10 +1125,26 @@ function UnikatDetail({
               {photo ? (
                 <div className="space-y-2">
                   <img src={thumb(photo, "large")} alt={u.name} className="w-full max-h-64 object-contain rounded-lg bg-muted" />
+                  {u.fotos.length > 1 &&
+                    (photoIndex === 0 ? (
+                      <p className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                        <Star className="w-4 h-4" aria-hidden /> Hauptbild, erscheint in Listen und Kacheln
+                      </p>
+                    ) : (
+                      <Button variant="ghost" className="h-11 px-2 text-base" disabled={busy || !update.enabled} onClick={() => makeMainPhoto(photoIndex)}>
+                        <Star className="w-5 h-5 mr-1.5" aria-hidden /> Als Hauptbild verwenden
+                      </Button>
+                    ))}
                   {u.fotos.length > 1 && (
                     <div className="flex gap-2 overflow-x-auto">
                       {u.fotos.map((a, i) => (
-                        <button key={a.id ?? a.url} type="button" aria-label={`Foto ${i + 1} zeigen`} onClick={() => setPhotoIndex(i)} className={`shrink-0 rounded-md overflow-hidden border-2 ${i === photoIndex ? "border-primary" : "border-transparent"}`}>
+                        <button
+                          key={a.id ?? a.url}
+                          type="button"
+                          aria-label={`Foto ${i + 1} zeigen`}
+                          onClick={() => setPhotoIndex(i)}
+                          className={`shrink-0 rounded-md overflow-hidden border-2 ${i === photoIndex ? "border-primary" : "border-transparent"}`}
+                        >
                           <img src={thumb(a, "small")} alt="" className="w-16 h-16 object-cover" />
                         </button>
                       ))}
@@ -1047,7 +1198,15 @@ function UnikatDetail({
               <div className="grid sm:grid-cols-2 gap-5">
                 <div>
                   <FieldLabel htmlFor="d-preis">Preis intern (€)</FieldLabel>
-                  <Input id="d-preis" inputMode="decimal" value={form.preis} onChange={(e) => set("preis", e.target.value)} placeholder="z. B. 480" className={FIELD_CLASS} aria-invalid={!!formError.preis} />
+                  <Input
+                    id="d-preis"
+                    inputMode="decimal"
+                    value={form.preis}
+                    onChange={(e) => set("preis", e.target.value)}
+                    placeholder="z. B. 480"
+                    className={FIELD_CLASS}
+                    aria-invalid={!!formError.preis}
+                  />
                   <ErrorText>{formError.preis}</ErrorText>
                 </div>
                 <label htmlFor="d-website" className="flex items-center justify-between gap-4 rounded-md border px-4 h-12 cursor-pointer self-end">
@@ -1118,6 +1277,172 @@ function UnikatDetail({
   );
 }
 
+// Kachel: Hauptbild groß, darunter Name, Nummer, Ort und Preis. Mehrere Fotos zeigt eine kleine Zahl.
+function UnikatTile({ u, onOpen }: { u: Unikat; onOpen: () => void }) {
+  const main = u.fotos[0];
+  return (
+    <button
+      type="button"
+      onClick={onOpen}
+      className="text-left rounded-lg border bg-card overflow-hidden transition-shadow hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+    >
+      <span className="relative block aspect-square bg-muted">
+        {main ? (
+          <img src={thumb(main, "medium")} alt="" loading="lazy" className="absolute inset-0 w-full h-full object-cover" />
+        ) : (
+          <span className="absolute inset-0 flex items-center justify-center text-muted-foreground/60" aria-label="Kein Foto">
+            <ImageOff className="w-6 h-6" aria-hidden />
+          </span>
+        )}
+        <span className="absolute left-2 top-2">
+          <StatusBadge text={u.status} />
+        </span>
+        {u.fotos.length > 1 && (
+          <span className="absolute right-2 bottom-2 inline-flex items-center gap-1 rounded-md bg-background/90 px-1.5 py-0.5 text-xs font-medium tabular-nums" aria-label={`${u.fotos.length} Fotos`}>
+            <Images className="w-3.5 h-3.5" aria-hidden />
+            {u.fotos.length}
+          </span>
+        )}
+      </span>
+      <span className="block p-3 space-y-0.5">
+        <span className="block font-medium leading-snug line-clamp-2 hyphens-auto">{u.name || "Ohne Namen"}</span>
+        <span className="block text-sm text-muted-foreground truncate">{[u.inv, ortVon(u)].filter(Boolean).join(" · ")}</span>
+        {u.preis !== null && <span className="block text-sm tabular-nums">{euro.format(u.preis)}</span>}
+      </span>
+    </button>
+  );
+}
+
+type InventurChange = { e: Edition; gezaehlt: number };
+const INVENTUR_KEY = "kwm-inventur";
+
+function loadCounts(): Record<string, string> {
+  try {
+    const raw = window.localStorage.getItem(INVENTUR_KEY);
+    return raw ? (JSON.parse(raw) as Record<string, string>) : {};
+  } catch {
+    return {};
+  }
+}
+
+// Inventur: gezählte Menge je Posten eintippen, Abweichungen sehen und gesammelt übernehmen.
+// Die Zahlen bleiben auf dem Gerät gespeichert, bis sie übernommen sind (Neuladen oder Unterbrechung schadet nicht).
+function InventurView({ rows, onApply, onClose }: { rows: Edition[]; onApply: (changes: InventurChange[]) => Promise<string[]>; onClose: () => void }) {
+  const [counts, setCounts] = useState<Record<string, string>>(loadCounts);
+  const [ort, setOrt] = useState("");
+  const [confirm, setConfirm] = useState(false);
+  const [busy, setBusy] = useState(false);
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(INVENTUR_KEY, JSON.stringify(counts));
+    } catch {
+      // Ohne Speicher gelten die Zahlen bis zum Neuladen.
+    }
+  }, [counts]);
+
+  const orte = [...new Set(rows.map((e) => e.lagerort?.label ?? "Ohne Lagerort"))].sort((a, b) => (a === "Ohne Lagerort" ? 1 : b === "Ohne Lagerort" ? -1 : a.localeCompare(b, "de")));
+  const shown = rows.filter((e) => !ort || (e.lagerort?.label ?? "Ohne Lagerort") === ort);
+  const groups = orte.filter((o) => !ort || o === ort).map((o) => ({ ort: o, rows: shown.filter((e) => (e.lagerort?.label ?? "Ohne Lagerort") === o) }));
+  const gezaehlt = rows.filter((e) => counts[e.id] !== undefined && counts[e.id] !== "");
+  const changes: InventurChange[] = gezaehlt.map((e) => ({ e, gezaehlt: Number(counts[e.id]) })).filter((c) => c.gezaehlt !== c.e.anzahl);
+
+  async function apply() {
+    setBusy(true);
+    const offen = await onApply(changes);
+    setCounts((c) => Object.fromEntries(Object.entries(c).filter(([id]) => offen.includes(id))));
+    setBusy(false);
+    setConfirm(false);
+  }
+
+  return (
+    <div className="space-y-4">
+      <div className={`${PANEL_CLASS} p-4 flex flex-wrap items-center gap-3`}>
+        <div className="flex-1 min-w-48">
+          <p className="font-medium">Inventur</p>
+          <p className="text-sm text-muted-foreground">Gezählte Menge eintippen. Übernommen wird erst am Ende, gesammelt.</p>
+        </div>
+        <select aria-label="Lagerort" value={ort} onChange={(ev) => setOrt(ev.target.value)} className={`${INPUT_CLASS} w-auto min-w-48`}>
+          <option value="">Alle Lagerorte</option>
+          {orte.map((o) => (
+            <option key={o} value={o}>
+              {o}
+            </option>
+          ))}
+        </select>
+        <Button variant="outline" className="h-12 text-base" onClick={onClose}>
+          Inventur beenden
+        </Button>
+      </div>
+
+      {groups.map((g) => (
+        <section key={g.ort} className={`${PANEL_CLASS} px-4`}>
+          <h2 className="py-3 font-semibold border-b">{g.ort}</h2>
+          <ul className="divide-y">
+            {g.rows.map((e) => {
+              const value = counts[e.id] ?? "";
+              const delta = value === "" ? null : Number(value) - e.anzahl;
+              return (
+                <li key={e.id} className="flex items-center gap-3 py-2">
+                  <span className="flex-1 min-w-0">
+                    <span className="block font-medium truncate">{e.modell}</span>
+                    <span className="block text-sm text-muted-foreground">{[e.zustand, e.glasur].filter(Boolean).join(" · ")}</span>
+                  </span>
+                  <span className="text-sm text-muted-foreground tabular-nums whitespace-nowrap">Soll {zahl.format(e.anzahl)}</span>
+                  <Input
+                    inputMode="numeric"
+                    aria-label={`${e.modell} ${e.zustand} ${e.glasur}: gezählt`}
+                    placeholder="–"
+                    value={value}
+                    onChange={(ev) => setCounts((c) => ({ ...c, [e.id]: ev.target.value.replace(/\D/g, "").slice(0, 5) }))}
+                    className="h-11 w-20 text-center text-base md:text-base"
+                  />
+                  <span className={`w-12 text-right text-sm font-medium tabular-nums ${delta === null ? "" : delta === 0 ? "text-emerald-700" : "text-amber-800"}`}>
+                    {delta === null ? "" : delta === 0 ? <Check className="inline w-4 h-4" aria-label="stimmt" /> : delta > 0 ? `+${delta}` : `−${-delta}`}
+                  </span>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+      ))}
+
+      <div className="sticky bottom-3 z-10">
+        <div className={`${PANEL_CLASS} shadow-md p-3 flex flex-wrap items-center gap-3`}>
+          <span className="flex-1 text-base">
+            {zahl.format(gezaehlt.length)} gezählt · <strong>{zahl.format(changes.length)}</strong> {changes.length === 1 ? "Abweichung" : "Abweichungen"}
+          </span>
+          <Button className="h-12 text-base" disabled={changes.length === 0 || busy} onClick={() => setConfirm(true)}>
+            Abweichungen übernehmen
+          </Button>
+        </div>
+      </div>
+
+      <Dialog open={confirm} onOpenChange={(o) => !busy && setConfirm(o)}>
+        <DialogContent className={`${DIALOG_CLASS} max-w-lg`}>
+          <PanelHeader title={`${changes.length} ${changes.length === 1 ? "Änderung" : "Änderungen"} übernehmen`} description="Der Bestand wird auf die gezählten Mengen gesetzt." />
+          <ul className="px-4 divide-y text-base">
+            {changes.map((c) => (
+              <li key={c.e.id} className="flex justify-between gap-3 py-2">
+                <span className="min-w-0 truncate">{[c.e.modell, c.e.zustand, c.e.glasur].filter(Boolean).join(" · ")}</span>
+                <span className="tabular-nums whitespace-nowrap">
+                  {zahl.format(c.e.anzahl)} → <strong>{zahl.format(c.gezaehlt)}</strong>
+                </span>
+              </li>
+            ))}
+          </ul>
+          <div className="px-4 pb-6 pt-2 space-y-2">
+            <Button className="w-full h-12 text-base" disabled={busy} onClick={apply}>
+              {busy ? <Loader2 className="w-5 h-5 mr-2 animate-spin" aria-hidden /> : null}
+              Jetzt übernehmen
+            </Button>
+            <DoneButton />
+          </div>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
+
 function EditionRow({ e, busy, canEdit, onAdjust, onOpen }: { e: Edition; busy: boolean; canEdit: boolean; onAdjust: (delta: number) => void; onOpen: () => void }) {
   return (
     <div className="flex items-center gap-2 py-1">
@@ -1143,7 +1468,19 @@ function EditionRow({ e, busy, canEdit, onAdjust, onOpen }: { e: Edition; busy: 
   );
 }
 
-function EditionDetail({ e, onClose, onSave, lagerorte, canEdit }: { e: Edition; onClose: () => void; onSave: (fields: { anzahl: number; lagerort: string[]; notiz: string }) => Promise<void>; lagerorte: Opt[]; canEdit: boolean }) {
+function EditionDetail({
+  e,
+  onClose,
+  onSave,
+  lagerorte,
+  canEdit,
+}: {
+  e: Edition;
+  onClose: () => void;
+  onSave: (fields: { anzahl: number; lagerort: string[]; notiz: string }) => Promise<void>;
+  lagerorte: Opt[];
+  canEdit: boolean;
+}) {
   const [anzahl, setAnzahl] = useState(String(e.anzahl));
   const [lagerortId, setLagerortId] = useState(e.lagerort?.id ?? "");
   const [notiz, setNotiz] = useState(e.notiz);
@@ -1161,7 +1498,14 @@ function EditionDetail({ e, onClose, onSave, lagerorte, canEdit }: { e: Edition;
               <Button variant="outline" className="h-12 w-12" aria-label="Eins weniger" disabled={!canEdit} onClick={() => setAnzahl(String(Math.max(0, value - 1)))}>
                 <Minus className="w-5 h-5" aria-hidden />
               </Button>
-              <Input id="ed-anzahl" inputMode="numeric" disabled={!canEdit} value={anzahl} onChange={(ev) => setAnzahl(ev.target.value.replace(/\D/g, ""))} className="h-12 w-24 rounded-md text-center text-lg md:text-lg" />
+              <Input
+                id="ed-anzahl"
+                inputMode="numeric"
+                disabled={!canEdit}
+                value={anzahl}
+                onChange={(ev) => setAnzahl(ev.target.value.replace(/\D/g, ""))}
+                className="h-12 w-24 rounded-md text-center text-lg md:text-lg"
+              />
               <Button variant="outline" className="h-12 w-12" aria-label="Eins mehr" disabled={!canEdit} onClick={() => setAnzahl(String(value + 1))}>
                 <Plus className="w-5 h-5" aria-hidden />
               </Button>
@@ -1209,6 +1553,8 @@ export default function Block() {
   const [editionId, setEditionId] = useState("");
   const [zustandFilter, setZustandFilter] = useState<ZustandKey>("alle");
   const [programmFilter, setProgrammFilter] = useState<ProgrammKey>("");
+  const [inventur, setInventur] = useState(false);
+  const [ansicht, setAnsicht] = useAnsicht();
   const [limit, setLimit] = useState(LIST_STEP);
   const [pendingEdition, setPendingEdition] = useState("");
 
@@ -1311,6 +1657,41 @@ export default function Block() {
     }
   }
 
+  // Inventur übernehmen: nur Posten, deren Anzahl sich seit dem Zählen nicht geändert hat. Die anderen bleiben offen.
+  async function applyInventur(changes: InventurChange[]): Promise<string[]> {
+    const fresh = await freshItems(editionQuery);
+    if (!fresh) {
+      toast.error("Der Bestand konnte nicht geladen werden. Bitte erneut übernehmen.");
+      return changes.map((c) => c.e.id);
+    }
+    const offen: string[] = [];
+    let ok = 0;
+    for (const c of changes) {
+      const row = fresh.find((i) => i.id === c.e.id);
+      if (!row || (num(row.fields.anzahl) ?? 0) !== c.e.anzahl) {
+        offen.push(c.e.id);
+        continue;
+      }
+      try {
+        await editionUpdate.mutateAsync({ recordId: c.e.id, fields: { anzahl: c.gezaehlt } } as never);
+        ok++;
+      } catch {
+        offen.push(c.e.id);
+      }
+    }
+    await editionQuery.refetch();
+    if (ok) toast.success(`${ok} Posten übernommen.`);
+    if (offen.length) toast.error(`${offen.length} ${offen.length === 1 ? "Posten wurde" : "Posten wurden"} inzwischen geändert oder nicht gespeichert. Bitte dort neu zählen.`);
+    return offen;
+  }
+
+  function exportPdf() {
+    const ok = isEdition
+      ? printEdition(visibleEdition, [activeZustand.key === "alle" ? "Alle Zustände" : activeZustand.label, programmFilter || "Alle Programme", term && `Suche „${term}“`].filter(Boolean).join(" · "))
+      : printUnikate(visible, [activeTab.label, typFilter, kuenstlerImBestand.find((k) => k.id === kuenstlerFilter)?.label, term && `Suche „${term}“`].filter(Boolean).join(" · "));
+    if (!ok) toast.error("Der Browser hat das Druckfenster blockiert. Bitte Pop-ups für diese Seite erlauben.");
+  }
+
   async function saveEdition(e: Edition, fields: { anzahl: number; lagerort: string[]; notiz: string }) {
     try {
       // Hat jemand die Anzahl geändert, seit das Fenster offen ist, nicht überschreiben, sondern melden.
@@ -1348,9 +1729,11 @@ export default function Block() {
                   <Table2 className="w-5 h-5 mr-2" aria-hidden /> Tabelle
                 </a>
               </Button>
-              <Button variant="outline" className="h-11 text-base" onClick={() => (isEdition ? exportEdition(visibleEdition) : exportUnikate(visible))} disabled={isEdition ? visibleEdition.length === 0 : visible.length === 0}>
-                <Download className="w-5 h-5 mr-2" aria-hidden /> CSV
-              </Button>
+              <ExportMenu
+                onCsv={() => (isEdition ? exportEdition(visibleEdition) : exportUnikate(visible))}
+                onPdf={exportPdf}
+                disabled={isEdition ? visibleEdition.length === 0 : visible.length === 0}
+              />
             </>
           }
         />
@@ -1366,13 +1749,14 @@ export default function Block() {
             setArt(key);
             setSearch("");
             setLimit(LIST_STEP);
+            setInventur(false);
           }}
         />
 
         {isEdition ? (
           <>
             <FilterChips label="Zustand" options={zustandChips} value={zustandFilter} onChange={setZustandFilter} />
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-[minmax(0,1fr)_16rem]">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-[minmax(0,1fr)_16rem_auto]">
               <div className="flex">
                 <SearchField label="Suche" placeholder="Suchen: Nummer, Modell, Glasur, Ort" value={search} onChange={setSearch} />
               </div>
@@ -1381,19 +1765,27 @@ export default function Block() {
                 <option value={EDITION_PROGRAMM}>Editionen</option>
                 <option value={MANUFAKTUR_PROGRAMM}>Manufakturprogramm</option>
               </select>
+              {!inventur && editionUpdate.enabled && (
+                <Button variant="outline" className="h-12 text-base" onClick={() => setInventur(true)}>
+                  <ClipboardList className="w-5 h-5 mr-2" aria-hidden /> Inventur
+                </Button>
+              )}
             </div>
           </>
         ) : (
           <>
-            <FilterChips
-              label="Status"
-              options={tabs}
-              value={tab}
-              onChange={(key) => {
-                setTab(key);
-                setLimit(LIST_STEP);
-              }}
-            />
+            <div className="flex items-start justify-between gap-3">
+              <FilterChips
+                label="Status"
+                options={tabs}
+                value={tab}
+                onChange={(key) => {
+                  setTab(key);
+                  setLimit(LIST_STEP);
+                }}
+              />
+              <AnsichtToggle value={ansicht} onChange={setAnsicht} />
+            </div>
             <div className="grid grid-cols-2 gap-3 lg:grid-cols-[minmax(0,1fr)_10rem_12rem_11rem]">
               <div className="col-span-2 lg:col-span-1 flex">
                 <SearchField label="Suche" placeholder="Suchen: Name, Nummer, Glasur, Ort" value={search} onChange={setSearch} />
@@ -1429,6 +1821,8 @@ export default function Block() {
           <ErrorState text="Der Bestand konnte nicht geladen werden. Bitte die Seite neu laden." />
         ) : loading ? (
           <LoadingState text="Bestand wird geladen …" />
+        ) : isEdition && inventur ? (
+          <InventurView rows={visibleEdition} onApply={applyInventur} onClose={() => setInventur(false)} />
         ) : isEdition ? (
           visibleEdition.length === 0 ? (
             <EmptyState text="Keine Editionsware gefunden." />
@@ -1458,24 +1852,34 @@ export default function Block() {
           </div>
         ) : (
           <>
-            <ul className={`${PANEL_CLASS} px-3 divide-y`}>
-              {visible.slice(0, limit).map((u) => (
-                <li key={u.id}>
-                  <ListRow
-                    fotos={u.fotos}
-                    title={u.name || "Ohne Namen"}
-                    sub={[u.inv, u.kuenstler?.label, ortVon(u) || "Kein Lagerort"].filter(Boolean).join(" · ")}
-                    meta={
-                      <span className="flex flex-col items-end gap-1">
-                        <StatusBadge text={u.status} />
-                        {u.preis !== null && <span className="text-sm tabular-nums">{euro.format(u.preis)}</span>}
-                      </span>
-                    }
-                    onClick={() => setSelectedId(u.id)}
-                  />
-                </li>
-              ))}
-            </ul>
+            {ansicht === "kacheln" ? (
+              <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+                {visible.slice(0, limit).map((u) => (
+                  <li key={u.id} className="grid">
+                    <UnikatTile u={u} onOpen={() => setSelectedId(u.id)} />
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <ul className={`${PANEL_CLASS} px-3 divide-y`}>
+                {visible.slice(0, limit).map((u) => (
+                  <li key={u.id}>
+                    <ListRow
+                      fotos={u.fotos}
+                      title={u.name || "Ohne Namen"}
+                      sub={[u.inv, u.kuenstler?.label, ortVon(u) || "Kein Lagerort"].filter(Boolean).join(" · ")}
+                      meta={
+                        <span className="flex flex-col items-end gap-1">
+                          <StatusBadge text={u.status} />
+                          {u.preis !== null && <span className="text-sm tabular-nums">{euro.format(u.preis)}</span>}
+                        </span>
+                      }
+                      onClick={() => setSelectedId(u.id)}
+                    />
+                  </li>
+                ))}
+              </ul>
+            )}
             {visible.length > limit && (
               <div className="flex justify-center">
                 <Button variant="outline" className="h-12 text-base" onClick={() => setLimit((l) => l + LIST_STEP)}>
