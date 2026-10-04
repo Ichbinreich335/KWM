@@ -4,7 +4,8 @@ import { reducedMotion } from './keramik';
 
 const MAX_SHIFT = 5; // Prozent der Bildhöhe
 
-export default function init(el: HTMLElement) {
+export default function init(el: Element) {
+  if (!(el instanceof HTMLElement)) return;
   if (reducedMotion()) return;
   const img = el.querySelector('.sticky-bild__img');
   if (!img) return;

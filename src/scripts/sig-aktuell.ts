@@ -26,7 +26,8 @@ function statusText(start: Date, end: Date, today: Date) {
   return `Läuft · bis ${formatDay(end)}`;
 }
 
-export default function init(el: HTMLElement) {
+export default function init(el: Element) {
+  if (!(el instanceof HTMLElement)) return;
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 

@@ -1,5 +1,5 @@
 // Lädt die generativen Elemente: je Platz [data-sig] das passende Modul.
-type Signatur = { default: (el: HTMLElement) => void };
+type Signatur = { default: (el: Element) => void };
 
 const modules: Record<string, () => Promise<Signatur>> = {
   logo: () => import('./sig-logo'),
@@ -11,8 +11,8 @@ const modules: Record<string, () => Promise<Signatur>> = {
   anfrage: () => import('./sig-anfrage'),
 };
 
-document.querySelectorAll<HTMLElement>('[data-sig]').forEach((el) => {
-  const key = el.dataset['sig'];
+document.querySelectorAll('[data-sig]').forEach((el) => {
+  const key = el.getAttribute('data-sig');
   const load = key ? modules[key] : undefined;
   if (load) load().then((m) => m.default(el));
 });

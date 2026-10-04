@@ -35,7 +35,9 @@ function buildMailto(data: Anfrage) {
   return `mailto:${RECIPIENT}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(lines.join('\r\n'))}`;
 }
 
-export default function init(root: HTMLElement) {
+export default function init(el: Element) {
+  if (!(el instanceof HTMLElement)) return;
+  const root = el;
   const form = root.querySelector('form');
   const done = root.querySelector<HTMLElement>('.anfrage__done');
   const summary = root.querySelector<HTMLElement>('.anfrage__summary');
