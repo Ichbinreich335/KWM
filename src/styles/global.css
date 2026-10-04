@@ -582,12 +582,6 @@ body::after {
 }
 .lede__text {
   grid-column: 1 / 11;
-  font-family: var(--f-text);
-  font-size: var(--t-lede);
-  line-height: var(--t-lede-lh);
-  letter-spacing: -0.01em;
-  text-wrap: balance;
-  margin: 0;
 }
 .lede__col {
   font-size: var(--t-small);
