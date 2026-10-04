@@ -1,10 +1,15 @@
 ---
+import { getImage } from 'astro:assets';
 import Bild from '../components/Bild.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import InquiryBand from '../components/InquiryBand.astro';
 import '../styles/basis.css';
 import '../styles/seiten/page-manufaktur.css';
 import '../styles/signaturen/signaturen.css';
+import { bildMetadaten } from '../data/bilder';
+
+// Die Glasurknöpfe tragen die gebaute Bild-URL in data-img (Doku: Bild-URL an den Client reichen).
+const glasurBild = async (src: string) => (await getImage({ src: bildMetadaten(src) })).src;
 ---
 
 <BaseLayout
@@ -1173,7 +1178,7 @@ import '../styles/signaturen/signaturen.css';
                 data-name="weiß"
                 data-meta="Geschirr"
                 data-color="#e1dccc"
-                data-img="/img/kwm/weiss.webp"
+                data-img={await glasurBild('/img/kwm/weiss.webp')}
               >
                 <Bild src="/img/kwm/weiss.webp" width="100" height="100" alt="" loading="eager" />
                 <span>weiß</span>
@@ -1187,7 +1192,7 @@ import '../styles/signaturen/signaturen.css';
                 data-name="hellgrün matt"
                 data-meta="Geschirr · matt"
                 data-color="#cfe0d5"
-                data-img="/img/kwm/hellgruen_matt.webp"
+                data-img={await glasurBild('/img/kwm/hellgruen_matt.webp')}
               >
                 <Bild src="/img/kwm/hellgruen_matt.webp" width="100" height="100" alt="" loading="eager" />
                 <span>hellgrün matt</span>
@@ -1201,7 +1206,7 @@ import '../styles/signaturen/signaturen.css';
                 data-name="hellgrün glänzend"
                 data-meta="Geschirr · glänzend"
                 data-color="#92ad9b"
-                data-img="/img/kwm/hellgruen_glaenzend.webp"
+                data-img={await glasurBild('/img/kwm/hellgruen_glaenzend.webp')}
                 data-gloss
               >
                 <Bild src="/img/kwm/hellgruen_glaenzend.webp" width="100" height="100" alt="" loading="eager" />
@@ -1216,7 +1221,7 @@ import '../styles/signaturen/signaturen.css';
                 data-name="dunkelgrün glänzend"
                 data-meta="Geschirr · glänzend"
                 data-color="#3f3b22"
-                data-img="/img/kwm/dunkelgruen_glaenzend.webp"
+                data-img={await glasurBild('/img/kwm/dunkelgruen_glaenzend.webp')}
                 data-gloss
                 data-dark
               >
@@ -1232,7 +1237,7 @@ import '../styles/signaturen/signaturen.css';
                 data-name="dunkelgrün matt"
                 data-meta="Geschirr · matt"
                 data-color="#474931"
-                data-img="/img/kwm/dunkelgruen_matt.webp"
+                data-img={await glasurBild('/img/kwm/dunkelgruen_matt.webp')}
                 data-dark
               >
                 <Bild src="/img/kwm/dunkelgruen_matt.webp" width="100" height="100" alt="" loading="eager" />
@@ -1247,7 +1252,7 @@ import '../styles/signaturen/signaturen.css';
                 data-name="rostbraun"
                 data-meta="Geschirr"
                 data-color="#8c580a"
-                data-img="/img/kwm/rostbraun.webp"
+                data-img={await glasurBild('/img/kwm/rostbraun.webp')}
                 data-dark
               >
                 <Bild src="/img/kwm/rostbraun.webp" width="100" height="100" alt="" loading="eager" />
@@ -1265,7 +1270,7 @@ import '../styles/signaturen/signaturen.css';
                 data-name="hellblau"
                 data-meta="Edition"
                 data-color="#75857a"
-                data-img="/img/kwm/hellblau.webp"
+                data-img={await glasurBild('/img/kwm/hellblau.webp')}
                 data-dark
               >
                 <Bild src="/img/kwm/hellblau.webp" width="100" height="100" alt="" loading="eager" />
@@ -1280,7 +1285,7 @@ import '../styles/signaturen/signaturen.css';
                 data-name="weiß"
                 data-meta="Edition · Craquelé"
                 data-color="#c3bcaf"
-                data-img="/img/kwm/craquele_weiss.webp"
+                data-img={await glasurBild('/img/kwm/craquele_weiss.webp')}
               >
                 <Bild src="/img/kwm/craquele_weiss.webp" width="100" height="100" alt="" loading="eager" />
                 <span>weiß</span>
@@ -1294,7 +1299,7 @@ import '../styles/signaturen/signaturen.css';
                 data-name="hellgrün"
                 data-meta="Edition · Craquelé"
                 data-color="#848d7a"
-                data-img="/img/kwm/craquele_hellgruen.webp"
+                data-img={await glasurBild('/img/kwm/craquele_hellgruen.webp')}
                 data-dark
               >
                 <Bild src="/img/kwm/craquele_hellgruen.webp" width="100" height="100" alt="" loading="eager" />
@@ -1309,7 +1314,7 @@ import '../styles/signaturen/signaturen.css';
                 data-name="dunkelgrün"
                 data-meta="Edition · Craquelé"
                 data-color="#5a6251"
-                data-img="/img/kwm/craquele_dunkelgruen.webp"
+                data-img={await glasurBild('/img/kwm/craquele_dunkelgruen.webp')}
                 data-dark
               >
                 <Bild src="/img/kwm/craquele_dunkelgruen.webp" width="100" height="100" alt="" loading="eager" />
