@@ -110,6 +110,8 @@ Das passt zu `konzept/redirects-vorschlag.txt`, der schon auf `/aktuelles` usw. 
 - Geheimnisse (API-Token, Deploy-Hook-URL) nie ins Repo.
 - Vor jedem Merge: `npm run check` grün, Skill `code-review`, Screens 1440/390 px unter `.shots/astro/`.
 - Arbeit nur im Worktree `../KWM-astro`. Vor jedem Commit `git branch --show-current` prüfen.
+- **Doku vor Code:** Alles, was nicht wörtlich im Plan steht, wird vor dem Schreiben im `astro-docs`- bzw. `cloudflare-docs`-MCP nachgeschlagen und nach den dortigen Best Practices umgesetzt. Ist das MCP nicht erreichbar, melden statt raten.
+- **Fehler-Regel:** Fehler aus Prototyp und alter Seite werden behoben, aber geordnet. Unsichtbare Korrekturen (gültiges HTML, absolute Links, fehlende `alt`/`aria`-Angaben, doppelte Daten) gehören sofort in Phase A, solange der Optik-Test grün bleibt. Alles, was man sieht (Abstände, Kontrast, Tippflächen, Texte, Umbrüche), wird in Phase A nur in `konzept/ASTRO-BERICHT.md` unter „Fehlerliste“ notiert (Seite, Fundstelle, Vorschlag) und in Phase B behoben. So bleibt der 1:1-Vergleich aussagekräftig, und kein Fund geht verloren.
 
 ## 5. Prüffokus (fällt in keinem Einzelschritt von selbst auf)
 
@@ -126,7 +128,7 @@ Das passt zu `konzept/redirects-vorschlag.txt`, der schon auf `/aktuelles` usw. 
 | PR | Inhalt | Sichtbare Änderung | Voraussetzung |
 |---|---|---|---|
 | **A** | Astro-Gerüst 1:1: Seiten, Layout, 4 Komponenten, Assets unverändert in `public/`, Tests, Werkzeuge, Workers Builds + Previews | keine | E2–E4 |
-| **B** | Varianten festlegen, Entwurf-Panel und ungenutzte Signaturen entfernen | keine (gegenüber `?praesentation`) | E5 |
+| **B** | Varianten festlegen, Entwurf-Panel und ungenutzte Signaturen entfernen; danach die Fehlerliste aus Phase A abarbeiten | ja, gezielt (nur die Fehlerkorrekturen) | E5, Fehlerliste |
 | **C** | Asset-Pipeline: CSS und JS nach `src/` (gebündelt, gehasht), Skripte in TypeScript strict, Bilder über `astro:assets`, Schriften über die Fonts API | keine, schnellere Ladezeiten | B |
 | **D** | Komponenten-Bibliothek nach `DESIGN.md` §11, Inhalte als typisierte Daten in der Form des Sanity-Modells, Seiten-CSS aufgelöst | keine | C |
 | **E** | Technisches SEO und Härtung: Sitemap, Canonical/OG, JSON-LD, Sicherheits-Header, CSP | keine | D |
@@ -1155,6 +1157,12 @@ BASIS_URL=https://<preview>-kwm-redesign.<subdomain>.workers.dev npx playwright 
 2. Keine Konsolenfehler (Teil der Optik-Tests).
 3. Lighthouse vorher (Prototyp) und nachher (Vorschau) mit dem Skill `web-perf`, mobil, je Startseite und Manufaktur. Nachher darf nicht schlechter sein.
 4. Screens zur Sichtprüfung: `node .shots/shoot.mjs <vorschau-url> astro-a` → `.shots/astro/`. Ansehen und gegen die Optik-Checkliste aus `CLAUDE.md` prüfen.
+5. **Fehler-Audit für Phase B:** alle 13 Seiten prüfen mit
+   - Barrierefreiheit: `@axe-core/playwright` (als Test `tests/barrierefreiheit.spec.ts`, Regeln WCAG 2.2 AA). Verstöße kommen in die Fehlerliste, der Test bleibt bis Phase B als `test.fixme` markiert.
+   - Lighthouse: alle vier Kategorien (Skill `web-perf`).
+   - Optik-Checkliste aus `CLAUDE.md`: Tippflächen ≥ 44 px, kein horizontales Scrollen bei 390 px, Kontrast, abgeschnittene Texte.
+   - Sichtprüfung mit den Skills `impeccable` (Modus Audit/Critique) und `design:accessibility-review`.
+   Ergebnis: priorisierte Fehlerliste im Bericht.
 
 - [ ] **Schritt 4: README und Bericht.** `README.md` neu: Start (`npm install`, `npm run dev`), Prüfen (`npm run check`, `npm run test:ausgangsstand` + `npm test`), Deploy (Workers Builds, Vorschau pro Branch), Ordnerstruktur. `konzept/ASTRO-BERICHT.md`: erledigt, offen, Screens, Lighthouse-Werte, akzeptierte Abweichungen, was der Admin tun muss.
 
@@ -1173,7 +1181,7 @@ git rm -r prototyp && npm uninstall playwright   # @playwright/test bleibt
 
 ---
 
-## 8. Phase B: Varianten festlegen (eigener PR)
+## 8. Phase B: Varianten festlegen und Fehler beheben (zwei PRs)
 
 Voraussetzung: E5, vom Admin am 04.10.2026 per Screenshot des Entwurf-Panels bestätigt. Ausgangsstand: Screens von `main` mit `?praesentation`, denn diese Ansicht entspricht genau der Auswahl.
 
@@ -1197,6 +1205,7 @@ Aufgaben:
 2. **B2 Skripte und CSS:** `public/js/entwurf.js` und `public/css/entwurf.css` löschen, den `<script>` im Layout entfernen. Alle Signatur-Module löschen, die nach B1 kein `[data-sig]` mehr im Markup haben, samt Eintrag in `signaturen.js`. Prüfen mit `grep -rho 'data-sig="[a-z]*"' src | sort -u`. Voraussichtlich betrifft das `sig-komposition`, `sig-drehen` und `sig-profil`; ob `sig-buehne` und der Kosmos-Code in `main.js` noch genutzt werden, entscheidet derselbe Grep. CSS-Regeln für `[data-grund="porzellan"|"creme"]`, `[data-lebensweg="zeichnen"]` usw. entfernen.
 3. **B3 Kopf-Skript:** Den Grundton statisch setzen (`<html lang="de" data-grund="galerie">`). Das Inline-Skript behält nur `js`-Klasse und Logo-Zeichnung.
 4. **B4 Prüfung:** Optik-Tests gegen den `main`-Ausgangsstand (`?praesentation`), alle PASS. `grep -rn "kwm-entwurf\|praesentation" src public` ohne Treffer. Konsolenfehler: keine. Danach Code-Review und PR „Varianten festgelegt, Entwurf-Panel entfernt“.
+5. **B5 Fehlerbehebung (zweiter PR):** Die Fehlerliste aus Phase A in Prioritätsreihenfolge abarbeiten. Jede Korrektur ist eine bewusste, sichtbare Änderung: Screens vorher und nachher unter `.shots/astro-fehler/`, danach die betroffenen Optik-Screens gezielt aktualisieren. Der Barrierefreiheits-Test (`test.fixme` entfernen) muss am Ende grün sein. Gestalterische Fragen, die die Liste aufwirft (z. B. Kontrast eines Tons ändern), vorher dem Admin vorlegen.
 
 ---
 
@@ -1278,17 +1287,18 @@ Skills `seo-aeo-best-practices` und `web-perf`, Astro-Doku `@astrojs/sitemap` un
 
 ## 13a. Ausführung: wer macht was
 
-Ausführung mit `superpowers:subagent-driven-development`. Die Hauptsession läuft auf dem stärksten Modell (CLAUDE.md: „Architektur, Umbauten und Reviews mit dem stärksten verfügbaren Modell“).
+Festlegung des Admins (04.10.2026): Planung und Feinplanung jeder Phase (B–E und die Folgepläne) macht **immer Opus**. Mechanisches Umsetzen darf Sonnet übernehmen. Geprüft wird gebündelt am Ende, nicht nach jeder Aufgabe.
 
 | Aufgabe | Wer | Warum |
 |---|---|---|
-| A0–A3 (Worktree, Ausgangsstand, Gerüst, Layout) | Hauptsession selbst | Fundament, auf dem alles aufbaut; Stabilität der Screens und die CSS-Reihenfolge brauchen Urteil |
-| A4–A7 (Komponenten, Seiten, Links) | Subagent auf Sonnet, je Aufgabe ein frischer | Mechanisches Portieren nach festem Muster, mit harter Prüfung durch Optik- und Verhaltenstests |
-| Review nach jeder Subagent-Aufgabe | Hauptsession | Prüft Diff, Tests und Screens, bevor die nächste Aufgabe startet |
-| A8 (Cloudflare, Abnahme, PR) | Hauptsession | Eingriffe ins Konto, Blocker-Abwägung, Bericht |
-| Abschluss | Skill `code-review` auf dem stärksten Modell | Pflicht vor dem Merge |
+| A0–A3 (Worktree, Ausgangsstand, Gerüst, Layout) | Hauptsession auf Opus | Fundament, auf dem alles aufbaut; Stabilität der Screens und die CSS-Reihenfolge brauchen Urteil |
+| A4–A7 (Komponenten, Seiten, Links) | Subagent auf Sonnet, je Aufgabe ein frischer | Mechanisches Portieren nach festem Muster |
+| Prüfung pro Aufgabe | automatisch, kein Review | Eine Aufgabe gilt erst als fertig, wenn ihre Optik- und Verhaltenstests und `npm run check` grün sind. Der Subagent meldet die Testausgabe mit. |
+| Ein Stichproben-Blick nach A4 | Hauptsession, kurz | Die erste Sonnet-Aufgabe legt das Muster für die übrigen 7 Seiten fest. Ein Fehler im Muster wäre sonst siebenfach zu korrigieren. Nur Diff ansehen, kein volles Review. |
+| A8 (Cloudflare, Fehler-Audit, Abnahme, PR) | Hauptsession auf Opus | Eingriffe ins Konto, Blocker-Abwägung, Bericht |
+| Gebündelte Endprüfung | Opus mit Skill `code-review` über den ganzen Branch | Pflicht vor dem Merge (CLAUDE.md) |
 
-Die Qualität sichern vor allem die Prüfungen: pixelgleiche Screens gegen den Prototyp, `npm run check` (Format, Lint, `astro check`, Build) und das Review. Kein Subagent darf eine Aufgabe als fertig melden, solange ein Test rot ist.
+Die Qualität sichern vor allem die Prüfungen: pixelgleiche Screens gegen den Prototyp, `npm run check` (Format, Lint, `astro check`, Build), Barrierefreiheits- und Lighthouse-Audit und die Endprüfung. Kein Subagent darf eine Aufgabe als fertig melden, solange ein Test rot ist.
 
 ---
 
