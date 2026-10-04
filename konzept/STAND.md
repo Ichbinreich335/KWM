@@ -31,12 +31,13 @@ Alle PRs sind Entwürfe und bauen aufeinander auf. Gemergt wird in dieser Reihen
 
 ## Als Nächstes
 
-1. **Prüfungen nachholen**: Feinschliff Teil 3 und Zitat-Baustein (je Sonnet). Danach Entwurfs-PR „Feinschliff“ (Teil 1–3) und Entwurfs-PR „Bausteine Teil 1“.
-2. **Handy kürzer, als Vergleich**: eigener Branch vom sauberen Feinschliff-Stand mit eigener Vorschau. Ziel etwa −25 % am Handy, der Desktop bleibt. Die Reise und alle starken Elemente bleiben, Orte nur behutsam. Dazu eine Vergleichsseite mit beiden Links und Screens. Plan: `PLAN-PHASE-B3.md`, Aufgabe B3-5.
-3. **Zitate angleichen** (sichtbar, mit Vergleich): Der Zitat-Baustein zeigt, wo dieselbe Rolle in verschiedenen Varianten steht. Angeglichen wird je Stelle mit einer Zeile.
-4. **Konzept-Vergleiche für Inhalte**: Ausstellung mit Flyer-Scan (drei Darstellungen), Galerien (Startseite oder eigene Unterseite).
-5. **Bausteine, Teil 2 bis 5**: Karten, Listen, Aufklapper, Formular, Bilder. Daten-Dateien nur für das, was später in Sanity kommt: Ausstellungen samt Flyer und Bildern, Orte bzw. Galerien; Werke später.
-6. **SEO und Sicherheit**: Sitemap, Vorschaubilder für Links, strukturierte Daten, Sicherheits-Header. `noindex` bleibt bis zum Go-live.
+1. **Porträt im schmalen Fenster** (Admin, Screenshot): Zwischen etwa 900 und 1100 px Breite, zum Beispiel bei geteiltem Bildschirm, zeigt das Porträt nur Regale, das Gesicht ist abgeschnitten. Lösung: die Fassung „untereinander“ auch für hochformatige Fenster (`orientation: portrait`) oder bis etwa 1100 px, am Screen prüfen. Am Handy untereinander hat der Admin bestätigt („besser als ein Scroll-Element für 3 Sekunden“).
+2. **Prüfungen nachholen**: Feinschliff Teil 3 und Zitat-Baustein (je Sonnet). Danach Entwurfs-PR „Feinschliff“ (Teil 1–3) und Entwurfs-PR „Bausteine Teil 1“.
+3. **Handy kürzer, als Vergleich** (an einem anderen Tag, Admin): eigener Branch vom sauberen Feinschliff-Stand mit eigener Vorschau. Ziel etwa −25 % am Handy, der Desktop bleibt. Die Reise und alle starken Elemente bleiben, Orte nur behutsam. Dazu eine Vergleichsseite mit beiden Links und Screens. Plan: `PLAN-PHASE-B3.md`, Aufgabe B3-5.
+4. **Zitate angleichen** (sichtbar, mit Vergleich): Der Zitat-Baustein zeigt, wo dieselbe Rolle in verschiedenen Varianten steht. Angeglichen wird je Stelle mit einer Zeile.
+5. **Konzept-Vergleiche für Inhalte**: Ausstellung mit Flyer-Scan (drei Darstellungen), Galerien (Startseite oder eigene Unterseite).
+6. **Bausteine, Teil 2 bis 5**: Karten, Listen, Aufklapper, Formular, Bilder. Daten-Dateien nur für das, was später in Sanity kommt: Ausstellungen samt Flyer und Bildern, Orte bzw. Galerien; Werke später.
+7. **SEO und Sicherheit**: Sitemap, Vorschaubilder für Links, strukturierte Daten, Sicherheits-Header. `noindex` bleibt bis zum Go-live.
 
 ## Warum in Schritten und nicht alles beim Umzug
 
