@@ -2,12 +2,13 @@
 
 Laufende Liste: Was du tun, entscheiden oder abnehmen musst, und was mir unterwegs aufgefallen ist. Neueste Einträge oben in jedem Abschnitt. Erledigtes wandert nach unten.
 
-Stand: 04.10.2026
+Stand: 04.10.2026 (abends)
 
 ## Abnehmen
 
 | Was | Wo | Hinweis |
 |---|---|---|
+| Feinplanungen Phase B–E (zum Durchsehen, nicht zwingend) | `konzept/PLAN-PHASE-B.md`, `PLAN-PHASE-C.md`, `PLAN-PHASE-D.md`, `PLAN-PHASE-E.md`; Überblick in `konzept/UEBERGABE.md` §0 | Phase B läuft bereits (Branch `phase-b-varianten`). Einwände gegen eine Planentscheidung bitte vor dem Start der jeweiligen Phase melden. Wichtigste Weichen: Phase D stellt Astros Scoped Styles auf `where` (keine Spezifitätsänderung beim Umzug von CSS in Komponenten); Phase E bereitet Sitemap und Go-live-Schalter nur vor, `noindex` bleibt. |
 | **Phase A: Website auf Astro (1:1)** | Vorschau https://astro-umbau-kwm-redesign.entwicklung-7f3.workers.dev · PR [#4](https://github.com/Ichbinreich335/KWM/pull/4) (Entwurf) · Bericht `konzept/ASTRO-BERICHT.md` | Sieht aus wie V3, nur ohne Entwurf-Panel. Auf Handy und Rechner durchklicken. Nach OK: PR auf „bereit“ stellen und mergen (ersetzt die Produktion auf `workers.dev`, nicht `kwm-1924.de`). |
 
 ## Tun (nur du kannst das)
