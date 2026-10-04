@@ -13,7 +13,7 @@
 .ms-intro__text { grid-column: 9 / 13; padding-top: 10px; }
 .ms-intro__text p { max-width: 44ch; }
 
-.catalog__ask { padding-block: 12px; margin-block: -7px -12px; font-size: var(--t-meta); line-height: var(--t-meta-lh); color: var(--ink-2); text-underline-offset: 0.28em; }
+.catalog__ask { display: inline-flex; align-items: center; min-height: 44px; box-sizing: border-box; padding-block: 12px; margin-block: -7px -12px; font-size: var(--t-meta); line-height: var(--t-meta-lh); color: var(--ink-2); text-underline-offset: 0.28em; }
 .catalog__ask:hover { color: var(--ink); }
 
 .catalog__quote { margin: 0; align-self: center; }
