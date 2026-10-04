@@ -11,8 +11,9 @@ export default defineConfig({
     deviceScaleFactor: 1,
   },
   expect: {
-    // Ganzseitige Screens der Startseite (über 18.000 px hoch) brauchen unter Parallel-Last länger als 5 s.
-    timeout: 15_000,
+    // Ganzseitige Screens der Startseite (über 18.000 px hoch) brauchen unter Parallel-Last länger als 5 s,
+    // vereinzelt auch knapp 15 s (Phase C2); 30 s geben Luft, ohne die Prüfung zu lockern.
+    timeout: 30_000,
     toHaveScreenshot: { maxDiffPixelRatio: 0.002, animations: 'disabled', caret: 'hide' },
   },
   projects: [
