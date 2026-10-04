@@ -1,0 +1,18 @@
+dist
+.astro
+public
+prototyp
+konzept
+keramik
+.shots
+tests/__screens__
+package-lock.json
+# Doku und Agenten-Dateien gehören nicht zur Website
+/*.md
+!/README.md
+.agents
+.claude
+.superpowers
+.impeccable
+skills-lock.json
+.mcp.json

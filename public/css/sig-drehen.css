@@ -1,0 +1,98 @@
+/* Signatur: drehen – Drehen und Abdrehen als scrollgebundene Werkzeichnung */
+
+/* Der Absatz davor rückt näher an die Zeichnung heran */
+.spread--hand { padding-bottom: clamp(32px, 5vw, 72px); }
+
+.throw {
+  --throw-run: 240vh;
+  background: var(--ground-2);
+  padding-inline: var(--m);
+}
+
+/* Ohne Skript: die drei Schritte als Text untereinander */
+.throw__text { padding-block: var(--section); max-width: 52ch; }
+.throw__steps { display: grid; gap: 40px; }
+.throw__name { font-family: var(--f-display); font-size: var(--t-h3); line-height: var(--t-h3-lh); letter-spacing: -0.01em; }
+.throw__dir { margin: 8px 0 12px; font-size: var(--t-meta); line-height: var(--t-meta-lh); letter-spacing: 0.04em; color: var(--ink-2); }
+.throw__body { margin: 0; max-width: 40ch; }
+.throw__hint, .throw__scene { display: none; }
+
+/* Mit Skript: Bühne klebt oben, die Zeichnung läuft über die Scrollstrecke */
+.throw.is-live { height: calc(100svh + var(--throw-run)); padding-inline: 0; }
+.throw.is-live .throw__sticky {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  padding: calc(var(--head) + 16px) var(--m) 24px;
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--g);
+  align-items: stretch;
+}
+.throw.is-live .throw__text { grid-column: 1 / 5; padding-block: 0; align-self: center; max-width: none; }
+.throw.is-live .throw__scene { grid-column: 5 / -1; display: block; position: relative; min-height: 0; margin-right: calc(var(--m) * -1); }
+.throw.is-live .throw__hint { display: block; margin: 36px 0 0; font-size: var(--t-meta); line-height: var(--t-meta-lh); color: var(--ink-2); }
+
+.throw__canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  touch-action: pan-y;
+  -webkit-tap-highlight-color: transparent;
+}
+.throw__canvas.is-grab { cursor: grab; }
+.throw__canvas.is-grabbing { cursor: grabbing; }
+.throw__canvas:focus-visible { outline: 2px solid var(--ink); outline-offset: -6px; }
+
+/* Schritte: der laufende ist aufgeklappt, die anderen bleiben als Name stehen */
+.throw.is-live .throw__steps { gap: 0; }
+.throw.is-live .throw__step { padding: 14px 0; border-top: 1px solid var(--hair); }
+.throw.is-live .throw__step:last-child { border-bottom: 1px solid var(--hair); }
+.throw.is-live .throw__name { transition: color 0.5s var(--ease), font-size 0.5s var(--ease); color: var(--ink-2); font-size: var(--t-quote); line-height: var(--t-quote-lh); }
+.throw.is-live .throw__step.is-active .throw__name { color: var(--ink); font-size: var(--t-h3); line-height: var(--t-h3-lh); }
+.throw.is-live .throw__more {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition: grid-template-rows 0.7s var(--ease), opacity 0.5s var(--ease);
+}
+.throw.is-live .throw__step.is-active .throw__more { grid-template-rows: 1fr; opacity: 1; }
+.throw.is-live .throw__more > div { overflow: hidden; }
+
+/* Reduzierte Bewegung: ruhiger Endzustand, keine Scrollstrecke */
+.throw.is-still { height: auto; }
+.throw.is-still .throw__sticky { position: static; height: auto; padding-block: var(--section); }
+.throw.is-still .throw__scene { aspect-ratio: 4 / 3; max-height: 70svh; }
+.throw.is-still .throw__more { grid-template-rows: 1fr; opacity: 1; }
+.throw.is-still .throw__name { color: var(--ink); }
+
+@media (max-width: 899px) {
+  .throw { --throw-run: 220vh; }
+  .throw.is-live .throw__sticky {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr);
+    row-gap: 4px;
+    padding: calc(var(--head) + 8px) var(--m) 12px;
+  }
+  .throw.is-live .throw__text, .throw.is-live .throw__scene { grid-column: 1; }
+  .throw.is-live .throw__scene { margin-right: calc(var(--m) * -1); margin-left: calc(var(--m) * -1); }
+  .throw.is-live .throw__text { align-self: start; }
+  /* Am Handy steht nur der laufende Schritt, die Reihenfolge zeigen drei Striche */
+  .throw.is-live .throw__steps { display: grid; }
+  .throw.is-live .throw__step { grid-area: 1 / 1; border: 0; padding: 0; opacity: 0; visibility: hidden; transition: opacity 0.5s var(--ease); }
+  .throw.is-live .throw__step.is-active { opacity: 1; visibility: visible; }
+  .throw.is-live .throw__step:last-child { border: 0; }
+  .throw.is-live .throw__name, .throw.is-live .throw__step.is-active .throw__name { font-size: var(--t-h3); line-height: var(--t-h3-lh); color: var(--ink); }
+  .throw.is-live .throw__more { grid-template-rows: 1fr; opacity: 1; }
+  .throw.is-live .throw__dir { margin: 4px 0 6px; }
+  .throw.is-live .throw__body { font-size: var(--t-small); line-height: var(--t-small-lh); max-width: none; }
+  .throw.is-live .throw__hint { display: none; }
+  .throw__bar { display: flex; gap: 6px; margin-top: 10px; }
+  .throw__bar span { flex: 1; height: 2px; background: var(--hair); transition: background 0.5s var(--ease); }
+  .throw__bar span.is-on { background: var(--ink); }
+  .throw.is-still .throw__sticky { display: block; }
+  .throw.is-still .throw__scene { margin-top: 32px; aspect-ratio: 4 / 5; max-height: none; }
+}
+@media (min-width: 900px) { .throw__bar { display: none; } }

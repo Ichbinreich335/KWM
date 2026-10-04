@@ -10,3 +10,5 @@ node_modules/
 tests/__screens__/
 test-results/
 playwright-report/
+dist/
+.astro/

@@ -1,0 +1,23 @@
+import eslintPluginAstro from 'eslint-plugin-astro';
+import tseslint from 'typescript-eslint';
+
+export default [
+  {
+    ignores: [
+      'dist/',
+      '.astro/',
+      'public/',
+      'prototyp/',
+      'konzept/',
+      'keramik/',
+      '.shots/',
+      'tests/__screens__/',
+      '.agents/',
+      '.claude/',
+      '.superpowers/',
+      '.impeccable/',
+    ],
+  },
+  ...tseslint.configs.recommended,
+  ...eslintPluginAstro.configs.recommended,
+];

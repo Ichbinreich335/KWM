@@ -19,8 +19,9 @@ export default defineConfig({
     { name: 'desktop', use: { viewport: { width: 1440, height: 900 } } },
     { name: 'mobil', use: { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true } },
   ],
+  // Mit BASIS_URL (Vorschau oder Produktion) startet kein lokaler Server.
   webServer: externeBasis
-    ? undefined
+    ? []
     : ziel === 'prototyp'
       ? { command: 'npm run prototyp', url: `${basisUrl.prototyp}/v3/index.html`, reuseExistingServer: true }
       : {
