@@ -33,7 +33,7 @@ Die Optik-Tests laufen nur lokal (die Schriftdarstellung unter Linux weicht ab),
 
 ## Deploy
 
-Workers Builds baut bei jedem Push mit `npm run build`:
+Workers Builds baut bei jedem Push mit `npm run build` (Build-Befehl muss im Cloudflare-Dashboard gesetzt sein, siehe `konzept/ASTRO-BERICHT.md`):
 
 - Branch `main` → `npx wrangler deploy` → Produktion
 - jeder andere Branch → `npx wrangler preview` → eigene Vorschau-URL `https://<branch>-kwm-redesign.<subdomain>.workers.dev`

@@ -15,6 +15,8 @@ Stand: 04.10.2026. Plan: [PLAN-ASTRO-UMBAU.md](PLAN-ASTRO-UMBAU.md), Abschnitt 7
 | 3 | optional: andere Branches | Vorschau-Builds von `design-v3`, `claude/softr-lager-app` usw. scheitern seit heute, weil `wrangler preview` einen `previews`-Block in `wrangler.jsonc` verlangt. In `astro-umbau` ist er ergänzt; nach dem Merge erben neue Branches ihn. | Nichts tun, falls diese Vorschauen nicht mehr gebraucht werden. |
 | 4 | optional (E6) | Vorschau-URLs sind öffentlich. | Cloudflare Access für die Previews einschalten (ein Schalter im Dashboard). |
 
+**Bestätigt per API (nur gelesen):** Deploy-Befehl `npx wrangler deploy`, Vorschau-Befehl `npx wrangler preview`, Preview Builds eingeschaltet, Produktionsbranch `main`, Root `/`. Nur der Build-Befehl fehlt.
+
 **Nicht nötig:** Die im Plan befürchtete einmalige, nicht umkehrbare Umstellung auf Worker Previews. Der Worker nutzt sie schon (`previews_enabled: true`, sieben Vorschauen pro Branch vorhanden).
 
 ## 2. Erledigt
@@ -24,14 +26,16 @@ Stand: 04.10.2026. Plan: [PLAN-ASTRO-UMBAU.md](PLAN-ASTRO-UMBAU.md), Abschnitt 7
 | A0 Worktree, Design-Freeze | `1bf41da` | Freeze in UEBERGABE.md §0 |
 | A1 Prototyp nach `prototyp/`, Ausgangsstand | `88121c6` | 26 Referenz-Screens, zweimal hintereinander stabil |
 | A2 Astro 7.3.5, TS strictest, Prettier, ESLint, CI, Assets | `48ecb21` | `npm run check` grün, 99 genutzte Bilder übernommen (nicht genutzte nicht) |
-| A3 Layout, Header, Footer, 404, Daten | `3c5e7f3` | Kontakt und Navigation an je einer Stelle (`src/data/`) |
+| A3 Layout, Header, Footer, 404, Daten | `3c5e7f3` | Kopf, Fuß und Anfrage-Leiste holen Kontakt und Navigation aus `src/data/`; in Seitentexten und im Anfrageformular stehen Telefon und Mail noch fest im Markup (1:1, Auflösung in Phase D) |
 | A4 Anfrage-Leiste, Anfrageformular, Rechtsseiten | `ef13e8f` | 10/10 Screens gleich |
 | A5 Unterseiten | `52e5f16` | 12/12 Screens gleich, Formular-Vorbelegung per `?stueck=` |
 | A6 Startseite | `f40c787` | 2/2 Screens gleich, Datumslogik bleibt im Browser |
 | A7 Linkprüfung, Weiterleitungen `/v3/`, `/v2/` | `f305ddb` | alle Links, Bilder, Skripte 200; `/v3/aktuelles.html?praesentation` → `/aktuelles?praesentation` |
-| A8 `previews`-Block, Barrierefreiheits-Test, a11y-Korrekturen, README, Bericht | `b40350e`, `2248735`, `19f1842`, dieser Commit | siehe unten |
+| A8 `previews`-Block, Barrierefreiheits-Test, a11y-Korrekturen, README, Bericht, Endprüfung | `b40350e`, `2248735`, `19f1842`, `de1f129`, `73a4874`, dieser Commit | siehe unten |
 
-Jede Aufgabe A4–A7 wurde von einem eigenen Subagenten (Sonnet) umgesetzt und danach von einem zweiten geprüft (Spezifikation und Codequalität). Alle vier Reviews: keine kritischen oder wichtigen Befunde.
+Jede Aufgabe A4–A7 (und die a11y-Korrekturen A8a) wurde von einem eigenen Subagenten (Sonnet) umgesetzt und danach von einem zweiten geprüft (Spezifikation und Codequalität). Alle fünf Reviews: keine kritischen oder wichtigen Befunde.
+
+**Endprüfung über den ganzen Branch** (Skill `code-review`, zwei getrennte Prüfer auf Opus: Standards und Spezifikation): keine Fehler in der Umsetzung. Behoben in `73a4874`: totes CSS, ungenutzter Typ, fehlende Begründung an `prettier-ignore`, uneinheitliche Ignore-Listen, offene Seiten im Datumstest. Die Nachprüfung bestätigt alle fünf. Die übrigen Hinweise stehen in Abschnitt 3 und 5.
 
 ### Prüfungen (Endstand)
 
@@ -39,7 +43,7 @@ Jede Aufgabe A4–A7 wurde von einem eigenen Subagenten (Sonnet) umgesetzt und d
 |---|---|
 | `npm run check` (Format, Lint, `astro check` strictest, Build) | grün |
 | Optik: 13 Seiten × Desktop 1440 / Mobil 390 gegen Prototyp | 26/26 |
-| Textvergleich `innerText` Prototyp gegen Astro (zusätzlich, siehe 4.2) | 0 Abweichungen auf allen 13 Seiten |
+| Textvergleich `innerText` Prototyp gegen Astro (zusätzlich, siehe 4.2), Text nur für Screenreader (`.visually-hidden`) auf beiden Seiten ausgeblendet | 0 Abweichungen auf allen 13 Seiten |
 | Routen (404 auch tief verschachtelt, saubere URLs, `noindex`, Links, Weiterleitungen) | 12/12 lokal, 22/22 Routen + Verhalten gegen die Vorschau |
 | Verhalten (Anfrage-Leiste, Sonderzeichen, Formular-Vorbelegung, Leerzeichen, Datumshinweis) | 10/10 |
 | Barrierefreiheit axe, WCAG 2.2 AA, 13 Seiten × 2 | 26/26 (nach den Korrekturen in 4.3) |
@@ -65,7 +69,8 @@ Auf der Cloudflare-Vorschau (mobil, Median aus 3): Startseite Leistung 95, Barri
 
 ## 3. Offen
 
-- **Prototyp löschen** (A8 Schritt 6): wartet auf die Abnahme (Admin-Punkt 2).
+- **Prototyp löschen** (A8 Schritt 6): wartet auf die Abnahme (Admin-Punkt 2). Dabei zuerst `prototyp/src/data/figures.json` nach `konzept/` verschieben und den Verweis in `konzept/AUFTRAG-ASTRO.md` (Phase 5, WordPress-Weiterleitungen) anpassen. Sonst wären die Quelldaten nur noch im Tag. Der Plan hatte das übersehen, die Endprüfung hat es gefunden.
+- **Alte Hilfsskripte in `.shots/`** (`folds.mjs`, `probe.mjs`, `states.mjs`, `sub-confirm.mjs`) zeigen auf den Prototyp-Server (Port 4391, `.html`-Adressen) und laufen nach dem Löschen von `prototyp/` nicht mehr. `shoot.mjs` funktioniert mit jeder URL. Entscheidung Admin: löschen oder auf `npm run preview` umstellen.
 - **Vorschau per Workers Builds:** wartet auf den Build-Befehl (Admin-Punkt 1). Die Vorschau oben habe ich bis dahin lokal mit `npx wrangler preview` erzeugt, dem Befehl, den auch Workers Builds ausführt.
 - **Nach dem Merge** (A8 Schritt 7): Produktions-Build beobachten, Routen- und Verhaltenstests gegen die Produktions-URL.
 
@@ -80,13 +85,13 @@ Auf der Cloudflare-Vorschau (mobil, Median aus 3): Startseite Leistung 95, Barri
 ### 4.2 Abweichungen vom Plan (Rulings)
 1. Prettier-, ESLint- und TypeScript-Ausnahmen um Doku- und Agenten-Ordner erweitert (Root-Markdown außer README, `.agents`, `.claude`, `.superpowers`, `.impeccable`, `.wrangler`, Testausgaben). Sonst hätte `npm run format` DESIGN.md und CLAUDE.md umformatiert.
 2. Plan-gewollt rote Tests zwischen A3 und A6 galten nicht als Blocker. Seit A6 ist alles grün.
-3. Review nach jeder Aufgabe A4–A7, wie im Auftrag verlangt (der Plan §13a sah keins vor).
+3. Review nach jeder Aufgabe A4–A7 auf Anweisung des Admins für diese Session (der Plan §13a sah nur eine gebündelte Endprüfung vor; die gab es zusätzlich).
 4. Prototyp-Testserver auf Port 4392 statt 4391, weil auf 4391 ein Server aus dem Hauptordner lief, den die Tests sonst still mitbenutzt hätten.
 5. `expect.timeout` 15 s in `playwright.config.ts`. Der „instabile“ Startseiten-Screen in A1 war kein Zufall in der Seite, sondern eine Zeitüberschreitung beim Erzeugen des 18.884 px hohen Screens unter Last.
 6. Test-Server gilt als bereit, sobald `/robots.txt` antwortet (die Startseite gab es erst ab A6).
 7. **Zusätzliche Abnahme Textvergleich:** Der Optik-Test hat 0,2 % Pixeltoleranz und übersieht deshalb ein einzelnes verschobenes Leerzeichen. Der Textvergleich hat zweimal genau so einen Fehler gefunden (siehe 4.1).
 8. `"previews": {}` in `wrangler.jsonc`, fehlte im Plan, Pflicht laut Cloudflare-Doku.
-9. Linkprüfung mit `?praesentation`, weil das Entwurf-Panel ohne den Parameter auf das nicht portierte `start-vorher.html` verlinkt. Reine Anker (`#…`) werden übersprungen (der Sprachlink „DE“ zeigt auf `#`).
+9. Linkprüfung mit `?praesentation`, weil das Entwurf-Panel ohne den Parameter auf das nicht portierte `start-vorher.html` verlinkt. Folge: Die Standardansicht ohne Parameter wird bei der Linkprüfung nicht abgedeckt, ihr Panel-Link „Vorher“ führt auf eine 404-Seite. Das Panel fällt in Phase B weg. Reine Anker (`#…`) werden übersprungen (der Sprachlink „DE“ zeigt auf `#`).
 10. Watch-Pfade in der Schreibweise der Cloudflare-Doku (`src/*` statt `src/**`).
 11. Die unsichtbaren Barrierefreiheits-Fehler sind schon in Phase A behoben und der axe-Test ist scharf geschaltet (der Plan sah `test.fixme` bis Phase B vor). Grund: Plan-Regel „Unsichtbare Korrekturen sofort, solange der Optik-Test grün bleibt“.
 
