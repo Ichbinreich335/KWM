@@ -10,7 +10,7 @@ import InquiryForm from '../components/InquiryForm.astro';
 >
   <main id="inhalt">
     {/* Einstieg: Zitat links, Kummerschalen rechts (hell) */}
-    <section class="hero grid" id="top" data-variant="einstieg:foto" aria-labelledby="hero-title">
+    <section class="hero grid" id="top" aria-labelledby="hero-title">
       <figure class="hero__media" data-reveal="img">
         <img
           src="/img/kwm/kummerschalen.webp"
@@ -42,77 +42,6 @@ import InquiryForm from '../components/InquiryForm.astro';
           </a>
         </p>
       </div>
-    </section>
-
-    {/* Einstieg, Variante: Wort-Bild-Komposition aus dem Wagner-Zitat (js/sig-komposition.js) */}
-    <section
-      class="komposition"
-      id="einstieg"
-      data-sig="komposition"
-      data-variant="einstieg:wortbild"
-      hidden
-      aria-labelledby="komposition-title"
-    >
-      <h1 class="komposition__title" id="komposition-title">
-        <span class="komposition__line">
-          <span class="komposition__word">Immer</span> <span class="komposition__word">sind</span>{' '}
-          <span class="komposition__word">es</span>
-        </span>
-        <span class="komposition__line">
-          <span class="komposition__word">Schalen,</span> <span class="komposition__word">und</span>
-        </span>
-        <span class="komposition__line">
-          <span class="komposition__word">doch</span> <span class="komposition__word">ist</span>{' '}
-          <span class="komposition__word">keine</span>
-        </span>
-        <span class="komposition__line">
-          <span class="komposition__word">wie</span> <span class="komposition__word">die</span>{' '}
-          <span class="komposition__word">andere.</span>
-        </span>
-      </h1>
-      <div class="komposition__info">
-        <p class="komposition__source">Thomas Wagner über die Schalen von Young-Jae Lee</p>
-        <p class="komposition__intro">
-          Keramische Werkstatt Margaretenhöhe. Gedrehte Gefäße und Gebrauchsgeschirr aus Essen – seit 1924, heute auf
-          dem Gelände der Zeche Zollverein.
-        </p>
-        <p class="komposition__actions">
-          <a class="link-arrow" href="/meisterstuecke">
-            Meisterstücke ansehen
-          </a>
-          <a class="link-arrow" href="/manufaktur">
-            Manufakturprogramm
-          </a>
-        </p>
-      </div>
-      <figure class="komposition__fig komposition__fig--big">
-        <img
-          src="/img/kwm/kummerschalen.webp"
-          width="937"
-          height="1040"
-          alt="Viele flache Schalen von Young-Jae Lee auf einem Steinboden, seladonblau, schwarz gesprenkelt und rotbraun glasiert"
-          fetchpriority="high"
-          decoding="async"
-        />
-      </figure>
-      <figure class="komposition__fig komposition__fig--a">
-        <img
-          src="/img/kwm/schale_spitz_gross.webp"
-          width="600"
-          height="400"
-          alt="Türkisfarbene Schale von Young-Jae Lee auf hohem Fuß"
-          decoding="async"
-        />
-      </figure>
-      <figure class="komposition__fig komposition__fig--b">
-        <img
-          src="/img/kwm/schale_spitz_xl_1.webp"
-          width="600"
-          height="400"
-          alt="Flache Schale von Young-Jae Lee, innen hellblau, außen rostrot glasiert"
-          decoding="async"
-        />
-      </figure>
     </section>
 
     {/* Aktuell: laufende und kommende Ausstellungen mit Flyer und Angaben, aufklappbar ohne Unterseite */}
@@ -499,7 +428,7 @@ import InquiryForm from '../components/InquiryForm.astro';
         </div>
       </div>
       <div class="works__feature grid">
-        <figure class="works__single" data-reveal="img" data-variant="einzelwerk:spindelvase">
+        <figure class="works__single" data-reveal="img">
           <img
             src="/img/kwm/werke/spindelvase-einzeln-1200.webp"
             width="1200"
@@ -509,39 +438,17 @@ import InquiryForm from '../components/InquiryForm.astro';
             alt="Weiße Spindelvase mit weiter Schulter und schmalem Fuß auf hellem Grund"
           />
         </figure>
-        <figure class="works__single" data-reveal="img" data-variant="einzelwerk:teeschale" hidden>
-          <img
-            src="/img/kwm/werke/teeschale-original-1400.webp"
-            width="1400"
-            height="1400"
-            loading="lazy"
-            sizes="(min-width: 900px) 55vw, 100vw"
-            alt="Teeschale mit rotbraun geflammter Glasur, hellblauen Pinselzeichen und dunklen Eisensprenkeln"
-          />
-        </figure>
         <div class="works__single-text">
           <p class="works__statement" data-reveal="words">
             Alle Meisterstücke stammen aus der Hand Young-Jae Lees – von ihr selbst gedreht, bemalt und glasiert.
           </p>
-          <div class="works__single-meta" data-variant="einzelwerk:spindelvase">
+          <div class="works__single-meta">
             <p class="works__single-name" data-reveal="fade">
               Spindelvase <span>2006/07</span>
             </p>
             <a
               class="link-arrow"
               href="/besuch?stueck=Spindelvase%20%28H%2035%2C5%20cm%2C%20D%2037%20cm%20%C2%B7%20Petalit-Eichenasche-Feldspat-Glasur%20%C2%B7%20Holzofen%201260%20%C2%B0C%20%C2%B7%20Reduktion%29#anfrage"
-              data-reveal="fade"
-            >
-              Zu diesem Stück anfragen
-            </a>
-          </div>
-          <div class="works__single-meta" data-variant="einzelwerk:teeschale" hidden>
-            <p class="works__single-name" data-reveal="fade">
-              Teeschale, ohne Titel <span>2023</span>
-            </p>
-            <a
-              class="link-arrow"
-              href="/besuch?stueck=Teeschale%2C%20ohne%20Titel%2C%202023#anfrage"
               data-reveal="fade"
             >
               Zu diesem Stück anfragen
@@ -1065,7 +972,7 @@ import InquiryForm from '../components/InquiryForm.astro';
     </section>
 
     {/* Variante „Getrennt“ (Standard): Meditation = Haltung und Arbeitsweise */}
-    <section class="med" id="haltung-meditation" data-variant="haltung:getrennt" aria-labelledby="med-title">
+    <section class="med" id="haltung-meditation" aria-labelledby="med-title">
       <div class="med__grid grid">
         <blockquote class="med__quote">
           <p id="med-title" data-reveal="words">
@@ -1095,76 +1002,10 @@ import InquiryForm from '../components/InquiryForm.astro';
     </section>
 
     {/* 99 Schalen: keine wie die andere, jede mit eigener Glasur */}
-    <section class="rep" id="kosmos" data-variant="haltung:getrennt" aria-labelledby="kosmos-title">
+    <section class="rep" id="kosmos" aria-labelledby="kosmos-title">
       <div class="sec-head grid">
         <h2 class="h2" id="kosmos-title" data-reveal="words">
           Ein Ring aus Teilchen um eine leere Mitte.
-        </h2>
-        <div class="sec-head__aside cosmos__text">
-          <p data-reveal="fade">
-            „Schalen über Schalen, einfach auf den Boden gestellt. Ein Meer aus Schalen, ein Feld aus Kelchen, ein Ring
-            aus Teilchen um eine leere Mitte, eine kleine Milchstraße voll schimmernder Gefäße.“
-          </p>
-          <p class="cosmos__source" data-reveal="fade">
-            Thomas Wagner, »Die aufgehobene Zeit?«
-          </p>
-        </div>
-      </div>
-      <div class="cosmos__floor">
-        <div class="cosmos__stage" data-cosmos>
-          <canvas
-            class="cosmos__canvas"
-            role="img"
-            aria-label="Neunundneunzig Schalen von oben gesehen, in einem Ring um eine leere Mitte angeordnet, jede mit eigener Glasur"
-          ></canvas>
-          <div class="cosmos__center">
-            <p class="cosmos__count" data-cosmos-readout>
-              99 Schalen
-            </p>
-            <p class="cosmos__show">Zu sehen im Museum für Ostasiatische Kunst, Köln, bis 25. Oktober 2026</p>
-            <a class="link-arrow" href="/aktuelles#kosmos">
-              Zur Ausstellung
-            </a>
-          </div>
-        </div>
-        <div class="cosmos__caption">
-          <p class="cosmos__show">Zu sehen im Museum für Ostasiatische Kunst, Köln, bis 25. Oktober 2026</p>
-          <a class="link-arrow" href="/aktuelles#kosmos">
-            Zur Ausstellung
-          </a>
-        </div>
-      </div>
-    </section>
-
-    {/* Variante „Zusammen“: Meditation und 99 Schalen als ein Kapitel */}
-    <section class="rep" id="kosmos-zusammen" data-variant="haltung:zusammen" hidden aria-labelledby="rep-title">
-      <div class="rep__lead grid">
-        <blockquote class="rep__quote">
-          <p id="rep-title" data-reveal="words">
-            Die Herstellung jedes neuen Gefäßes gleicht einer Meditation.
-          </p>
-        </blockquote>
-        <p class="rep__body" data-reveal="fade">
-          Für Young-Jae Lee ist – in Anlehnung an die koreanische Tradition – nicht die ständige Neuerfindung von Formen
-          entscheidend, sondern die vollkommene Beherrschung des vorhandenen Repertoires. Erst mit der Verinnerlichung
-          der Formen wird die tägliche Arbeit an der Drehscheibe jenseits aller Routine zu einer Art Exerzitium. Die
-          Persönlichkeit beginnt einzufließen, das Individuelle drückt sich im Handwerklichen aus.
-        </p>
-        <figure class="rep__media" data-reveal="img">
-          <img
-            src="/img/01-seladon-gefaess.webp"
-            srcset="/img/01-seladon-gefaess-800.webp 800w, /img/01-seladon-gefaess.webp 1600w"
-            sizes="(min-width: 900px) 40vw, 100vw"
-            width="1600"
-            height="1067"
-            loading="lazy"
-            alt="Bauchiges Gefäß mit seladongrüner bis taubenblauer Glasur"
-          />
-        </figure>
-      </div>
-      <div class="sec-head grid">
-        <h2 class="h2" data-reveal="words">
-          Dieselbe Form, immer wieder.
         </h2>
         <div class="sec-head__aside cosmos__text">
           <p data-reveal="fade">

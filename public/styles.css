@@ -413,19 +413,6 @@ body::after {
 
 /* Meditation und Kosmos: ein Kapitel */
 .rep { padding-top: var(--section); }
-.rep__lead { row-gap: 24px; align-items: start; padding-bottom: var(--head-gap); }
-.rep__quote { grid-column: 1 / 9; grid-row: 1; margin: 0; }
-.rep__quote p {
-  font-family: var(--f-display);
-  font-size: var(--t-h2);
-  line-height: var(--t-h2-lh);
-  letter-spacing: -0.02em;
-  text-wrap: balance;
-  margin: 0;
-}
-.rep__body { grid-column: 1 / 8; grid-row: 2; max-width: 46ch; color: var(--ink-2); margin: 0; }
-.rep__media { grid-column: 10 / -1; grid-row: 1 / 3; }
-.rep__media img { width: 100%; aspect-ratio: 1; object-fit: cover; object-position: 68% 50%; }
 
 /* Meditation: Haltung und Arbeitsweise */
 .med { padding-top: var(--section); }
@@ -728,9 +715,6 @@ body::after {
   .spread__media img { height: 72svh; }
   .spread__text { grid-column: 1 / -1; padding-top: 48px; }
 
-  .rep__lead { padding-bottom: var(--head-gap); }
-  .rep__quote, .rep__body, .rep__media { grid-column: 1 / -1; grid-row: auto; }
-  .rep__media img { aspect-ratio: 4 / 3; }
   .med__grid { grid-template-rows: none; }
   .med__quote, .med__body, .med__media { grid-column: 1 / -1; grid-row: auto; }
 

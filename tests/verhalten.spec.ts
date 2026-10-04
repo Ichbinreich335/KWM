@@ -66,7 +66,7 @@ test('Kein Entwurf-Panel, feste Fassung auch mit früher gespeicherter Auswahl',
   await page.goto('/?grund=porzellan&einstieg=wortbild');
   await expect(page.locator('html')).toHaveAttribute('data-grund', 'galerie');
   await expect(page.locator('html')).toHaveAttribute('data-lebensweg', 'scrollen');
-  await expect(page.locator('[data-variant="einstieg:foto"]')).toBeVisible();
-  await expect(page.locator('[data-variant="einstieg:wortbild"]')).toBeHidden();
+  await expect(page.locator('#top')).toBeVisible();
+  await expect(page.locator('#einstieg')).toHaveCount(0);
   await expect(page.getByRole('button', { name: /Entwurf/ })).toHaveCount(0);
 });
