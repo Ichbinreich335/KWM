@@ -69,10 +69,9 @@ export default function init(host: Element) {
     const meta = panel.querySelector('.orte__detail-meta');
     const list = panel.querySelector('.orte__list');
     const shows = tile.querySelector('.orte__shows');
-    if (!title || !meta || !list || !shows) return panel;
-    title.textContent = buttons.get(tile)?.textContent ?? '';
-    meta.textContent = [...tile.querySelectorAll('.orte__meta span')].map((s) => s.textContent).join(' · ');
-    list.innerHTML = shows.innerHTML;
+    if (title) title.textContent = buttons.get(tile)?.textContent ?? '';
+    if (meta) meta.textContent = [...tile.querySelectorAll('.orte__meta span')].map((s) => s.textContent).join(' · ');
+    if (list && shows) list.innerHTML = shows.innerHTML;
     panel.querySelector('.orte__close')?.addEventListener('click', () => closeDetail());
     return panel;
   }

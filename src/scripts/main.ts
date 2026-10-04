@@ -360,7 +360,8 @@ interface Bowl extends Schale {
       bowls.forEach((b) => {
         b.dist = Math.hypot(b.hx, b.hy);
         b.theta = Math.atan2(b.hy, b.hx);
-        ({ sprite: b.sprite, half: b.spriteHalf } = renderBowlSprite(b, dpr));
+        const rendered = renderBowlSprite(b, dpr);
+        if (rendered) ({ sprite: b.sprite, half: b.spriteHalf } = rendered);
       });
     };
 

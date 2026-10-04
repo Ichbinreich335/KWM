@@ -15,7 +15,8 @@ const MONTHS = [
 ];
 
 const parseDay = (iso: string) => {
-  const [y = 0, m = 1, d = 1] = iso.split('-').map(Number);
+  const [y, m, d] = iso.split('-').map(Number);
+  if (y === undefined || m === undefined || d === undefined) return new Date(NaN);
   return new Date(y, m - 1, d);
 };
 const formatDay = (date: Date) => `${date.getDate()}. ${MONTHS[date.getMonth()]}`;
