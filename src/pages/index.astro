@@ -1,5 +1,6 @@
 ---
 import '../styles/basis.css';
+import SectionHead from '../components/SectionHead.astro';
 import Bild from '../components/Bild.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import InquiryForm from '../components/InquiryForm.astro';
@@ -420,16 +421,12 @@ import '../styles/signaturen/signaturen.css';
 
     {/* Meisterstücke */}
     <section class="works" id="meisterstuecke" aria-labelledby="works-title">
-      <div class="sec-head grid">
-        <h2 class="h2" id="works-title" data-reveal="words">
-          Meisterstücke
-        </h2>
-        <div class="sec-head__aside">
-          <a class="link-arrow" href="/meisterstuecke">
-            Alle Meisterstücke
-          </a>
-        </div>
-      </div>
+      <SectionHead typ="start" titelId="works-title">
+        <Fragment slot="titel">Meisterstücke</Fragment>
+        <a class="link-arrow" href="/meisterstuecke">
+          Alle Meisterstücke
+        </a>
+      </SectionHead>
       <div class="works__feature grid">
         <figure class="works__single" data-reveal="img">
           <Bild
@@ -1005,20 +1002,16 @@ import '../styles/signaturen/signaturen.css';
 
     {/* 99 Schalen: keine wie die andere, jede mit eigener Glasur */}
     <section class="rep" id="kosmos" aria-labelledby="kosmos-title">
-      <div class="sec-head grid">
-        <h2 class="h2" id="kosmos-title" data-reveal="words">
-          Ein Ring aus Teilchen um eine leere Mitte.
-        </h2>
-        <div class="sec-head__aside cosmos__text">
-          <p data-reveal="fade">
-            „Schalen über Schalen, einfach auf den Boden gestellt. Ein Meer aus Schalen, ein Feld aus Kelchen, ein Ring
-            aus Teilchen um eine leere Mitte, eine kleine Milchstraße voll schimmernder Gefäße.“
-          </p>
-          <p class="cosmos__source" data-reveal="fade">
-            Thomas Wagner, »Die aufgehobene Zeit?«
-          </p>
-        </div>
-      </div>
+      <SectionHead typ="start" titelId="kosmos-title" rechtsKlasse="cosmos__text">
+        <Fragment slot="titel">Ein Ring aus Teilchen um eine leere Mitte.</Fragment>
+        <p data-reveal="fade">
+          „Schalen über Schalen, einfach auf den Boden gestellt. Ein Meer aus Schalen, ein Feld aus Kelchen, ein Ring
+          aus Teilchen um eine leere Mitte, eine kleine Milchstraße voll schimmernder Gefäße.“
+        </p>
+        <p class="cosmos__source" data-reveal="fade">
+          Thomas Wagner, »Die aufgehobene Zeit?«
+        </p>
+      </SectionHead>
       <div class="cosmos__floor">
         <div class="cosmos__stage" data-cosmos>
           <canvas
@@ -1047,22 +1040,18 @@ import '../styles/signaturen/signaturen.css';
 
     {/* Manufaktur */}
     <section class="craft" id="manufaktur" aria-labelledby="craft-title">
-      <div class="sec-head grid">
-        <h2 class="h2" id="craft-title" data-reveal="words">
-          Keiner Mode, keinem Zeitgeist unterworfen.
-        </h2>
-        <div class="sec-head__aside">
-          <p data-reveal="fade">
-            Unter Rückbesinnung auf die Grundprinzipien des Bauhauses entwickelte Young-Jae Lee mit Hildegard Eggemann,
-            Michael Schmandt und Claudia Neumann die Formensprache des Manufakturprogramms: zuerst 25 Grundelemente
-            eines Geschirrs – Teller, Schalen, Krüge.
-          </p>
-          <p class="craft__rule" data-reveal="fade">
-            „Jedes Stück muss gut zu drehen sein und auch zu benutzen. Alle Teile eines Geschirrs, gleich welcher Farbe,
-            sollten miteinander kombinierbar sein.“
-          </p>
-        </div>
-      </div>
+      <SectionHead typ="start" titelId="craft-title">
+        <Fragment slot="titel">Keiner Mode, keinem Zeitgeist unterworfen.</Fragment>
+        <p data-reveal="fade">
+          Unter Rückbesinnung auf die Grundprinzipien des Bauhauses entwickelte Young-Jae Lee mit Hildegard Eggemann,
+          Michael Schmandt und Claudia Neumann die Formensprache des Manufakturprogramms: zuerst 25 Grundelemente eines
+          Geschirrs – Teller, Schalen, Krüge.
+        </p>
+        <p class="craft__rule" data-reveal="fade">
+          „Jedes Stück muss gut zu drehen sein und auch zu benutzen. Alle Teile eines Geschirrs, gleich welcher Farbe,
+          sollten miteinander kombinierbar sein.“
+        </p>
+      </SectionHead>
 
       <div
         class="scale"
@@ -1396,17 +1385,13 @@ import '../styles/signaturen/signaturen.css';
 
     {/* Besuch */}
     <section class="visit" id="besuch" aria-labelledby="visit-title">
-      <div class="sec-head grid">
-        <h2 class="h2" id="visit-title" data-reveal="words">
-          Die Werkstatt ist offen.
-        </h2>
-        <div class="sec-head__aside">
-          <p data-reveal="fade">
-            Wenn Sie Stücke aus unserem Programm erwerben möchten, senden wir Ihnen gerne weitere Informationen oder ein
-            Angebot zu. Oder Sie kommen vorbei.
-          </p>
-        </div>
-      </div>
+      <SectionHead typ="start" titelId="visit-title">
+        <Fragment slot="titel">Die Werkstatt ist offen.</Fragment>
+        <p data-reveal="fade">
+          Wenn Sie Stücke aus unserem Programm erwerben möchten, senden wir Ihnen gerne weitere Informationen oder ein
+          Angebot zu. Oder Sie kommen vorbei.
+        </p>
+      </SectionHead>
       <div class="visit__body grid">
         <div class="visit__info">
           <table class="hours">

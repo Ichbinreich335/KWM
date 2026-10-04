@@ -1,5 +1,6 @@
 ---
 import '../styles/basis.css';
+import SectionHead from '../components/SectionHead.astro';
 import Bild from '../components/Bild.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import InquiryBand from '../components/InquiryBand.astro';
@@ -117,14 +118,10 @@ import '../styles/signaturen/signaturen.css';
 
     {/* Biografie */}
     <section class="chapter" id="biografie" aria-labelledby="bio-title">
-      <div class="chapter__head grid">
-        <h2 class="h2" id="bio-title" data-reveal="words">
-          Biografie
-        </h2>
-        <p class="chapter__intro" data-reveal="fade">
-          Von Seoul über Wiesbaden, Sandhausen und Kassel nach Essen.
-        </p>
-      </div>
+      <SectionHead titelId="bio-title">
+        <Fragment slot="titel">Biografie</Fragment>
+        Von Seoul über Wiesbaden, Sandhausen und Kassel nach Essen.
+      </SectionHead>
       <div class="grid">
         <ol class="datelist">
           <li class="datelist__row">
@@ -179,14 +176,10 @@ import '../styles/signaturen/signaturen.css';
 
     {/* Texte */}
     <section class="chapter" id="texte" aria-labelledby="texts-title">
-      <div class="chapter__head grid">
-        <h2 class="h2" id="texts-title" data-reveal="words">
-          Texte über Young-Jae Lee
-        </h2>
-        <p class="chapter__intro" data-reveal="fade">
-          Essays aus Katalogen und Büchern, vollständig zu lesen auf der bisherigen Website.
-        </p>
-      </div>
+      <SectionHead titelId="texts-title">
+        <Fragment slot="titel">Texte über Young-Jae Lee</Fragment>
+        Essays aus Katalogen und Büchern, vollständig zu lesen auf der bisherigen Website.
+      </SectionHead>
       <div class="grid">
         <ol class="texts">
           <li class="texts__row">
@@ -312,14 +305,10 @@ import '../styles/signaturen/signaturen.css';
 
     {/* Ausstellungen */}
     <section class="chapter" id="ausstellungen" aria-labelledby="exh-title">
-      <div class="chapter__head grid">
-        <h2 class="h2" id="exh-title" data-reveal="words">
-          Ausstellungen
-        </h2>
-        <p class="chapter__intro" data-reveal="fade">
-          Eine Auswahl der letzten zehn Jahre. Ausstellungen seit 1980 in Europa, Korea, Japan und den USA.
-        </p>
-      </div>
+      <SectionHead titelId="exh-title">
+        <Fragment slot="titel">Ausstellungen</Fragment>
+        Eine Auswahl der letzten zehn Jahre. Ausstellungen seit 1980 in Europa, Korea, Japan und den USA.
+      </SectionHead>
       <div class="grid">
         <ol class="datelist">
           <li class="datelist__row">
@@ -958,15 +947,10 @@ import '../styles/signaturen/signaturen.css';
 
     {/* Sammlungen */}
     <section class="chapter" id="sammlungen" aria-labelledby="coll-title">
-      <div class="chapter__head grid">
-        <h2 class="h2" id="coll-title" data-reveal="words">
-          Werke in Sammlungen
-        </h2>
-        <p class="chapter__intro" data-reveal="fade">
-          Gefäße von Young-Jae Lee befinden sich in Museen und Sammlungen in Deutschland, Österreich, Israel und den
-          USA.
-        </p>
-      </div>
+      <SectionHead titelId="coll-title">
+        <Fragment slot="titel">Werke in Sammlungen</Fragment>
+        Gefäße von Young-Jae Lee befinden sich in Museen und Sammlungen in Deutschland, Österreich, Israel und den USA.
+      </SectionHead>
       <div class="grid">
         <ul class="museums">
           <li>Museum für Asiatische Kunst, Berlin</li>
@@ -993,11 +977,9 @@ import '../styles/signaturen/signaturen.css';
 
     {/* Auszeichnungen */}
     <section class="chapter" id="auszeichnungen" aria-labelledby="awards-title">
-      <div class="chapter__head grid">
-        <h2 class="h2" id="awards-title" data-reveal="words">
-          Auszeichnungen
-        </h2>
-      </div>
+      <SectionHead titelId="awards-title">
+        <Fragment slot="titel">Auszeichnungen</Fragment>
+      </SectionHead>
       <div class="grid">
         <ol class="datelist">
           <li class="datelist__row">
@@ -1025,14 +1007,10 @@ import '../styles/signaturen/signaturen.css';
 
     {/* Publikationen */}
     <section class="chapter" id="publikationen" aria-labelledby="pubs-title">
-      <div class="chapter__head grid">
-        <h2 class="h2" id="pubs-title" data-reveal="words">
-          Publikationen
-        </h2>
-        <p class="chapter__intro" data-reveal="fade">
-          Kataloge, Bücher und Artikel, 1981 bis 2020.
-        </p>
-      </div>
+      <SectionHead titelId="pubs-title">
+        <Fragment slot="titel">Publikationen</Fragment>
+        Kataloge, Bücher und Artikel, 1981 bis 2020.
+      </SectionHead>
       <div class="grid">
         <ul class="pubs">
           <li>

@@ -1,5 +1,6 @@
 ---
 import '../styles/basis.css';
+import SectionHead from '../components/SectionHead.astro';
 import Bild from '../components/Bild.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import InquiryForm from '../components/InquiryForm.astro';
@@ -80,15 +81,11 @@ import '../styles/signaturen/signaturen.css';
 
     {/* Anfahrt */}
     <section class="routes-band on-flaeche" aria-labelledby="routes-title">
-      <div class="chapter__head grid">
-        <h2 class="h2" id="routes-title" data-reveal="words">
-          So erreichen Sie uns.
-        </h2>
-        <p class="chapter__intro" data-reveal="fade">
-          Die Werkstatt liegt auf dem Zechengelände. Nach der Einfahrt links abbiegen, nach etwa 100 Metern auf der
-          linken Seite.
-        </p>
-      </div>
+      <SectionHead titelId="routes-title">
+        <Fragment slot="titel">So erreichen Sie uns.</Fragment>
+        Die Werkstatt liegt auf dem Zechengelände. Nach der Einfahrt links abbiegen, nach etwa 100 Metern auf der linken
+        Seite.
+      </SectionHead>
       <div class="routes">
         <article class="route" data-reveal="fade">
           <h3 class="route__title">Mit dem Auto von Norden</h3>
