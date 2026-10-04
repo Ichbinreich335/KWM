@@ -3,7 +3,42 @@
 // Wird ein Band geöffnet, steigt die Glasur ein Stück höher, wie beim Tauchen.
 // Gerechnet wird in „Kachel-Koordinaten“: y läuft vom Scherben (0) zur dicken Glasur (L).
 // Mobil liegt die Kachel quer, dann werden die Achsen beim Zeichnen getauscht.
-import { CLAY, random, reducedMotion } from './keramik';
+import { CLAY, random, reducedMotion, type Rng } from './keramik';
+
+type RGB = readonly [number, number, number];
+
+interface Offscreen {
+  c: HTMLCanvasElement;
+  x: CanvasRenderingContext2D;
+}
+
+interface Kachelglasur {
+  grund: RGB;
+  dunkel: RGB;
+  hell: RGB;
+  finish: string;
+  layers: boolean;
+  seed: number;
+  speckle?: RGB;
+  speckleKind?: 'korn' | 'eisen' | 'punkte';
+}
+
+interface Welle {
+  a: number;
+  f: number;
+  ph: number;
+}
+
+interface Beule {
+  x: number;
+  w: number;
+  h: number;
+}
+
+interface Platz {
+  width: number;
+  height: number;
+}
 
 const MAX_DPR = 2;
 const OPEN_GROW = 2.6;
@@ -14,18 +49,23 @@ const SPRING = 5.5;
 const REST_EDGE = 0.34;
 const OPEN_EDGE = 0.2;
 
-const rgb = (hex) => {
+const rgb = (hex: string): RGB => {
   const n = parseInt(hex.slice(1), 16);
   return [n >> 16, (n >> 8) & 255, n & 255];
 };
-const rgba = (c, a) => `rgba(${c[0]},${c[1]},${c[2]},${a})`;
-const mix = (a, b, t) => a.map((v, i) => Math.round(v + (b[i] - v) * t));
+const rgba = (c: RGB, a: number) => `rgba(${c[0]},${c[1]},${c[2]},${a})`;
+const mix = (a: RGB, b: RGB, t: number): RGB => [
+  Math.round(a[0] + (b[0] - a[0]) * t),
+  Math.round(a[1] + (b[1] - a[1]) * t),
+  Math.round(a[2] + (b[2] - a[2]) * t),
+];
 
 // feines Korn, einmal erzeugt und überall als Muster verwendet
 function grainTile() {
   const c = document.createElement('canvas');
   c.width = c.height = 128;
   const x = c.getContext('2d');
+  if (!x) return c;
   const img = x.createImageData(128, 128);
   const r = random(41);
   for (let i = 0; i < 128 * 128; i++) {
@@ -37,24 +77,26 @@ function grainTile() {
   return c;
 }
 
-function offscreen(w, h, dpr) {
+function offscreen(w: number, h: number, dpr: number): Offscreen | null {
   const c = document.createElement('canvas');
   c.width = Math.ceil(w * dpr);
   c.height = Math.ceil(h * dpr);
   const x = c.getContext('2d');
+  if (!x) return null;
   x.scale(dpr, dpr);
   return { c, x };
 }
 
-function fillGrain(x, w, h, grain, alpha) {
+function fillGrain(x: CanvasRenderingContext2D, w: number, h: number, grain: HTMLCanvasElement, alpha: number) {
   x.save();
   x.globalAlpha = alpha;
-  x.fillStyle = x.createPattern(grain, 'repeat');
+  const pattern = x.createPattern(grain, 'repeat');
+  if (pattern) x.fillStyle = pattern;
   x.fillRect(0, 0, w, h);
   x.restore();
 }
 
-function soft(x, cx, cy, rx, ry, color, alpha) {
+function soft(x: CanvasRenderingContext2D, cx: number, cy: number, rx: number, ry: number, color: RGB, alpha: number) {
   x.save();
   x.translate(cx, cy);
   x.scale(rx, ry);
@@ -67,7 +109,7 @@ function soft(x, cx, cy, rx, ry, color, alpha) {
 }
 
 // Geschichteter Scherben: Ton mit Poren, Licht von links
-function paintBiscuit(x, T, L, grain, rand) {
+function paintBiscuit(x: CanvasRenderingContext2D, T: number, L: number, grain: HTMLCanvasElement, rand: Rng) {
   const base = rgb(CLAY.bisque);
   const g = x.createLinearGradient(0, 0, T, 0);
   g.addColorStop(0, rgba(mix(base, [255, 250, 240], 0.28), 1));
@@ -95,7 +137,14 @@ function paintBiscuit(x, T, L, grain, rand) {
 }
 
 // Glasurkörper: nach unten dichter und dunkler, mit Flecken, Korn und Sprenkeln
-function paintBody(x, T, L, glaze, grain, rand) {
+function paintBody(
+  x: CanvasRenderingContext2D,
+  T: number,
+  L: number,
+  glaze: Kachelglasur,
+  grain: HTMLCanvasElement,
+  rand: Rng,
+) {
   const { grund, dunkel, hell, finish, speckle } = glaze;
   const g = x.createLinearGradient(0, 0, 0, L);
   g.addColorStop(0, rgba(grund, 1));
@@ -156,17 +205,48 @@ function paintBody(x, T, L, glaze, grain, rand) {
   }
 }
 
+// Pflichtattribut der Kachel: fehlt es, ist das Markup falsch (wie bisher bricht das Skript dann ab)
+const datum = (d: DOMStringMap, key: string) => {
+  const v = d[key];
+  if (v === undefined) throw new TypeError(`data-${key} fehlt am Band`);
+  return v;
+};
+
 class Tile {
-  constructor(el, index, grain) {
+  el: HTMLElement;
+  index: number;
+  grain: HTMLCanvasElement;
+  glaze: Kachelglasur;
+  canvas: HTMLCanvasElement;
+  ctx: CanvasRenderingContext2D | null;
+  p = 0;
+  target = 0;
+  mx = 0.3;
+  mxTarget = 0.3;
+  dirty = true;
+  visible = 0;
+  horizontal = false;
+  dpr = 1;
+  L = 0;
+  T = 0;
+  hi = 0;
+  rest = 0;
+  p0 = 0;
+  bisc: Offscreen | null = null;
+  body: Offscreen | null = null;
+  wave: Welle[] = [];
+  bumps: Beule[] = [];
+
+  constructor(el: HTMLElement, index: number, grain: HTMLCanvasElement) {
     this.el = el;
     this.index = index;
     this.grain = grain;
     const d = el.dataset;
-    const glaze = {
-      grund: rgb(d.grund),
-      dunkel: rgb(d.dunkel),
-      hell: rgb(d.hell),
-      finish: d.finish,
+    const glaze: Kachelglasur = {
+      grund: rgb(datum(d, 'grund')),
+      dunkel: rgb(datum(d, 'dunkel')),
+      hell: rgb(datum(d, 'hell')),
+      finish: datum(d, 'finish'),
       layers: 'schichten' in d,
       seed: Number(d.seed),
     };
@@ -181,36 +261,31 @@ class Tile {
     this.canvas.setAttribute('aria-hidden', 'true');
     el.prepend(this.canvas);
     this.ctx = this.canvas.getContext('2d');
-    this.p = 0;
-    this.target = 0;
-    this.mx = 0.3;
-    this.mxTarget = 0.3;
-    this.dirty = true;
-    this.visible = 0;
   }
 
   // Maße neu aufnehmen: T = Dicke der Kachel (fest auf die größte Weite), L = Länge
-  layout(horizontal, box, dpr) {
+  layout(horizontal: boolean, box: Platz, dpr: number) {
     const share = OPEN_GROW / (OPEN_GROW + OTHER_GROW * (BAND_COUNT - 1));
     this.horizontal = horizontal;
     this.dpr = dpr;
     this.L = Math.round(horizontal ? box.width : box.height);
     const slots = horizontal ? box.height : box.width;
     this.T = Math.ceil(slots * share) + 4;
-    const css = horizontal ? [this.L, this.T] : [this.T, this.L];
-    this.canvas.style.width = `${css[0]}px`;
-    this.canvas.style.height = `${css[1]}px`;
-    this.canvas.width = Math.ceil(css[0] * dpr);
-    this.canvas.height = Math.ceil(css[1] * dpr);
+    const cssW = horizontal ? this.L : this.T;
+    const cssH = horizontal ? this.T : this.L;
+    this.canvas.style.width = `${cssW}px`;
+    this.canvas.style.height = `${cssH}px`;
+    this.canvas.width = Math.ceil(cssW * dpr);
+    this.canvas.height = Math.ceil(cssH * dpr);
     this.hi = Math.max(this.L * OPEN_EDGE, horizontal ? 112 : 132);
     this.rest = Math.max(this.L * REST_EDGE, horizontal ? 104 : 148);
     this.p0 = (this.L - this.rest) / (this.L - this.hi);
 
     const rand = random(this.glaze.seed * 977 + 13);
     this.bisc = offscreen(this.T, this.L, dpr);
-    paintBiscuit(this.bisc.x, this.T, this.L, this.grain, rand);
+    if (this.bisc) paintBiscuit(this.bisc.x, this.T, this.L, this.grain, rand);
     this.body = offscreen(this.T, this.L, dpr);
-    paintBody(this.body.x, this.T, this.L, this.glaze, this.grain, rand);
+    if (this.body) paintBody(this.body.x, this.T, this.L, this.glaze, this.grain, rand);
 
     const r = random(this.glaze.seed * 31 + 5);
     this.wave = [0, 1, 2].map(() => ({ a: 1 + r() * 2.2, f: 0.012 + r() * 0.03, ph: r() * 6.28 }));
@@ -218,14 +293,14 @@ class Tile {
     this.dirty = true;
   }
 
-  edgeAt(x, e) {
+  edgeAt(x: number, e: number) {
     let y = e;
     for (const w of this.wave) y += w.a * Math.sin(x * w.f * 6.28 + w.ph);
     for (const b of this.bumps) y -= b.h * Math.exp(-((x - b.x) ** 2) / (2 * b.w * b.w));
     return y;
   }
 
-  edgePath(ctx, e) {
+  edgePath(ctx: CanvasRenderingContext2D, e: number) {
     ctx.beginPath();
     ctx.moveTo(0, this.edgeAt(0, e));
     for (let x = 3; x < this.T; x += 3) ctx.lineTo(x, this.edgeAt(x, e));
@@ -236,13 +311,14 @@ class Tile {
   }
 
   draw() {
-    const { ctx, T, L, glaze, dpr } = this;
+    const { ctx, bisc, body, T, L, glaze, dpr } = this;
+    if (!ctx || !bisc || !body) return;
     this.visible = this.horizontal ? this.el.clientHeight : this.el.clientWidth;
     const e = this.L - this.p * (this.L - this.hi);
     const swap = this.horizontal;
     ctx.setTransform(swap ? 0 : dpr, swap ? dpr : 0, swap ? dpr : 0, swap ? 0 : dpr, 0, 0);
     ctx.clearRect(0, 0, T, L);
-    ctx.drawImage(this.bisc.c, 0, 0, T, L);
+    ctx.drawImage(bisc.c, 0, 0, T, L);
     if (this.p <= 0.001) {
       this.dirty = false;
       return;
@@ -264,7 +340,7 @@ class Tile {
     ctx.save();
     this.edgePath(ctx, e);
     ctx.clip();
-    ctx.drawImage(this.body.c, 0, 0, T, L);
+    ctx.drawImage(body.c, 0, 0, T, L);
 
     // Dünn an der Kante: der Scherben scheint durch, die Glasur wird heller
     const span = Math.min(60, (L - e) * 0.5);
@@ -342,7 +418,7 @@ class Tile {
     this.dirty = false;
   }
 
-  step(dt) {
+  step(dt: number) {
     const k = 1 - Math.exp(-dt * SPRING);
     const pPrev = this.p;
     this.p += (this.target - this.p) * k;
@@ -355,9 +431,10 @@ class Tile {
   }
 }
 
-export default function init(el) {
-  const bands = [...el.querySelectorAll('.scale__band')];
-  if (!bands.length) return;
+export default function init(el: Element) {
+  const bands = [...el.querySelectorAll<HTMLElement>('.scale__band')];
+  const [firstBand] = bands;
+  if (!firstBand) return;
   const reduced = reducedMotion();
   const grain = grainTile();
   const tiles = bands.map((b, i) => new Tile(b, i, grain));
@@ -371,7 +448,7 @@ export default function init(el) {
 
   const active = () => (hovered >= 0 ? hovered : focused >= 0 ? focused : pinned);
 
-  const frame = (now) => {
+  const frame = (now: number) => {
     const dt = Math.min(0.05, (now - last) / 1000 || 0.016);
     last = now;
     let moving = false;
@@ -405,7 +482,7 @@ export default function init(el) {
 
   const build = () => {
     const box = el.getBoundingClientRect();
-    const first = bands[0].getBoundingClientRect();
+    const first = firstBand.getBoundingClientRect();
     const horizontal = narrow.matches;
     const dpr = Math.min(window.devicePixelRatio || 1, MAX_DPR);
     const slot = horizontal
