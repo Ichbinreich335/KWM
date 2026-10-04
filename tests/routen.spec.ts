@@ -32,3 +32,32 @@ test('.html leitet auf die saubere URL um', async ({ request }) => {
   expect(antwort.status()).toBeLessThan(400);
   expect(antwort.headers()['location']).toBe('/aktuelles');
 });
+
+test('Alle internen Links, Bilder, Skripte und Stylesheets antworten mit 200', async ({ page, request }) => {
+  const geprueft = new Set<string>();
+  for (const seite of seiten) {
+    // ?praesentation: ohne den Parameter hängt entwurf.js (entfällt in Phase B) einen Link auf das nicht portierte start-vorher.html an.
+    await page.goto(`${seite.astro}?praesentation`);
+    const ziele = await page
+      .locator('a[href], img[src], link[href], script[src], [data-img]')
+      .evaluateAll((els) =>
+        els.map((e) => e.getAttribute('href') ?? e.getAttribute('src') ?? e.getAttribute('data-img') ?? ''),
+      );
+    for (const ziel of ziele) {
+      // Reine Anker (z. B. href="#" beim aktuellen Menüpunkt) zeigen auf die Seite selbst; auf der 404-Seite wäre das 404.
+      if (ziel.startsWith('#')) continue;
+      const url = new URL(ziel, page.url());
+      if (url.origin !== new URL(page.url()).origin || geprueft.has(url.pathname)) continue;
+      geprueft.add(url.pathname);
+      expect((await request.get(url.pathname)).status(), `${seite.astro} → ${url.pathname}`).toBe(200);
+    }
+  }
+});
+
+test('Geteilte Prototyp-Links unter /v3/ führen auf die neue Seite, mit Parametern', async ({ page }) => {
+  await page.goto('/v3/aktuelles.html?praesentation');
+  expect(new URL(page.url()).pathname).toBe('/aktuelles');
+  expect(new URL(page.url()).search).toBe('?praesentation');
+  await page.goto('/v3/index.html');
+  expect(new URL(page.url()).pathname).toBe('/');
+});
