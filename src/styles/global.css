@@ -637,7 +637,7 @@ body::after {
 }
 .works__statement {
   margin: 0;
-  font-family: var(--f-text);
+  font-family: var(--f-display);
   font-size: var(--t-statement);
   line-height: var(--t-statement-lh);
   letter-spacing: -0.01em;
