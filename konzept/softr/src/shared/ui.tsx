@@ -1,28 +1,115 @@
 // Gemeinsame Bauteile. Jede Auswahl, jedes Feld, jedes Fenster sieht in allen Blöcken gleich aus.
 // Radien: Bedienelemente (Feld, Knopf, Auswahl, Badge) rounded-md, Flächen (Liste, Bereich, Fenster) rounded-lg.
-import { useEffect, useMemo, useRef, useState } from "react";
+import { forwardRef, useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
+import { Checkbox } from "@/components/ui/checkbox";
 import { DialogClose, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import { AlertTriangle, Camera, ChevronDown, ChevronRight, Download, FileSpreadsheet, ImageOff, LayoutGrid, List, Loader2, Plus, Printer, Search, SlidersHorizontal, X } from "lucide-react";
-import { STATUS_ACTIVE, STATUS_BADGE } from "../shared/konstanten";
+import { AUSGESTELLT, GLASIERT, KOMMISSION, RESERVIERT, ROHLING, VERFUEGBAR, VERKAUFT } from "../shared/konstanten";
 import { type Attachment, type Opt, type ThumbSize, thumb } from "../shared/daten";
 
-export const DIALOG_CLASS = "w-[calc(100vw-2rem)] max-h-[90vh] overflow-y-auto rounded-lg p-4 sm:p-6 [&>button:last-child]:hidden";
 // Die eine Rahmenfarbe der App: Flächen, Kacheln, Felder, Auswahlen, Knöpfe. Nur Trennlinien innerhalb einer Fläche bleiben heller.
-export const LINE = "border-neutral-300";
+const LINE = "border-neutral-300";
+// Jedes Fenster (Dialog). Rahmen in der App-Rahmenfarbe.
+export const DIALOG_CLASS = `w-[calc(100vw-2rem)] max-h-[90vh] overflow-y-auto rounded-lg border ${LINE} p-4 sm:p-6 [&>button:last-child]:hidden`;
+// Jedes aufklappende Menü (Popover, Ausklappliste).
+export const POPOVER_CLASS = `border ${LINE}`;
 // md:text-base hebt das md:text-sm der shadcn-Felder auf, damit Eingabe und Auswahlliste gleich groß schreiben.
-export const FIELD_CLASS = `h-12 rounded-md text-base md:text-base ${LINE}`;
-export const TEXTAREA_CLASS = `rounded-md text-base md:text-base ${LINE}`;
-export const INPUT_CLASS = `w-full h-12 rounded-md border ${LINE} bg-background px-3 text-base`;
+const FIELD_CLASS = `h-12 rounded-md text-base md:text-base ${LINE}`;
 // Die Box: jede umrandete Fläche (Bereich, Liste, Kachel, Tabelle). Innerhalb einer Box keine zweite Box.
 export const PANEL_CLASS = `rounded-lg border ${LINE} bg-card`;
+// Box, deren Inhalt in Felder geteilt ist (z. B. Kennzahlen): Die Trennlinien haben dieselbe Farbe wie der Rahmen.
+export const PANEL_GRID_CLASS = `rounded-lg border ${LINE} bg-neutral-300 gap-px overflow-hidden`;
 // Am Handy eine Zeile zum seitlich Wischen statt mehrerer umbrochener Reihen, ab Tablet umbrechen.
 export const SCROLL_ROW = "flex gap-2 py-0.5 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:flex-wrap sm:overflow-visible";
 // Klebende Leisten am unteren Rand: am Handy knapp über Softrs Navigationsleiste (ca. 56 px), ab Tablet am Rand.
 export const STICKY_BOTTOM = "bottom-[calc(4.25rem+env(safe-area-inset-bottom))] sm:bottom-4";
+
+// Farbe trägt nur den Status eines Unikats (farbiger Rand im Ton des Status). Neutrale Werte (verkauft, Rohling, glasiert) haben den App-Rahmen.
+const STATUS_BADGE: Record<string, string> = {
+  [VERFUEGBAR]: "bg-emerald-50 text-emerald-800 border-emerald-200",
+  [RESERVIERT]: "bg-amber-50 text-amber-900 border-amber-200",
+  [VERKAUFT]: `bg-zinc-100 text-zinc-700 ${LINE}`,
+  [KOMMISSION]: "bg-sky-50 text-sky-800 border-sky-200",
+  [AUSGESTELLT]: "bg-violet-50 text-violet-800 border-violet-200",
+  [ROHLING]: `bg-background text-muted-foreground ${LINE}`,
+  [GLASIERT]: `bg-muted text-foreground ${LINE}`,
+};
+
+// Kräftige Variante für den gewählten Status-Knopf. Weiße Schrift nur auf ausreichend dunklen Tönen.
+const STATUS_ACTIVE: Record<string, string> = {
+  [VERFUEGBAR]: "bg-emerald-600 text-white border-emerald-600",
+  [RESERVIERT]: "bg-amber-400 text-amber-950 border-amber-400",
+  [VERKAUFT]: "bg-zinc-600 text-white border-zinc-600",
+  [KOMMISSION]: "bg-sky-600 text-white border-sky-600",
+  [AUSGESTELLT]: "bg-violet-700 text-white border-violet-700",
+};
+
+// Grundbausteine. Seiten nutzen nur diese, nie Button, Input, Textarea, Badge oder <select> direkt
+// (geprüft von pruefung/einheitlich.sh). Rahmen, Schrift und Höhe stehen nur hier; Seiten geben höchstens Größe und Breite mit.
+
+type KnopfProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
+  variant?: "default" | "outline" | "secondary" | "ghost" | "destructive" | "link";
+  size?: "default" | "sm" | "lg" | "icon";
+  asChild?: boolean;
+};
+
+// Jeder Knopf. Umrandet (outline) und gefüllt-grau (secondary) tragen dieselbe Rahmenfarbe, damit ein aktiver Filter nicht die Größe ändert.
+export const Knopf = forwardRef<HTMLButtonElement, KnopfProps>(function Knopf({ variant = "default", className = "", ...props }, ref) {
+  const rahmen = variant === "outline" || variant === "secondary" ? `border ${LINE}` : "";
+  return <Button ref={ref} variant={variant} className={`${rahmen} ${className}`} {...props} />;
+});
+
+// Jedes einzeilige Eingabefeld.
+export const Feld = forwardRef<HTMLInputElement, React.InputHTMLAttributes<HTMLInputElement>>(function Feld({ className = "", ...props }, ref) {
+  return <Input ref={ref} className={`${FIELD_CLASS} ${className}`} {...props} />;
+});
+
+// Jedes mehrzeilige Textfeld.
+export const Textfeld = forwardRef<HTMLTextAreaElement, React.TextareaHTMLAttributes<HTMLTextAreaElement>>(function Textfeld({ className = "", ...props }, ref) {
+  return <Textarea ref={ref} className={`rounded-md text-base md:text-base ${LINE} ${className}`} {...props} />;
+});
+
+// Jede Auswahlliste (öffnet am Handy die Auswahl des Telefons). kompakt: für dichte Filterzeilen. breite ersetzt die volle Breite.
+export const Auswahl = forwardRef<HTMLSelectElement, Omit<React.SelectHTMLAttributes<HTMLSelectElement>, "className"> & { kompakt?: boolean; breite?: string }>(function Auswahl(
+  { kompakt, breite = "w-full", ...props },
+  ref,
+) {
+  return <select ref={ref} className={`${breite} ${kompakt ? "h-11 px-2" : "h-12 px-3"} rounded-md border ${LINE} bg-background text-base`} {...props} />;
+});
+
+// Ein-/Aus-Schalter als umrandete Zeile in Feldhöhe. lage: nur Ausrichtung im Raster (z. B. self-end).
+export function SchalterFeld({ id, label, hint, checked, onChange, lage = "" }: { id: string; label: string; hint?: string; checked: boolean; onChange: (v: boolean) => void; lage?: string }) {
+  return (
+    <label htmlFor={id} className={`flex items-center justify-between gap-4 min-h-12 rounded-md border ${LINE} px-4 py-2 cursor-pointer ${lage}`}>
+      <span>
+        <span className="block text-base font-medium">{label}</span>
+        {hint && <span className="block text-sm text-muted-foreground">{hint}</span>}
+      </span>
+      <Switch id={id} className="scale-125 data-[state=unchecked]:bg-zinc-300" checked={checked} onCheckedChange={onChange} />
+    </label>
+  );
+}
+
+// Jedes Ankreuzfeld.
+export function Ankreuzfeld({ checked, onChange }: { checked: boolean; onChange: (v: boolean) => void }) {
+  return <Checkbox className={LINE} checked={checked} onCheckedChange={(v) => onChange(v === true)} />;
+}
+
+// Kleines Etikett für Werte in Tabellen (z. B. Glasuren).
+export function Etikett({ children }: { children: React.ReactNode }) {
+  return (
+    <Badge variant="outline" className={`text-sm font-normal ${LINE}`}>
+      {children}
+    </Badge>
+  );
+}
 
 const MOBILE_QUERY = "(max-width: 639px)";
 
@@ -111,7 +198,7 @@ export function Tabs<K extends string>({ label, tabs, value, onChange }: { label
 export function StatusBadge({ text }: { text: string }) {
   if (!text) return null;
   return (
-    <span className={`inline-flex items-center rounded-md border px-2 py-0.5 text-sm font-medium whitespace-nowrap ${STATUS_BADGE[text] ?? "bg-muted text-foreground border-border"}`}>
+    <span className={`inline-flex items-center rounded-md border px-2 py-0.5 text-sm font-medium whitespace-nowrap ${STATUS_BADGE[text] ?? `bg-muted text-foreground ${LINE}`}`}>
       {text}
     </span>
   );
@@ -142,21 +229,21 @@ export function ErrorText({ children }: { children?: string }) {
 // Auswahlliste für verknüpfte Datensätze. Wert ist die Datensatz-ID.
 export function OptionSelect({ id, value, onChange, options, placeholder, disabled }: { id: string; value: string; onChange: (id: string) => void; options: Opt[]; placeholder: string; disabled?: boolean }) {
   return (
-    <select id={id} value={value} disabled={disabled} onChange={(e) => onChange(e.target.value)} className={INPUT_CLASS}>
+    <Auswahl id={id} value={value} disabled={disabled} onChange={(e) => onChange(e.target.value)}>
       <option value="">{placeholder}</option>
       {options.map((o) => (
         <option key={o.id} value={o.id}>
           {o.label}
         </option>
       ))}
-    </select>
+    </Auswahl>
   );
 }
 
 // Auswahlliste mit Gruppen (z. B. Editionen | Manufakturprogramm). Am Handy öffnet sie die Auswahl des Systems.
 export function GroupedSelect({ id, value, onChange, groups, placeholder }: { id: string; value: string; onChange: (id: string) => void; groups: { label: string; options: Opt[] }[]; placeholder: string }) {
   return (
-    <select id={id} value={value} onChange={(e) => onChange(e.target.value)} className={INPUT_CLASS}>
+    <Auswahl id={id} value={value} onChange={(e) => onChange(e.target.value)}>
       <option value="">{placeholder}</option>
       {groups
         .filter((g) => g.options.length > 0)
@@ -169,7 +256,7 @@ export function GroupedSelect({ id, value, onChange, groups, placeholder }: { id
             ))}
           </optgroup>
         ))}
-    </select>
+    </Auswahl>
   );
 }
 
@@ -177,7 +264,7 @@ export function SearchField({ value, onChange, placeholder, label }: { value: st
   return (
     <div className="relative flex-1 min-w-0">
       <Search className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" aria-hidden />
-      <Input type="search" aria-label={label} placeholder={placeholder} value={value} onChange={(e) => onChange(e.target.value)} className={`${FIELD_CLASS} pl-10`} />
+      <Feld type="search" aria-label={label} placeholder={placeholder} value={value} onChange={(e) => onChange(e.target.value)} className="pl-10" />
     </div>
   );
 }
@@ -223,7 +310,7 @@ export function SearchPick({
       </div>
       {term && matches.length === 0 && !exact && <p className="text-sm text-muted-foreground">Keine {label} mit „{query.trim()}“.</p>}
       {onCreate && term && !exact && (
-        <Button
+        <Knopf
           type="button"
           variant="ghost"
           className="h-11 px-2 text-base text-primary"
@@ -239,7 +326,7 @@ export function SearchPick({
           }}
         >
           {busy ? <Loader2 className="w-5 h-5 mr-1 animate-spin" aria-hidden /> : <Plus className="w-5 h-5 mr-1" aria-hidden />}„{query.trim()}“ als {createNoun} anlegen
-        </Button>
+        </Knopf>
       )}
     </div>
   );
@@ -338,9 +425,9 @@ export function PanelHeader({ title, description }: { title: string; description
         <DialogDescription>{description}</DialogDescription>
       </div>
       <DialogClose asChild>
-        <Button variant="ghost" className="h-11 w-11 p-0 shrink-0" aria-label="Schließen">
+        <Knopf variant="ghost" className="h-11 w-11 p-0 shrink-0" aria-label="Schließen">
           <X className="w-6 h-6" aria-hidden />
-        </Button>
+        </Knopf>
       </DialogClose>
     </DialogHeader>
   );
@@ -349,9 +436,9 @@ export function PanelHeader({ title, description }: { title: string; description
 export function DoneButton() {
   return (
     <DialogClose asChild>
-      <Button variant="outline" className={`w-full h-12 text-base ${LINE}`}>
+      <Knopf variant="outline" className={`w-full h-12 text-base`}>
         Fertig
-      </Button>
+      </Knopf>
     </DialogClose>
   );
 }
@@ -365,16 +452,16 @@ export function AddNew({ label, placeholder, existing, onAdd }: { label: string;
   const duplicate = existing.find((o) => o.label.toLowerCase() === name.toLowerCase());
   if (!open) {
     return (
-      <Button type="button" variant="ghost" className="h-11 px-2 text-base text-primary" onClick={() => setOpen(true)}>
+      <Knopf type="button" variant="ghost" className="h-11 px-2 text-base text-primary" onClick={() => setOpen(true)}>
         <Plus className="w-5 h-5 mr-1" aria-hidden />
         {label}
-      </Button>
+      </Knopf>
     );
   }
   return (
     <div className="flex flex-wrap items-center gap-2 w-full">
-      <Input autoFocus value={value} onChange={(e) => setValue(e.target.value)} placeholder={placeholder} aria-label={label} className={`${FIELD_CLASS} flex-1 min-w-48`} />
-      <Button
+      <Feld autoFocus value={value} onChange={(e) => setValue(e.target.value)} placeholder={placeholder} aria-label={label} className="flex-1 min-w-48" />
+      <Knopf
         type="button"
         className="h-12 text-base"
         disabled={!name || !!duplicate || busy}
@@ -389,8 +476,8 @@ export function AddNew({ label, placeholder, existing, onAdd }: { label: string;
         }}
       >
         Übernehmen
-      </Button>
-      <Button
+      </Knopf>
+      <Knopf
         type="button"
         variant="ghost"
         className="h-12 text-base"
@@ -400,7 +487,7 @@ export function AddNew({ label, placeholder, existing, onAdd }: { label: string;
         }}
       >
         Abbrechen
-      </Button>
+      </Knopf>
       {duplicate && <p className="w-full text-sm text-muted-foreground">„{duplicate.label}“ gibt es schon. Bitte oben auswählen.</p>}
     </div>
   );
@@ -470,13 +557,13 @@ export function ExportMenu({ onCsv, onPdf, disabled }: { onCsv: () => void; onPd
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" className={`h-12 w-12 px-0 text-base sm:w-auto sm:px-4 ${LINE}`} disabled={disabled} aria-label="Exportieren">
+        <Knopf variant="outline" className={`h-12 w-12 px-0 text-base sm:w-auto sm:px-4`} disabled={disabled} aria-label="Exportieren">
           <Download className="w-5 h-5 sm:mr-2" aria-hidden />
           <span className="hidden sm:inline">Exportieren</span>
           <ChevronDown className="hidden sm:block w-4 h-4 ml-1" aria-hidden />
-        </Button>
+        </Knopf>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-56">
+      <DropdownMenuContent align="end" className={`${POPOVER_CLASS} w-56`}>
         <DropdownMenuItem className="min-h-11 text-base gap-2" onSelect={onCsv}>
           <FileSpreadsheet className="w-5 h-5" aria-hidden /> Excel (CSV-Datei)
         </DropdownMenuItem>
@@ -537,10 +624,10 @@ export function AnsichtToggle({ value, onChange }: { value: Ansicht; onChange: (
 // Filter-Knopf am Handy. Die Zahl zeigt, wie viele Filter gerade greifen.
 export function FilterButton({ count, onClick }: { count: number; onClick: () => void }) {
   return (
-    <Button variant={count ? "secondary" : "outline"} className="relative h-12 w-12 px-0 shrink-0" aria-label={count ? `Filter, ${count} aktiv` : "Filter"} onClick={onClick}>
+    <Knopf variant={count ? "secondary" : "outline"} className="relative h-12 w-12 px-0 shrink-0" aria-label={count ? `Filter, ${count} aktiv` : "Filter"} onClick={onClick}>
       <SlidersHorizontal className="w-5 h-5" aria-hidden />
       {count > 0 && <span className="absolute -top-1.5 -right-1.5 min-w-5 h-5 px-1 rounded-full bg-primary text-primary-foreground text-xs font-medium leading-5 tabular-nums">{count}</span>}
-    </Button>
+    </Knopf>
   );
 }
 
@@ -563,7 +650,7 @@ export function FilterSheet({
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
       {/* Hoher z-index: Das Blatt muss über Softrs eigener Navigationsleiste liegen. */}
-      <DrawerContent lang="de" className="z-[99999]">
+      <DrawerContent lang="de" className={`z-[99999] ${LINE}`}>
         <DrawerHeader className="text-left">
           <DrawerTitle className="text-xl">Filter</DrawerTitle>
           <DrawerDescription className="text-base">Gilt sofort für die Liste.</DrawerDescription>
@@ -571,11 +658,11 @@ export function FilterSheet({
         <div className="px-4 space-y-5">{children}</div>
         <DrawerFooter className="pt-6 pb-[calc(1rem+env(safe-area-inset-bottom))]">
           <DrawerClose asChild>
-            <Button className="h-12 text-base">{resultText}</Button>
+            <Knopf className="h-12 text-base">{resultText}</Knopf>
           </DrawerClose>
-          <Button variant="ghost" className="h-12 text-base" disabled={!canReset} onClick={onReset}>
+          <Knopf variant="ghost" className="h-12 text-base" disabled={!canReset} onClick={onReset}>
             Filter zurücksetzen
-          </Button>
+          </Knopf>
         </DrawerFooter>
       </DrawerContent>
     </Drawer>

@@ -12,15 +12,11 @@ import {
 import { useNavigationSetting } from "@/lib/editable-settings";
 import { NavigationAction } from "@/components/navigation-action";
 import { useCurrentUser } from "@/lib/user";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Switch } from "@/components/ui/switch";
 import { Check, ChevronDown, Loader2, Minus, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { AUSSER_HAUS_ORT, EDITION_PROGRAMM, MANUFAKTUR_PROGRAMM, PAGE_SIZE, ROHLING, isAusserHaus } from "../shared/konstanten";
 import { type Opt, type RawItem, activeOptions, asOpts, compareNr, freshItems, link, modellLabel, parseNumber, str, useAllPages } from "../shared/daten";
-import { AddNew, ChoiceChips, ErrorText, FIELD_CLASS, FieldLabel, GroupedSelect, Hint, OptionSelect, PANEL_CLASS, PageHeader, PhotoPicker, STICKY_BOTTOM, SearchPick, TEXTAREA_CLASS, Tabs, LINE, useIsMobile } from "../shared/ui";
+import { AddNew, ChoiceChips, ErrorText, Feld, FieldLabel, GroupedSelect, Hint, Knopf, OptionSelect, PageHeader, PANEL_CLASS, PhotoPicker, SchalterFeld, SearchPick, STICKY_BOTTOM, Tabs, Textfeld, useIsMobile } from "../shared/ui";
 
 const ds = datasource.define({ unikate: "unikate", edition: "edition", glasuren: "glasuren", kuenstler: "kuenstler", lagerorte: "lagerorte", partner: "partner", modelle: "modelle" });
 const glasurNeu = q.select({ name: "OuhBi" });
@@ -192,12 +188,12 @@ function SuccessCard({ saved, onNext }: { saved: Saved; onNext: () => void }) {
         {inventarnummer && <p className="text-base mt-1">Inventarnummer: <strong>{inventarnummer}</strong></p>}
       </div>
       <div className="flex flex-col sm:flex-row gap-3 justify-center">
-        <Button size="lg" className={FIELD_CLASS} onClick={onNext}>
+        <Knopf size="lg" onClick={onNext}>
           Nächstes Stück erfassen
-        </Button>
-        <Button asChild size="lg" variant="outline" className={FIELD_CLASS}>
+        </Knopf>
+        <Knopf asChild size="lg" variant="outline">
           <NavigationAction navigation={bestandLink}>Zum Bestand</NavigationAction>
-        </Button>
+        </Knopf>
       </div>
     </div>
   );
@@ -494,12 +490,11 @@ export default function Block() {
                     <FieldLabel htmlFor="u-name" required>
                       Name
                     </FieldLabel>
-                    <Input
+                    <Feld
                       id="u-name"
                       value={unikat.name}
                       onChange={(e) => setU("name", e.target.value)}
                       placeholder="z. B. Mondvase „Seladon“"
-                      className={FIELD_CLASS}
                       aria-invalid={!!errors.name}
                     />
                     <ErrorText>{errors.name}</ErrorText>
@@ -574,12 +569,11 @@ export default function Block() {
                     </div>
                     <div>
                       <FieldLabel htmlFor="u-jahr">Jahr</FieldLabel>
-                      <Input
+                      <Feld
                         id="u-jahr"
                         inputMode="numeric"
                         value={unikat.jahr}
                         onChange={(e) => setU("jahr", e.target.value.replace(/\D/g, "").slice(0, 4))}
-                        className={FIELD_CLASS}
                       />
                     </div>
                   </div>
@@ -593,22 +587,20 @@ export default function Block() {
                   <div className="grid sm:grid-cols-2 gap-6">
                     <div>
                       <FieldLabel htmlFor="u-masse">Maße</FieldLabel>
-                      <Input
+                      <Feld
                         id="u-masse"
                         value={unikat.masse}
                         onChange={(e) => setU("masse", e.target.value)}
                         placeholder="z. B. Ø 24 × H 8 cm"
-                        className={FIELD_CLASS}
                       />
                     </div>
                     <div>
                       <FieldLabel htmlFor="u-bildnachweis">Bildnachweis</FieldLabel>
-                      <Input
+                      <Feld
                         id="u-bildnachweis"
                         value={unikat.bildnachweis}
                         onChange={(e) => setU("bildnachweis", e.target.value)}
                         placeholder="z. B. Foto: Name der Fotografin"
-                        className={FIELD_CLASS}
                       />
                     </div>
                   </div>
@@ -616,35 +608,34 @@ export default function Block() {
                   <div className="grid sm:grid-cols-2 gap-6">
                     <div>
                       <FieldLabel htmlFor="u-preis">Preis intern (€)</FieldLabel>
-                      <Input
+                      <Feld
                         id="u-preis"
                         inputMode="decimal"
                         value={unikat.preis}
                         onChange={(e) => setU("preis", e.target.value)}
                         placeholder="z. B. 480"
-                        className={FIELD_CLASS}
                         aria-invalid={!!errors.preis}
                       />
                       <Hint>Nur intern, erscheint nie auf der Website.</Hint>
                       <ErrorText>{errors.preis}</ErrorText>
                     </div>
-                    <label htmlFor="u-website" className={`flex items-center justify-between gap-4 rounded-md border ${LINE} px-4 py-3 cursor-pointer self-start sm:mt-8`}>
-                      <span>
-                        <span className="block text-base font-medium">Auf Website zeigen</span>
-                        <span className="block text-sm text-muted-foreground">Nur für die spätere Website-Anbindung.</span>
-                      </span>
-                      <Switch id="u-website" className="scale-125 data-[state=unchecked]:bg-zinc-300" checked={unikat.website} onCheckedChange={(v) => setU("website", v)} />
-                    </label>
+                    <SchalterFeld
+                      id="u-website"
+                      label="Auf Website zeigen"
+                      hint="Nur für die spätere Website-Anbindung."
+                      checked={unikat.website}
+                      onChange={(v) => setU("website", v)}
+                      lage="self-start sm:mt-8"
+                    />
                   </div>
 
                   <div>
                     <FieldLabel htmlFor="u-notiz">Notiz</FieldLabel>
-                    <Textarea
+                    <Textfeld
                       id="u-notiz"
                       value={unikat.notiz}
                       onChange={(e) => setU("notiz", e.target.value)}
                       rows={3}
-                      className={TEXTAREA_CLASS}
                     />
                   </div>
                 </WeitereAngaben>
@@ -697,31 +688,31 @@ export default function Block() {
                       Anzahl
                     </FieldLabel>
                     <div className="flex items-center gap-3">
-                      <Button
+                      <Knopf
                         type="button"
                         variant="outline"
-                        className={`h-12 w-12 ${LINE}`}
+                        className="h-12 w-12"
                         aria-label="Eins weniger"
                         onClick={() => setE("anzahl", Math.max(1, edition.anzahl - 1))}
                       >
                         <Minus className="w-5 h-5" aria-hidden />
-                      </Button>
-                      <Input
+                      </Knopf>
+                      <Feld
                         id="e-anzahl"
                         inputMode="numeric"
                         value={String(edition.anzahl)}
                         onChange={(e) => setE("anzahl", Number(e.target.value.replace(/\D/g, "")) || 0)}
-                        className={`h-12 w-24 rounded-md text-center text-lg md:text-lg ${LINE}`}
+                        className="h-12 w-24 rounded-md text-center text-lg md:text-lg"
                       />
-                      <Button
+                      <Knopf
                         type="button"
                         variant="outline"
-                        className={`h-12 w-12 ${LINE}`}
+                        className="h-12 w-12"
                         aria-label="Eins mehr"
                         onClick={() => setE("anzahl", edition.anzahl + 1)}
                       >
                         <Plus className="w-5 h-5" aria-hidden />
-                      </Button>
+                      </Knopf>
                     </div>
                     <ErrorText>{errors.anzahl}</ErrorText>
                     {existingRow && (
@@ -751,12 +742,11 @@ export default function Block() {
                     </div>
                     <div>
                       <FieldLabel htmlFor="e-notiz">Notiz</FieldLabel>
-                      <Textarea
+                      <Textfeld
                         id="e-notiz"
                         value={edition.notiz}
                         onChange={(e) => setE("notiz", e.target.value)}
                         rows={3}
-                        className={TEXTAREA_CLASS}
                       />
                     </div>
                   </WeitereAngaben>
@@ -772,7 +762,7 @@ export default function Block() {
             {canCreate ? (
               // Am Handy klebt Speichern unten, damit es nach den Pflichtangaben ohne Scrollen erreichbar ist.
               <div className={`sticky ${STICKY_BOTTOM} z-10 sm:static`}>
-                <Button type="submit" size="lg" className="w-full h-14 rounded-md text-lg shadow-lg sm:shadow-none" disabled={busy}>
+                <Knopf type="submit" size="lg" className="w-full h-14 rounded-md text-lg shadow-lg sm:shadow-none" disabled={busy}>
                   {busy ? (
                     <>
                       <Loader2 className="w-5 h-5 mr-2 animate-spin" aria-hidden /> Wird gespeichert …
@@ -782,7 +772,7 @@ export default function Block() {
                   ) : (
                     "Speichern"
                   )}
-                </Button>
+                </Knopf>
               </div>
             ) : (
               <p className="text-base text-muted-foreground">Du hast keine Berechtigung, Stücke zu erfassen.</p>

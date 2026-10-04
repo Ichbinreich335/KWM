@@ -1,8 +1,5 @@
 import { useMemo, useState } from "react";
 import { datasource, q, useFieldOptions, useRecordCreate, useRecordDelete, useRecordUpdate, useRecords, useUpload } from "@/lib/datasource";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Archive, ArchiveRestore, Check, ChevronDown, Loader2, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
@@ -14,20 +11,20 @@ import {
   EmptyState,
   ErrorState,
   ErrorText,
-  FIELD_CLASS,
+  Feld,
   FieldLabel,
   Hint,
+  Knopf,
   ListRow,
   LoadingState,
-  PANEL_CLASS,
   PageHeader,
+  PANEL_CLASS,
   PanelHeader,
   PhotoPicker,
   SearchField,
   SearchPick,
-  TEXTAREA_CLASS,
   Tabs,
-  LINE,
+  Textfeld,
 } from "../shared/ui";
 
 const ds = datasource.define({
@@ -187,9 +184,9 @@ function EntryDialog({ kat, entry, onClose }: { kat: Kategorie; entry: Entry | n
                   multiple
                 />
               ) : f.kind === "textarea" ? (
-                <Textarea id={`f-${f.key}`} rows={3} value={values[f.key]} onChange={(e) => setValues((s) => ({ ...s, [f.key]: e.target.value }))} className={TEXTAREA_CLASS} />
+                <Textfeld id={`f-${f.key}`} rows={3} value={values[f.key]} onChange={(e) => setValues((s) => ({ ...s, [f.key]: e.target.value }))} />
               ) : (
-                <Input
+                <Feld
                   id={`f-${f.key}`}
                   value={values[f.key]}
                   inputMode={f.kind === "price" ? "decimal" : undefined}
@@ -200,7 +197,6 @@ function EntryDialog({ kat, entry, onClose }: { kat: Kategorie; entry: Entry | n
                     setValues((s) => ({ ...s, [f.key]: e.target.value }));
                     setError(null);
                   }}
-                  className={FIELD_CLASS}
                 />
               )}
               {f.key === "name" && lockedReason && <Hint>{lockedReason}</Hint>}
@@ -215,13 +211,13 @@ function EntryDialog({ kat, entry, onClose }: { kat: Kategorie; entry: Entry | n
             </div>
           )}
           <div className="flex gap-3">
-            <Button variant="outline" className={`h-12 flex-1 text-base ${LINE}`} disabled={busy} onClick={onClose}>
+            <Knopf variant="outline" className="h-12 flex-1 text-base" disabled={busy} onClick={onClose}>
               Abbrechen
-            </Button>
-            <Button className="h-12 flex-1 text-base" disabled={busy || !name} onClick={save}>
+            </Knopf>
+            <Knopf className="h-12 flex-1 text-base" disabled={busy || !name} onClick={save}>
               {busy ? <Loader2 className="w-5 h-5 mr-2 animate-spin" aria-hidden /> : <Check className="w-5 h-5 mr-2" aria-hidden />}
               {entry ? "Speichern" : "Anlegen"}
-            </Button>
+            </Knopf>
           </div>
           {entry && !lockedReason && (
             <section className="border-t pt-5 space-y-3" aria-label="Archivieren und Löschen">
@@ -238,29 +234,29 @@ function EntryDialog({ kat, entry, onClose }: { kat: Kategorie; entry: Entry | n
                 <div role="alert" className="rounded-md border border-destructive/40 bg-destructive/5 p-3 space-y-3">
                   <p className="text-base">„{entry.name}“ endgültig löschen? Das lässt sich nicht rückgängig machen.</p>
                   <div className="flex flex-wrap gap-3">
-                    <Button variant="destructive" className="h-11 text-base" disabled={busy} onClick={() => act(() => kat.remove(entry.id), `„${entry.name}“ gelöscht.`)}>
+                    <Knopf variant="destructive" className="h-11 text-base" disabled={busy} onClick={() => act(() => kat.remove(entry.id), `„${entry.name}“ gelöscht.`)}>
                       Endgültig löschen
-                    </Button>
-                    <Button variant="ghost" className="h-11 text-base" disabled={busy} onClick={() => setConfirmDelete(false)}>
+                    </Knopf>
+                    <Knopf variant="ghost" className="h-11 text-base" disabled={busy} onClick={() => setConfirmDelete(false)}>
                       Abbrechen
-                    </Button>
+                    </Knopf>
                   </div>
                 </div>
               ) : (
                 <div className="flex flex-wrap gap-3">
-                  <Button
+                  <Knopf
                     variant="outline"
-                    className={`h-11 text-base ${LINE}`}
+                    className="h-11 text-base"
                     disabled={busy}
                     onClick={() => act(() => kat.archive(entry.id, !entry.archiviert), entry.archiviert ? `„${entry.name}“ wiederhergestellt.` : `„${entry.name}“ archiviert.`)}
                   >
                     {entry.archiviert ? <ArchiveRestore className="w-5 h-5 mr-2" aria-hidden /> : <Archive className="w-5 h-5 mr-2" aria-hidden />}
                     {entry.archiviert ? "Wiederherstellen" : "Archivieren"}
-                  </Button>
+                  </Knopf>
                   {inUse === 0 && (
-                    <Button variant="ghost" className="h-11 text-base text-destructive hover:text-destructive" disabled={busy} onClick={() => setConfirmDelete(true)}>
+                    <Knopf variant="ghost" className="h-11 text-base text-destructive hover:text-destructive" disabled={busy} onClick={() => setConfirmDelete(true)}>
                       <Trash2 className="w-5 h-5 mr-2" aria-hidden /> Löschen
-                    </Button>
+                    </Knopf>
                   )}
                 </div>
               )}
@@ -524,9 +520,9 @@ export default function Block() {
         />
         <div className="flex flex-wrap items-center justify-between gap-3">
           <p className="text-base text-muted-foreground min-w-0 flex-1 basis-64">{kat.hint}</p>
-          <Button className="h-11 text-base" onClick={() => setDialog({ entry: null })}>
+          <Knopf className="h-11 text-base" onClick={() => setDialog({ entry: null })}>
             <Plus className="w-5 h-5 mr-2" aria-hidden /> {kat.singular} anlegen
-          </Button>
+          </Knopf>
         </div>
         {kat.entries.length > SEARCH_FROM && <SearchField label="Suche" placeholder={`${kat.label} durchsuchen`} value={search} onChange={setSearch} />}
         {failed ? (
@@ -538,10 +534,10 @@ export default function Block() {
             {aktiv.length === 0 ? <EmptyState text={term ? "Nichts gefunden." : `Noch keine ${kat.label}. Mit „${kat.singular} anlegen“ beginnen.`} /> : rows(aktiv)}
             {archiviert.length > 0 && (
               <div className="space-y-3">
-                <Button variant="ghost" className="h-11 px-2 text-base text-muted-foreground" aria-expanded={showArchived} onClick={() => setShowArchived((v) => !v)}>
+                <Knopf variant="ghost" className="h-11 px-2 text-base text-muted-foreground" aria-expanded={showArchived} onClick={() => setShowArchived((v) => !v)}>
                   <ChevronDown className={`w-5 h-5 mr-1 transition-transform ${showArchived ? "rotate-180" : ""}`} aria-hidden />
                   Archiviert ({zahl.format(archiviert.length)})
-                </Button>
+                </Knopf>
                 {showArchived && rows(archiviert)}
               </div>
             )}

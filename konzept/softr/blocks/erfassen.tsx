@@ -1,15 +1,15 @@
 // Generiert von konzept/softr/build.mjs aus src/blocks/erfassen.tsx und src/shared/. Nicht von Hand ändern.
-import { useEffect, useMemo, useRef, useState } from "react";
+import { forwardRef, useEffect, useMemo, useRef, useState } from "react";
 import { datasource, q, useFieldOptions, useRecord, useRecordCreate, useRecords, useRecordUpdate, useUpload } from "@/lib/datasource";
 import { useNavigationSetting } from "@/lib/editable-settings";
 import { NavigationAction } from "@/components/navigation-action";
 import { useCurrentUser } from "@/lib/user";
+import { Camera, Check, ChevronDown, Loader2, Minus, Plus, Search, X } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import { Camera, Check, ChevronDown, Loader2, Minus, Plus, Search, X } from "lucide-react";
-import { toast } from "sonner";
 
 const PAGE_SIZE = 100;
 const VERFUEGBAR = "verfügbar";
@@ -25,16 +25,6 @@ const EDITION_PROGRAMM = "Edition";
 const MANUFAKTUR_PROGRAMM = "Manufakturprogramm";
 const AUSSER_HAUS_ORT = "Außer Haus";
 const isAusserHaus = (status: string) => status === KOMMISSION || status === AUSGESTELLT;
-
-// Kräftige Variante für den gewählten Status-Knopf. Weiße Schrift nur auf ausreichend dunklen Tönen.
-const STATUS_ACTIVE: Record<string, string> = {
-  [VERFUEGBAR]: "bg-emerald-600 text-white border-emerald-600",
-  [RESERVIERT]: "bg-amber-400 text-amber-950 border-amber-400",
-  [VERKAUFT]: "bg-zinc-600 text-white border-zinc-600",
-  [KOMMISSION]: "bg-sky-600 text-white border-sky-600",
-  [AUSGESTELLT]: "bg-violet-700 text-white border-violet-700",
-};
-
 type Opt = { id: string; label: string };
 type RawItem = { id: string; fields: Record<string, unknown> };
 
@@ -103,14 +93,66 @@ const LINE = "border-neutral-300";
 // md:text-base hebt das md:text-sm der shadcn-Felder auf, damit Eingabe und Auswahlliste gleich groß schreiben.
 const FIELD_CLASS = `h-12 rounded-md text-base md:text-base ${LINE}`;
 
-const TEXTAREA_CLASS = `rounded-md text-base md:text-base ${LINE}`;
-const INPUT_CLASS = `w-full h-12 rounded-md border ${LINE} bg-background px-3 text-base`;
-
 // Die Box: jede umrandete Fläche (Bereich, Liste, Kachel, Tabelle). Innerhalb einer Box keine zweite Box.
 const PANEL_CLASS = `rounded-lg border ${LINE} bg-card`;
 
 // Klebende Leisten am unteren Rand: am Handy knapp über Softrs Navigationsleiste (ca. 56 px), ab Tablet am Rand.
 const STICKY_BOTTOM = "bottom-[calc(4.25rem+env(safe-area-inset-bottom))] sm:bottom-4";
+
+// Kräftige Variante für den gewählten Status-Knopf. Weiße Schrift nur auf ausreichend dunklen Tönen.
+const STATUS_ACTIVE: Record<string, string> = {
+  [VERFUEGBAR]: "bg-emerald-600 text-white border-emerald-600",
+  [RESERVIERT]: "bg-amber-400 text-amber-950 border-amber-400",
+  [VERKAUFT]: "bg-zinc-600 text-white border-zinc-600",
+  [KOMMISSION]: "bg-sky-600 text-white border-sky-600",
+  [AUSGESTELLT]: "bg-violet-700 text-white border-violet-700",
+};
+
+// Grundbausteine. Seiten nutzen nur diese, nie Button, Input, Textarea, Badge oder <select> direkt
+// (geprüft von pruefung/einheitlich.sh). Rahmen, Schrift und Höhe stehen nur hier; Seiten geben höchstens Größe und Breite mit.
+
+type KnopfProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
+  variant?: "default" | "outline" | "secondary" | "ghost" | "destructive" | "link";
+  size?: "default" | "sm" | "lg" | "icon";
+  asChild?: boolean;
+};
+
+// Jeder Knopf. Umrandet (outline) und gefüllt-grau (secondary) tragen dieselbe Rahmenfarbe, damit ein aktiver Filter nicht die Größe ändert.
+const Knopf = forwardRef<HTMLButtonElement, KnopfProps>(function Knopf({ variant = "default", className = "", ...props }, ref) {
+  const rahmen = variant === "outline" || variant === "secondary" ? `border ${LINE}` : "";
+  return <Button ref={ref} variant={variant} className={`${rahmen} ${className}`} {...props} />;
+});
+
+// Jedes einzeilige Eingabefeld.
+const Feld = forwardRef<HTMLInputElement, React.InputHTMLAttributes<HTMLInputElement>>(function Feld({ className = "", ...props }, ref) {
+  return <Input ref={ref} className={`${FIELD_CLASS} ${className}`} {...props} />;
+});
+
+// Jedes mehrzeilige Textfeld.
+const Textfeld = forwardRef<HTMLTextAreaElement, React.TextareaHTMLAttributes<HTMLTextAreaElement>>(function Textfeld({ className = "", ...props }, ref) {
+  return <Textarea ref={ref} className={`rounded-md text-base md:text-base ${LINE} ${className}`} {...props} />;
+});
+
+// Jede Auswahlliste (öffnet am Handy die Auswahl des Telefons). kompakt: für dichte Filterzeilen. breite ersetzt die volle Breite.
+const Auswahl = forwardRef<HTMLSelectElement, Omit<React.SelectHTMLAttributes<HTMLSelectElement>, "className"> & { kompakt?: boolean; breite?: string }>(function Auswahl(
+  { kompakt, breite = "w-full", ...props },
+  ref,
+) {
+  return <select ref={ref} className={`${breite} ${kompakt ? "h-11 px-2" : "h-12 px-3"} rounded-md border ${LINE} bg-background text-base`} {...props} />;
+});
+
+// Ein-/Aus-Schalter als umrandete Zeile in Feldhöhe. lage: nur Ausrichtung im Raster (z. B. self-end).
+function SchalterFeld({ id, label, hint, checked, onChange, lage = "" }: { id: string; label: string; hint?: string; checked: boolean; onChange: (v: boolean) => void; lage?: string }) {
+  return (
+    <label htmlFor={id} className={`flex items-center justify-between gap-4 min-h-12 rounded-md border ${LINE} px-4 py-2 cursor-pointer ${lage}`}>
+      <span>
+        <span className="block text-base font-medium">{label}</span>
+        {hint && <span className="block text-sm text-muted-foreground">{hint}</span>}
+      </span>
+      <Switch id={id} className="scale-125 data-[state=unchecked]:bg-zinc-300" checked={checked} onCheckedChange={onChange} />
+    </label>
+  );
+}
 
 const MOBILE_QUERY = "(max-width: 639px)";
 
@@ -208,21 +250,21 @@ function ErrorText({ children }: { children?: string }) {
 // Auswahlliste für verknüpfte Datensätze. Wert ist die Datensatz-ID.
 function OptionSelect({ id, value, onChange, options, placeholder, disabled }: { id: string; value: string; onChange: (id: string) => void; options: Opt[]; placeholder: string; disabled?: boolean }) {
   return (
-    <select id={id} value={value} disabled={disabled} onChange={(e) => onChange(e.target.value)} className={INPUT_CLASS}>
+    <Auswahl id={id} value={value} disabled={disabled} onChange={(e) => onChange(e.target.value)}>
       <option value="">{placeholder}</option>
       {options.map((o) => (
         <option key={o.id} value={o.id}>
           {o.label}
         </option>
       ))}
-    </select>
+    </Auswahl>
   );
 }
 
 // Auswahlliste mit Gruppen (z. B. Editionen | Manufakturprogramm). Am Handy öffnet sie die Auswahl des Systems.
 function GroupedSelect({ id, value, onChange, groups, placeholder }: { id: string; value: string; onChange: (id: string) => void; groups: { label: string; options: Opt[] }[]; placeholder: string }) {
   return (
-    <select id={id} value={value} onChange={(e) => onChange(e.target.value)} className={INPUT_CLASS}>
+    <Auswahl id={id} value={value} onChange={(e) => onChange(e.target.value)}>
       <option value="">{placeholder}</option>
       {groups
         .filter((g) => g.options.length > 0)
@@ -235,7 +277,7 @@ function GroupedSelect({ id, value, onChange, groups, placeholder }: { id: strin
             ))}
           </optgroup>
         ))}
-    </select>
+    </Auswahl>
   );
 }
 
@@ -243,7 +285,7 @@ function SearchField({ value, onChange, placeholder, label }: { value: string; o
   return (
     <div className="relative flex-1 min-w-0">
       <Search className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" aria-hidden />
-      <Input type="search" aria-label={label} placeholder={placeholder} value={value} onChange={(e) => onChange(e.target.value)} className={`${FIELD_CLASS} pl-10`} />
+      <Feld type="search" aria-label={label} placeholder={placeholder} value={value} onChange={(e) => onChange(e.target.value)} className="pl-10" />
     </div>
   );
 }
@@ -289,7 +331,7 @@ function SearchPick({
       </div>
       {term && matches.length === 0 && !exact && <p className="text-sm text-muted-foreground">Keine {label} mit „{query.trim()}“.</p>}
       {onCreate && term && !exact && (
-        <Button
+        <Knopf
           type="button"
           variant="ghost"
           className="h-11 px-2 text-base text-primary"
@@ -305,7 +347,7 @@ function SearchPick({
           }}
         >
           {busy ? <Loader2 className="w-5 h-5 mr-1 animate-spin" aria-hidden /> : <Plus className="w-5 h-5 mr-1" aria-hidden />}„{query.trim()}“ als {createNoun} anlegen
-        </Button>
+        </Knopf>
       )}
     </div>
   );
@@ -332,16 +374,16 @@ function AddNew({ label, placeholder, existing, onAdd }: { label: string; placeh
   const duplicate = existing.find((o) => o.label.toLowerCase() === name.toLowerCase());
   if (!open) {
     return (
-      <Button type="button" variant="ghost" className="h-11 px-2 text-base text-primary" onClick={() => setOpen(true)}>
+      <Knopf type="button" variant="ghost" className="h-11 px-2 text-base text-primary" onClick={() => setOpen(true)}>
         <Plus className="w-5 h-5 mr-1" aria-hidden />
         {label}
-      </Button>
+      </Knopf>
     );
   }
   return (
     <div className="flex flex-wrap items-center gap-2 w-full">
-      <Input autoFocus value={value} onChange={(e) => setValue(e.target.value)} placeholder={placeholder} aria-label={label} className={`${FIELD_CLASS} flex-1 min-w-48`} />
-      <Button
+      <Feld autoFocus value={value} onChange={(e) => setValue(e.target.value)} placeholder={placeholder} aria-label={label} className="flex-1 min-w-48" />
+      <Knopf
         type="button"
         className="h-12 text-base"
         disabled={!name || !!duplicate || busy}
@@ -356,8 +398,8 @@ function AddNew({ label, placeholder, existing, onAdd }: { label: string; placeh
         }}
       >
         Übernehmen
-      </Button>
-      <Button
+      </Knopf>
+      <Knopf
         type="button"
         variant="ghost"
         className="h-12 text-base"
@@ -367,7 +409,7 @@ function AddNew({ label, placeholder, existing, onAdd }: { label: string; placeh
         }}
       >
         Abbrechen
-      </Button>
+      </Knopf>
       {duplicate && <p className="w-full text-sm text-muted-foreground">„{duplicate.label}“ gibt es schon. Bitte oben auswählen.</p>}
     </div>
   );
@@ -602,12 +644,12 @@ function SuccessCard({ saved, onNext }: { saved: Saved; onNext: () => void }) {
         {inventarnummer && <p className="text-base mt-1">Inventarnummer: <strong>{inventarnummer}</strong></p>}
       </div>
       <div className="flex flex-col sm:flex-row gap-3 justify-center">
-        <Button size="lg" className={FIELD_CLASS} onClick={onNext}>
+        <Knopf size="lg" onClick={onNext}>
           Nächstes Stück erfassen
-        </Button>
-        <Button asChild size="lg" variant="outline" className={FIELD_CLASS}>
+        </Knopf>
+        <Knopf asChild size="lg" variant="outline">
           <NavigationAction navigation={bestandLink}>Zum Bestand</NavigationAction>
-        </Button>
+        </Knopf>
       </div>
     </div>
   );
@@ -904,12 +946,11 @@ export default function Block() {
                     <FieldLabel htmlFor="u-name" required>
                       Name
                     </FieldLabel>
-                    <Input
+                    <Feld
                       id="u-name"
                       value={unikat.name}
                       onChange={(e) => setU("name", e.target.value)}
                       placeholder="z. B. Mondvase „Seladon“"
-                      className={FIELD_CLASS}
                       aria-invalid={!!errors.name}
                     />
                     <ErrorText>{errors.name}</ErrorText>
@@ -984,12 +1025,11 @@ export default function Block() {
                     </div>
                     <div>
                       <FieldLabel htmlFor="u-jahr">Jahr</FieldLabel>
-                      <Input
+                      <Feld
                         id="u-jahr"
                         inputMode="numeric"
                         value={unikat.jahr}
                         onChange={(e) => setU("jahr", e.target.value.replace(/\D/g, "").slice(0, 4))}
-                        className={FIELD_CLASS}
                       />
                     </div>
                   </div>
@@ -1003,22 +1043,20 @@ export default function Block() {
                   <div className="grid sm:grid-cols-2 gap-6">
                     <div>
                       <FieldLabel htmlFor="u-masse">Maße</FieldLabel>
-                      <Input
+                      <Feld
                         id="u-masse"
                         value={unikat.masse}
                         onChange={(e) => setU("masse", e.target.value)}
                         placeholder="z. B. Ø 24 × H 8 cm"
-                        className={FIELD_CLASS}
                       />
                     </div>
                     <div>
                       <FieldLabel htmlFor="u-bildnachweis">Bildnachweis</FieldLabel>
-                      <Input
+                      <Feld
                         id="u-bildnachweis"
                         value={unikat.bildnachweis}
                         onChange={(e) => setU("bildnachweis", e.target.value)}
                         placeholder="z. B. Foto: Name der Fotografin"
-                        className={FIELD_CLASS}
                       />
                     </div>
                   </div>
@@ -1026,35 +1064,34 @@ export default function Block() {
                   <div className="grid sm:grid-cols-2 gap-6">
                     <div>
                       <FieldLabel htmlFor="u-preis">Preis intern (€)</FieldLabel>
-                      <Input
+                      <Feld
                         id="u-preis"
                         inputMode="decimal"
                         value={unikat.preis}
                         onChange={(e) => setU("preis", e.target.value)}
                         placeholder="z. B. 480"
-                        className={FIELD_CLASS}
                         aria-invalid={!!errors.preis}
                       />
                       <Hint>Nur intern, erscheint nie auf der Website.</Hint>
                       <ErrorText>{errors.preis}</ErrorText>
                     </div>
-                    <label htmlFor="u-website" className={`flex items-center justify-between gap-4 rounded-md border ${LINE} px-4 py-3 cursor-pointer self-start sm:mt-8`}>
-                      <span>
-                        <span className="block text-base font-medium">Auf Website zeigen</span>
-                        <span className="block text-sm text-muted-foreground">Nur für die spätere Website-Anbindung.</span>
-                      </span>
-                      <Switch id="u-website" className="scale-125 data-[state=unchecked]:bg-zinc-300" checked={unikat.website} onCheckedChange={(v) => setU("website", v)} />
-                    </label>
+                    <SchalterFeld
+                      id="u-website"
+                      label="Auf Website zeigen"
+                      hint="Nur für die spätere Website-Anbindung."
+                      checked={unikat.website}
+                      onChange={(v) => setU("website", v)}
+                      lage="self-start sm:mt-8"
+                    />
                   </div>
 
                   <div>
                     <FieldLabel htmlFor="u-notiz">Notiz</FieldLabel>
-                    <Textarea
+                    <Textfeld
                       id="u-notiz"
                       value={unikat.notiz}
                       onChange={(e) => setU("notiz", e.target.value)}
                       rows={3}
-                      className={TEXTAREA_CLASS}
                     />
                   </div>
                 </WeitereAngaben>
@@ -1107,31 +1144,31 @@ export default function Block() {
                       Anzahl
                     </FieldLabel>
                     <div className="flex items-center gap-3">
-                      <Button
+                      <Knopf
                         type="button"
                         variant="outline"
-                        className={`h-12 w-12 ${LINE}`}
+                        className="h-12 w-12"
                         aria-label="Eins weniger"
                         onClick={() => setE("anzahl", Math.max(1, edition.anzahl - 1))}
                       >
                         <Minus className="w-5 h-5" aria-hidden />
-                      </Button>
-                      <Input
+                      </Knopf>
+                      <Feld
                         id="e-anzahl"
                         inputMode="numeric"
                         value={String(edition.anzahl)}
                         onChange={(e) => setE("anzahl", Number(e.target.value.replace(/\D/g, "")) || 0)}
-                        className={`h-12 w-24 rounded-md text-center text-lg md:text-lg ${LINE}`}
+                        className="h-12 w-24 rounded-md text-center text-lg md:text-lg"
                       />
-                      <Button
+                      <Knopf
                         type="button"
                         variant="outline"
-                        className={`h-12 w-12 ${LINE}`}
+                        className="h-12 w-12"
                         aria-label="Eins mehr"
                         onClick={() => setE("anzahl", edition.anzahl + 1)}
                       >
                         <Plus className="w-5 h-5" aria-hidden />
-                      </Button>
+                      </Knopf>
                     </div>
                     <ErrorText>{errors.anzahl}</ErrorText>
                     {existingRow && (
@@ -1161,12 +1198,11 @@ export default function Block() {
                     </div>
                     <div>
                       <FieldLabel htmlFor="e-notiz">Notiz</FieldLabel>
-                      <Textarea
+                      <Textfeld
                         id="e-notiz"
                         value={edition.notiz}
                         onChange={(e) => setE("notiz", e.target.value)}
                         rows={3}
-                        className={TEXTAREA_CLASS}
                       />
                     </div>
                   </WeitereAngaben>
@@ -1182,7 +1218,7 @@ export default function Block() {
             {canCreate ? (
               // Am Handy klebt Speichern unten, damit es nach den Pflichtangaben ohne Scrollen erreichbar ist.
               <div className={`sticky ${STICKY_BOTTOM} z-10 sm:static`}>
-                <Button type="submit" size="lg" className="w-full h-14 rounded-md text-lg shadow-lg sm:shadow-none" disabled={busy}>
+                <Knopf type="submit" size="lg" className="w-full h-14 rounded-md text-lg shadow-lg sm:shadow-none" disabled={busy}>
                   {busy ? (
                     <>
                       <Loader2 className="w-5 h-5 mr-2 animate-spin" aria-hidden /> Wird gespeichert …
@@ -1192,7 +1228,7 @@ export default function Block() {
                   ) : (
                     "Speichern"
                   )}
-                </Button>
+                </Knopf>
               </div>
             ) : (
               <p className="text-base text-muted-foreground">Du hast keine Berechtigung, Stücke zu erfassen.</p>

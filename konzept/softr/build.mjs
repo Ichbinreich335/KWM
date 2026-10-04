@@ -5,6 +5,7 @@
 import { readFileSync, readdirSync, writeFileSync, existsSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
+import { pruefeEinheitlich } from "./pruefung/einheitlich.mjs";
 
 const ROOT = dirname(fileURLToPath(import.meta.url));
 const SRC = join(ROOT, "src", "blocks");
@@ -60,7 +61,14 @@ function parseShared(file) {
 const shared = SHARED_ORDER.map(parseShared);
 const allDecls = shared.flatMap((s) => s.decls);
 const byName = new Map(allDecls.map((d) => [d.name, d]));
-const uses = (code, name) => new RegExp(`(?<![A-Za-z0-9_.])${name}(?![A-Za-z0-9_])`).test(code);
+// Für die Suche nach benutzten Namen zählen nur Code-Zeichen: Zeichenketten in "…" und Kommentare werden ausgeblendet,
+// sonst zöge z. B. ein Kommentar mit dem Wort „Badge“ einen unnötigen Import nach sich.
+const codeOnly = (code) =>
+  code
+    .replace(/"(?:[^"\\\n]|\\.)*"/g, '""')
+    .replace(/\/\*[\s\S]*?\*\//g, "")
+    .replace(/\/\/.*$/gm, "");
+const uses = (code, name) => new RegExp(`(?<![A-Za-z0-9_.])${name}(?![A-Za-z0-9_])`).test(codeOnly(code));
 
 function build(file) {
   const src = readFileSync(join(SRC, file), "utf8");
@@ -108,6 +116,12 @@ function build(file) {
   }
   const header = `// Generiert von konzept/softr/build.mjs aus src/blocks/${file} und src/shared/. Nicht von Hand ändern.\n`;
   return `${header}${importLines.join("\n")}\n\n${code}`;
+}
+
+const verstoesse = pruefeEinheitlich(ROOT);
+if (verstoesse.length) {
+  console.error(`Build abgebrochen: ${verstoesse.length} Verstöße gegen die einheitlichen Bausteine\n${verstoesse.join("\n")}`);
+  process.exit(1);
 }
 
 let changed = 0;

@@ -1,18 +1,14 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { datasource, q, useRecordCreate, useRecordDelete, useRecords } from "@/lib/datasource";
 import { useCurrentUser } from "@/lib/user";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Badge } from "@/components/ui/badge";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ArrowDown, ArrowUp, Bookmark, ChevronDown, ChevronLeft, ChevronRight, Columns3, ImageOff, Plus, SlidersHorizontal, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
 import { PAGE_SIZE, VERKAUFT } from "../shared/konstanten";
 import { type Attachment, type RawItem, asAttachments, asOpts, downloadCsv, euro, formatDate, lookupValue, num, parseNumber, printTable, str, thumb, today, useAllPages, zahl } from "../shared/daten";
-import { DIALOG_CLASS, DoneButton, EmptyState, ErrorState, ExportMenu, FIELD_CLASS, ListRow, LoadingState, PANEL_CLASS, PageHeader, PanelHeader, SCROLL_ROW, SearchField, StatusBadge, Tabs, Thumb, LINE } from "../shared/ui";
+import { Ankreuzfeld, Auswahl, DIALOG_CLASS, DoneButton, EmptyState, ErrorState, ErrorText, Etikett, ExportMenu, Feld, FieldLabel, Knopf, ListRow, LoadingState, PageHeader, PANEL_CLASS, PanelHeader, POPOVER_CLASS, SCROLL_ROW, SearchField, StatusBadge, Tabs, Thumb } from "../shared/ui";
 
 const ds = datasource.define({ unikate: "unikate", edition: "edition", ansichten: "ansichten" });
 
@@ -459,8 +455,6 @@ function matchesQuick(r: Row, quick: Quick): boolean {
   });
 }
 
-const selectClass = `h-11 rounded-md border ${LINE} bg-background px-2 text-base`;
-
 function CheckList({ options, value, onChange }: { options: string[]; value: string[]; onChange: (v: string[]) => void }) {
   if (options.length === 0) return <p className="text-sm text-muted-foreground p-2">Keine Werte vorhanden.</p>;
   return (
@@ -469,7 +463,7 @@ function CheckList({ options, value, onChange }: { options: string[]; value: str
         const checked = value.includes(o);
         return (
           <label key={o} className="flex items-center gap-3 min-h-11 px-2 rounded-md hover:bg-muted cursor-pointer">
-            <Checkbox checked={checked} onCheckedChange={() => onChange(checked ? value.filter((x) => x !== o) : [...value, o])} />
+            <Ankreuzfeld checked={checked} onChange={() => onChange(checked ? value.filter((x) => x !== o) : [...value, o])} />
             <span className="text-base">{o}</span>
           </label>
         );
@@ -483,11 +477,11 @@ function MultiPick({ options, value, onChange, label }: { options: string[]; val
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="outline" className={`h-11 justify-start text-base font-normal min-w-40 max-w-full truncate ${LINE}`} aria-label={`${label}: Werte wählen`}>
+        <Knopf variant="outline" className="h-11 justify-start text-base font-normal min-w-40 max-w-full truncate" aria-label={`${label}: Werte wählen`}>
           <span className="truncate">{text}</span>
-        </Button>
+        </Knopf>
       </PopoverTrigger>
-      <PopoverContent align="start" className="w-64 max-h-80 overflow-y-auto p-2">
+      <PopoverContent align="start" className={`${POPOVER_CLASS} w-64 max-h-80 overflow-y-auto p-2`}>
         <CheckList options={options} value={value} onChange={onChange} />
       </PopoverContent>
     </Popover>
@@ -500,20 +494,20 @@ function QuickFilter({ label, options, value, onChange }: { label: string; optio
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant={active ? "secondary" : "outline"} className={`h-11 text-base font-normal max-w-72 ${active ? `border ${LINE}` : ""}`}>
+        <Knopf variant={active ? "secondary" : "outline"} className="h-11 text-base font-normal max-w-72">
           <span className="truncate">
             {label}
             {active && <span className="font-medium">: {value.length === 1 ? value[0] : `${value.length} gewählt`}</span>}
           </span>
           <ChevronDown className="w-4 h-4 ml-1 shrink-0" aria-hidden />
-        </Button>
+        </Knopf>
       </PopoverTrigger>
-      <PopoverContent align="start" className="w-64 max-h-80 overflow-y-auto p-2">
+      <PopoverContent align="start" className={`${POPOVER_CLASS} w-64 max-h-80 overflow-y-auto p-2`}>
         <CheckList options={options} value={value} onChange={onChange} />
         {active && (
-          <Button variant="ghost" className="w-full h-11 text-base mt-1" onClick={() => onChange([])}>
+          <Knopf variant="ghost" className="w-full h-11 text-base mt-1" onClick={() => onChange([])}>
             Auswahl aufheben
-          </Button>
+          </Knopf>
         )}
       </PopoverContent>
     </Popover>
@@ -547,53 +541,54 @@ function ConditionRow({
         {index === 0 ? (
           <span className="text-base text-muted-foreground">Wenn</span>
         ) : index === 1 ? (
-          <select aria-label="Verknüpfung" value={conj} onChange={(e) => onConj(e.target.value as Conj)} className={`${selectClass} w-20`}>
+          <Auswahl aria-label="Verknüpfung" value={conj} onChange={(e) => onConj(e.target.value as Conj)} kompakt breite="w-20">
             <option value="und">und</option>
             <option value="oder">oder</option>
-          </select>
+          </Auswahl>
         ) : (
           <span className="text-base text-muted-foreground">{conj}</span>
         )}
       </div>
-      <select
+      <Auswahl
         aria-label="Feld"
+        kompakt
+        breite="w-auto"
         value={c.field}
         onChange={(e) => {
           const field = e.target.value as ColKey;
           onChange({ ...c, field, op: OPS[COL[field].type][0].op, value: COL[field].type === "select" || COL[field].type === "multi" ? [] : "" });
         }}
-        className={selectClass}
       >
         {(fields.includes(col) ? fields : [col, ...fields]).map((x) => (
           <option key={x.key} value={x.key}>
             {x.label}
           </option>
         ))}
-      </select>
-      <select aria-label="Bedingung" value={c.op} onChange={(e) => onChange({ ...c, op: e.target.value as Op })} className={selectClass}>
+      </Auswahl>
+      <Auswahl aria-label="Bedingung" value={c.op} onChange={(e) => onChange({ ...c, op: e.target.value as Op })} kompakt breite="w-auto">
         {ops.map((o) => (
           <option key={o.op} value={o.op}>
             {o.label}
           </option>
         ))}
-      </select>
+      </Auswahl>
       {!NO_VALUE.includes(c.op) &&
         (col.type === "select" || col.type === "multi" ? (
           <MultiPick label={col.label} options={optionsFor(c.field)} value={Array.isArray(c.value) ? c.value : []} onChange={(value) => onChange({ ...c, value })} />
         ) : (
-          <Input
+          <Feld
             aria-label="Wert"
             type={col.type === "date" ? "date" : "text"}
             inputMode={col.type === "number" ? "decimal" : undefined}
             value={typeof c.value === "string" ? c.value : ""}
             onChange={(e) => onChange({ ...c, value: e.target.value })}
             placeholder="Wert"
-            className={`h-11 text-base w-44 ${LINE}`}
+            className="h-11 text-base w-44"
           />
         ))}
-      <Button variant="ghost" className="h-11 w-11 p-0" aria-label="Bedingung entfernen" onClick={onRemove}>
+      <Knopf variant="ghost" className="h-11 w-11 p-0" aria-label="Bedingung entfernen" onClick={onRemove}>
         <X className="w-5 h-5" aria-hidden />
-      </Button>
+      </Knopf>
     </div>
   );
 }
@@ -624,9 +619,9 @@ function Detail({ r, onClose }: { r: Row; onClose: () => void }) {
               </div>
             ))}
           </dl>
-          <Button asChild className="w-full h-12 text-base">
+          <Knopf asChild className="w-full h-12 text-base">
             <a href={href}>Im Bestand bearbeiten</a>
-          </Button>
+          </Knopf>
           <DoneButton />
         </div>
       </DialogContent>
@@ -640,23 +635,16 @@ function SaveViewDialog({ open, onOpenChange, onSave, taken }: { open: boolean; 
   const [busy, setBusy] = useState(false);
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Ansicht speichern</DialogTitle>
-        </DialogHeader>
-        <label htmlFor="view-name" className="text-base font-medium">
-          Name der Ansicht
-        </label>
-        <Input id="view-name" value={name} onChange={(e) => setName(e.target.value)} placeholder="z. B. Seladon im Schauraum" className={FIELD_CLASS} />
-        <p className="text-sm text-muted-foreground">Gespeichert werden Reiter, Filter, Spalten, Sortierung und Suche. Alle Mitarbeitenden sehen die Ansicht.</p>
-        {duplicate && (
-          <p role="alert" className="text-sm text-destructive">
-            Diesen Namen gibt es schon. Bitte einen anderen wählen.
-          </p>
-        )}
-        <DialogFooter>
-          <Button
-            className={FIELD_CLASS}
+      <DialogContent className={`${DIALOG_CLASS} max-w-md`}>
+        <PanelHeader title="Ansicht speichern" description="Gespeichert werden Reiter, Filter, Spalten, Sortierung und Suche. Alle Mitarbeitenden sehen die Ansicht." />
+        <div className="pb-2 space-y-5">
+          <div>
+            <FieldLabel htmlFor="view-name">Name der Ansicht</FieldLabel>
+            <Feld id="view-name" value={name} onChange={(e) => setName(e.target.value)} placeholder="z. B. Seladon im Schauraum" aria-invalid={duplicate} />
+            <ErrorText>{duplicate ? "Diesen Namen gibt es schon. Bitte einen anderen wählen." : undefined}</ErrorText>
+          </div>
+          <Knopf
+            className="w-full h-12 text-base"
             disabled={!name.trim() || duplicate || busy}
             onClick={async () => {
               setBusy(true);
@@ -666,8 +654,8 @@ function SaveViewDialog({ open, onOpenChange, onSave, taken }: { open: boolean; 
             }}
           >
             Speichern
-          </Button>
-        </DialogFooter>
+          </Knopf>
+        </div>
       </DialogContent>
     </Dialog>
   );
@@ -680,15 +668,15 @@ function Pager({ page, total, onPage }: { page: number; total: number; onPage: (
   const to = Math.min(total, from + PAGE_ROWS - 1);
   return (
     <nav aria-label="Seiten" className="flex items-center justify-between gap-2">
-      <Button variant="outline" className={`h-11 text-base ${LINE}`} disabled={page === 0} onClick={() => onPage(page - 1)}>
+      <Knopf variant="outline" className="h-11 text-base" disabled={page === 0} onClick={() => onPage(page - 1)}>
         <ChevronLeft className="w-5 h-5 mr-1" aria-hidden /> Zurück
-      </Button>
+      </Knopf>
       <span className="text-sm text-muted-foreground tabular-nums">
         {zahl.format(from)}–{zahl.format(to)} von {zahl.format(total)}
       </span>
-      <Button variant="outline" className={`h-11 text-base ${LINE}`} disabled={page >= pages - 1} onClick={() => onPage(page + 1)}>
+      <Knopf variant="outline" className="h-11 text-base" disabled={page >= pages - 1} onClick={() => onPage(page + 1)}>
         Weiter <ChevronRight className="w-5 h-5 ml-1" aria-hidden />
-      </Button>
+      </Knopf>
     </nav>
   );
 }
@@ -959,56 +947,56 @@ export default function Block() {
                 }}
               />
             ))}
-            <Button variant={activeConditions.length ? "secondary" : "ghost"} className="h-11 text-base" onClick={() => (conditions.length ? setFilterOpen((o) => !o) : addCondition())} aria-expanded={filterOpen}>
+            <Knopf variant={activeConditions.length ? "secondary" : "ghost"} className="h-11 text-base" onClick={() => (conditions.length ? setFilterOpen((o) => !o) : addCondition())} aria-expanded={filterOpen}>
               <SlidersHorizontal className="w-5 h-5 mr-2" aria-hidden />
               Weitere Filter{activeConditions.length ? ` (${activeConditions.length})` : ""}
-            </Button>
+            </Knopf>
             {anythingSet && (
-              <Button variant="ghost" className="h-11 text-base underline-offset-4 hover:underline" onClick={reset}>
+              <Knopf variant="ghost" className="h-11 text-base underline-offset-4 hover:underline" onClick={reset}>
                 Zurücksetzen
-              </Button>
+              </Knopf>
             )}
           </div>
           <div className="flex flex-wrap items-center gap-2 sm:ml-auto">
             <Popover>
               <PopoverTrigger asChild>
-                <Button variant="outline" className={`h-11 text-base hidden sm:inline-flex ${LINE}`}>
+                <Knopf variant="outline" className="h-11 text-base hidden sm:inline-flex">
                   <Columns3 className="w-5 h-5 mr-2" aria-hidden />
                   Spalten
-                </Button>
+                </Knopf>
               </PopoverTrigger>
-              <PopoverContent align="end" className="w-64 max-h-96 overflow-y-auto p-2">
+              <PopoverContent align="end" className={`${POPOVER_CLASS} w-64 max-h-96 overflow-y-auto p-2`}>
                 {tabColumns.map((c) => {
                   const checked = columns.includes(c.key);
                   return (
                     <label key={c.key} className="flex items-center gap-3 min-h-11 px-2 rounded-md hover:bg-muted cursor-pointer">
-                      <Checkbox checked={checked} onCheckedChange={() => setColumns((cols) => (checked ? cols.filter((k) => k !== c.key) : COLUMNS.map((x) => x.key).filter((k) => k === c.key || cols.includes(k))))} />
+                      <Ankreuzfeld checked={checked} onChange={() => setColumns((cols) => (checked ? cols.filter((k) => k !== c.key) : COLUMNS.map((x) => x.key).filter((k) => k === c.key || cols.includes(k))))} />
                       <span className="text-base">{c.label}</span>
                     </label>
                   );
                 })}
-                <Button variant="ghost" className="w-full h-11 text-base mt-1" onClick={() => setColumns(DEFAULT_VISIBLE)}>
+                <Knopf variant="ghost" className="w-full h-11 text-base mt-1" onClick={() => setColumns(DEFAULT_VISIBLE)}>
                   Standardspalten
-                </Button>
+                </Knopf>
               </PopoverContent>
             </Popover>
-            <select aria-label="Gespeicherte Ansicht" value={viewId} onChange={(e) => (e.target.value ? applyView(e.target.value) : setViewId(""))} className={`${selectClass} flex-1 min-w-0 sm:flex-none sm:max-w-60`}>
+            <Auswahl aria-label="Gespeicherte Ansicht" value={viewId} onChange={(e) => (e.target.value ? applyView(e.target.value) : setViewId(""))} kompakt breite="flex-1 min-w-0 sm:flex-none sm:max-w-60">
               <option value="">Gespeicherte Ansichten</option>
               {ansichten.map((v) => (
                 <option key={v.id} value={v.id}>
                   {v.name}
                 </option>
               ))}
-            </select>
-            <Button variant="outline" className={`h-11 text-base ${LINE}`} onClick={() => setSaveOpen(true)}>
+            </Auswahl>
+            <Knopf variant="outline" className="h-11 text-base" onClick={() => setSaveOpen(true)}>
               <Bookmark className="w-5 h-5 mr-2" aria-hidden />
               Speichern
-            </Button>
+            </Knopf>
             {viewId && deleteView.enabled && (
-              <Button variant="ghost" className="h-11 text-base" onClick={removeView}>
+              <Knopf variant="ghost" className="h-11 text-base" onClick={removeView}>
                 <Trash2 className="w-4 h-4 mr-1" aria-hidden />
                 Ansicht entfernen
-              </Button>
+              </Knopf>
             )}
           </div>
         </div>
@@ -1041,10 +1029,10 @@ export default function Block() {
                 />
               ))
             )}
-            <Button variant="outline" className={`h-11 text-base ${LINE}`} onClick={addCondition}>
+            <Knopf variant="outline" className="h-11 text-base" onClick={addCondition}>
               <Plus className="w-5 h-5 mr-1" aria-hidden />
               Bedingung hinzufügen
-            </Button>
+            </Knopf>
           </div>
         )}
 
@@ -1056,9 +1044,9 @@ export default function Block() {
           <div className="space-y-2">
             <EmptyState text="Keine Einträge gefunden." />
             {anythingSet && (
-              <Button variant="outline" className={`h-11 text-base ${LINE}`} onClick={reset}>
+              <Knopf variant="outline" className="h-11 text-base" onClick={reset}>
                 Filter zurücksetzen
-              </Button>
+              </Knopf>
             )}
           </div>
         ) : (
@@ -1091,12 +1079,12 @@ export default function Block() {
               {(scrollState.left || scrollState.right) && (
                 <div className="flex items-center justify-end gap-2">
                   <span className="text-sm text-muted-foreground mr-auto">Weitere Spalten: seitlich wischen oder Pfeile nutzen.</span>
-                  <Button variant="outline" className={`h-11 w-11 p-0 ${LINE}`} aria-label="Spalten links zeigen" disabled={!scrollState.left} onClick={() => scrollBy(-SCROLL_STEP)}>
+                  <Knopf variant="outline" className="h-11 w-11 p-0" aria-label="Spalten links zeigen" disabled={!scrollState.left} onClick={() => scrollBy(-SCROLL_STEP)}>
                     <ChevronLeft className="w-5 h-5" aria-hidden />
-                  </Button>
-                  <Button variant="outline" className={`h-11 w-11 p-0 ${LINE}`} aria-label="Spalten rechts zeigen" disabled={!scrollState.right} onClick={() => scrollBy(SCROLL_STEP)}>
+                  </Knopf>
+                  <Knopf variant="outline" className="h-11 w-11 p-0" aria-label="Spalten rechts zeigen" disabled={!scrollState.right} onClick={() => scrollBy(SCROLL_STEP)}>
                     <ChevronRight className="w-5 h-5" aria-hidden />
-                  </Button>
+                  </Knopf>
                 </div>
               )}
               <div ref={tableBox} className={PANEL_CLASS}>
@@ -1138,15 +1126,15 @@ export default function Block() {
                                 {r.name || "Ohne Namen"}
                               </button>
                             ) : c.key === "typ" && r.typ ? (
-                              <Badge variant="outline" className="text-sm font-normal">
+                              <Etikett>
                                 {r.typ}
-                              </Badge>
+                              </Etikett>
                             ) : c.key === "glasur" && r.glasur.length ? (
                               <span className="flex flex-wrap gap-1">
                                 {r.glasur.map((g) => (
-                                  <Badge key={g} variant="outline" className="text-sm font-normal">
+                                  <Etikett key={g}>
                                     {g}
-                                  </Badge>
+                                  </Etikett>
                                 ))}
                               </span>
                             ) : (

@@ -1,12 +1,12 @@
 // Generiert von konzept/softr/build.mjs aus src/blocks/stammdaten.tsx und src/shared/. Nicht von Hand ändern.
-import { useEffect, useMemo, useRef, useState } from "react";
+import { forwardRef, useEffect, useMemo, useRef, useState } from "react";
 import { datasource, q, useFieldOptions, useRecordCreate, useRecordDelete, useRecords, useRecordUpdate, useUpload } from "@/lib/datasource";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { AlertTriangle, Archive, ArchiveRestore, Camera, Check, ChevronDown, ChevronRight, ImageOff, Loader2, Plus, Search, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 
 const PAGE_SIZE = 100;
 const VERFUEGBAR = "verfügbar";
@@ -15,16 +15,6 @@ const VERKAUFT = "verkauft";
 const KOMMISSION = "in Kommission";
 const AUSGESTELLT = "ausgestellt";
 const AUSSER_HAUS_ORT = "Außer Haus";
-
-// Kräftige Variante für den gewählten Status-Knopf. Weiße Schrift nur auf ausreichend dunklen Tönen.
-const STATUS_ACTIVE: Record<string, string> = {
-  [VERFUEGBAR]: "bg-emerald-600 text-white border-emerald-600",
-  [RESERVIERT]: "bg-amber-400 text-amber-950 border-amber-400",
-  [VERKAUFT]: "bg-zinc-600 text-white border-zinc-600",
-  [KOMMISSION]: "bg-sky-600 text-white border-sky-600",
-  [AUSGESTELLT]: "bg-violet-700 text-white border-violet-700",
-};
-
 type Opt = { id: string; label: string };
 type Attachment = { id?: string; url: string; filename?: string; thumbnails?: { url: string; size: string }[] };
 type RawItem = { id: string; fields: Record<string, unknown> };
@@ -90,18 +80,51 @@ function useAllPages(query: { hasNextPage?: boolean; isFetchingNextPage?: boolea
   }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 }
 
-const DIALOG_CLASS = "w-[calc(100vw-2rem)] max-h-[90vh] overflow-y-auto rounded-lg p-4 sm:p-6 [&>button:last-child]:hidden";
-
 // Die eine Rahmenfarbe der App: Flächen, Kacheln, Felder, Auswahlen, Knöpfe. Nur Trennlinien innerhalb einer Fläche bleiben heller.
 const LINE = "border-neutral-300";
+
+// Jedes Fenster (Dialog). Rahmen in der App-Rahmenfarbe.
+const DIALOG_CLASS = `w-[calc(100vw-2rem)] max-h-[90vh] overflow-y-auto rounded-lg border ${LINE} p-4 sm:p-6 [&>button:last-child]:hidden`;
 
 // md:text-base hebt das md:text-sm der shadcn-Felder auf, damit Eingabe und Auswahlliste gleich groß schreiben.
 const FIELD_CLASS = `h-12 rounded-md text-base md:text-base ${LINE}`;
 
-const TEXTAREA_CLASS = `rounded-md text-base md:text-base ${LINE}`;
-
 // Die Box: jede umrandete Fläche (Bereich, Liste, Kachel, Tabelle). Innerhalb einer Box keine zweite Box.
 const PANEL_CLASS = `rounded-lg border ${LINE} bg-card`;
+
+// Kräftige Variante für den gewählten Status-Knopf. Weiße Schrift nur auf ausreichend dunklen Tönen.
+const STATUS_ACTIVE: Record<string, string> = {
+  [VERFUEGBAR]: "bg-emerald-600 text-white border-emerald-600",
+  [RESERVIERT]: "bg-amber-400 text-amber-950 border-amber-400",
+  [VERKAUFT]: "bg-zinc-600 text-white border-zinc-600",
+  [KOMMISSION]: "bg-sky-600 text-white border-sky-600",
+  [AUSGESTELLT]: "bg-violet-700 text-white border-violet-700",
+};
+
+// Grundbausteine. Seiten nutzen nur diese, nie Button, Input, Textarea, Badge oder <select> direkt
+// (geprüft von pruefung/einheitlich.sh). Rahmen, Schrift und Höhe stehen nur hier; Seiten geben höchstens Größe und Breite mit.
+
+type KnopfProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
+  variant?: "default" | "outline" | "secondary" | "ghost" | "destructive" | "link";
+  size?: "default" | "sm" | "lg" | "icon";
+  asChild?: boolean;
+};
+
+// Jeder Knopf. Umrandet (outline) und gefüllt-grau (secondary) tragen dieselbe Rahmenfarbe, damit ein aktiver Filter nicht die Größe ändert.
+const Knopf = forwardRef<HTMLButtonElement, KnopfProps>(function Knopf({ variant = "default", className = "", ...props }, ref) {
+  const rahmen = variant === "outline" || variant === "secondary" ? `border ${LINE}` : "";
+  return <Button ref={ref} variant={variant} className={`${rahmen} ${className}`} {...props} />;
+});
+
+// Jedes einzeilige Eingabefeld.
+const Feld = forwardRef<HTMLInputElement, React.InputHTMLAttributes<HTMLInputElement>>(function Feld({ className = "", ...props }, ref) {
+  return <Input ref={ref} className={`${FIELD_CLASS} ${className}`} {...props} />;
+});
+
+// Jedes mehrzeilige Textfeld.
+const Textfeld = forwardRef<HTMLTextAreaElement, React.TextareaHTMLAttributes<HTMLTextAreaElement>>(function Textfeld({ className = "", ...props }, ref) {
+  return <Textarea ref={ref} className={`rounded-md text-base md:text-base ${LINE} ${className}`} {...props} />;
+});
 
 // Gewählt = gefüllt. Kein zusätzliches Symbol, damit der Knopf beim Antippen nicht breiter wird und nichts springt.
 // Mindestbreite, damit kurze Wörter (Sieb, Topf) nicht winzig wirken und die Reihen ruhiger aussehen.
@@ -185,7 +208,7 @@ function SearchField({ value, onChange, placeholder, label }: { value: string; o
   return (
     <div className="relative flex-1 min-w-0">
       <Search className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" aria-hidden />
-      <Input type="search" aria-label={label} placeholder={placeholder} value={value} onChange={(e) => onChange(e.target.value)} className={`${FIELD_CLASS} pl-10`} />
+      <Feld type="search" aria-label={label} placeholder={placeholder} value={value} onChange={(e) => onChange(e.target.value)} className="pl-10" />
     </div>
   );
 }
@@ -231,7 +254,7 @@ function SearchPick({
       </div>
       {term && matches.length === 0 && !exact && <p className="text-sm text-muted-foreground">Keine {label} mit „{query.trim()}“.</p>}
       {onCreate && term && !exact && (
-        <Button
+        <Knopf
           type="button"
           variant="ghost"
           className="h-11 px-2 text-base text-primary"
@@ -247,7 +270,7 @@ function SearchPick({
           }}
         >
           {busy ? <Loader2 className="w-5 h-5 mr-1 animate-spin" aria-hidden /> : <Plus className="w-5 h-5 mr-1" aria-hidden />}„{query.trim()}“ als {createNoun} anlegen
-        </Button>
+        </Knopf>
       )}
     </div>
   );
@@ -331,9 +354,9 @@ function PanelHeader({ title, description }: { title: string; description: strin
         <DialogDescription>{description}</DialogDescription>
       </div>
       <DialogClose asChild>
-        <Button variant="ghost" className="h-11 w-11 p-0 shrink-0" aria-label="Schließen">
+        <Knopf variant="ghost" className="h-11 w-11 p-0 shrink-0" aria-label="Schließen">
           <X className="w-6 h-6" aria-hidden />
-        </Button>
+        </Knopf>
       </DialogClose>
     </DialogHeader>
   );
@@ -555,9 +578,9 @@ function EntryDialog({ kat, entry, onClose }: { kat: Kategorie; entry: Entry | n
                   multiple
                 />
               ) : f.kind === "textarea" ? (
-                <Textarea id={`f-${f.key}`} rows={3} value={values[f.key]} onChange={(e) => setValues((s) => ({ ...s, [f.key]: e.target.value }))} className={TEXTAREA_CLASS} />
+                <Textfeld id={`f-${f.key}`} rows={3} value={values[f.key]} onChange={(e) => setValues((s) => ({ ...s, [f.key]: e.target.value }))} />
               ) : (
-                <Input
+                <Feld
                   id={`f-${f.key}`}
                   value={values[f.key]}
                   inputMode={f.kind === "price" ? "decimal" : undefined}
@@ -568,7 +591,6 @@ function EntryDialog({ kat, entry, onClose }: { kat: Kategorie; entry: Entry | n
                     setValues((s) => ({ ...s, [f.key]: e.target.value }));
                     setError(null);
                   }}
-                  className={FIELD_CLASS}
                 />
               )}
               {f.key === "name" && lockedReason && <Hint>{lockedReason}</Hint>}
@@ -583,13 +605,13 @@ function EntryDialog({ kat, entry, onClose }: { kat: Kategorie; entry: Entry | n
             </div>
           )}
           <div className="flex gap-3">
-            <Button variant="outline" className={`h-12 flex-1 text-base ${LINE}`} disabled={busy} onClick={onClose}>
+            <Knopf variant="outline" className="h-12 flex-1 text-base" disabled={busy} onClick={onClose}>
               Abbrechen
-            </Button>
-            <Button className="h-12 flex-1 text-base" disabled={busy || !name} onClick={save}>
+            </Knopf>
+            <Knopf className="h-12 flex-1 text-base" disabled={busy || !name} onClick={save}>
               {busy ? <Loader2 className="w-5 h-5 mr-2 animate-spin" aria-hidden /> : <Check className="w-5 h-5 mr-2" aria-hidden />}
               {entry ? "Speichern" : "Anlegen"}
-            </Button>
+            </Knopf>
           </div>
           {entry && !lockedReason && (
             <section className="border-t pt-5 space-y-3" aria-label="Archivieren und Löschen">
@@ -606,29 +628,29 @@ function EntryDialog({ kat, entry, onClose }: { kat: Kategorie; entry: Entry | n
                 <div role="alert" className="rounded-md border border-destructive/40 bg-destructive/5 p-3 space-y-3">
                   <p className="text-base">„{entry.name}“ endgültig löschen? Das lässt sich nicht rückgängig machen.</p>
                   <div className="flex flex-wrap gap-3">
-                    <Button variant="destructive" className="h-11 text-base" disabled={busy} onClick={() => act(() => kat.remove(entry.id), `„${entry.name}“ gelöscht.`)}>
+                    <Knopf variant="destructive" className="h-11 text-base" disabled={busy} onClick={() => act(() => kat.remove(entry.id), `„${entry.name}“ gelöscht.`)}>
                       Endgültig löschen
-                    </Button>
-                    <Button variant="ghost" className="h-11 text-base" disabled={busy} onClick={() => setConfirmDelete(false)}>
+                    </Knopf>
+                    <Knopf variant="ghost" className="h-11 text-base" disabled={busy} onClick={() => setConfirmDelete(false)}>
                       Abbrechen
-                    </Button>
+                    </Knopf>
                   </div>
                 </div>
               ) : (
                 <div className="flex flex-wrap gap-3">
-                  <Button
+                  <Knopf
                     variant="outline"
-                    className={`h-11 text-base ${LINE}`}
+                    className="h-11 text-base"
                     disabled={busy}
                     onClick={() => act(() => kat.archive(entry.id, !entry.archiviert), entry.archiviert ? `„${entry.name}“ wiederhergestellt.` : `„${entry.name}“ archiviert.`)}
                   >
                     {entry.archiviert ? <ArchiveRestore className="w-5 h-5 mr-2" aria-hidden /> : <Archive className="w-5 h-5 mr-2" aria-hidden />}
                     {entry.archiviert ? "Wiederherstellen" : "Archivieren"}
-                  </Button>
+                  </Knopf>
                   {inUse === 0 && (
-                    <Button variant="ghost" className="h-11 text-base text-destructive hover:text-destructive" disabled={busy} onClick={() => setConfirmDelete(true)}>
+                    <Knopf variant="ghost" className="h-11 text-base text-destructive hover:text-destructive" disabled={busy} onClick={() => setConfirmDelete(true)}>
                       <Trash2 className="w-5 h-5 mr-2" aria-hidden /> Löschen
-                    </Button>
+                    </Knopf>
                   )}
                 </div>
               )}
@@ -892,9 +914,9 @@ export default function Block() {
         />
         <div className="flex flex-wrap items-center justify-between gap-3">
           <p className="text-base text-muted-foreground min-w-0 flex-1 basis-64">{kat.hint}</p>
-          <Button className="h-11 text-base" onClick={() => setDialog({ entry: null })}>
+          <Knopf className="h-11 text-base" onClick={() => setDialog({ entry: null })}>
             <Plus className="w-5 h-5 mr-2" aria-hidden /> {kat.singular} anlegen
-          </Button>
+          </Knopf>
         </div>
         {kat.entries.length > SEARCH_FROM && <SearchField label="Suche" placeholder={`${kat.label} durchsuchen`} value={search} onChange={setSearch} />}
         {failed ? (
@@ -906,10 +928,10 @@ export default function Block() {
             {aktiv.length === 0 ? <EmptyState text={term ? "Nichts gefunden." : `Noch keine ${kat.label}. Mit „${kat.singular} anlegen“ beginnen.`} /> : rows(aktiv)}
             {archiviert.length > 0 && (
               <div className="space-y-3">
-                <Button variant="ghost" className="h-11 px-2 text-base text-muted-foreground" aria-expanded={showArchived} onClick={() => setShowArchived((v) => !v)}>
+                <Knopf variant="ghost" className="h-11 px-2 text-base text-muted-foreground" aria-expanded={showArchived} onClick={() => setShowArchived((v) => !v)}>
                   <ChevronDown className={`w-5 h-5 mr-1 transition-transform ${showArchived ? "rotate-180" : ""}`} aria-hidden />
                   Archiviert ({zahl.format(archiviert.length)})
-                </Button>
+                </Knopf>
                 {showArchived && rows(archiviert)}
               </div>
             )}

@@ -1,9 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
 import { datasource, q, useFieldOptions, useRecordUpdate, useRecords, useUpload } from "@/lib/datasource";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Check, ClipboardList, ImageOff, Images, Loader2, Minus, Pencil, Plus, Star, Table2 } from "lucide-react";
 import { toast } from "sonner";
@@ -34,6 +30,7 @@ import {
 } from "../shared/daten";
 import {
   AnsichtToggle,
+  Auswahl,
   ChoiceChips,
   DIALOG_CLASS,
   DoneButton,
@@ -41,28 +38,28 @@ import {
   ErrorState,
   ErrorText,
   ExportMenu,
-  FIELD_CLASS,
+  Feld,
   FieldLabel,
   FilterButton,
   FilterChips,
   FilterSheet,
-  INPUT_CLASS,
+  Knopf,
   ListRow,
   LoadingState,
   OptionSelect,
-  PANEL_CLASS,
   PageHeader,
+  PANEL_CLASS,
   PanelHeader,
   PhotoPicker,
-  STICKY_BOTTOM,
+  SchalterFeld,
   SearchField,
   SearchPick,
   StatusBadge,
-  TEXTAREA_CLASS,
+  STICKY_BOTTOM,
   Tabs,
+  Textfeld,
   useAnsicht,
   useIsMobile,
-  LINE,
 } from "../shared/ui";
 
 const ds = datasource.define({ unikate: "unikate", edition: "edition", kuenstler: "kuenstler", glasuren: "glasuren", lagerorte: "lagerorte", partner: "partner" });
@@ -526,7 +523,7 @@ function UnikatDetail({ u, onClose, onSaved, stamm, typen, statusListe }: { u: U
                   </div>
                   <div>
                     <FieldLabel htmlFor="d-rueckgabe">Rückgabe bis</FieldLabel>
-                    <Input
+                    <Feld
                       id="d-rueckgabe"
                       type="date"
                       disabled={busy}
@@ -536,7 +533,6 @@ function UnikatDetail({ u, onClose, onSaved, stamm, typen, statusListe }: { u: U
                         if (v === u.rueckgabe.slice(0, 10)) return;
                         quickSave({ rueckgabe: v || null }, `Rückgabe bis: ${v ? formatDate(v) : "offen"}`, { rueckgabe: u.rueckgabe ? u.rueckgabe.slice(0, 10) : null });
                       }}
-                      className={FIELD_CLASS}
                     />
                   </div>
                 </div>
@@ -549,9 +545,9 @@ function UnikatDetail({ u, onClose, onSaved, stamm, typen, statusListe }: { u: U
               {undo && !busy && (
                 <div role="status" className="flex items-center justify-between gap-3 rounded-lg bg-muted p-2 pl-3">
                   <span className="text-sm">{undo.text} gespeichert</span>
-                  <Button
+                  <Knopf
                     variant="outline"
-                    className={`h-11 text-base ${LINE}`}
+                    className="h-11 text-base"
                     onClick={() => {
                       const fields = undo.fields;
                       setUndo(null);
@@ -559,7 +555,7 @@ function UnikatDetail({ u, onClose, onSaved, stamm, typen, statusListe }: { u: U
                     }}
                   >
                     Rückgängig
-                  </Button>
+                  </Knopf>
                 </div>
               )}
             </section>
@@ -576,9 +572,9 @@ function UnikatDetail({ u, onClose, onSaved, stamm, typen, statusListe }: { u: U
                         <Star className="w-4 h-4" aria-hidden /> Hauptbild, erscheint in Listen und Kacheln
                       </p>
                     ) : (
-                      <Button variant="ghost" className="h-11 px-2 text-base" disabled={busy || !update.enabled} onClick={() => makeMainPhoto(photoIndex)}>
+                      <Knopf variant="ghost" className="h-11 px-2 text-base" disabled={busy || !update.enabled} onClick={() => makeMainPhoto(photoIndex)}>
                         <Star className="w-5 h-5 mr-1.5" aria-hidden /> Als Hauptbild verwenden
-                      </Button>
+                      </Knopf>
                     ))}
                   {u.fotos.length > 1 && (
                     <div className="flex gap-2 overflow-x-auto">
@@ -617,9 +613,9 @@ function UnikatDetail({ u, onClose, onSaved, stamm, typen, statusListe }: { u: U
               )}
               <div className="flex flex-col gap-3">
                 {update.enabled && (
-                  <Button className={FIELD_CLASS} onClick={() => setEditing(true)}>
+                  <Knopf onClick={() => setEditing(true)}>
                     <Pencil className="w-5 h-5 mr-2" aria-hidden /> Alle Angaben bearbeiten
-                  </Button>
+                  </Knopf>
                 )}
                 <p className="text-sm text-muted-foreground">Löschen ist nicht vorgesehen. Verkaufte Stücke bitte auf „verkauft“ setzen.</p>
                 <DoneButton />
@@ -633,7 +629,7 @@ function UnikatDetail({ u, onClose, onSaved, stamm, typen, statusListe }: { u: U
                 <FieldLabel htmlFor="d-name" required>
                   Name
                 </FieldLabel>
-                <Input id="d-name" value={form.name} onChange={(e) => set("name", e.target.value)} className={FIELD_CLASS} aria-invalid={!!formError.name} />
+                <Feld id="d-name" value={form.name} onChange={(e) => set("name", e.target.value)} aria-invalid={!!formError.name} />
                 <ErrorText>{formError.name}</ErrorText>
               </div>
               <div>
@@ -643,21 +639,17 @@ function UnikatDetail({ u, onClose, onSaved, stamm, typen, statusListe }: { u: U
               <div className="grid sm:grid-cols-2 gap-5">
                 <div>
                   <FieldLabel htmlFor="d-preis">Preis intern (€)</FieldLabel>
-                  <Input
+                  <Feld
                     id="d-preis"
                     inputMode="decimal"
                     value={form.preis}
                     onChange={(e) => set("preis", e.target.value)}
                     placeholder="z. B. 480"
-                    className={FIELD_CLASS}
                     aria-invalid={!!formError.preis}
                   />
                   <ErrorText>{formError.preis}</ErrorText>
                 </div>
-                <label htmlFor="d-website" className={`flex items-center justify-between gap-4 rounded-md border ${LINE} px-4 h-12 cursor-pointer self-end`}>
-                  <span className="text-base font-medium">Auf Website zeigen</span>
-                  <Switch id="d-website" className="scale-125 data-[state=unchecked]:bg-zinc-300" checked={form.website} onCheckedChange={(v) => set("website", v)} />
-                </label>
+                <SchalterFeld id="d-website" label="Auf Website zeigen" checked={form.website} onChange={(v) => set("website", v)} lage="self-end" />
               </div>
               <div className="grid sm:grid-cols-2 gap-5">
                 <div>
@@ -666,7 +658,7 @@ function UnikatDetail({ u, onClose, onSaved, stamm, typen, statusListe }: { u: U
                 </div>
                 <div>
                   <FieldLabel htmlFor="d-jahr">Jahr</FieldLabel>
-                  <Input id="d-jahr" inputMode="numeric" value={form.jahr} onChange={(e) => set("jahr", e.target.value.replace(/\D/g, "").slice(0, 4))} className={FIELD_CLASS} />
+                  <Feld id="d-jahr" inputMode="numeric" value={form.jahr} onChange={(e) => set("jahr", e.target.value.replace(/\D/g, "").slice(0, 4))} />
                 </div>
               </div>
               <div>
@@ -676,29 +668,29 @@ function UnikatDetail({ u, onClose, onSaved, stamm, typen, statusListe }: { u: U
               <div className="grid sm:grid-cols-2 gap-5">
                 <div>
                   <FieldLabel htmlFor="d-masse">Maße</FieldLabel>
-                  <Input id="d-masse" value={form.masse} onChange={(e) => set("masse", e.target.value)} placeholder="z. B. Ø 24 × H 8 cm" className={FIELD_CLASS} />
+                  <Feld id="d-masse" value={form.masse} onChange={(e) => set("masse", e.target.value)} placeholder="z. B. Ø 24 × H 8 cm" />
                 </div>
                 <div>
                   <FieldLabel htmlFor="d-verkauft">Verkauft am</FieldLabel>
-                  <input id="d-verkauft" type="date" value={form.verkauftAm} onChange={(e) => set("verkauftAm", e.target.value)} className={INPUT_CLASS} />
+                  <Feld id="d-verkauft" type="date" value={form.verkauftAm} onChange={(e) => set("verkauftAm", e.target.value)} />
                 </div>
               </div>
               <div>
                 <FieldLabel htmlFor="d-bildnachweis">Bildnachweis</FieldLabel>
-                <Input id="d-bildnachweis" value={form.bildnachweis} onChange={(e) => set("bildnachweis", e.target.value)} className={FIELD_CLASS} />
+                <Feld id="d-bildnachweis" value={form.bildnachweis} onChange={(e) => set("bildnachweis", e.target.value)} />
               </div>
               <div>
                 <FieldLabel htmlFor="d-notiz">Notiz</FieldLabel>
-                <Textarea id="d-notiz" rows={3} value={form.notiz} onChange={(e) => set("notiz", e.target.value)} className={TEXTAREA_CLASS} />
+                <Textfeld id="d-notiz" rows={3} value={form.notiz} onChange={(e) => set("notiz", e.target.value)} />
               </div>
               <div>
                 <FieldLabel htmlFor="foto-input">Fotos hinzufügen</FieldLabel>
                 <PhotoPicker files={newFiles} onChange={setNewFiles} multiple />
               </div>
               <div className="flex gap-3">
-                <Button
+                <Knopf
                   variant="outline"
-                  className={`h-12 flex-1 text-base ${LINE}`}
+                  className="h-12 flex-1 text-base"
                   disabled={busy}
                   onClick={() => {
                     setForm(initial);
@@ -708,11 +700,11 @@ function UnikatDetail({ u, onClose, onSaved, stamm, typen, statusListe }: { u: U
                   }}
                 >
                   Abbrechen
-                </Button>
-                <Button className="h-12 flex-1 text-base" disabled={busy} onClick={saveAll}>
+                </Knopf>
+                <Knopf className="h-12 flex-1 text-base" disabled={busy} onClick={saveAll}>
                   {busy ? <Loader2 className="w-5 h-5 mr-2 animate-spin" aria-hidden /> : <Check className="w-5 h-5 mr-2" aria-hidden />}
                   Speichern
-                </Button>
+                </Knopf>
               </div>
             </section>
           )}
@@ -806,17 +798,17 @@ function InventurView({ rows, onApply, onClose }: { rows: Edition[]; onApply: (c
           <p className="font-medium">Inventur</p>
           <p className="text-sm text-muted-foreground">Gezählte Menge eintippen. Übernommen wird erst am Ende, gesammelt.</p>
         </div>
-        <select aria-label="Lagerort" value={ort} onChange={(ev) => setOrt(ev.target.value)} className={`${INPUT_CLASS} w-auto min-w-48`}>
+        <Auswahl aria-label="Lagerort" value={ort} onChange={(ev) => setOrt(ev.target.value)} breite="w-auto min-w-48">
           <option value="">Alle Lagerorte</option>
           {orte.map((o) => (
             <option key={o} value={o}>
               {o}
             </option>
           ))}
-        </select>
-        <Button variant="outline" className={`h-12 text-base ${LINE}`} onClick={onClose}>
+        </Auswahl>
+        <Knopf variant="outline" className="h-12 text-base" onClick={onClose}>
           Inventur beenden
-        </Button>
+        </Knopf>
       </div>
 
       {groups.map((g) => (
@@ -833,13 +825,13 @@ function InventurView({ rows, onApply, onClose }: { rows: Edition[]; onApply: (c
                     <span className="block text-sm text-muted-foreground">{[e.zustand, e.glasur].filter(Boolean).join(" · ")}</span>
                   </span>
                   <span className="text-sm text-muted-foreground tabular-nums whitespace-nowrap">Soll {zahl.format(e.anzahl)}</span>
-                  <Input
+                  <Feld
                     inputMode="numeric"
                     aria-label={`${e.modell} ${e.zustand} ${e.glasur}: gezählt`}
                     placeholder="–"
                     value={value}
                     onChange={(ev) => setCounts((c) => ({ ...c, [e.id]: ev.target.value.replace(/\D/g, "").slice(0, 5) }))}
-                    className={`h-11 w-20 text-center text-base md:text-base ${LINE}`}
+                    className="h-11 w-20 text-center text-base md:text-base"
                   />
                   <span className={`w-12 text-right text-sm font-medium tabular-nums ${delta === null ? "" : delta === 0 ? "text-emerald-700" : "text-amber-800"}`}>
                     {delta === null ? "" : delta === 0 ? <Check className="inline w-4 h-4" aria-label="stimmt" /> : delta > 0 ? `+${delta}` : `−${-delta}`}
@@ -856,9 +848,9 @@ function InventurView({ rows, onApply, onClose }: { rows: Edition[]; onApply: (c
           <span className="flex-1 text-base">
             {zahl.format(gezaehlt.length)} gezählt · <strong>{zahl.format(changes.length)}</strong> {changes.length === 1 ? "Abweichung" : "Abweichungen"}
           </span>
-          <Button className="h-12 text-base" disabled={changes.length === 0 || busy} onClick={() => setConfirm(true)}>
+          <Knopf className="h-12 text-base" disabled={changes.length === 0 || busy} onClick={() => setConfirm(true)}>
             Abweichungen übernehmen
-          </Button>
+          </Knopf>
         </div>
       </div>
 
@@ -876,10 +868,10 @@ function InventurView({ rows, onApply, onClose }: { rows: Edition[]; onApply: (c
             ))}
           </ul>
           <div className="pt-2 space-y-2">
-            <Button className="w-full h-12 text-base" disabled={busy} onClick={apply}>
+            <Knopf className="w-full h-12 text-base" disabled={busy} onClick={apply}>
               {busy ? <Loader2 className="w-5 h-5 mr-2 animate-spin" aria-hidden /> : null}
               Jetzt übernehmen
-            </Button>
+            </Knopf>
             <DoneButton />
           </div>
         </DialogContent>
@@ -896,17 +888,17 @@ function EditionRow({ e, busy, canEdit, onAdjust, onOpen }: { e: Edition; busy: 
       </div>
       <div className="flex items-center gap-1 shrink-0">
         {canEdit && (
-          <Button variant="outline" className={`h-11 w-11 p-0 ${LINE}`} aria-label={`${e.modell}: eins weniger`} disabled={busy || e.anzahl <= 0} onClick={() => onAdjust(-1)}>
+          <Knopf variant="outline" className="h-11 w-11 p-0" aria-label={`${e.modell}: eins weniger`} disabled={busy || e.anzahl <= 0} onClick={() => onAdjust(-1)}>
             <Minus className="w-5 h-5" aria-hidden />
-          </Button>
+          </Knopf>
         )}
         <span className={`w-12 text-center text-lg font-semibold tabular-nums ${e.anzahl < LOW_STOCK ? "text-amber-800" : ""}`} aria-label={`Anzahl ${e.anzahl}`}>
           {e.anzahl}
         </span>
         {canEdit && (
-          <Button variant="outline" className={`h-11 w-11 p-0 ${LINE}`} aria-label={`${e.modell}: eins mehr`} disabled={busy} onClick={() => onAdjust(1)}>
+          <Knopf variant="outline" className="h-11 w-11 p-0" aria-label={`${e.modell}: eins mehr`} disabled={busy} onClick={() => onAdjust(1)}>
             <Plus className="w-5 h-5" aria-hidden />
-          </Button>
+          </Knopf>
         )}
       </div>
     </div>
@@ -940,20 +932,20 @@ function EditionDetail({
           <div>
             <FieldLabel htmlFor="ed-anzahl">Anzahl</FieldLabel>
             <div className="flex items-center gap-3">
-              <Button variant="outline" className={`h-12 w-12 ${LINE}`} aria-label="Eins weniger" disabled={!canEdit} onClick={() => setAnzahl(String(Math.max(0, value - 1)))}>
+              <Knopf variant="outline" className="h-12 w-12" aria-label="Eins weniger" disabled={!canEdit} onClick={() => setAnzahl(String(Math.max(0, value - 1)))}>
                 <Minus className="w-5 h-5" aria-hidden />
-              </Button>
-              <Input
+              </Knopf>
+              <Feld
                 id="ed-anzahl"
                 inputMode="numeric"
                 disabled={!canEdit}
                 value={anzahl}
                 onChange={(ev) => setAnzahl(ev.target.value.replace(/\D/g, ""))}
-                className={`h-12 w-24 rounded-md text-center text-lg md:text-lg ${LINE}`}
+                className="h-12 w-24 rounded-md text-center text-lg md:text-lg"
               />
-              <Button variant="outline" className={`h-12 w-12 ${LINE}`} aria-label="Eins mehr" disabled={!canEdit} onClick={() => setAnzahl(String(value + 1))}>
+              <Knopf variant="outline" className="h-12 w-12" aria-label="Eins mehr" disabled={!canEdit} onClick={() => setAnzahl(String(value + 1))}>
                 <Plus className="w-5 h-5" aria-hidden />
-              </Button>
+              </Knopf>
             </div>
           </div>
           <div>
@@ -962,10 +954,10 @@ function EditionDetail({
           </div>
           <div>
             <FieldLabel htmlFor="ed-notiz">Notiz</FieldLabel>
-            <Textarea id="ed-notiz" rows={3} disabled={!canEdit} value={notiz} onChange={(ev) => setNotiz(ev.target.value)} className={TEXTAREA_CLASS} />
+            <Textfeld id="ed-notiz" rows={3} disabled={!canEdit} value={notiz} onChange={(ev) => setNotiz(ev.target.value)} />
           </div>
           {canEdit && (
-            <Button
+            <Knopf
               className="w-full h-12 text-base"
               disabled={busy}
               onClick={async () => {
@@ -975,7 +967,7 @@ function EditionDetail({
               }}
             >
               {busy ? "Wird gespeichert …" : "Änderungen speichern"}
-            </Button>
+            </Knopf>
           )}
           <DoneButton />
         </div>
@@ -1165,40 +1157,40 @@ export default function Block() {
 
   // Filter-Auswahllisten: am Rechner in einer Zeile, am Handy im Blatt von unten (dann mit sichtbarer Beschriftung).
   const typAuswahl = (id?: string) => (
-    <select id={id} aria-label={id ? undefined : "Typ"} value={typFilter} onChange={(e) => setTypFilter(e.target.value)} className={INPUT_CLASS}>
+    <Auswahl id={id} aria-label={id ? undefined : "Typ"} value={typFilter} onChange={(e) => setTypFilter(e.target.value)}>
       <option value="">Alle Typen</option>
       {typen.map((t) => (
         <option key={t.id} value={t.label}>
           {t.label}
         </option>
       ))}
-    </select>
+    </Auswahl>
   );
   const kuenstlerAuswahl = (id?: string) => (
-    <select id={id} aria-label={id ? undefined : "Künstler:in"} value={kuenstlerFilter} onChange={(e) => setKuenstlerFilter(e.target.value)} className={INPUT_CLASS}>
+    <Auswahl id={id} aria-label={id ? undefined : "Künstler:in"} value={kuenstlerFilter} onChange={(e) => setKuenstlerFilter(e.target.value)}>
       <option value="">Alle Künstler:innen</option>
       {kuenstlerImBestand.map((k) => (
         <option key={k.id} value={k.id}>
           {k.label}
         </option>
       ))}
-    </select>
+    </Auswahl>
   );
   const sortAuswahl = (id?: string) => (
-    <select id={id} aria-label={id ? undefined : "Sortierung"} value={sort} onChange={(e) => setSort(e.target.value as SortKey)} className={INPUT_CLASS}>
+    <Auswahl id={id} aria-label={id ? undefined : "Sortierung"} value={sort} onChange={(e) => setSort(e.target.value as SortKey)}>
       {SORTS.map((s) => (
         <option key={s.key} value={s.key}>
           {s.label}
         </option>
       ))}
-    </select>
+    </Auswahl>
   );
   const programmAuswahl = (id?: string) => (
-    <select id={id} aria-label={id ? undefined : "Programm"} value={programmFilter} onChange={(e) => setProgrammFilter(e.target.value as ProgrammKey)} className={INPUT_CLASS}>
+    <Auswahl id={id} aria-label={id ? undefined : "Programm"} value={programmFilter} onChange={(e) => setProgrammFilter(e.target.value as ProgrammKey)}>
       <option value="">Alle Programme</option>
       <option value={EDITION_PROGRAMM}>Editionen</option>
       <option value={MANUFAKTUR_PROGRAMM}>Manufakturprogramm</option>
-    </select>
+    </Auswahl>
   );
   const filterCount = isEdition ? (programmFilter ? 1 : 0) : [typFilter, kuenstlerFilter].filter(Boolean).length;
   function resetFilters() {
@@ -1211,9 +1203,9 @@ export default function Block() {
   const searchPlaceholder = isEdition ? "Nummer, Modell, Glasur, Ort" : "Name, Nummer, Glasur, Ort";
   const inventurButton =
     isEdition && !inventur && editionUpdate.enabled ? (
-      <Button variant="outline" className={`h-12 text-base ${LINE}`} onClick={() => setInventur(true)}>
+      <Knopf variant="outline" className="h-12 text-base" onClick={() => setInventur(true)}>
         <ClipboardList className="w-5 h-5 mr-2" aria-hidden /> Inventur
-      </Button>
+      </Knopf>
     ) : undefined;
 
   return (
@@ -1227,11 +1219,11 @@ export default function Block() {
               inventurButton
             ) : (
               <>
-                <Button asChild variant="ghost" className="h-11 text-base">
+                <Knopf asChild variant="ghost" className="h-11 text-base">
                   <a href="/tabelle">
                     <Table2 className="w-5 h-5 mr-2" aria-hidden /> Tabelle
                   </a>
-                </Button>
+                </Knopf>
                 {inventurButton}
                 <ExportMenu
                   onCsv={() => (isEdition ? exportEdition(visibleEdition) : exportUnikate(visible))}
@@ -1352,9 +1344,9 @@ export default function Block() {
           <div className="space-y-3 text-center">
             <EmptyState text={filtered ? "Keine Stücke zu Suche und Filter." : "Hier ist zurzeit kein Stück."} />
             {filtered && (
-              <Button
+              <Knopf
                 variant="outline"
-                className={`h-11 text-base ${LINE}`}
+                className="h-11 text-base"
                 onClick={() => {
                   setSearch("");
                   setTypFilter("");
@@ -1362,7 +1354,7 @@ export default function Block() {
                 }}
               >
                 Suche und Filter zurücksetzen
-              </Button>
+              </Knopf>
             )}
           </div>
         ) : (
@@ -1397,9 +1389,9 @@ export default function Block() {
             )}
             {visible.length > limit && (
               <div className="flex justify-center">
-                <Button variant="outline" className={`h-12 text-base ${LINE}`} onClick={() => setLimit((l) => l + LIST_STEP)}>
+                <Knopf variant="outline" className="h-12 text-base" onClick={() => setLimit((l) => l + LIST_STEP)}>
                   Weitere {Math.min(LIST_STEP, visible.length - limit)} anzeigen
-                </Button>
+                </Knopf>
               </div>
             )}
           </>

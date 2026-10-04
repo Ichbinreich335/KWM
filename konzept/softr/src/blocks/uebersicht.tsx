@@ -3,7 +3,7 @@ import { datasource, q, useRecords } from "@/lib/datasource";
 import { AlertTriangle, CalendarClock, ChevronDown, ChevronRight, CircleCheck, ClipboardList, Package, Receipt } from "lucide-react";
 import { AUSGESTELLT, KOMMISSION, PAGE_SIZE, RESERVIERT, ROHLING, VERFUEGBAR, VERKAUFT, isAusserHaus } from "../shared/konstanten";
 import { type Attachment, type RawItem, asAttachments, asOpts, firstLabel, euro, lookupValue, modellLabel, num, str, useAllPages, zahl } from "../shared/daten";
-import { EmptyState, ErrorState, LINE, ListRow, LoadingState, PANEL_CLASS, PageHeader, Section, Thumb } from "../shared/ui";
+import { EmptyState, ErrorState, ListRow, LoadingState, PageHeader, PANEL_CLASS, PANEL_GRID_CLASS, Section, Thumb } from "../shared/ui";
 
 const ds = datasource.define({ unikate: "unikate", edition: "edition", partner: "partner", modelle: "modelle" });
 const modellSelect = q.select({ name: "eXo5w", artikelnr: "BNpSN", vk: "772dM", archiviert: "3tlrw" });
@@ -81,7 +81,7 @@ const ROW = "flex items-center gap-3 min-h-14 py-2 px-1 rounded-md hover:bg-mute
 // Vier Kennzahlen in einem Band statt einzelner Kästen. Jede führt in den passenden Bestand.
 function Kennzahlen({ items }: { items: Kennzahl[] }) {
   return (
-    <div className={`grid grid-cols-2 lg:grid-cols-4 gap-px overflow-hidden rounded-lg border ${LINE} bg-neutral-300`}>
+    <div className={`grid grid-cols-2 lg:grid-cols-4 ${PANEL_GRID_CLASS}`}>
       {items.map((k) => (
         <a key={k.label} href={k.href} className="group bg-card p-4 hover:bg-muted/40 transition-colors">
           <span className="flex items-center justify-between gap-2 text-sm text-muted-foreground">

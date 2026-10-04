@@ -116,3 +116,21 @@ Grundlage: Feedback des Admins zu den Screens vom 04.10. und der Skill `impeccab
 - **Kein Kasten im Kasten:** „Schnell ändern“ ist eine normale Gruppe mit Überschrift, ohne Fläche oder Tönung.
 - **Fenster:** Der Inhalt steht jetzt bündig mit der Überschrift. Vorher war er in allen Fenstern 16 px zu weit eingerückt.
 - **Auswahlknöpfe:** Sie fließen wieder nach Textlänge, wie die Glasur-Knöpfe. Die Mindestbreite von 5 rem hält kurze Wörter ruhig. Gewählt bleibt gefüllt ohne Haken, deshalb springt nichts.
+
+## Runde 9: Bausteine erzwungen statt empfohlen (04.10.)
+
+- **Fehler aus Runde 8:** Die Schnellfilter der Tabelle hatten noch den dünnen Rahmen. Ursache: Der Knopf wechselte je nach Zustand die Variante (`outline` oder `secondary`), und die Rahmenklasse kam nur im aktiven Zustand dazu. Meine Umstellung hatte nur die feste Schreibweise `variant="outline"` erfasst. Eine Prüfung nach Textmustern reicht dafür nicht.
+- **Lösung: Grundbausteine statt Klassen.** Jedes Element gibt es genau einmal in `src/shared/ui.tsx`, Rahmen, Höhe und Schrift stehen nur dort:
+  - `Knopf` (alle Varianten; `outline` und `secondary` tragen denselben Rahmen, damit ein aktiver Filter nicht die Größe ändert)
+  - `Feld`, `Textfeld`, `Auswahl` (`kompakt` und `breite` statt eigener Klassen)
+  - `SchalterFeld`, `Ankreuzfeld`, `Etikett`
+  - `PANEL_CLASS` (Box), `PANEL_GRID_CLASS` (Box mit Feldern, z. B. Kennzahlen), `DIALOG_CLASS` (Fenster), `POPOVER_CLASS` (Menüs)
+  - Status-Farben liegen jetzt ebenfalls in `ui.tsx`. Neutrale Werte (verkauft, Rohling, glasiert) nutzen den App-Rahmen.
+- **Alle fünf Blöcke umgestellt.** Kein Block importiert mehr Button, Input, Textarea, Badge, Switch oder Checkbox, und keiner nennt eine Rahmenfarbe. Der Dialog „Ansicht speichern“ in der Tabelle nutzt jetzt denselben Fensteraufbau wie alle anderen.
+- **Systematisch verhindert:** `build.mjs` ruft `pruefung/einheitlich.mjs` auf und bricht bei jedem Verstoß mit Datei und Zeile ab. Die Regeln stehen im README unter „Einheitliche Bausteine“. Getestet mit absichtlich eingebauten Verstößen: Der Build bricht jeweils ab.
+- **Build-Fehler behoben:** Wörter in Kommentaren oder Texten (z. B. „Badge“) zogen ungenutzte Bauteile in die Blöcke. Die Namenssuche ignoriert jetzt Zeichenketten und Kommentare.
+- **Messung:** In der Nachbildung wurde die berechnete Rahmenfarbe jedes Elements auf allen Seiten ausgelesen. Alle haben denselben Wert (`neutral-300`). Bewusste Ausnahmen:
+  - Status-Farben
+  - gewählte, gefüllte Chips
+  - Trennlinien innerhalb einer Box
+- **Prüfung:** `build.mjs --check`, Einheitlichkeit und Typprüfung grün. Die Render-Tests für alle Blöcke (Handy und Rechner) sind bestanden. Die Prüfsummen aller fünf hochgeladenen Blöcke stimmen. Die Aktionsrechte sind wieder auf angemeldete Nutzer gesetzt.

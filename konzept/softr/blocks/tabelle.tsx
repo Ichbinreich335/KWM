@@ -1,16 +1,16 @@
 // Generiert von konzept/softr/build.mjs aus src/blocks/tabelle.tsx und src/shared/. Nicht von Hand ändern.
-import { useEffect, useMemo, useRef, useState } from "react";
+import { forwardRef, useEffect, useMemo, useRef, useState } from "react";
 import { datasource, q, useRecordCreate, useRecordDelete, useRecords } from "@/lib/datasource";
 import { useCurrentUser } from "@/lib/user";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Badge } from "@/components/ui/badge";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { AlertTriangle, ArrowDown, ArrowUp, Bookmark, ChevronDown, ChevronLeft, ChevronRight, Columns3, Download, FileSpreadsheet, ImageOff, Loader2, Plus, Printer, Search, SlidersHorizontal, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 const PAGE_SIZE = 100;
@@ -21,18 +21,6 @@ const KOMMISSION = "in Kommission";
 const AUSGESTELLT = "ausgestellt";
 const ROHLING = "Rohling";
 const GLASIERT = "glasiert";
-
-// Farbe trägt nur den Status eines Unikats. Der Zustand der Editionsware (Rohling, glasiert) bleibt neutral.
-const STATUS_BADGE: Record<string, string> = {
-  [VERFUEGBAR]: "bg-emerald-50 text-emerald-800 border-emerald-200",
-  [RESERVIERT]: "bg-amber-50 text-amber-900 border-amber-200",
-  [VERKAUFT]: "bg-zinc-100 text-zinc-700 border-zinc-200",
-  [KOMMISSION]: "bg-sky-50 text-sky-800 border-sky-200",
-  [AUSGESTELLT]: "bg-violet-50 text-violet-800 border-violet-200",
-  [ROHLING]: "bg-background text-muted-foreground border-border",
-  [GLASIERT]: "bg-muted text-foreground border-border",
-};
-
 type Opt = { id: string; label: string };
 type Attachment = { id?: string; url: string; filename?: string; thumbnails?: { url: string; size: string }[] };
 type RawItem = { id: string; fields: Record<string, unknown> };
@@ -163,10 +151,14 @@ ${footer ? `<tfoot><tr>${footer.map((v, i) => cell("td", v, columns[i])).join(""
   return true;
 }
 
-const DIALOG_CLASS = "w-[calc(100vw-2rem)] max-h-[90vh] overflow-y-auto rounded-lg p-4 sm:p-6 [&>button:last-child]:hidden";
-
 // Die eine Rahmenfarbe der App: Flächen, Kacheln, Felder, Auswahlen, Knöpfe. Nur Trennlinien innerhalb einer Fläche bleiben heller.
 const LINE = "border-neutral-300";
+
+// Jedes Fenster (Dialog). Rahmen in der App-Rahmenfarbe.
+const DIALOG_CLASS = `w-[calc(100vw-2rem)] max-h-[90vh] overflow-y-auto rounded-lg border ${LINE} p-4 sm:p-6 [&>button:last-child]:hidden`;
+
+// Jedes aufklappende Menü (Popover, Ausklappliste).
+const POPOVER_CLASS = `border ${LINE}`;
 
 // md:text-base hebt das md:text-sm der shadcn-Felder auf, damit Eingabe und Auswahlliste gleich groß schreiben.
 const FIELD_CLASS = `h-12 rounded-md text-base md:text-base ${LINE}`;
@@ -176,6 +168,56 @@ const PANEL_CLASS = `rounded-lg border ${LINE} bg-card`;
 
 // Am Handy eine Zeile zum seitlich Wischen statt mehrerer umbrochener Reihen, ab Tablet umbrechen.
 const SCROLL_ROW = "flex gap-2 py-0.5 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:flex-wrap sm:overflow-visible";
+
+// Farbe trägt nur den Status eines Unikats (farbiger Rand im Ton des Status). Neutrale Werte (verkauft, Rohling, glasiert) haben den App-Rahmen.
+const STATUS_BADGE: Record<string, string> = {
+  [VERFUEGBAR]: "bg-emerald-50 text-emerald-800 border-emerald-200",
+  [RESERVIERT]: "bg-amber-50 text-amber-900 border-amber-200",
+  [VERKAUFT]: `bg-zinc-100 text-zinc-700 ${LINE}`,
+  [KOMMISSION]: "bg-sky-50 text-sky-800 border-sky-200",
+  [AUSGESTELLT]: "bg-violet-50 text-violet-800 border-violet-200",
+  [ROHLING]: `bg-background text-muted-foreground ${LINE}`,
+  [GLASIERT]: `bg-muted text-foreground ${LINE}`,
+};
+
+type KnopfProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
+  variant?: "default" | "outline" | "secondary" | "ghost" | "destructive" | "link";
+  size?: "default" | "sm" | "lg" | "icon";
+  asChild?: boolean;
+};
+
+// Jeder Knopf. Umrandet (outline) und gefüllt-grau (secondary) tragen dieselbe Rahmenfarbe, damit ein aktiver Filter nicht die Größe ändert.
+const Knopf = forwardRef<HTMLButtonElement, KnopfProps>(function Knopf({ variant = "default", className = "", ...props }, ref) {
+  const rahmen = variant === "outline" || variant === "secondary" ? `border ${LINE}` : "";
+  return <Button ref={ref} variant={variant} className={`${rahmen} ${className}`} {...props} />;
+});
+
+// Jedes einzeilige Eingabefeld.
+const Feld = forwardRef<HTMLInputElement, React.InputHTMLAttributes<HTMLInputElement>>(function Feld({ className = "", ...props }, ref) {
+  return <Input ref={ref} className={`${FIELD_CLASS} ${className}`} {...props} />;
+});
+
+// Jede Auswahlliste (öffnet am Handy die Auswahl des Telefons). kompakt: für dichte Filterzeilen. breite ersetzt die volle Breite.
+const Auswahl = forwardRef<HTMLSelectElement, Omit<React.SelectHTMLAttributes<HTMLSelectElement>, "className"> & { kompakt?: boolean; breite?: string }>(function Auswahl(
+  { kompakt, breite = "w-full", ...props },
+  ref,
+) {
+  return <select ref={ref} className={`${breite} ${kompakt ? "h-11 px-2" : "h-12 px-3"} rounded-md border ${LINE} bg-background text-base`} {...props} />;
+});
+
+// Jedes Ankreuzfeld.
+function Ankreuzfeld({ checked, onChange }: { checked: boolean; onChange: (v: boolean) => void }) {
+  return <Checkbox className={LINE} checked={checked} onCheckedChange={(v) => onChange(v === true)} />;
+}
+
+// Kleines Etikett für Werte in Tabellen (z. B. Glasuren).
+function Etikett({ children }: { children: React.ReactNode }) {
+  return (
+    <Badge variant="outline" className={`text-sm font-normal ${LINE}`}>
+      {children}
+    </Badge>
+  );
+}
 
 // Reiter: der einzige Umschalter der App (Erfassen, Bestand, Stammdaten). Unterstrichen, am Handy seitlich wischbar.
 function Tabs<K extends string>({ label, tabs, value, onChange }: { label: string; tabs: { key: K; label: string; count?: number }[]; value: K; onChange: (key: K) => void }) {
@@ -206,9 +248,27 @@ function Tabs<K extends string>({ label, tabs, value, onChange }: { label: strin
 function StatusBadge({ text }: { text: string }) {
   if (!text) return null;
   return (
-    <span className={`inline-flex items-center rounded-md border px-2 py-0.5 text-sm font-medium whitespace-nowrap ${STATUS_BADGE[text] ?? "bg-muted text-foreground border-border"}`}>
+    <span className={`inline-flex items-center rounded-md border px-2 py-0.5 text-sm font-medium whitespace-nowrap ${STATUS_BADGE[text] ?? `bg-muted text-foreground ${LINE}`}`}>
       {text}
     </span>
+  );
+}
+
+function FieldLabel({ htmlFor, children, required }: { htmlFor?: string; children: string; required?: boolean }) {
+  return (
+    <label htmlFor={htmlFor} className="block text-base font-medium mb-2">
+      {children}
+      {required && <span className="text-destructive"> *</span>}
+    </label>
+  );
+}
+
+function ErrorText({ children }: { children?: string }) {
+  if (!children) return null;
+  return (
+    <p role="alert" data-error="true" className="text-sm text-destructive mt-1.5">
+      {children}
+    </p>
   );
 }
 
@@ -216,7 +276,7 @@ function SearchField({ value, onChange, placeholder, label }: { value: string; o
   return (
     <div className="relative flex-1 min-w-0">
       <Search className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" aria-hidden />
-      <Input type="search" aria-label={label} placeholder={placeholder} value={value} onChange={(e) => onChange(e.target.value)} className={`${FIELD_CLASS} pl-10`} />
+      <Feld type="search" aria-label={label} placeholder={placeholder} value={value} onChange={(e) => onChange(e.target.value)} className="pl-10" />
     </div>
   );
 }
@@ -299,9 +359,9 @@ function PanelHeader({ title, description }: { title: string; description: strin
         <DialogDescription>{description}</DialogDescription>
       </div>
       <DialogClose asChild>
-        <Button variant="ghost" className="h-11 w-11 p-0 shrink-0" aria-label="Schließen">
+        <Knopf variant="ghost" className="h-11 w-11 p-0 shrink-0" aria-label="Schließen">
           <X className="w-6 h-6" aria-hidden />
-        </Button>
+        </Knopf>
       </DialogClose>
     </DialogHeader>
   );
@@ -310,9 +370,9 @@ function PanelHeader({ title, description }: { title: string; description: strin
 function DoneButton() {
   return (
     <DialogClose asChild>
-      <Button variant="outline" className={`w-full h-12 text-base ${LINE}`}>
+      <Knopf variant="outline" className={`w-full h-12 text-base`}>
         Fertig
-      </Button>
+      </Knopf>
     </DialogClose>
   );
 }
@@ -322,13 +382,13 @@ function ExportMenu({ onCsv, onPdf, disabled }: { onCsv: () => void; onPdf: () =
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" className={`h-12 w-12 px-0 text-base sm:w-auto sm:px-4 ${LINE}`} disabled={disabled} aria-label="Exportieren">
+        <Knopf variant="outline" className={`h-12 w-12 px-0 text-base sm:w-auto sm:px-4`} disabled={disabled} aria-label="Exportieren">
           <Download className="w-5 h-5 sm:mr-2" aria-hidden />
           <span className="hidden sm:inline">Exportieren</span>
           <ChevronDown className="hidden sm:block w-4 h-4 ml-1" aria-hidden />
-        </Button>
+        </Knopf>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-56">
+      <DropdownMenuContent align="end" className={`${POPOVER_CLASS} w-56`}>
         <DropdownMenuItem className="min-h-11 text-base gap-2" onSelect={onCsv}>
           <FileSpreadsheet className="w-5 h-5" aria-hidden /> Excel (CSV-Datei)
         </DropdownMenuItem>
@@ -785,8 +845,6 @@ function matchesQuick(r: Row, quick: Quick): boolean {
   });
 }
 
-const selectClass = `h-11 rounded-md border ${LINE} bg-background px-2 text-base`;
-
 function CheckList({ options, value, onChange }: { options: string[]; value: string[]; onChange: (v: string[]) => void }) {
   if (options.length === 0) return <p className="text-sm text-muted-foreground p-2">Keine Werte vorhanden.</p>;
   return (
@@ -795,7 +853,7 @@ function CheckList({ options, value, onChange }: { options: string[]; value: str
         const checked = value.includes(o);
         return (
           <label key={o} className="flex items-center gap-3 min-h-11 px-2 rounded-md hover:bg-muted cursor-pointer">
-            <Checkbox checked={checked} onCheckedChange={() => onChange(checked ? value.filter((x) => x !== o) : [...value, o])} />
+            <Ankreuzfeld checked={checked} onChange={() => onChange(checked ? value.filter((x) => x !== o) : [...value, o])} />
             <span className="text-base">{o}</span>
           </label>
         );
@@ -809,11 +867,11 @@ function MultiPick({ options, value, onChange, label }: { options: string[]; val
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="outline" className={`h-11 justify-start text-base font-normal min-w-40 max-w-full truncate ${LINE}`} aria-label={`${label}: Werte wählen`}>
+        <Knopf variant="outline" className="h-11 justify-start text-base font-normal min-w-40 max-w-full truncate" aria-label={`${label}: Werte wählen`}>
           <span className="truncate">{text}</span>
-        </Button>
+        </Knopf>
       </PopoverTrigger>
-      <PopoverContent align="start" className="w-64 max-h-80 overflow-y-auto p-2">
+      <PopoverContent align="start" className={`${POPOVER_CLASS} w-64 max-h-80 overflow-y-auto p-2`}>
         <CheckList options={options} value={value} onChange={onChange} />
       </PopoverContent>
     </Popover>
@@ -826,20 +884,20 @@ function QuickFilter({ label, options, value, onChange }: { label: string; optio
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant={active ? "secondary" : "outline"} className={`h-11 text-base font-normal max-w-72 ${active ? `border ${LINE}` : ""}`}>
+        <Knopf variant={active ? "secondary" : "outline"} className="h-11 text-base font-normal max-w-72">
           <span className="truncate">
             {label}
             {active && <span className="font-medium">: {value.length === 1 ? value[0] : `${value.length} gewählt`}</span>}
           </span>
           <ChevronDown className="w-4 h-4 ml-1 shrink-0" aria-hidden />
-        </Button>
+        </Knopf>
       </PopoverTrigger>
-      <PopoverContent align="start" className="w-64 max-h-80 overflow-y-auto p-2">
+      <PopoverContent align="start" className={`${POPOVER_CLASS} w-64 max-h-80 overflow-y-auto p-2`}>
         <CheckList options={options} value={value} onChange={onChange} />
         {active && (
-          <Button variant="ghost" className="w-full h-11 text-base mt-1" onClick={() => onChange([])}>
+          <Knopf variant="ghost" className="w-full h-11 text-base mt-1" onClick={() => onChange([])}>
             Auswahl aufheben
-          </Button>
+          </Knopf>
         )}
       </PopoverContent>
     </Popover>
@@ -873,53 +931,54 @@ function ConditionRow({
         {index === 0 ? (
           <span className="text-base text-muted-foreground">Wenn</span>
         ) : index === 1 ? (
-          <select aria-label="Verknüpfung" value={conj} onChange={(e) => onConj(e.target.value as Conj)} className={`${selectClass} w-20`}>
+          <Auswahl aria-label="Verknüpfung" value={conj} onChange={(e) => onConj(e.target.value as Conj)} kompakt breite="w-20">
             <option value="und">und</option>
             <option value="oder">oder</option>
-          </select>
+          </Auswahl>
         ) : (
           <span className="text-base text-muted-foreground">{conj}</span>
         )}
       </div>
-      <select
+      <Auswahl
         aria-label="Feld"
+        kompakt
+        breite="w-auto"
         value={c.field}
         onChange={(e) => {
           const field = e.target.value as ColKey;
           onChange({ ...c, field, op: OPS[COL[field].type][0].op, value: COL[field].type === "select" || COL[field].type === "multi" ? [] : "" });
         }}
-        className={selectClass}
       >
         {(fields.includes(col) ? fields : [col, ...fields]).map((x) => (
           <option key={x.key} value={x.key}>
             {x.label}
           </option>
         ))}
-      </select>
-      <select aria-label="Bedingung" value={c.op} onChange={(e) => onChange({ ...c, op: e.target.value as Op })} className={selectClass}>
+      </Auswahl>
+      <Auswahl aria-label="Bedingung" value={c.op} onChange={(e) => onChange({ ...c, op: e.target.value as Op })} kompakt breite="w-auto">
         {ops.map((o) => (
           <option key={o.op} value={o.op}>
             {o.label}
           </option>
         ))}
-      </select>
+      </Auswahl>
       {!NO_VALUE.includes(c.op) &&
         (col.type === "select" || col.type === "multi" ? (
           <MultiPick label={col.label} options={optionsFor(c.field)} value={Array.isArray(c.value) ? c.value : []} onChange={(value) => onChange({ ...c, value })} />
         ) : (
-          <Input
+          <Feld
             aria-label="Wert"
             type={col.type === "date" ? "date" : "text"}
             inputMode={col.type === "number" ? "decimal" : undefined}
             value={typeof c.value === "string" ? c.value : ""}
             onChange={(e) => onChange({ ...c, value: e.target.value })}
             placeholder="Wert"
-            className={`h-11 text-base w-44 ${LINE}`}
+            className="h-11 text-base w-44"
           />
         ))}
-      <Button variant="ghost" className="h-11 w-11 p-0" aria-label="Bedingung entfernen" onClick={onRemove}>
+      <Knopf variant="ghost" className="h-11 w-11 p-0" aria-label="Bedingung entfernen" onClick={onRemove}>
         <X className="w-5 h-5" aria-hidden />
-      </Button>
+      </Knopf>
     </div>
   );
 }
@@ -950,9 +1009,9 @@ function Detail({ r, onClose }: { r: Row; onClose: () => void }) {
               </div>
             ))}
           </dl>
-          <Button asChild className="w-full h-12 text-base">
+          <Knopf asChild className="w-full h-12 text-base">
             <a href={href}>Im Bestand bearbeiten</a>
-          </Button>
+          </Knopf>
           <DoneButton />
         </div>
       </DialogContent>
@@ -966,23 +1025,16 @@ function SaveViewDialog({ open, onOpenChange, onSave, taken }: { open: boolean; 
   const [busy, setBusy] = useState(false);
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Ansicht speichern</DialogTitle>
-        </DialogHeader>
-        <label htmlFor="view-name" className="text-base font-medium">
-          Name der Ansicht
-        </label>
-        <Input id="view-name" value={name} onChange={(e) => setName(e.target.value)} placeholder="z. B. Seladon im Schauraum" className={FIELD_CLASS} />
-        <p className="text-sm text-muted-foreground">Gespeichert werden Reiter, Filter, Spalten, Sortierung und Suche. Alle Mitarbeitenden sehen die Ansicht.</p>
-        {duplicate && (
-          <p role="alert" className="text-sm text-destructive">
-            Diesen Namen gibt es schon. Bitte einen anderen wählen.
-          </p>
-        )}
-        <DialogFooter>
-          <Button
-            className={FIELD_CLASS}
+      <DialogContent className={`${DIALOG_CLASS} max-w-md`}>
+        <PanelHeader title="Ansicht speichern" description="Gespeichert werden Reiter, Filter, Spalten, Sortierung und Suche. Alle Mitarbeitenden sehen die Ansicht." />
+        <div className="pb-2 space-y-5">
+          <div>
+            <FieldLabel htmlFor="view-name">Name der Ansicht</FieldLabel>
+            <Feld id="view-name" value={name} onChange={(e) => setName(e.target.value)} placeholder="z. B. Seladon im Schauraum" aria-invalid={duplicate} />
+            <ErrorText>{duplicate ? "Diesen Namen gibt es schon. Bitte einen anderen wählen." : undefined}</ErrorText>
+          </div>
+          <Knopf
+            className="w-full h-12 text-base"
             disabled={!name.trim() || duplicate || busy}
             onClick={async () => {
               setBusy(true);
@@ -992,8 +1044,8 @@ function SaveViewDialog({ open, onOpenChange, onSave, taken }: { open: boolean; 
             }}
           >
             Speichern
-          </Button>
-        </DialogFooter>
+          </Knopf>
+        </div>
       </DialogContent>
     </Dialog>
   );
@@ -1006,15 +1058,15 @@ function Pager({ page, total, onPage }: { page: number; total: number; onPage: (
   const to = Math.min(total, from + PAGE_ROWS - 1);
   return (
     <nav aria-label="Seiten" className="flex items-center justify-between gap-2">
-      <Button variant="outline" className={`h-11 text-base ${LINE}`} disabled={page === 0} onClick={() => onPage(page - 1)}>
+      <Knopf variant="outline" className="h-11 text-base" disabled={page === 0} onClick={() => onPage(page - 1)}>
         <ChevronLeft className="w-5 h-5 mr-1" aria-hidden /> Zurück
-      </Button>
+      </Knopf>
       <span className="text-sm text-muted-foreground tabular-nums">
         {zahl.format(from)}–{zahl.format(to)} von {zahl.format(total)}
       </span>
-      <Button variant="outline" className={`h-11 text-base ${LINE}`} disabled={page >= pages - 1} onClick={() => onPage(page + 1)}>
+      <Knopf variant="outline" className="h-11 text-base" disabled={page >= pages - 1} onClick={() => onPage(page + 1)}>
         Weiter <ChevronRight className="w-5 h-5 ml-1" aria-hidden />
-      </Button>
+      </Knopf>
     </nav>
   );
 }
@@ -1285,56 +1337,56 @@ export default function Block() {
                 }}
               />
             ))}
-            <Button variant={activeConditions.length ? "secondary" : "ghost"} className="h-11 text-base" onClick={() => (conditions.length ? setFilterOpen((o) => !o) : addCondition())} aria-expanded={filterOpen}>
+            <Knopf variant={activeConditions.length ? "secondary" : "ghost"} className="h-11 text-base" onClick={() => (conditions.length ? setFilterOpen((o) => !o) : addCondition())} aria-expanded={filterOpen}>
               <SlidersHorizontal className="w-5 h-5 mr-2" aria-hidden />
               Weitere Filter{activeConditions.length ? ` (${activeConditions.length})` : ""}
-            </Button>
+            </Knopf>
             {anythingSet && (
-              <Button variant="ghost" className="h-11 text-base underline-offset-4 hover:underline" onClick={reset}>
+              <Knopf variant="ghost" className="h-11 text-base underline-offset-4 hover:underline" onClick={reset}>
                 Zurücksetzen
-              </Button>
+              </Knopf>
             )}
           </div>
           <div className="flex flex-wrap items-center gap-2 sm:ml-auto">
             <Popover>
               <PopoverTrigger asChild>
-                <Button variant="outline" className={`h-11 text-base hidden sm:inline-flex ${LINE}`}>
+                <Knopf variant="outline" className="h-11 text-base hidden sm:inline-flex">
                   <Columns3 className="w-5 h-5 mr-2" aria-hidden />
                   Spalten
-                </Button>
+                </Knopf>
               </PopoverTrigger>
-              <PopoverContent align="end" className="w-64 max-h-96 overflow-y-auto p-2">
+              <PopoverContent align="end" className={`${POPOVER_CLASS} w-64 max-h-96 overflow-y-auto p-2`}>
                 {tabColumns.map((c) => {
                   const checked = columns.includes(c.key);
                   return (
                     <label key={c.key} className="flex items-center gap-3 min-h-11 px-2 rounded-md hover:bg-muted cursor-pointer">
-                      <Checkbox checked={checked} onCheckedChange={() => setColumns((cols) => (checked ? cols.filter((k) => k !== c.key) : COLUMNS.map((x) => x.key).filter((k) => k === c.key || cols.includes(k))))} />
+                      <Ankreuzfeld checked={checked} onChange={() => setColumns((cols) => (checked ? cols.filter((k) => k !== c.key) : COLUMNS.map((x) => x.key).filter((k) => k === c.key || cols.includes(k))))} />
                       <span className="text-base">{c.label}</span>
                     </label>
                   );
                 })}
-                <Button variant="ghost" className="w-full h-11 text-base mt-1" onClick={() => setColumns(DEFAULT_VISIBLE)}>
+                <Knopf variant="ghost" className="w-full h-11 text-base mt-1" onClick={() => setColumns(DEFAULT_VISIBLE)}>
                   Standardspalten
-                </Button>
+                </Knopf>
               </PopoverContent>
             </Popover>
-            <select aria-label="Gespeicherte Ansicht" value={viewId} onChange={(e) => (e.target.value ? applyView(e.target.value) : setViewId(""))} className={`${selectClass} flex-1 min-w-0 sm:flex-none sm:max-w-60`}>
+            <Auswahl aria-label="Gespeicherte Ansicht" value={viewId} onChange={(e) => (e.target.value ? applyView(e.target.value) : setViewId(""))} kompakt breite="flex-1 min-w-0 sm:flex-none sm:max-w-60">
               <option value="">Gespeicherte Ansichten</option>
               {ansichten.map((v) => (
                 <option key={v.id} value={v.id}>
                   {v.name}
                 </option>
               ))}
-            </select>
-            <Button variant="outline" className={`h-11 text-base ${LINE}`} onClick={() => setSaveOpen(true)}>
+            </Auswahl>
+            <Knopf variant="outline" className="h-11 text-base" onClick={() => setSaveOpen(true)}>
               <Bookmark className="w-5 h-5 mr-2" aria-hidden />
               Speichern
-            </Button>
+            </Knopf>
             {viewId && deleteView.enabled && (
-              <Button variant="ghost" className="h-11 text-base" onClick={removeView}>
+              <Knopf variant="ghost" className="h-11 text-base" onClick={removeView}>
                 <Trash2 className="w-4 h-4 mr-1" aria-hidden />
                 Ansicht entfernen
-              </Button>
+              </Knopf>
             )}
           </div>
         </div>
@@ -1367,10 +1419,10 @@ export default function Block() {
                 />
               ))
             )}
-            <Button variant="outline" className={`h-11 text-base ${LINE}`} onClick={addCondition}>
+            <Knopf variant="outline" className="h-11 text-base" onClick={addCondition}>
               <Plus className="w-5 h-5 mr-1" aria-hidden />
               Bedingung hinzufügen
-            </Button>
+            </Knopf>
           </div>
         )}
 
@@ -1382,9 +1434,9 @@ export default function Block() {
           <div className="space-y-2">
             <EmptyState text="Keine Einträge gefunden." />
             {anythingSet && (
-              <Button variant="outline" className={`h-11 text-base ${LINE}`} onClick={reset}>
+              <Knopf variant="outline" className="h-11 text-base" onClick={reset}>
                 Filter zurücksetzen
-              </Button>
+              </Knopf>
             )}
           </div>
         ) : (
@@ -1417,12 +1469,12 @@ export default function Block() {
               {(scrollState.left || scrollState.right) && (
                 <div className="flex items-center justify-end gap-2">
                   <span className="text-sm text-muted-foreground mr-auto">Weitere Spalten: seitlich wischen oder Pfeile nutzen.</span>
-                  <Button variant="outline" className={`h-11 w-11 p-0 ${LINE}`} aria-label="Spalten links zeigen" disabled={!scrollState.left} onClick={() => scrollBy(-SCROLL_STEP)}>
+                  <Knopf variant="outline" className="h-11 w-11 p-0" aria-label="Spalten links zeigen" disabled={!scrollState.left} onClick={() => scrollBy(-SCROLL_STEP)}>
                     <ChevronLeft className="w-5 h-5" aria-hidden />
-                  </Button>
-                  <Button variant="outline" className={`h-11 w-11 p-0 ${LINE}`} aria-label="Spalten rechts zeigen" disabled={!scrollState.right} onClick={() => scrollBy(SCROLL_STEP)}>
+                  </Knopf>
+                  <Knopf variant="outline" className="h-11 w-11 p-0" aria-label="Spalten rechts zeigen" disabled={!scrollState.right} onClick={() => scrollBy(SCROLL_STEP)}>
                     <ChevronRight className="w-5 h-5" aria-hidden />
-                  </Button>
+                  </Knopf>
                 </div>
               )}
               <div ref={tableBox} className={PANEL_CLASS}>
@@ -1464,15 +1516,15 @@ export default function Block() {
                                 {r.name || "Ohne Namen"}
                               </button>
                             ) : c.key === "typ" && r.typ ? (
-                              <Badge variant="outline" className="text-sm font-normal">
+                              <Etikett>
                                 {r.typ}
-                              </Badge>
+                              </Etikett>
                             ) : c.key === "glasur" && r.glasur.length ? (
                               <span className="flex flex-wrap gap-1">
                                 {r.glasur.map((g) => (
-                                  <Badge key={g} variant="outline" className="text-sm font-normal">
+                                  <Etikett key={g}>
                                     {g}
-                                  </Badge>
+                                  </Etikett>
                                 ))}
                               </span>
                             ) : (
