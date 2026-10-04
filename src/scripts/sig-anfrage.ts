@@ -4,7 +4,12 @@ const RECIPIENT = 'kontakt@kwm1924.de';
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 const PHONE_PATTERN = /^[0-9 +()\/.\-]{5,}$/;
 
-const checks = {
+const CHECK_KEYS = ['name', 'email', 'telefon', 'nachricht'] as const;
+type CheckKey = (typeof CHECK_KEYS)[number];
+type Feld = HTMLInputElement | HTMLTextAreaElement;
+type Anfrage = Partial<Record<CheckKey | 'stueck', string>>;
+
+const checks: Record<CheckKey, (v: string) => string> = {
   name: (v) => (v ? '' : 'Bitte nennen Sie uns Ihren Namen.'),
   email: (v) => {
     if (!v) return 'Bitte geben Sie Ihre E-Mail-Adresse an, damit wir antworten können.';
@@ -16,7 +21,7 @@ const checks = {
   nachricht: (v) => (v ? '' : 'Bitte schreiben Sie uns kurz, worum es geht.'),
 };
 
-function buildMailto(data) {
+function buildMailto(data: Anfrage) {
   const subject = `Anfrage: ${data.stueck || 'Allgemein'}`;
   const lines = [
     data.nachricht,
@@ -30,49 +35,63 @@ function buildMailto(data) {
   return `mailto:${RECIPIENT}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(lines.join('\r\n'))}`;
 }
 
-export default function init(root) {
+export default function init(root: HTMLElement) {
   const form = root.querySelector('form');
-  const done = root.querySelector('.anfrage__done');
-  const summary = root.querySelector('.anfrage__summary');
-  const fields = Object.fromEntries(Object.keys(checks).map((key) => [key, form.elements[key]]));
+  const done = root.querySelector<HTMLElement>('.anfrage__done');
+  const summary = root.querySelector<HTMLElement>('.anfrage__summary');
+  if (!form || !done || !summary) return;
+
+  const field = (name: string): Feld | null => {
+    const element = form.elements.namedItem(name);
+    return element instanceof HTMLInputElement || element instanceof HTMLTextAreaElement ? element : null;
+  };
+  const name = field('name');
+  const email = field('email');
+  const telefon = field('telefon');
+  const nachricht = field('nachricht');
+  if (!name || !email || !telefon || !nachricht) return;
+  const fields: Record<CheckKey, Feld> = { name, email, telefon, nachricht };
 
   const stueck = new URLSearchParams(location.search).get('stueck');
-  if (stueck) form.elements.stueck.value = stueck.trim().slice(0, 400);
+  const stueckField = field('stueck');
+  if (stueck && stueckField) stueckField.value = stueck.trim().slice(0, 400);
 
-  const showError = (key, message) => {
+  const showError = (key: CheckKey, message: string) => {
     const input = fields[key];
-    const out = root.querySelector(`#${input.id}-fehler`);
+    const out = root.querySelector<HTMLElement>(`#${input.id}-fehler`);
+    if (!out) return;
     out.textContent = message;
     out.hidden = !message;
     if (message) input.setAttribute('aria-invalid', 'true');
     else input.removeAttribute('aria-invalid');
   };
-  const validate = (key) => {
+  const validate = (key: CheckKey) => {
     const message = checks[key](fields[key].value.trim());
     showError(key, message);
     return !message;
   };
 
-  Object.keys(checks).forEach((key) => {
+  CHECK_KEYS.forEach((key) => {
     fields[key].addEventListener('blur', () => fields[key].value && validate(key));
     fields[key].addEventListener('input', () => fields[key].hasAttribute('aria-invalid') && validate(key));
   });
 
   form.addEventListener('submit', (event) => {
     event.preventDefault();
-    const invalid = Object.keys(checks).filter((key) => !validate(key));
+    const invalid = CHECK_KEYS.filter((key) => !validate(key));
     summary.hidden = invalid.length === 0;
-    if (invalid.length) {
+    const [first] = invalid;
+    if (first) {
       summary.textContent =
         invalid.length === 1
           ? 'Ein Feld braucht noch Ihre Angabe.'
           : `${invalid.length} Felder brauchen noch Ihre Angabe.`;
-      fields[invalid[0]].focus();
+      fields[first].focus();
       return;
     }
-    const data = Object.fromEntries(new FormData(form).entries());
-    Object.keys(data).forEach((key) => {
-      data[key] = String(data[key]).trim();
+    const data: Record<string, string> = {};
+    new FormData(form).forEach((value, key) => {
+      data[key] = String(value).trim();
     });
     const url = buildMailto(data);
     root.dispatchEvent(new CustomEvent('kwm:anfrage', { bubbles: true, detail: { url } }));
@@ -82,7 +101,7 @@ export default function init(root) {
     done.focus();
   });
 
-  root.querySelector('.anfrage__again').addEventListener('click', () => {
+  root.querySelector('.anfrage__again')?.addEventListener('click', () => {
     done.hidden = true;
     form.hidden = false;
     fields.name.focus();
