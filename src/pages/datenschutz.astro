@@ -1,0 +1,72 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Datenschutz · Keramische Werkstatt Margaretenhöhe"
+  description="Datenschutzerklärung der Keramischen Werkstatt Margaretenhöhe GmbH. Der Text folgt."
+  bodyClass="page-text"
+>
+  <Fragment slot="head">
+    <link rel="stylesheet" href="/css/page-text.css" />
+    <meta name="robots" content="noindex" />
+  </Fragment>
+  <main id="inhalt">
+    <section class="page-hero page-hero--name page-hero--text grid" aria-labelledby="page-title">
+      <h1 class="page-hero__title" id="page-title" data-reveal="words">
+        Datenschutz
+      </h1>
+      <p class="page-hero__lede" data-reveal="fade">
+        Hier steht die Datenschutzerklärung dieser Website.
+      </p>
+    </section>
+
+    <div class="legal grid">
+      <aside class="legal__aside">
+        <nav aria-label="Rechtliches und Service">
+          <p class="legal__label">Rechtliches</p>
+          <ul>
+            <li>
+              <a href="/impressum">Impressum</a>
+            </li>
+            <li>
+              <a href="/datenschutz" aria-current="page">
+                Datenschutz
+              </a>
+            </li>
+            <li>
+              <a href="/agb">AGB</a>
+            </li>
+            <li>
+              <a href="/versand">Verpackung und Transport</a>
+            </li>
+            <li>
+              <a href="/zahlung">Zahlung</a>
+            </li>
+          </ul>
+        </nav>
+      </aside>
+      <div class="legal__body">
+        <div class="legal__notice" role="note">
+          <p class="legal__notice-title">Text folgt</p>
+          <p>Die Datenschutzerklärung wird von der Werkstatt geliefert und hier veröffentlicht, sobald sie vorliegt.</p>
+        </div>
+        <h2 id="verantwortlich">Verantwortliche Stelle</h2>
+        <p>
+          Keramische Werkstatt Margaretenhöhe GmbH
+          <br />
+          Bullmannaue 19, 45327 Essen
+          <br />
+          Telefon 0049 (0)201 – 30 50 80
+          <br />
+          E-Mail: <a href="mailto:kontakt@kwm1924.de">kontakt@kwm1924.de</a>
+        </p>
+        <h2 id="bisherige-hinweise">Bisherige Hinweise</h2>
+        <p>
+          Bis zur neuen Erklärung gelten die bisherigen Datenschutzhinweise im{' '}
+          <a href="/impressum#datenschutz-ihr-gutes-recht-unsere-verpflichtung">Impressum</a>.
+        </p>
+      </div>
+    </div>
+  </main>
+</BaseLayout>

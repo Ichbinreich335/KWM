@@ -1,0 +1,31 @@
+---
+import { kontakt } from '../data/kontakt';
+
+interface Props {
+  text: string;
+  /** Vorbelegung für das Feld „Stück“ im Anfrageformular */
+  stueck?: string;
+}
+const { text, stueck } = Astro.props;
+const href = stueck ? `/besuch?stueck=${encodeURIComponent(stueck)}#anfrage` : '/besuch#anfrage';
+const hatHinweis = Astro.slots.has('default');
+---
+
+<section class="anfrage-band on-flaeche grid" aria-label="Anfrage">
+  <p class="anfrage-band__text" data-reveal="fade">
+    {text}
+  </p>
+  <div class="anfrage-band__actions" data-reveal="fade">
+    <a class="button" href={href}>
+      Anfrage schreiben
+    </a>
+    <a class="link-arrow" href={kontakt.telefonHref}>
+      {kontakt.telefon}
+    </a>
+  </div>
+  {hatHinweis && (
+    <p class="anfrage-band__hint" data-reveal="fade">
+      <slot />
+    </p>
+  )}
+</section>

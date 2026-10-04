@@ -1,0 +1,60 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import InquiryBand from '../components/InquiryBand.astro';
+---
+
+<BaseLayout
+  title="Verpackung und Transportkosten · Keramische Werkstatt Margaretenhöhe"
+  description="Wie sich Verpackungs- und Transportkosten bei der Keramischen Werkstatt Margaretenhöhe berechnen, auch bei Lieferungen ins Ausland."
+  bodyClass="page-text"
+>
+  <Fragment slot="head">
+    <link rel="stylesheet" href="/css/page-text.css" />
+  </Fragment>
+  <main id="inhalt">
+    <section class="page-hero page-hero--name page-hero--text grid" aria-labelledby="page-title">
+      <h1 class="page-hero__title" id="page-title" data-reveal="words">
+        Verpackung und Transportkosten
+      </h1>
+      <p class="page-hero__lede" data-reveal="fade">
+        So berechnen sich Versand und Verpackung.
+      </p>
+    </section>
+
+    <div class="legal grid">
+      <aside class="legal__aside">
+        <nav aria-label="Rechtliches und Service">
+          <p class="legal__label">Rechtliches</p>
+          <ul>
+            <li>
+              <a href="/impressum">Impressum</a>
+            </li>
+            <li>
+              <a href="/datenschutz">Datenschutz</a>
+            </li>
+            <li>
+              <a href="/agb">AGB</a>
+            </li>
+            <li>
+              <a href="/versand" aria-current="page">
+                Verpackung und Transport
+              </a>
+            </li>
+            <li>
+              <a href="/zahlung">Zahlung</a>
+            </li>
+          </ul>
+        </nav>
+      </aside>
+      <div class="legal__body">
+        <p>
+          Die Verpackungs- und Transportkosten richten sich nach Anzahl und Gewicht der zu versendenden Pakete. Bei
+          Auslandslieferungen kommen ggfs. Kosten für die Zollabfertigung hinzu. <br />
+          Die Kosten für die Einfuhr werden von den Zollbehörden direkt an den Kunden erhoben.
+        </p>
+      </div>
+    </div>
+
+    <InquiryBand text="Möchten Sie wissen, was der Versand eines Stücks kostet? Nennen Sie uns das Stück und Ihr Ziel." />
+  </main>
+</BaseLayout>
