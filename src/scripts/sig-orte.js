@@ -18,11 +18,14 @@ export default function init(el) {
 
   const tip = el.querySelector('[data-orte-tip]');
   if (tip) {
-    const seen = new IntersectionObserver(([entry]) => {
-      if (!entry.isIntersecting) return;
-      tip.classList.add('is-in');
-      seen.disconnect();
-    }, { threshold: 0.15 });
+    const seen = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        tip.classList.add('is-in');
+        seen.disconnect();
+      },
+      { threshold: 0.15 },
+    );
     seen.observe(grid);
   }
 
@@ -84,9 +87,14 @@ export default function init(el) {
     if (!panel.isConnected) return;
     panel.inert = true;
     panel.setAttribute('aria-hidden', 'true');
-    if (reducedMotion()) { panel.remove(); return; }
+    if (reducedMotion()) {
+      panel.remove();
+      return;
+    }
     const done = () => panel.remove();
-    panel.addEventListener('transitionend', (e) => { if (e.target === panel && e.propertyName === 'grid-template-rows') done(); });
+    panel.addEventListener('transitionend', (e) => {
+      if (e.target === panel && e.propertyName === 'grid-template-rows') done();
+    });
     setTimeout(done, DURATION + 150);
     panel.classList.remove('is-open');
   }
@@ -96,7 +104,10 @@ export default function init(el) {
     cancelAnimationFrame(holdFrame);
     const top = tile.getBoundingClientRect().top;
     const end = performance.now() + DURATION + 100;
-    const stop = () => { cancelAnimationFrame(holdFrame); holdFrame = 0; };
+    const stop = () => {
+      cancelAnimationFrame(holdFrame);
+      holdFrame = 0;
+    };
     const step = (now) => {
       const delta = tile.getBoundingClientRect().top - top;
       if (Math.abs(delta) > 0.25) window.scrollBy({ top: delta, behavior: 'instant' });
@@ -164,7 +175,10 @@ export default function init(el) {
   });
 
   el.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && active) { e.preventDefault(); closeDetail(); }
+    if (e.key === 'Escape' && active) {
+      e.preventDefault();
+      closeDetail();
+    }
   });
 
   // Fokusring im Detailbereich nur, wenn zuletzt die Tastatur bedient wurde.

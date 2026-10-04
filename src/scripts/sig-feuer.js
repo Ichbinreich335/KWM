@@ -7,29 +7,57 @@ const STATES = {
     color: 'Gelb bis braun',
     why: 'Eisenoxid, oxidierend: sauerstoffreiche Ofenatmosphäre.',
     label: 'Schale mit honiggelber bis brauner Eisenglasur',
-    rim: '#D9BC84', body: '#B98A45', pool: '#8B5C26', deep: '#6A4119',
-    mottle: ['#D6A95E', '#7A4D1E'], speck: '#3A2312', specks: 150, pins: 26, edge: '#7A4D1E',
+    rim: '#D9BC84',
+    body: '#B98A45',
+    pool: '#8B5C26',
+    deep: '#6A4119',
+    mottle: ['#D6A95E', '#7A4D1E'],
+    speck: '#3A2312',
+    specks: 150,
+    pins: 26,
+    edge: '#7A4D1E',
   },
   'eisen-red': {
     color: 'Grün',
     why: 'Eisenoxid, reduzierend: sauerstoffarme Ofenatmosphäre.',
     label: 'Schale mit seladongrüner Eisenglasur und dunklen Eisenpunkten',
-    rim: '#CDD9C6', body: '#A3BDA9', pool: '#6F9783', deep: '#4B7566',
-    mottle: ['#BFD3C2', '#5E8776'], speck: '#33291F', specks: 120, pins: 30, edge: '#5E5646',
+    rim: '#CDD9C6',
+    body: '#A3BDA9',
+    pool: '#6F9783',
+    deep: '#4B7566',
+    mottle: ['#BFD3C2', '#5E8776'],
+    speck: '#33291F',
+    specks: 120,
+    pins: 30,
+    edge: '#5E5646',
   },
   'kupfer-ox': {
     color: 'Grün',
     why: 'Kupfer, oxidierend: sauerstoffreiche Ofenatmosphäre.',
     label: 'Schale mit kupfergrüner Glasur',
-    rim: '#86AB91', body: '#58886B', pool: '#3A6A52', deep: '#244C3A',
-    mottle: ['#7FAE90', '#2F5A45'], speck: '#1E3A2D', specks: 18, pins: 20, edge: '#2F5A45',
+    rim: '#86AB91',
+    body: '#58886B',
+    pool: '#3A6A52',
+    deep: '#244C3A',
+    mottle: ['#7FAE90', '#2F5A45'],
+    speck: '#1E3A2D',
+    specks: 18,
+    pins: 20,
+    edge: '#2F5A45',
   },
   'kupfer-red': {
     color: 'Rot',
     why: 'Kupfer, reduzierend: sauerstoffarme Ofenatmosphäre – es schlägt von Grün nach Rot um.',
     label: 'Schale mit ochsenblutroter Kupferglasur',
-    rim: '#B9644F', body: '#A23F36', pool: '#741F20', deep: '#4D1217',
-    mottle: ['#BE5744', '#4A1621'], speck: '#3A1014', specks: 10, pins: 14, edge: '#5A1A1C',
+    rim: '#B9644F',
+    body: '#A23F36',
+    pool: '#741F20',
+    deep: '#4D1217',
+    mottle: ['#BE5744', '#4A1621'],
+    speck: '#3A1014',
+    specks: 10,
+    pins: 14,
+    edge: '#5A1A1C',
   },
 };
 const KEY = (metal, atmo) => `${metal}-${atmo === 'ox' ? 'ox' : 'red'}`;
@@ -38,7 +66,10 @@ const GLOW_CHASE_MS = 260;
 const SEED = 1924;
 const ease = (t) => (t < 0.5 ? 2 * t * t : 1 - 2 * (1 - t) * (1 - t));
 
-const hexA = (hex, a) => `${hex}${Math.round(a * 255).toString(16).padStart(2, '0')}`;
+const hexA = (hex, a) =>
+  `${hex}${Math.round(a * 255)
+    .toString(16)
+    .padStart(2, '0')}`;
 
 // Schale von oben, Licht von links oben. Alles in Einheiten des Radius R.
 // part 'shadow': nur der Schattenwurf (für alle Zustände gleich), part 'bowl': die Schale ohne Schatten.
@@ -59,9 +90,13 @@ function renderBowl(S, dpr, g, part) {
     c.beginPath();
     for (let k = 0; k <= 96; k++) {
       const a = (k / 96) * Math.PI * 2;
-      const rr = r * (1 + wob[0] * Math.sin(2 * a + wob[1]) + wob[2] * Math.sin(3 * a + wob[3]) + wob[4] * Math.sin(5 * a + wob[5]));
-      const x = Math.cos(a) * rr, y = Math.sin(a) * rr;
-      if (k) c.lineTo(x, y); else c.moveTo(x, y);
+      const rr =
+        r *
+        (1 + wob[0] * Math.sin(2 * a + wob[1]) + wob[2] * Math.sin(3 * a + wob[3]) + wob[4] * Math.sin(5 * a + wob[5]));
+      const x = Math.cos(a) * rr,
+        y = Math.sin(a) * rr;
+      if (k) c.lineTo(x, y);
+      else c.moveTo(x, y);
     }
     c.closePath();
   };
@@ -116,7 +151,8 @@ function renderBowl(S, dpr, g, part) {
     const d = Math.pow(rand(), 0.8) * ri * 0.95;
     const r = R * (0.05 + rand() * 0.22);
     const col = g.mottle[i % g.mottle.length];
-    const x = Math.cos(a) * d, y = Math.sin(a) * d;
+    const x = Math.cos(a) * d,
+      y = Math.sin(a) * d;
     const b = c.createRadialGradient(x, y, 0, x, y, r);
     b.addColorStop(0, hexA(col, 0.1 + rand() * 0.16));
     b.addColorStop(1, hexA(col, 0));
@@ -167,19 +203,32 @@ function renderBowl(S, dpr, g, part) {
     c.globalAlpha = 0.35 + s * 0.6;
     c.fillStyle = g.speck;
     c.beginPath();
-    c.ellipse(Math.cos(a) * d, Math.sin(a) * d, R * (0.004 + s * s * 0.016), R * (0.004 + s * s * 0.012), randSpecks() * 3, 0, Math.PI * 2);
+    c.ellipse(
+      Math.cos(a) * d,
+      Math.sin(a) * d,
+      R * (0.004 + s * s * 0.016),
+      R * (0.004 + s * s * 0.012),
+      randSpecks() * 3,
+      0,
+      Math.PI * 2,
+    );
     c.fill();
   }
   // Nadelstiche: winzige helle Punkte mit dunklem Hof
   for (let i = 0; i < g.pins; i++) {
     const a = randPins() * Math.PI * 2;
     const d = Math.sqrt(randPins()) * ri * 0.9;
-    const x = Math.cos(a) * d, y = Math.sin(a) * d;
+    const x = Math.cos(a) * d,
+      y = Math.sin(a) * d;
     c.globalAlpha = 0.5;
     c.fillStyle = 'rgba(0,0,0,0.5)';
-    c.beginPath(); c.arc(x, y, R * 0.006, 0, Math.PI * 2); c.fill();
+    c.beginPath();
+    c.arc(x, y, R * 0.006, 0, Math.PI * 2);
+    c.fill();
     c.fillStyle = 'rgba(255,255,255,0.55)';
-    c.beginPath(); c.arc(x - R * 0.002, y - R * 0.002, R * 0.0025, 0, Math.PI * 2); c.fill();
+    c.beginPath();
+    c.arc(x - R * 0.002, y - R * 0.002, R * 0.0025, 0, Math.PI * 2);
+    c.fill();
   }
   c.globalAlpha = 1;
 
@@ -258,8 +307,22 @@ export default function init(el) {
   const controls = document.createElement('div');
   controls.className = 'feuer-farben__controls';
   controls.append(
-    makeGroup('Färbendes Oxid', [['eisen', 'Eisen'], ['kupfer', 'Kupfer']], 'metal'),
-    makeGroup('Ofenatmosphäre', [['ox', 'oxidierend'], ['red', 'reduzierend']], 'atmo'),
+    makeGroup(
+      'Färbendes Oxid',
+      [
+        ['eisen', 'Eisen'],
+        ['kupfer', 'Kupfer'],
+      ],
+      'metal',
+    ),
+    makeGroup(
+      'Ofenatmosphäre',
+      [
+        ['ox', 'oxidierend'],
+        ['red', 'reduzierend'],
+      ],
+      'atmo',
+    ),
   );
 
   const result = document.createElement('p');
@@ -277,12 +340,17 @@ export default function init(el) {
 
   el.replaceChildren(...intro, stage, controls, result, note);
 
-  let S = 0, dpr = 1, ctx = null;
+  let S = 0,
+    dpr = 1,
+    ctx = null;
   const sprites = {};
   let shadow = null;
-  let base = KEY(sel.metal, sel.atmo);   // Schale, die gerade ganz sichtbar ist (Bild oder Schnappschuss)
-  let target = null;                      // Zielzustand eines laufenden Wechsels
-  let progress = 0, glowAmt = 0, last = 0, raf = 0;
+  let base = KEY(sel.metal, sel.atmo); // Schale, die gerade ganz sichtbar ist (Bild oder Schnappschuss)
+  let target = null; // Zielzustand eines laufenden Wechsels
+  let progress = 0,
+    glowAmt = 0,
+    last = 0,
+    raf = 0;
   const snaps = [];
   let snapIndex = 0;
 
@@ -350,13 +418,16 @@ export default function init(el) {
     glowAmt += ((target && progress < 0.5 ? 1 : 0) - glowAmt) * (1 - Math.exp(-dt / GLOW_CHASE_MS));
     paint();
     if (target && progress >= 1) {
-      base = target; target = null; progress = 0;
+      base = target;
+      target = null;
+      progress = 0;
       paint();
     }
     if (target || glowAmt > 0.004) {
       raf = requestAnimationFrame(frame);
     } else {
-      glowAmt = 0; raf = 0;
+      glowAmt = 0;
+      raf = 0;
       paint();
     }
   };
@@ -366,7 +437,10 @@ export default function init(el) {
     const next = KEY(sel.metal, sel.atmo);
     if (!S) return;
     if (reduced) {
-      base = next; target = null; progress = 0; glowAmt = 0;
+      base = next;
+      target = null;
+      progress = 0;
+      glowAmt = 0;
       paint();
       return;
     }
@@ -388,16 +462,26 @@ export default function init(el) {
     ctx.setTransform(dpr, 0, 0, dpr, (S * dpr) / 2, (S * dpr) / 2);
     Object.keys(sprites).forEach((k) => delete sprites[k]);
     shadow = renderBowl(S, dpr, STATES['eisen-ox'], 'shadow');
-    if (raf) { cancelAnimationFrame(raf); raf = 0; }
-    target = null; progress = 0; glowAmt = 0;
+    if (raf) {
+      cancelAnimationFrame(raf);
+      raf = 0;
+    }
+    target = null;
+    progress = 0;
+    glowAmt = 0;
     base = KEY(sel.metal, sel.atmo);
     paint();
     // die übrigen Endzustände in Leerlaufzeit vorrendern
-    Object.keys(STATES).filter((k) => k !== base).forEach((k, i) => setTimeout(() => bowl(k), 300 + i * 250));
+    Object.keys(STATES)
+      .filter((k) => k !== base)
+      .forEach((k, i) => setTimeout(() => bowl(k), 300 + i * 250));
   };
 
   text();
   layout();
   let resizeTimer = 0;
-  new ResizeObserver(() => { clearTimeout(resizeTimer); resizeTimer = setTimeout(layout, 150); }).observe(stage);
+  new ResizeObserver(() => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(layout, 150);
+  }).observe(stage);
 }

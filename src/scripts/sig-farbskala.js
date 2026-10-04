@@ -14,7 +14,10 @@ const SPRING = 5.5;
 const REST_EDGE = 0.34;
 const OPEN_EDGE = 0.2;
 
-const rgb = (hex) => { const n = parseInt(hex.slice(1), 16); return [n >> 16, (n >> 8) & 255, n & 255]; };
+const rgb = (hex) => {
+  const n = parseInt(hex.slice(1), 16);
+  return [n >> 16, (n >> 8) & 255, n & 255];
+};
 const rgba = (c, a) => `rgba(${c[0]},${c[1]},${c[2]},${a})`;
 const mix = (a, b, t) => a.map((v, i) => Math.round(v + (b[i] - v) * t));
 
@@ -72,7 +75,15 @@ function paintBiscuit(x, T, L, grain, rand) {
   x.fillStyle = g;
   x.fillRect(0, 0, T, L);
   for (let i = 0; i < 26; i++) {
-    soft(x, rand() * T, rand() * L, T * (0.2 + rand() * 0.4), L * (0.04 + rand() * 0.1), rgb(CLAY.raw), 0.05 + rand() * 0.05);
+    soft(
+      x,
+      rand() * T,
+      rand() * L,
+      T * (0.2 + rand() * 0.4),
+      L * (0.04 + rand() * 0.1),
+      rgb(CLAY.raw),
+      0.05 + rand() * 0.05,
+    );
   }
   fillGrain(x, T, L, grain, 0.55);
   const pores = Math.round((T * L) / 900);
@@ -114,7 +125,13 @@ function paintBody(x, T, L, glaze, grain, rand) {
     soft(x, rand() * T, rand() * L, T * (0.15 + rand() * 0.35), L * (0.03 + rand() * 0.08), c, 0.07 + rand() * 0.08);
   }
 
-  fillGrain(x, T, L, grain, (finish === 'matt' ? 0.5 : finish === 'satin' ? 0.32 : 0.14) * (grund[0] + grund[1] + grund[2] < 330 ? 0.6 : 1));
+  fillGrain(
+    x,
+    T,
+    L,
+    grain,
+    (finish === 'matt' ? 0.5 : finish === 'satin' ? 0.32 : 0.14) * (grund[0] + grund[1] + grund[2] < 330 ? 0.6 : 1),
+  );
 
   if (speckle) {
     // Weiß: vereinzelte Eisenpunkte; Rostbraun: dichte dunkle Sprenkel; matt: helle Flecken im Korn
@@ -155,7 +172,8 @@ class Tile {
     };
     if (d.speckle) {
       glaze.speckle = rgb(d.speckle);
-      glaze.speckleKind = d.finish === 'matt' ? 'korn' : d.finish === 'satin' && d.grund !== '#e2ddcd' ? 'eisen' : 'punkte';
+      glaze.speckleKind =
+        d.finish === 'matt' ? 'korn' : d.finish === 'satin' && d.grund !== '#e2ddcd' ? 'eisen' : 'punkte';
     }
     this.glaze = glaze;
     this.canvas = document.createElement('canvas');
@@ -225,7 +243,10 @@ class Tile {
     ctx.setTransform(swap ? 0 : dpr, swap ? dpr : 0, swap ? dpr : 0, swap ? 0 : dpr, 0, 0);
     ctx.clearRect(0, 0, T, L);
     ctx.drawImage(this.bisc.c, 0, 0, T, L);
-    if (this.p <= 0.001) { this.dirty = false; return; }
+    if (this.p <= 0.001) {
+      this.dirty = false;
+      return;
+    }
 
     const light = glaze.finish === 'glanz';
     const lum = (glaze.grund[0] + glaze.grund[1] + glaze.grund[2]) / 3;
@@ -249,7 +270,10 @@ class Tile {
     const span = Math.min(60, (L - e) * 0.5);
     if (span > 4) {
       const g = ctx.createLinearGradient(0, e - 6, 0, e + span);
-      g.addColorStop(0, rgba(mix(glaze.hell, rgb(CLAY.bisque), glaze.finish === 'matt' ? 0.3 : 0.14), dark ? 0.3 : 0.75));
+      g.addColorStop(
+        0,
+        rgba(mix(glaze.hell, rgb(CLAY.bisque), glaze.finish === 'matt' ? 0.3 : 0.14), dark ? 0.3 : 0.75),
+      );
       g.addColorStop(1, rgba(glaze.hell, 0));
       ctx.fillStyle = g;
       ctx.fillRect(0, e - 8, T, span + 8);
@@ -270,7 +294,15 @@ class Tile {
       if (light) {
         const cx = vis * (0.2 + this.mx * 0.3);
         soft(ctx, cx, e + reach * 0.3, Math.max(8, vis * 0.07), reach * 0.24, [255, 255, 255], sheen * 1.3);
-        soft(ctx, cx - 1, e + reach * 0.22, Math.max(3, vis * 0.022), reach * 0.1, [255, 255, 255], Math.min(0.85, sheen * 2.2));
+        soft(
+          ctx,
+          cx - 1,
+          e + reach * 0.22,
+          Math.max(3, vis * 0.022),
+          reach * 0.1,
+          [255, 255, 255],
+          Math.min(0.85, sheen * 2.2),
+        );
       }
     }
     ctx.restore();
@@ -363,7 +395,10 @@ export default function init(el) {
       t.el.setAttribute('aria-pressed', String(i === pinned));
       t.target = i === a ? 1 : t.p0;
       if (!introDone) return;
-      if (reduced) { t.p = t.target; t.dirty = true; }
+      if (reduced) {
+        t.p = t.target;
+        t.dirty = true;
+      }
     });
     wake();
   };
@@ -373,10 +408,14 @@ export default function init(el) {
     const first = bands[0].getBoundingClientRect();
     const horizontal = narrow.matches;
     const dpr = Math.min(window.devicePixelRatio || 1, MAX_DPR);
-    const slot = horizontal ? { width: first.width, height: box.height } : { width: box.width - 2 * parseFloat(getComputedStyle(el).paddingLeft), height: first.height };
+    const slot = horizontal
+      ? { width: first.width, height: box.height }
+      : { width: box.width - 2 * parseFloat(getComputedStyle(el).paddingLeft), height: first.height };
     tiles.forEach((t) => {
       t.layout(horizontal, slot, dpr);
-      if (introDone) { t.p = t.target = t.p0; }
+      if (introDone) {
+        t.p = t.target = t.p0;
+      }
     });
     if (introDone) apply();
     wake();
@@ -384,31 +423,69 @@ export default function init(el) {
 
   el.classList.add('is-live');
   build();
-  tiles.forEach((t) => { t.target = 0; t.p = 0; });
+  tiles.forEach((t) => {
+    t.target = 0;
+    t.p = 0;
+  });
   tiles.forEach((t) => t.draw());
 
   bands.forEach((b, i) => {
-    b.addEventListener('pointerenter', (e) => { if (e.pointerType === 'mouse') { hovered = i; apply(); } });
-    b.addEventListener('pointerleave', (e) => { if (e.pointerType === 'mouse' && hovered === i) { hovered = -1; apply(); } });
-    b.addEventListener('focus', () => { if (b.matches(':focus-visible')) { focused = i; apply(); } });
-    b.addEventListener('blur', () => { if (focused === i) { focused = -1; apply(); } });
-    b.addEventListener('click', () => { pinned = pinned === i ? -1 : i; apply(); });
+    b.addEventListener('pointerenter', (e) => {
+      if (e.pointerType === 'mouse') {
+        hovered = i;
+        apply();
+      }
+    });
+    b.addEventListener('pointerleave', (e) => {
+      if (e.pointerType === 'mouse' && hovered === i) {
+        hovered = -1;
+        apply();
+      }
+    });
+    b.addEventListener('focus', () => {
+      if (b.matches(':focus-visible')) {
+        focused = i;
+        apply();
+      }
+    });
+    b.addEventListener('blur', () => {
+      if (focused === i) {
+        focused = -1;
+        apply();
+      }
+    });
+    b.addEventListener('click', () => {
+      pinned = pinned === i ? -1 : i;
+      apply();
+    });
   });
 
   // Einstieg: die Proben werden nacheinander getaucht, sobald die Skala im Bild ist
   const start = () => {
     introDone = true;
     tiles.forEach((t, i) => {
-      const go = () => { t.target = t.p0; wake(); if (i === tiles.length - 1) setTimeout(() => el.classList.add('is-ready'), 700); };
-      if (reduced) { t.p = t.p0; t.target = t.p0; t.dirty = true; el.classList.add('is-ready'); } else setTimeout(go, i * INTRO_STAGGER);
+      const go = () => {
+        t.target = t.p0;
+        wake();
+        if (i === tiles.length - 1) setTimeout(() => el.classList.add('is-ready'), 700);
+      };
+      if (reduced) {
+        t.p = t.p0;
+        t.target = t.p0;
+        t.dirty = true;
+        el.classList.add('is-ready');
+      } else setTimeout(go, i * INTRO_STAGGER);
     });
     if (reduced) wake();
   };
-  const io = new IntersectionObserver((entries) => {
-    if (!entries.some((e) => e.isIntersecting)) return;
-    io.disconnect();
-    start();
-  }, { threshold: 0.25 });
+  const io = new IntersectionObserver(
+    (entries) => {
+      if (!entries.some((e) => e.isIntersecting)) return;
+      io.disconnect();
+      start();
+    },
+    { threshold: 0.25 },
+  );
   io.observe(el);
 
   const size = { w: el.clientWidth, h: el.clientHeight };

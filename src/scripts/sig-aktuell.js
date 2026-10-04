@@ -1,5 +1,18 @@
 // Signatur: aktuell. Status je Ausstellung aus dem Datum, Details klappen ohne Unterseite auf (immer nur eine offen).
-const MONTHS = ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];
+const MONTHS = [
+  'Januar',
+  'Februar',
+  'März',
+  'April',
+  'Mai',
+  'Juni',
+  'Juli',
+  'August',
+  'September',
+  'Oktober',
+  'November',
+  'Dezember',
+];
 
 const parseDay = (iso) => {
   const [y, m, d] = iso.split('-').map(Number);
@@ -18,7 +31,11 @@ export default function init(el) {
   today.setHours(0, 0, 0, 0);
 
   el.querySelectorAll('.aktuell__item[data-start]').forEach((item) => {
-    item.querySelector('[data-status]').textContent = statusText(parseDay(item.dataset.start), parseDay(item.dataset.end), today);
+    item.querySelector('[data-status]').textContent = statusText(
+      parseDay(item.dataset.start),
+      parseDay(item.dataset.end),
+      today,
+    );
   });
   // Hinweis: nur sichtbar zwischen data-start und data-end (inklusive)
   el.querySelectorAll('.aktuell__note').forEach((note) => {

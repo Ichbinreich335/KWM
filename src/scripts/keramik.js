@@ -44,8 +44,10 @@ const shapePath = (c, r, wob) => {
   for (let k = 0; k <= 64; k++) {
     const a = (k / 64) * Math.PI * 2;
     const rr = r * (1 + wob[0] * Math.sin(2 * a + wob[1]) + wob[2] * Math.sin(3 * a + wob[3]));
-    const x = Math.cos(a) * rr, y = Math.sin(a) * rr;
-    if (k) c.lineTo(x, y); else c.moveTo(x, y);
+    const x = Math.cos(a) * rr,
+      y = Math.sin(a) * rr;
+    if (k) c.lineTo(x, y);
+    else c.moveTo(x, y);
   }
   c.closePath();
 };
@@ -114,7 +116,8 @@ export const renderBowlSprite = (b, dpr) => {
   if (g.speckle) {
     c.fillStyle = g.speckle;
     b.speckles.forEach(([u, v, s]) => {
-      const a = u * Math.PI * 2, d = Math.sqrt(v) * ri * 0.92;
+      const a = u * Math.PI * 2,
+        d = Math.sqrt(v) * ri * 0.92;
       c.globalAlpha = 0.55 + s * 0.4;
       c.beginPath();
       c.ellipse(Math.cos(a) * d, Math.sin(a) * d, r * (0.03 + s * 0.05), r * (0.02 + s * 0.035), a, 0, Math.PI * 2);

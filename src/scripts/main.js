@@ -45,28 +45,34 @@ import { random, pickGlaze as pickFrom, renderBowlSprite } from './keramik.js';
   });
 
   /* ---------- Einblenden beim Scrollen ---------- */
-  const io = new IntersectionObserver((entries) => {
-    entries.forEach((e) => {
-      if (!e.isIntersecting) return;
-      e.target.classList.add('is-in');
-      io.unobserve(e.target);
-    });
-  }, { rootMargin: '0px 0px -10% 0px', threshold: 0.12 });
+  const io = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((e) => {
+        if (!e.isIntersecting) return;
+        e.target.classList.add('is-in');
+        io.unobserve(e.target);
+      });
+    },
+    { rootMargin: '0px 0px -10% 0px', threshold: 0.12 },
+  );
 
   const heroEls = $$('.hero [data-reveal]');
-  $$('[data-reveal], .chronicle__list li').forEach((el) => { if (!heroEls.includes(el)) io.observe(el); });
+  $$('[data-reveal], .chronicle__list li').forEach((el) => {
+    if (!heroEls.includes(el)) io.observe(el);
+  });
   requestAnimationFrame(() => {
     $('.hero__media')?.classList.add('is-in');
-    heroEls.filter((el) => !el.classList.contains('hero__media')).forEach((el, i) => {
-      setTimeout(() => el.classList.add('is-in'), 450 + i * 160);
-    });
+    heroEls
+      .filter((el) => !el.classList.contains('hero__media'))
+      .forEach((el, i) => {
+        setTimeout(() => el.classList.add('is-in'), 450 + i * 160);
+      });
   });
 
   /* ---------- Chronik: Linie zeichnet sich strikt nacheinander an die Lesehöhe gebunden, jeder Punkt füllt sich, wenn sie ihn erreicht ---------- */
   const chronicle = $('.chronicle__list');
   if (chronicle) {
     const items = $$('li', chronicle);
-    const segs = items.slice(0, -1);
     const READ_LINE = 0.62;
     const SWIPE_EDGE = 8; // Punkt füllt sich, sobald seine Karte so weit in die Wischleiste ragt (px)
     const SWIPE_VISIBLE = 0.9; // Wischleiste zählt als sichtbar, wenn ihre Oberkante über dieser Bildschirmhöhe liegt
@@ -77,7 +83,9 @@ import { random, pickGlaze as pickFrom, renderBowlSprite } from './keramik.js';
       if (swipe.matches) {
         const box = chronicle.getBoundingClientRect();
         const shown = box.top < innerHeight * SWIPE_VISIBLE;
-        items.forEach((li) => li.classList.toggle('is-on', shown && li.getBoundingClientRect().left < box.right - SWIPE_EDGE));
+        items.forEach((li) =>
+          li.classList.toggle('is-on', shown && li.getBoundingClientRect().left < box.right - SWIPE_EDGE),
+        );
         return;
       }
       const line = innerHeight * READ_LINE;
@@ -85,10 +93,16 @@ import { random, pickGlaze as pickFrom, renderBowlSprite } from './keramik.js';
       items.forEach((li) => {
         const box = li.getBoundingClientRect();
         li.classList.toggle('is-on', line >= box.top + dotY);
-        if (!reduced && li !== items.at(-1)) li.style.setProperty('--seg', Math.min(1, Math.max(0, (line - (box.top + dotY)) / box.height)).toFixed(3));
+        if (!reduced && li !== items.at(-1))
+          li.style.setProperty('--seg', Math.min(1, Math.max(0, (line - (box.top + dotY)) / box.height)).toFixed(3));
       });
     };
-    const schedule = () => { if (!framed) { framed = true; requestAnimationFrame(paint); } };
+    const schedule = () => {
+      if (!framed) {
+        framed = true;
+        requestAnimationFrame(paint);
+      }
+    };
     if (reduced) {
       items.forEach((li) => li.classList.add('is-on'));
     } else {
@@ -117,7 +131,9 @@ import { random, pickGlaze as pickFrom, renderBowlSprite } from './keramik.js';
       const size = parseFloat(dot.width);
       const start = parseFloat(vertical ? rail.top : rail.left);
       const length = parseFloat(vertical ? rail.height : rail.width);
-      offsets = stops.map((li) => ((vertical ? li.offsetTop + parseFloat(dot.top) : li.offsetLeft) + size / 2 - start) / length);
+      offsets = stops.map(
+        (li) => ((vertical ? li.offsetTop + parseFloat(dot.top) : li.offsetLeft) + size / 2 - start) / length,
+      );
       return vertical;
     };
     const setProgress = (p) => {
@@ -135,8 +151,13 @@ import { random, pickGlaze as pickFrom, renderBowlSprite } from './keramik.js';
       const span = vertical ? vh * (1 - END_MOBILE) + height : vh * (1 - END_AT);
       setProgress(clamp01((vh - top) / span));
     };
-    const request = () => { if (!queued) queued = requestAnimationFrame(update); };
-    const relayout = () => { vertical = measure(); request(); };
+    const request = () => {
+      if (!queued) queued = requestAnimationFrame(update);
+    };
+    const relayout = () => {
+      vertical = measure();
+      request();
+    };
     update();
     window.addEventListener('scroll', request, { passive: true });
     window.addEventListener('resize', relayout, { passive: true });
@@ -160,9 +181,16 @@ import { random, pickGlaze as pickFrom, renderBowlSprite } from './keramik.js';
     lastY = y;
     ticking = false;
   };
-  window.addEventListener('scroll', () => {
-    if (!ticking) { ticking = true; requestAnimationFrame(onScroll); }
-  }, { passive: true });
+  window.addEventListener(
+    'scroll',
+    () => {
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(onScroll);
+      }
+    },
+    { passive: true },
+  );
 
   /* ---------- Sprungleiste der Unterseiten: aktuellen Abschnitt markieren ---------- */
   const subnav = $('.subnav');
@@ -181,20 +209,27 @@ import { random, pickGlaze as pickFrom, renderBowlSprite } from './keramik.js';
     fade();
 
     const byId = new Map(subLinks.map((a) => [a.getAttribute('href').slice(1), a]));
-    const sio = new IntersectionObserver((entries) => {
-      entries.forEach((e) => {
-        const current = e.isIntersecting && byId.get(e.target.id);
-        if (!current) return;
-        subLinks.forEach((a) => {
-          a.classList.toggle('is-current', a === current);
-          if (a === current) a.setAttribute('aria-current', 'true'); else a.removeAttribute('aria-current');
+    const sio = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          const current = e.isIntersecting && byId.get(e.target.id);
+          if (!current) return;
+          subLinks.forEach((a) => {
+            a.classList.toggle('is-current', a === current);
+            if (a === current) a.setAttribute('aria-current', 'true');
+            else a.removeAttribute('aria-current');
+          });
+          // aktiven Eintrag in die Mitte der Leiste holen
+          const left = current.offsetLeft - (subnav.clientWidth - current.offsetWidth) / 2;
+          subnav.scrollTo({ left, behavior: reduced ? 'auto' : 'smooth' });
         });
-        // aktiven Eintrag in die Mitte der Leiste holen
-        const left = current.offsetLeft - (subnav.clientWidth - current.offsetWidth) / 2;
-        subnav.scrollTo({ left, behavior: reduced ? 'auto' : 'smooth' });
-      });
-    }, { rootMargin: '-35% 0px -60% 0px' });
-    byId.forEach((_, id) => { const el = document.getElementById(id); if (el) sio.observe(el); });
+      },
+      { rootMargin: '-35% 0px -60% 0px' },
+    );
+    byId.forEach((_, id) => {
+      const el = document.getElementById(id);
+      if (el) sio.observe(el);
+    });
   }
 
   /* ---------- Kosmos: 99 Schalen von oben, im Ring um eine leere Mitte ---------- */
@@ -217,11 +252,24 @@ import { random, pickGlaze as pickFrom, renderBowlSprite } from './keramik.js';
       wob: [rand() * 0.02 + 0.008, rand() * 6.28, rand() * 0.016 + 0.006, rand() * 6.28],
       rings: 2 + Math.floor(rand() * 3),
       speckles: Array.from({ length: 6 + Math.floor(rand() * 16) }, () => [rand(), rand(), rand()]),
-      x: 0, y: 0, r: 0, lift: 0, px: 0, py: 0, sprite: null, spriteHalf: 0,
+      x: 0,
+      y: 0,
+      r: 0,
+      lift: 0,
+      px: 0,
+      py: 0,
+      sprite: null,
+      spriteHalf: 0,
     }));
 
-    let S = 0, dpr = 1, rot = 0, startedAt = 0, running = false;
-    let pointer = null, hovered = -1, lastT = 0;
+    let S = 0,
+      dpr = 1,
+      rot = 0,
+      startedAt = 0,
+      running = false;
+    let pointer = null,
+      hovered = -1,
+      lastT = 0;
 
     const layout = () => {
       const rect = canvas.getBoundingClientRect();
@@ -231,10 +279,12 @@ import { random, pickGlaze as pickFrom, renderBowlSprite } from './keramik.js';
       canvas.width = Math.round(S * dpr);
       canvas.height = Math.round(S * dpr);
       const R = S / 2;
-      const ri = R * 0.44, ro = R * 0.96;
+      const ri = R * 0.44,
+        ro = R * 0.96;
       const d = Math.sqrt((Math.PI * (ro * ro - ri * ri)) / N);
       const base = d * 0.39;
-      const a2 = (ri + base) ** 2, b2 = (ro - base * 1.15) ** 2;
+      const a2 = (ri + base) ** 2,
+        b2 = (ro - base * 1.15) ** 2;
       bowls.forEach((b) => {
         const dist = Math.sqrt(a2 + ((b.i + 0.5) / N) * (b2 - a2));
         const theta = b.i * GOLDEN + b.jitter;
@@ -246,21 +296,30 @@ import { random, pickGlaze as pickFrom, renderBowlSprite } from './keramik.js';
       for (let it = 0; it < 60; it++) {
         for (let p = 0; p < N; p++) {
           for (let q = p + 1; q < N; q++) {
-            const A = bowls[p], B = bowls[q];
-            const dx = B.hx - A.hx, dy = B.hy - A.hy;
+            const A = bowls[p],
+              B = bowls[q];
+            const dx = B.hx - A.hx,
+              dy = B.hy - A.hy;
             const d = Math.hypot(dx, dy) || 0.01;
             const min = (A.r + B.r) * 1.12;
             if (d < min) {
               const push = (min - d) / 2;
-              A.hx -= (dx / d) * push; A.hy -= (dy / d) * push;
-              B.hx += (dx / d) * push; B.hy += (dy / d) * push;
+              A.hx -= (dx / d) * push;
+              A.hy -= (dy / d) * push;
+              B.hx += (dx / d) * push;
+              B.hy += (dy / d) * push;
             }
           }
         }
         bowls.forEach((b) => {
           const d = Math.hypot(b.hx, b.hy);
-          const lo = ri + b.r * 1.1, hi = ro - b.r * 1.1;
-          if (d < lo || d > hi) { const k = (d < lo ? lo : hi) / d; b.hx *= k; b.hy *= k; }
+          const lo = ri + b.r * 1.1,
+            hi = ro - b.r * 1.1;
+          if (d < lo || d > hi) {
+            const k = (d < lo ? lo : hi) / d;
+            b.hx *= k;
+            b.hy *= k;
+          }
         });
       }
       bowls.forEach((b) => {
@@ -285,13 +344,16 @@ import { random, pickGlaze as pickFrom, renderBowlSprite } from './keramik.js';
         const a = b.theta + rot;
         b.x = R + Math.cos(a) * b.dist;
         b.y = R + Math.sin(a) * b.dist;
-        let tx = 0, ty = 0;
+        let tx = 0,
+          ty = 0;
         if (pointer && !reduced) {
-          const dx = b.x - pointer.x, dy = b.y - pointer.y;
+          const dx = b.x - pointer.x,
+            dy = b.y - pointer.y;
           const dd = Math.hypot(dx, dy);
           if (dd < reach && dd > 0.01 && b.i !== hovered) {
             const f = (1 - dd / reach) ** 2 * b.r * 0.55;
-            tx = (dx / dd) * f; ty = (dy / dd) * f;
+            tx = (dx / dd) * f;
+            ty = (dy / dd) * f;
           }
         }
         const k = reduced ? 1 : 0.14;
@@ -300,15 +362,24 @@ import { random, pickGlaze as pickFrom, renderBowlSprite } from './keramik.js';
         b.lift += ((b.i === hovered ? 1 : 0) - b.lift) * (reduced ? 1 : 0.16);
       });
 
-      bowls.slice().sort((p, q) => p.lift - q.lift).forEach((b) => {
-        const appear = reduced ? 1 : Math.min(1, Math.max(0, (t - startedAt - b.i * 16) / 800));
-        if (appear <= 0) return;
-        const e = 1 - (1 - appear) ** 3;
-        const scale = (1 + (1 - e) * 0.18) * (1 + b.lift * 0.14);
-        const half = b.spriteHalf * scale;
-        ctx.globalAlpha = e;
-        ctx.drawImage(b.sprite, b.x + b.px - half, b.y + b.py - half - (1 - e) * b.r * 0.5 - b.lift * b.r * 0.12, half * 2, half * 2);
-      });
+      bowls
+        .slice()
+        .sort((p, q) => p.lift - q.lift)
+        .forEach((b) => {
+          const appear = reduced ? 1 : Math.min(1, Math.max(0, (t - startedAt - b.i * 16) / 800));
+          if (appear <= 0) return;
+          const e = 1 - (1 - appear) ** 3;
+          const scale = (1 + (1 - e) * 0.18) * (1 + b.lift * 0.14);
+          const half = b.spriteHalf * scale;
+          ctx.globalAlpha = e;
+          ctx.drawImage(
+            b.sprite,
+            b.x + b.px - half,
+            b.y + b.py - half - (1 - e) * b.r * 0.5 - b.lift * b.r * 0.12,
+            half * 2,
+            half * 2,
+          );
+        });
       ctx.globalAlpha = 1;
       requestAnimationFrame(frame);
     };
@@ -322,10 +393,14 @@ import { random, pickGlaze as pickFrom, renderBowlSprite } from './keramik.js';
     };
 
     const hit = (x, y) => {
-      let best = -1, bestD = Infinity;
+      let best = -1,
+        bestD = Infinity;
       bowls.forEach((b) => {
         const d = Math.hypot(b.x + b.px - x, b.y + b.py - y);
-        if (d < b.r * 1.05 && d < bestD) { best = b.i; bestD = d; }
+        if (d < b.r * 1.05 && d < bestD) {
+          best = b.i;
+          bestD = d;
+        }
       });
       return best;
     };
@@ -341,13 +416,27 @@ import { random, pickGlaze as pickFrom, renderBowlSprite } from './keramik.js';
     };
     canvas.addEventListener('pointermove', track);
     canvas.addEventListener('pointerdown', track);
-    canvas.addEventListener('pointerleave', () => { pointer = null; setHover(-1); });
+    canvas.addEventListener('pointerleave', () => {
+      pointer = null;
+      setHover(-1);
+    });
 
     layout();
     let rz;
-    window.addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(layout, 150); }, { passive: true });
-    new IntersectionObserver(([e]) => {
-      if (e.isIntersecting) start(); else running = false;
-    }, { threshold: 0.08 }).observe(stage);
+    window.addEventListener(
+      'resize',
+      () => {
+        clearTimeout(rz);
+        rz = setTimeout(layout, 150);
+      },
+      { passive: true },
+    );
+    new IntersectionObserver(
+      ([e]) => {
+        if (e.isIntersecting) start();
+        else running = false;
+      },
+      { threshold: 0.08 },
+    ).observe(stage);
   });
 })();

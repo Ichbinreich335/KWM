@@ -8,7 +8,9 @@ const checks = {
   name: (v) => (v ? '' : 'Bitte nennen Sie uns Ihren Namen.'),
   email: (v) => {
     if (!v) return 'Bitte geben Sie Ihre E-Mail-Adresse an, damit wir antworten können.';
-    return EMAIL_PATTERN.test(v) ? '' : 'Diese E-Mail-Adresse scheint nicht zu stimmen. Bitte prüfen Sie sie, z. B. name@beispiel.de.';
+    return EMAIL_PATTERN.test(v)
+      ? ''
+      : 'Diese E-Mail-Adresse scheint nicht zu stimmen. Bitte prüfen Sie sie, z. B. name@beispiel.de.';
   },
   telefon: (v) => (!v || PHONE_PATTERN.test(v) ? '' : 'Bitte nur Ziffern, Leerzeichen und + ( ) / - verwenden.'),
   nachricht: (v) => (v ? '' : 'Bitte schreiben Sie uns kurz, worum es geht.'),
@@ -61,12 +63,17 @@ export default function init(root) {
     const invalid = Object.keys(checks).filter((key) => !validate(key));
     summary.hidden = invalid.length === 0;
     if (invalid.length) {
-      summary.textContent = invalid.length === 1 ? 'Ein Feld braucht noch Ihre Angabe.' : `${invalid.length} Felder brauchen noch Ihre Angabe.`;
+      summary.textContent =
+        invalid.length === 1
+          ? 'Ein Feld braucht noch Ihre Angabe.'
+          : `${invalid.length} Felder brauchen noch Ihre Angabe.`;
       fields[invalid[0]].focus();
       return;
     }
     const data = Object.fromEntries(new FormData(form).entries());
-    Object.keys(data).forEach((key) => { data[key] = String(data[key]).trim(); });
+    Object.keys(data).forEach((key) => {
+      data[key] = String(data[key]).trim();
+    });
     const url = buildMailto(data);
     root.dispatchEvent(new CustomEvent('kwm:anfrage', { bubbles: true, detail: { url } }));
     location.href = url;

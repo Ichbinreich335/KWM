@@ -18,7 +18,9 @@ export default function init(el) {
     const progress = Math.min(1, Math.max(0, (vh - top) / (vh + height)));
     el.style.setProperty('--sticky-shift', `${((progress - 0.5) * 2 * MAX_SHIFT).toFixed(2)}%`);
   };
-  const request = () => { if (!frame) frame = requestAnimationFrame(update); };
+  const request = () => {
+    if (!frame) frame = requestAnimationFrame(update);
+  };
 
   const visibility = new IntersectionObserver(([entry]) => {
     const method = entry.isIntersecting ? 'addEventListener' : 'removeEventListener';
