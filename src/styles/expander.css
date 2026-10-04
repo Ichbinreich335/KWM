@@ -2,7 +2,7 @@
    Markup: .expander > .expander__bar (h3) > button.expander__btn[aria-expanded][aria-controls]
            + .expander__panel#id > .expander__inner
    Varianten: --row (Zeile mit Jahr, Teaser, Plus) und --lang (großer Knopf, bleibt offen oben fixiert).
-   Verhalten: js/expander.js. Ohne JavaScript bleibt der Inhalt offen sichtbar. */
+   Verhalten: src/scripts/expander.ts. Ohne JavaScript bleibt der Inhalt offen sichtbar. */
 
 .expander {
   --expander-time: 0.5s;

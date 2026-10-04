@@ -50,7 +50,8 @@ src/components/       Header, Footer, InquiryBand (Anfrage-Leiste), InquiryForm 
 src/data/             kontakt.ts (Telefon, Mail, Zeiten, Adresse), navigation.ts (Menü, Fußlinks)
 src/pages/            eine .astro-Datei pro Seite
 src/styles/           basis.css (bindet global.css, pages.css, expander.css ein), seiten/ (Seiten-CSS), signaturen/ (signaturen.css und sig-*.css)
-public/               JS, Schriften (fonts.css), Bilder, _headers, _redirects, robots.txt (kein CSS mehr; Rest wird in Phase C gebündelt)
+src/scripts/          Browser-Skripte (TypeScript): main, signaturen (lädt die sig-* als eigene Chunks), expander, keramik (gemeinsame Typen und Daten); das Layout bindet sie als ein verarbeitetes Skript ein
+public/               Schriften (fonts.css), Bilder, _headers, _redirects, robots.txt (kein CSS mehr; Rest wird in Phase C gebündelt)
 tests/                Playwright-Tests (siehe oben)
 konzept/              Konzepte, Pläne, Berichte; figures.json = Bilderliste der alten WordPress-Seite
 .shots/               Skripte für Screenshots zur Sichtprüfung (Bilder werden nicht eingecheckt)

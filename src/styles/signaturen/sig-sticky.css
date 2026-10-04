@@ -1,10 +1,10 @@
 /* Signatur: sticky – Text bleibt beim Scrollen oben im Foto stehen, bis das Bild durch ist (Porträt und Feuer).
    Abschnitt ist höher als der Bildschirm, die Textebene klebt oben (100svh) und zieht am Ende mit dem Abschnitt weiter.
-   Das Foto läuft normal mit; js/sig-sticky.js verschiebt es nur minimal gegenläufig (Parallax, ≤ 5 %). */
+   Das Foto läuft normal mit; src/scripts/sig-sticky.ts verschiebt es nur minimal gegenläufig (Parallax, ≤ 5 %). */
 .sticky-bild {
   --sticky-h: 150svh;
   --sticky-over: 6%; /* Bild ragt oben und unten über, Platz für den Parallax */
-  --sticky-shift: 0%; /* setzt sig-sticky.js, Wertebereich ±5 % der Bildhöhe */
+  --sticky-shift: 0%; /* setzt sig-sticky.ts, Wertebereich ±5 % der Bildhöhe */
   --sticky-text-from: 1;
   --sticky-text-to: 9;
   position: relative;

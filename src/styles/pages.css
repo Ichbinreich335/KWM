@@ -183,7 +183,7 @@
 .masthead.is-hidden ~ main .subnav {
   top: 0;
 }
-/* Randausblendung zeigt, dass die Leiste seitlich weiterläuft (Attribut setzt main.js) */
+/* Randausblendung zeigt, dass die Leiste seitlich weiterläuft (Attribut setzt main.ts) */
 .subnav[data-more='start'] {
   mask-image: linear-gradient(90deg, transparent, #000 40px);
 }
