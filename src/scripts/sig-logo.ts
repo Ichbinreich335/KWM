@@ -9,13 +9,15 @@ const SPAN = 0.62; // Scrollstrecke des Aufbaus (Anteil Fensterhöhe)
 const MAIN_PX = [2.4, 4]; // Strichstärke des Logos in Bildschirm-Pixeln (min, max)
 const MAIN_PX_PER_WIDTH = 0.0068;
 
-const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
-const easeInOut = (t) => (t < 0.5 ? 4 * t ** 3 : 1 - (-2 * t + 2) ** 3 / 2);
+const clamp = (v: number, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+const easeInOut = (t: number) => (t < 0.5 ? 4 * t ** 3 : 1 - (-2 * t + 2) ** 3 / 2);
 
-export default function init(svg) {
+export default function init(el: Element) {
+  if (!(el instanceof SVGSVGElement)) return;
+  const svg = el;
   if (reducedMotion()) return;
 
-  const parts = [...svg.querySelectorAll('[data-a]')].map((el) => ({
+  const parts = [...svg.querySelectorAll<SVGGeometryElement>('[data-a]')].map((el) => ({
     el,
     a: Number(el.dataset.a),
     b: Number(el.dataset.b),
@@ -49,19 +51,19 @@ export default function init(svg) {
     end = Math.max(start + 80, Math.min(start + vh * SPAN, scrollMax - 6));
   }
 
-  function draw(p) {
+  function draw(p: number) {
     for (const part of parts) {
       const t = clamp((p - part.a) / (part.b - part.a));
       const shown = part.len * easeInOut(t);
       const { el } = part;
       if (part.sym) {
         el.style.strokeDasharray = `${shown} ${part.len}`;
-        el.style.strokeDashoffset = -(part.len - shown) / 2;
+        el.style.strokeDashoffset = String(-(part.len - shown) / 2);
       } else {
         el.style.strokeDasharray = `${part.len} ${part.len + 1}`;
-        el.style.strokeDashoffset = part.len - shown;
+        el.style.strokeDashoffset = String(part.len - shown);
       }
-      el.style.opacity = t > 0 ? 1 : 0;
+      el.style.opacity = t > 0 ? '1' : '0';
     }
   }
 
@@ -89,6 +91,7 @@ export default function init(svg) {
 
   new IntersectionObserver(
     ([entry]) => {
+      if (!entry) return;
       visible = entry.isIntersecting;
       if (visible) update();
     },
