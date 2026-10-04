@@ -1,0 +1,13 @@
+{
+  "name": "kwm-softr-sicherung",
+  "private": true,
+  "type": "module",
+  "description": "Nächtliche Sicherung der Softr-Datenbank nach Cloudflare R2",
+  "scripts": {
+    "sichern": "node export.mjs",
+    "zuruecksetzen": "node restore.mjs"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.700.0"
+  }
+}

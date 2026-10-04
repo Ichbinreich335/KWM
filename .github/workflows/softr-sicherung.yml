@@ -1,0 +1,38 @@
+name: Softr-Sicherung
+
+on:
+  schedule:
+    - cron: "17 1 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: softr-sicherung
+  cancel-in-progress: false
+
+jobs:
+  sichern:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: konzept/softr/sicherung
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: konzept/softr/sicherung/package-lock.json
+      - run: npm ci
+      - name: Datenbank und Fotos nach R2 sichern
+        run: node export.mjs
+        env:
+          SOFTR_API_KEY: ${{ secrets.SOFTR_API_KEY }}
+          R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          R2_BUCKET: ${{ secrets.R2_BUCKET }}
+          R2_JURISDICTION: ${{ secrets.R2_JURISDICTION }}
