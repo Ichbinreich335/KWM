@@ -1,6 +1,6 @@
 # Offen für den Admin
 
-Laufende Liste: Was du tun, entscheiden oder abnehmen musst, und was mir unterwegs aufgefallen ist. Neueste Einträge oben in jedem Abschnitt. Erledigtes wandert nach unten.
+Laufende Liste: Was du tun, entscheiden oder abnehmen musst, und was mir unterwegs aufgefallen ist. Überblick über alle Schritte: [STAND.md](STAND.md). Neueste Einträge oben in jedem Abschnitt. Erledigtes wandert nach unten.
 
 Stand: 04.10.2026 (abends)
 
@@ -27,7 +27,7 @@ Stand: 04.10.2026 (abends)
 
 | Frage | Optionen | Meine Empfehlung |
 |---|---|---|
-| **Visueller Feinschliff (B-3), 10 Fragen** – Details, Messungen und Screens in `konzept/VISUELLES-REVIEW.md` (Abschnitt „Vorschlag Phase B-3“, Teil b) | 1 Porträt am Handy: Bild und Zitat untereinander statt Zitat über dem Gesicht · 2 Tablet zweispaltig · 3 weniger große Zitate (Meisterstücke-Satz streichen, Kosmos-Dopplung) · 4 1986 oder 1987 (Werkstatt fragen) · 5 Bildnachweise einheitlich „Titel · Foto: Name“, fehlende Namen liefern · 6 Bildgründe der Freisteller angleichen, höher aufgelöste Originale · 7 Bildwiederholungen tauschen, später Ortsfotos · 8 Orte am Handy verdichten · 9 Regel für gefüllte Buttons und Überschriften · 10 Datumsformat „2003–2005“, Chronik-Spalten | Meine Empfehlung steht je Frage im Bericht. Nicht übernommen, weil schon entschieden: Meditation und 99 Schalen zusammenlegen (E5), Orte auf hellen Grund (DESIGN.md §5). |
+| **Visueller Feinschliff, 10 Fragen** (Frage 1 Porträt am Handy: von dir entschieden, wird umgesetzt) – Details, Messungen und Screens in `konzept/VISUELLES-REVIEW.md` (Abschnitt „Vorschlag Phase B-3“, Teil b) | 1 Porträt am Handy: Bild und Zitat untereinander statt Zitat über dem Gesicht · 2 Tablet zweispaltig · 3 weniger große Zitate (Meisterstücke-Satz streichen, Kosmos-Dopplung) · 4 1986 oder 1987 (Werkstatt fragen) · 5 Bildnachweise einheitlich „Titel · Foto: Name“, fehlende Namen liefern · 6 Bildgründe der Freisteller angleichen, höher aufgelöste Originale · 7 Bildwiederholungen tauschen, später Ortsfotos · 8 Orte am Handy verdichten · 9 Regel für gefüllte Buttons und Überschriften · 10 Datumsformat „2003–2005“, Chronik-Spalten | Meine Empfehlung steht je Frage im Bericht. Nicht übernommen, weil schon entschieden: Meditation und 99 Schalen zusammenlegen (E5), Orte auf hellen Grund (DESIGN.md §5). |
 | Leichtes Überschwingen der Punkte in Lebensweg und Chronik (`--ease-pop`) | Laut Kommentar im Code bewusst gewählt („Punkt füllt sich mit leichtem Überziehen“); ein Prüfwerkzeug meldet so etwas pauschal als „veraltet“. (a) so lassen, (b) ruhig auslaufen lassen ohne Überschwingen | (a), wenn es dir gefällt. Ansehen: Startseite, Abschnitt Lebensweg beim Scrollen |
 | Vorschauen der alten Branches (`design-v3`, `claude/softr-lager-app`, `claude/baserow-nachbau`, `design-v2` …) | Sie scheitern seit 04.10. an einer neuen Cloudflare-Pflichtangabe (`previews`-Block). (a) Angabe dort ergänzen, (b) ignorieren, (c) Branches später aufräumen | (b), solange sie nicht gebraucht werden; nach dem Merge erben neue Branches die Angabe |
 | Google Tag Manager vorziehen (Phase 4)? | Braucht GTM-Container-ID und Wahl des Einwilligungsbanners | Nach Phase B; Conversion „Anfrage gesendet“ ist erst mit dem Formular-Worker (Phase 3) sinnvoll |
