@@ -151,13 +151,30 @@
   .sticky-bild--feuer .sticky-bild__media::after {
     background: rgb(10 10 10 / 0.66);
   }
+  /* Porträt mobil: Bild und Zitat untereinander, ohne Sticky, Abdunklung und Parallax; das Zitat setzt das Bild auf Kohle fort */
   .sticky-bild--portrait {
-    --sticky-h: 135svh;
+    height: auto;
     --sticky-text-from: 1;
     --sticky-text-to: -1;
   }
-  .sticky-bild__media::after,
+  .sticky-bild--portrait .sticky-bild__media {
+    position: relative;
+    aspect-ratio: 4 / 5;
+  }
   .sticky-bild--portrait .sticky-bild__media::after {
+    content: none;
+  }
+  .sticky-bild--portrait .sticky-bild__img {
+    inset-block: 0;
+    height: 100%;
+    transform: none;
+    object-position: 8% 50%;
+  }
+  .sticky-bild--portrait .sticky-bild__pane {
+    position: static;
+    padding-block: var(--head-gap);
+  }
+  .sticky-bild__media::after {
     background: rgb(10 10 10 / 0.66);
   }
   .sticky-bild__pane {
@@ -167,13 +184,6 @@
   .sticky-bild--feuer .sticky-bild__pane {
     align-content: start;
     padding-bottom: 0;
-  }
-  .sticky-bild--portrait .sticky-bild__pane {
-    align-content: start;
-    padding-bottom: var(--head-gap);
-  }
-  .sticky-bild--portrait .sticky-bild__img {
-    object-position: 22% 50%;
   }
 }
 
