@@ -4,7 +4,7 @@ import { reducedMotion } from './keramik';
 
 const MAX_SHIFT = 5; // Prozent der Bildhöhe
 
-export default function init(el) {
+export default function init(el: HTMLElement) {
   if (reducedMotion()) return;
   const img = el.querySelector('.sticky-bild__img');
   if (!img) return;
@@ -23,6 +23,7 @@ export default function init(el) {
   };
 
   const visibility = new IntersectionObserver(([entry]) => {
+    if (!entry) return;
     const method = entry.isIntersecting ? 'addEventListener' : 'removeEventListener';
     window[method]('scroll', request, { passive: true });
     window[method]('resize', request, { passive: true });
