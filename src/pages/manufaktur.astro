@@ -1380,7 +1380,7 @@ import '../styles/signaturen/signaturen.css';
       </a>
     </InquiryBand>
 
-    <script is:inline>
+    <script>
       (() => {
         // Glasurbühne: die Probe wird zur Fläche
         const root = document.querySelector('[data-glaze]');
@@ -1389,31 +1389,33 @@ import '../styles/signaturen/signaturen.css';
         const layers = root.querySelector('[data-glaze-layers]');
         const nameEl = root.querySelector('[data-glaze-name]');
         const metaEl = root.querySelector('[data-glaze-meta]');
-        const buttons = [...root.querySelectorAll('.glaze__btn')];
+        const buttons = [...root.querySelectorAll<HTMLButtonElement>('.glaze__btn')];
+        const [first] = buttons;
+        if (!stage || !layers || !nameEl || !metaEl || !first) return;
         const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        let current = null;
+        let current: HTMLButtonElement | null = null;
 
-        const show = (btn) => {
+        const show = (btn: HTMLButtonElement) => {
           if (btn === current) return;
           current = btn;
           const layer = document.createElement('div');
           layer.className = 'glaze__layer';
-          layer.style.setProperty('--g', btn.dataset.color);
-          layer.style.setProperty('--img', `url("${new URL(btn.dataset.img, location.href).href}")`);
+          layer.style.setProperty('--g', btn.dataset['color'] ?? '');
+          layer.style.setProperty('--img', `url("${new URL(btn.dataset['img'] ?? '', location.href).href}")`);
           if ('gloss' in btn.dataset) layer.classList.add('is-gloss');
           layers.appendChild(layer);
           requestAnimationFrame(() => layer.classList.add('is-in'));
           const old = [...layers.children].slice(0, -1);
           setTimeout(() => old.forEach((l) => l.remove()), reduced ? 0 : 1200);
           stage.classList.toggle('is-dark', 'dark' in btn.dataset);
-          nameEl.textContent = btn.dataset.name;
-          metaEl.textContent = btn.dataset.meta;
+          nameEl.textContent = btn.dataset['name'] ?? '';
+          metaEl.textContent = btn.dataset['meta'] ?? '';
         };
-        const select = (btn) => {
+        const select = (btn: HTMLButtonElement) => {
           buttons.forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
           show(btn);
         };
-        let pinned = buttons[0];
+        let pinned = first;
         buttons.forEach((btn) => {
           btn.addEventListener('pointerenter', (e) => {
             if (e.pointerType === 'mouse') show(btn);
@@ -1424,7 +1426,7 @@ import '../styles/signaturen/signaturen.css';
             select(btn);
           });
         });
-        root.querySelector('.glaze__pick').addEventListener('pointerleave', () => show(pinned));
+        root.querySelector('.glaze__pick')?.addEventListener('pointerleave', () => show(pinned));
         select(pinned);
       })();
     </script>
