@@ -22,9 +22,9 @@
   --glaze-copper-g: #4f7d62;
   --glaze-copper-r: #8e2f2a;
 
-  --f-display: 'Libre Caslon Display', 'Libre Caslon Text', Georgia, serif;
-  --f-text: 'Libre Caslon Text', Georgia, serif;
-  --f-sans: 'Jost', 'Futura', system-ui, sans-serif;
+  --f-display: var(--font-caslon-display);
+  --f-text: var(--font-caslon-text);
+  --f-sans: var(--font-jost);
 
   --m: clamp(16px, 2.8vw, 44px);
   --g: clamp(12px, 1.6vw, 24px);

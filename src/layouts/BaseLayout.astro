@@ -1,4 +1,5 @@
 ---
+import { Font, fontData } from 'astro:assets';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
 import type { NavKey } from '../data/navigation';
@@ -10,6 +11,14 @@ interface Props {
   nav?: NavKey;
 }
 const { title, description, bodyClass, nav } = Astro.props;
+
+// Die Fonts API kann lokale Schriften nicht nach Teilmenge vorladen. Darum die zwei Dateien über fontData wählen:
+// Die latin-Variante steht in astro.config.mjs (varianten) immer vor latin-ext. Ob es wirklich die latin-Datei ist, prüft tests/routen.spec.ts.
+const vorgeladeneSchriften = (['--font-caslon-display', '--font-jost'] as const).map((cssVariable) => {
+  const url = fontData[cssVariable]?.find((schnitt) => schnitt.style === 'normal')?.src[0]?.url;
+  if (url === undefined) throw new Error(`Keine Schriftdatei für ${cssVariable} gefunden (siehe astro.config.mjs).`);
+  return url;
+});
 ---
 
 <!doctype html>
@@ -20,9 +29,12 @@ const { title, description, bodyClass, nav } = Astro.props;
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="icon" href="/img/kwm/logo.svg" type="image/svg+xml" />
-    <link rel="preload" href="/fonts/libre-caslon-display-normal-latin.woff2" as="font" type="font/woff2" crossorigin />
-    <link rel="preload" href="/fonts/jost-normal-latin.woff2" as="font" type="font/woff2" crossorigin />
-    <link rel="stylesheet" href="/fonts/fonts.css" />
+    {vorgeladeneSchriften.map((url) => (
+      <link rel="preload" href={url} as="font" type="font/woff2" crossorigin />
+    ))}
+    <Font cssVariable="--font-caslon-display" />
+    <Font cssVariable="--font-caslon-text" />
+    <Font cssVariable="--font-jost" />
     <slot name="head" />
     {/* Muss vor dem ersten Rendern laufen (Logo-Zeichnung einmal pro Sitzung), daher inline */}
     <script is:inline>

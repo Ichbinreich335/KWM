@@ -61,17 +61,38 @@ test('Geteilte Prototyp-Links unter /v3/ führen auf die neue Seite, mit Paramet
   expect(new URL(page.url()).pathname).toBe('/');
 });
 
-test('Stylesheet-Reihenfolge: Schriften, Grundstile, Seiten-CSS, Signaturen, nichts inline', async ({ page }) => {
+test('Stylesheet-Reihenfolge: Grundstile, Seiten-CSS, Signaturen, nur die Schrift-Stile inline', async ({ page }) => {
   for (const seite of seiten) {
     await page.goto(seite.astro);
     const pfade = await page
       .locator('link[rel=stylesheet]')
       .evaluateAll((links) => links.map((l) => new URL((l as HTMLLinkElement).href).pathname));
     const wo = `${seite.name}: ${pfade.join(', ')}`;
-    expect(pfade[0], wo).toBe('/fonts/fonts.css');
-    expect(pfade[1], wo).toMatch(/^\/_astro\/basis\..+\.css$/);
+    expect(pfade[0], wo).toMatch(/^\/_astro\/basis\..+\.css$/);
     expect(pfade.at(-1), wo).toMatch(/^\/_astro\/signaturen\..+\.css$/);
-    expect(pfade.length, wo).toBeLessThanOrEqual(4);
-    expect(await page.locator('head style').count(), `${seite.name}: <style> im Head`).toBe(0);
+    expect(pfade.length, wo).toBeLessThanOrEqual(3);
+    const stile = await page.locator('head style').allTextContents();
+    expect(stile.length, `${seite.name}: Anzahl <style> im Head (nur die drei der Fonts API)`).toBe(3);
+    for (const stil of stile) {
+      expect(stil, `${seite.name}: fremdes <style> im Head`).toMatch(/^@font-face\{.*:root\{--font-[a-z-]+:/s);
+    }
+  }
+});
+
+test('Schriften: genau zwei Preloads, beide sind die latin-Datei (nicht latin-ext)', async ({ page }) => {
+  const latin = 'U+0000-00FF';
+  for (const seite of seiten) {
+    await page.goto(seite.astro);
+    const preloads = await page
+      .locator('link[rel=preload][as=font]')
+      .evaluateAll((links) => links.map((l) => new URL((l as HTMLLinkElement).href).pathname));
+    expect(preloads.length, `${seite.name}: Anzahl Schrift-Preloads`).toBe(2);
+    const css = (await page.locator('head style').allTextContents()).join('');
+    for (const pfad of preloads) {
+      expect(pfad, seite.name).toMatch(/^\/_astro\/fonts\/.+\.woff2$/);
+      const regel = css.split('@font-face{').find((r) => r.includes(`url("${pfad}")`));
+      expect(regel, `${seite.name}: keine @font-face-Regel für ${pfad}`).toBeDefined();
+      expect(regel, `${seite.name}: ${pfad} ist nicht die latin-Datei`).toContain(`unicode-range:${latin},`);
+    }
   }
 });

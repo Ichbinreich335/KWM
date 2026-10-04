@@ -52,8 +52,9 @@ src/data/             kontakt.ts (Telefon, Mail, Zeiten, Adresse), navigation.ts
 src/pages/            eine .astro-Datei pro Seite
 src/styles/           basis.css (bindet global.css, pages.css, expander.css ein), seiten/ (Seiten-CSS), signaturen/ (signaturen.css und sig-*.css)
 src/scripts/          Browser-Skripte (TypeScript): main, signaturen (lädt die sig-* als eigene Chunks), expander, keramik (gemeinsame Typen und Daten); das Layout bindet sie als ein verarbeitetes Skript ein
+src/assets/fonts/     Selbst gehostete Schriften (woff2, je Teilmenge latin und latin-ext); registriert in `astro.config.mjs` (`fonts`), eingebunden über `<Font>` im Layout
 src/assets/img/       Bilder, nur über `<Bild src="/img/…">` einbinden (Pfad ohne `src/assets`)
-public/               Schriften (fonts.css), Favicon (`img/kwm/logo.svg`), _headers, _redirects, robots.txt (kein CSS mehr; Rest wird in Phase C gebündelt)
+public/               Favicon (`img/kwm/logo.svg`), _headers, _redirects, robots.txt (kein CSS mehr; Rest wird in Phase C gebündelt)
 tests/                Playwright-Tests (siehe oben)
 konzept/              Konzepte, Pläne, Berichte; figures.json = Bilderliste der alten WordPress-Seite
 .shots/               Skripte für Screenshots zur Sichtprüfung (Bilder werden nicht eingecheckt)
@@ -62,8 +63,12 @@ archiv/               abgeschlossene Stände: HTML-Prototyp (V1–V3), frühe En
 
 ## CSS-Reihenfolge
 
-Jede Seite importiert in dieser Reihenfolge: `../styles/basis.css`, ihr Seiten-CSS aus `../styles/seiten/` (falls vorhanden), `../styles/signaturen/signaturen.css`. Das Layout importiert kein CSS. Nur `fonts.css` bleibt ein `<link>` im Layout.
+Jede Seite importiert in dieser Reihenfolge: `../styles/basis.css`, ihr Seiten-CSS aus `../styles/seiten/` (falls vorhanden), `../styles/signaturen/signaturen.css`. Das Layout importiert kein CSS. Die Schrift-Stile (`@font-face`, `--font-*`) erzeugt die Fonts API als drei `<style>`-Blöcke im Head.
 
 Warum: Die Kaskade lebt von der Reihenfolge (Grundstile, dann Seite, dann Signaturen). Vite legt gemeinsam genutzte Stile sonst in einen Chunk, der im HTML hinter dem Seiten-CSS steht. Deshalb trennt `codeSplitting.groups` in `astro.config.mjs` die Chunks `basis` und `signaturen`, und `build.inlineStylesheets: 'never'` verhindert, dass kleines Seiten-CSS als `<style>` vor alle Links rutscht. Kaskaden-Ebenen (`@layer`) taugen hier nicht, weil sie die Spezifität umkehren. Die Bildstile von Astro (`image.responsiveStyles`) sind in den Chunk `basis` eingemischt und liegen in `@layer astro.images`; diese Ebene steht unter allem CSS des Projekts ohne Ebene und kann es deshalb nie überschreiben (darum ist `@layer` dort unbedenklich, im Projekt-CSS aber nicht).
 
-Gesichert durch den Test „Stylesheet-Reihenfolge“ in `tests/routen.spec.ts`: Er prüft auf allen Seiten, dass `fonts.css`, `basis`, höchstens ein Seiten-Chunk und `signaturen` in dieser Reihenfolge geladen werden und kein `<style>` im Head steht.
+Gesichert durch den Test „Stylesheet-Reihenfolge“ in `tests/routen.spec.ts`: Er prüft auf allen Seiten, dass `basis`, höchstens ein Seiten-Chunk und `signaturen` in dieser Reihenfolge geladen werden und im Head nur die drei Schrift-Stile der Fonts API stehen. Der Test „Schriften“ stellt sicher, dass genau zwei Dateien vorgeladen werden und beide die latin-Teilmenge sind.
+
+## Schriften
+
+`astro.config.mjs` registriert Jost, Libre Caslon Display und Libre Caslon Text mit dem lokalen Provider (je Teilmenge eine Variante mit `unicodeRange`). Das Layout bindet sie mit `<Font>` ein und lädt zwei Dateien vor. Die Fonts API kann lokale Schriften nicht nach Teilmenge vorladen, deshalb wählt das Layout die Dateien über `fontData`: Die latin-Variante muss in `varianten()` vor latin-ext stehen. Die Tokens `--f-*` in `global.css` verweisen auf `--font-*` (enthalten die Ersatzschriften).
