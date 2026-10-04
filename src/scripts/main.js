@@ -1,4 +1,4 @@
-import { random, pickGlaze as pickFrom, renderBowlSprite } from './js/keramik.js';
+import { random, pickGlaze as pickFrom, renderBowlSprite } from './keramik.js';
 
 (() => {
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;

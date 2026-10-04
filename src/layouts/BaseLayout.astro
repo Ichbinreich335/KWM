@@ -41,8 +41,10 @@ const { title, description, bodyClass, nav } = Astro.props;
     <Header current={nav} />
     <slot />
     <Footer />
-    <script is:inline type="module" src="/main.js"></script>
-    <script is:inline type="module" src="/js/signaturen.js"></script>
-    <script is:inline type="module" src="/js/expander.js"></script>
+    <script>
+      import '../scripts/main';
+      import '../scripts/signaturen';
+      import '../scripts/expander';
+    </script>
   </body>
 </html>
