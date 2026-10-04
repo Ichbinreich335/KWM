@@ -24,6 +24,13 @@ Für die nächste Session. Zuerst `CLAUDE.md`, `konzept/SOFTR-AUFTRAG.md` und `k
 | `/stammdaten` | `c8a4fadb-196f-4712-b649-816e0f1ebd5e` | `stammdaten.tsx` | `451b0d69-677c-4f15-9f15-87cae9021028` | kuenstler, glasuren, modelle, partner, lagerorte, unikate, edition | alle ADD → LOGGED_IN_USERS |
 | `/` (Home) | `089c7891-ebdd-44cf-b346-8d14a1a9a983` | `start-weiterleitung.tsx` | `9753e657-6e52-489f-9279-d9695beb5b1a` | keine | keine |
 
+## Stand 04.10.2026 (gilt vor allem darunter)
+- **UI-Sweep** mit Skill `impeccable`: Bericht `konzept/vergleich/SOFTR-UI-SWEEP-0410.md`. Neue Bauteile `Segmented`, `Tabs`, `SearchPick`, `StatusDot` in `src/shared/ui.tsx`.
+- **Archiv in Stammdaten:** Feld „Archiviert“ in Künstler:innen `TOhYe`, Glasuren `jxxXN`, Modelle `3tlrw`, Partner `24Tn9`, Lagerorte `kMBsy`. Löschen nur ohne Verwendung.
+- **Neue Datenquellen:** Erfassen hat zusätzlich `lagerorte`, `partner`, `modelle`; Bestand zusätzlich `kuenstler`, `glasuren`, `lagerorte`, `partner`.
+- **Aktionsrechte:** Erfassen alle ADD, Tabelle ADD ansichten, Stammdaten alle ADD → LOGGED_IN_USERS. Nach jedem Hochladen neu setzen.
+- **Übersicht liegt jetzt auf `/`**, die alte Startseite auf `/old-home`.
+
 ## Stand 03.10.2026 (gilt vor den Abschnitten darunter)
 - **Rechte:** Die Werkstatt darf **alle** Daten ändern, auch Preis, „Auf Website zeigen“ und Verkaufsdatum (Vorgabe Admin 03.10.). Eigene Nutzergruppen werden damit nicht mehr gebraucht. Alle Aktionen stehen auf „angemeldete Nutzer“.
 - **Logins:** genau zwei, „KWM“ (Admin) und eines für die Werkstatt. Die Liste der Künstler:innen bleibt davon unabhängig (Stammdaten).
