@@ -1,7 +1,7 @@
 ---
 interface Props {
-  /** `gross`: Display-Zitat als Zäsur; `aussage`: Aussage in Textgröße Statement; `regel`: wie `aussage`, mit engerem Satz und Abstand; `zitat`: Text-Schnitt in Titelgröße, ruhig; `aussage-text`: Aussage im Text-Schnitt; `lede`: einleitender Satz der Startseite in Lede-Größe */
-  typ: 'gross' | 'aussage' | 'regel' | 'zitat' | 'aussage-text' | 'lede';
+  /** `gross`: Display-Zitat als Zäsur; `aussage`: Aussage in Textgröße Statement; `regel`: wie `aussage`, mit engerem Satz und Abstand; `zitat`: Text-Schnitt in Titelgröße, ruhig; `aussage-text`: Aussage im Text-Schnitt; `lede`: einleitender Satz der Startseite in Lede-Größe; `zitat-klein`: längeres Zitat im Text-Schnitt in Zitatgröße */
+  typ: 'gross' | 'aussage' | 'regel' | 'zitat' | 'aussage-text' | 'lede' | 'zitat-klein';
   /** `p`: nackter Absatz ohne `blockquote` (Aussage ohne Zitat, keine Quelle) */
   als?: 'blockquote' | 'p';
   /** Einblend-Animation des Satzes */
@@ -72,7 +72,8 @@ const { typ, als = 'blockquote', einblendung = 'words', quelle, textId, class: k
     line-height: var(--t-h3-lh);
     text-wrap: pretty;
   }
-  .statement--zitat:has(+ footer) {
+  .statement--zitat:has(+ footer),
+  .statement--zitat-klein:has(+ footer) {
     margin-bottom: 1em;
   }
   .statement--aussage-text {
@@ -84,5 +85,11 @@ const { typ, als = 'blockquote', einblendung = 'words', quelle, textId, class: k
     font-size: var(--t-lede);
     line-height: var(--t-lede-lh);
     letter-spacing: -0.01em;
+  }
+  .statement--zitat-klein {
+    font-family: var(--f-text);
+    font-size: var(--t-quote);
+    line-height: var(--t-quote-lh);
+    text-wrap: pretty;
   }
 </style>

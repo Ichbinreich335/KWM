@@ -69,20 +69,6 @@
 .memory__text .h2 {
   margin-bottom: 36px;
 }
-.memory__text blockquote {
-  margin: 0;
-}
-.memory__text blockquote p {
-  font-family: var(--f-text);
-  font-size: var(--t-quote);
-  line-height: var(--t-quote-lh);
-  text-wrap: pretty;
-}
-.memory__text footer {
-  font-size: var(--t-meta);
-  line-height: var(--t-meta-lh);
-  color: var(--ink-2);
-}
 .memory__media {
   grid-column: 8 / -1;
   margin-right: calc(var(--m) * -1);

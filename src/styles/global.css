@@ -805,13 +805,6 @@ body::after {
   grid-column: 9 / 13;
   padding-bottom: 40px;
 }
-.artist__memory {
-  font-family: var(--f-text);
-  font-size: var(--t-quote);
-  line-height: var(--t-quote-lh);
-  text-wrap: pretty;
-  margin-bottom: 18px;
-}
 .artist__cite {
   display: block;
   font-size: var(--t-meta);
