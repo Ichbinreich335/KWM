@@ -15,8 +15,8 @@ export const GLAZES = [
   { name: 'Kupferrot', rim: '#A8413A', pool: '#6E1F1C', w: 3 },
 ];
 
-// Farben des Tons: roher, lederharter und gebrannter Scherben
-export const CLAY = { raw: '#B89A76', leather: '#C9B08F', bisque: '#E2D3BC', porcelain: '#EEEAE1' };
+// Farben des Tons: roher und gebrannter Scherben
+export const CLAY = { raw: '#B89A76', bisque: '#E2D3BC' };
 
 // mulberry32: gleicher Startwert, gleiche Folge
 export function random(seed) {
@@ -52,8 +52,8 @@ const shapePath = (c, r, wob) => {
 
 // Rendert eine Schale von oben als Sprite (Licht links oben, weicher Schatten).
 // b: { r (CSS-Pixel), glaze, wob, rings, speckles }. Gibt die Leinwand und ihre halbe Kantenlänge in CSS-Pixeln zurück.
-// shadow: Schattenfarbe, auf dunklem Boden schwarz und kräftiger als das warme Braun auf hellem Grund.
-export const renderBowlSprite = (b, dpr, shadow = 'rgba(52, 38, 24, 0.30)') => {
+// Der Schatten ist ein warmes Braun auf hellem Grund.
+export const renderBowlSprite = (b, dpr) => {
   const r = b.r * dpr;
   const pad = r * 0.9;
   const size = Math.ceil(r * 2 + pad * 2);
@@ -65,7 +65,7 @@ export const renderBowlSprite = (b, dpr, shadow = 'rgba(52, 38, 24, 0.30)') => {
 
   // Schatten auf dem Boden, Licht von links oben
   c.save();
-  c.shadowColor = shadow;
+  c.shadowColor = 'rgba(52, 38, 24, 0.30)';
   c.shadowBlur = r * 0.45;
   c.shadowOffsetX = r * 0.14;
   c.shadowOffsetY = r * 0.22;

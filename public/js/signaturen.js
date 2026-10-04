@@ -1,5 +1,4 @@
-// Lädt die generativen Elemente nur, wenn ihr Platz [data-sig] sichtbar ist.
-// Ausgeblendete Elemente (hidden) werden nicht geladen.
+// Lädt die generativen Elemente: je Platz [data-sig] das passende Modul.
 const modules = {
   logo: () => import('./sig-logo.js'),
   farbskala: () => import('./sig-farbskala.js'),
@@ -9,15 +8,8 @@ const modules = {
   aktuell: () => import('./sig-aktuell.js'),
   anfrage: () => import('./sig-anfrage.js'),
 };
-const started = new WeakSet();
 
-const run = () => {
-  document.querySelectorAll('[data-sig]:not([hidden])').forEach((el) => {
-    const load = modules[el.dataset.sig];
-    if (!load || started.has(el)) return;
-    started.add(el);
-    load().then((m) => m.default(el));
-  });
-};
-
-run();
+document.querySelectorAll('[data-sig]').forEach((el) => {
+  const load = modules[el.dataset.sig];
+  if (load) load().then((m) => m.default(el));
+});
