@@ -11,6 +11,8 @@ interface Props extends Omit<HTMLAttributes<'img'>, 'src' | 'srcset' | 'alt' | '
   width: number | `${number}`;
   height: number | `${number}`;
   layout?: 'constrained' | 'full-width';
+  /** Breiten der srcset-Kandidaten, wenn die Quelle größer ist als die angezeigte Eigengröße. */
+  widths?: number[];
 }
 
 const { src, layout = 'constrained', ...rest } = Astro.props;
