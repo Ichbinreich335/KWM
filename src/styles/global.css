@@ -1317,8 +1317,8 @@ body::after {
 }
 .scale__note span {
   grid-column: 1 / 8;
-  font-size: var(--t-meta);
-  line-height: var(--t-meta-lh);
+  font-size: var(--t-small);
+  line-height: var(--t-small-lh);
   color: var(--ink-2);
   max-width: 70ch;
 }
@@ -1525,6 +1525,7 @@ body::after {
 .chronicle__what p {
   font-size: var(--t-small);
   line-height: var(--t-small-lh);
+  color: var(--ink-2);
   max-width: 44ch;
   margin: 0;
   text-wrap: pretty;
