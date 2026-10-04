@@ -3,7 +3,7 @@
 // Wird ein Band geöffnet, steigt die Glasur ein Stück höher, wie beim Tauchen.
 // Gerechnet wird in „Kachel-Koordinaten“: y läuft vom Scherben (0) zur dicken Glasur (L).
 // Mobil liegt die Kachel quer, dann werden die Achsen beim Zeichnen getauscht.
-import { CLAY, random, reducedMotion } from './keramik.js';
+import { CLAY, random, reducedMotion } from './keramik';
 
 const MAX_DPR = 2;
 const OPEN_GROW = 2.6;

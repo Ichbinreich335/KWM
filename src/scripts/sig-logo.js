@@ -1,7 +1,7 @@
 // Signatur: logo. Das Logo zeichnet sich beim Scrollen selbst, ohne Hilfslinien.
 // Reihenfolge der Töpferin: Grundlinien, Achse, Bogen (gegen den Uhrzeigersinn), Querbalken, M.
 // Jeder Strich trägt seinen Abschnitt des Scrollwegs in data-a und data-b (0 bis 1).
-import { reducedMotion } from './keramik.js';
+import { reducedMotion } from './keramik';
 
 const SCRUB_FACTOR = 0.14; // Nachlauf: Anteil der Restdistanz pro Frame
 const START_AT = 0.96; // Aufbau beginnt, wenn das Logo so tief im Fenster steht (Anteil Fensterhöhe)

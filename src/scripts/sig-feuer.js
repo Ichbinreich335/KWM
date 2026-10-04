@@ -1,5 +1,5 @@
 // Signatur: feuer – eine Schale, vier Glasuren. Alle Zustände teilen exakt dieselbe Form; der Wechsel blendet nur die Glasurfarbe über und lässt die Schale kurz glühen.
-import { random, reducedMotion } from './keramik.js';
+import { random, reducedMotion } from './keramik';
 
 // Farben aus Glasur-Realität: Honig, Seladon, Kupfergrün, Ochsenblut
 const STATES = {

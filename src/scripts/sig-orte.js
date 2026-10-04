@@ -1,7 +1,7 @@
 // Signatur: orte. Ohne Skript zeigt jede Kachel ihre Häuser. Mit Skript klappt ein Klick auf die Kachel
 // einen Detailbereich in voller Breite direkt unter der Reihe der Kachel auf (Akkordeon). Die Kacheln behalten
 // ihre Reihenfolge, nur die Reihen darunter rutschen nach unten.
-import { reducedMotion } from './keramik.js';
+import { reducedMotion } from './keramik';
 
 const DURATION = 500;
 const ROW_TOLERANCE = 2;

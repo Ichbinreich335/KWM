@@ -1,7 +1,26 @@
 // Gemeinsame Grundlagen der generativen Elemente: Glasuren der Werkstatt und reproduzierbarer Zufall.
 
 // Glasuren: Rand, Mitte (wo die Glasur sich sammelt), Gewicht für die Auswahl, optional Sprenkel
-export const GLAZES = [
+export interface Glasur {
+  name: string;
+  rim: string;
+  pool: string;
+  w: number;
+  speckle?: string;
+}
+
+export type Rng = () => number;
+
+/** Parameter einer Schale für `renderBowlSprite`. */
+export interface Schale {
+  r: number;
+  glaze: Glasur;
+  wob: readonly [number, number, number, number];
+  rings: number;
+  speckles: readonly (readonly [number, number, number])[];
+}
+
+export const GLAZES: readonly Glasur[] = [
   { name: 'Seladon', rim: '#C3D2C4', pool: '#7FA493', w: 16 },
   { name: 'Hellblau', rim: '#CBD9DD', pool: '#8DAFB9', w: 11 },
   { name: 'Weiß', rim: '#EEEAE1', pool: '#D3CCBE', w: 13 },
@@ -19,7 +38,7 @@ export const GLAZES = [
 export const CLAY = { raw: '#B89A76', bisque: '#E2D3BC' };
 
 // mulberry32: gleicher Startwert, gleiche Folge
-export function random(seed) {
+export function random(seed: number): Rng {
   let s = seed | 0;
   return () => {
     s = (s + 0x6d2b79f5) | 0;
@@ -29,17 +48,17 @@ export function random(seed) {
   };
 }
 
-export function pickGlaze(rand) {
+export function pickGlaze(rand: Rng): Glasur {
   const total = GLAZES.reduce((a, g) => a + g.w, 0);
   let r = rand() * total;
   for (const g of GLAZES) if ((r -= g.w) <= 0) return g;
-  return GLAZES[0];
+  return GLAZES[0] as Glasur; // Rückfall nach Rundungsfehlern; die Liste ist nicht leer
 }
 
 export const reducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 // Umriss einer leicht unregelmäßigen Schale um den Ursprung
-const shapePath = (c, r, wob) => {
+const shapePath = (c: CanvasRenderingContext2D, r: number, wob: Schale['wob']) => {
   c.beginPath();
   for (let k = 0; k <= 64; k++) {
     const a = (k / 64) * Math.PI * 2;
@@ -55,13 +74,14 @@ const shapePath = (c, r, wob) => {
 // Rendert eine Schale von oben als Sprite (Licht links oben, weicher Schatten).
 // b: { r (CSS-Pixel), glaze, wob, rings, speckles }. Gibt die Leinwand und ihre halbe Kantenlänge in CSS-Pixeln zurück.
 // Der Schatten ist ein warmes Braun auf hellem Grund.
-export const renderBowlSprite = (b, dpr) => {
+export const renderBowlSprite = (b: Schale, dpr: number) => {
   const r = b.r * dpr;
   const pad = r * 0.9;
   const size = Math.ceil(r * 2 + pad * 2);
   const cv = document.createElement('canvas');
   cv.width = cv.height = size;
   const c = cv.getContext('2d');
+  if (!c) throw new Error('Canvas 2D nicht verfügbar');
   c.translate(size / 2, size / 2);
   const g = b.glaze;
 

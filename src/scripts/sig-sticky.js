@@ -1,6 +1,6 @@
 // Signatur: sticky – gegenläufiger Parallax des Fotos (höchstens ±5 % der Bildhöhe, nur transform).
 // Das Festhalten des Textes ist reines CSS (position: sticky), hier steckt nur die Feinheit.
-import { reducedMotion } from './keramik.js';
+import { reducedMotion } from './keramik';
 
 const MAX_SHIFT = 5; // Prozent der Bildhöhe
 
