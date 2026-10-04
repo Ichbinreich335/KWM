@@ -162,7 +162,6 @@
     row-gap: 24px;
   }
   .page-hero__media--strip img {
-    min-height: 150px;
     object-position: 22% 50%;
   }
   .team-strip {

@@ -6,13 +6,13 @@ interface Eintrag {
 
 interface Props {
   /** Zugänglicher Name der Navigation, z. B. „Kapitel dieser Seite“ */
-  label: string;
-  eintraege: Eintrag[];
+  beschriftung: string;
+  eintraege: readonly Eintrag[];
 }
-const { label, eintraege } = Astro.props;
+const { beschriftung, eintraege } = Astro.props;
 ---
 
-<nav class="subnav" aria-label={label}>
+<nav class="subnav" aria-label={beschriftung}>
   {eintraege.map(({ href, text }) => (
     <a href={href}>{text}</a>
   ))}

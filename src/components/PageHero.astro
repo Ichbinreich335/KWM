@@ -1,43 +1,51 @@
 ---
-interface Props {
-  /** Typ des Seitenkopfs (DESIGN.md, Seitenkopf) */
-  typ: 'name' | 'meta' | 'flaeche' | 'anker';
-  /** Text-Ausprägung des Typs `name` ohne Bild (Impressum, Datenschutz, AGB, Versand, Zahlung) */
-  text?: boolean;
+interface Gemeinsam {
   /** Id der Überschrift, auf die `aria-labelledby` zeigt */
   titelId?: string;
   /** Lede als `div` statt `p`, wenn sie Listen oder Links enthält (Fehlerseite) */
-  ledeBlock?: boolean;
-  /** Titel und Lede ohne Einblend-Animation (Fehlerseite) */
-  ohneEinblendung?: boolean;
+  ledeAls?: 'p' | 'div';
+  /** Einblend-Animation für Titel, Lede und Bild; die Fehlerseite blendet nichts ein */
+  einblenden?: boolean;
+  /** Nur mit Slot `bild` sinnvoll */
   bildunterschrift?: string;
-  /** Bild als randloser Streifen (Typ `anker`) */
+  /** Bild als randloser Streifen (Typ `anker`), nur mit Slot `bild` sinnvoll */
   streifen?: boolean;
   /** Zusätzliche Klassen für die Platzierung durch die Seite */
-  class?: string;
+  class?: string | undefined;
 }
+
+type Props = Gemeinsam &
+  (
+    | {
+        typ: 'name';
+        /** Textseiten ohne Bild (Impressum, Datenschutz, AGB, Versand, Zahlung) */
+        textseite?: boolean;
+      }
+    | { typ: 'meta' | 'flaeche' | 'anker' }
+  );
+
 const {
   typ,
-  text = false,
   titelId = 'page-title',
-  ledeBlock = false,
-  ohneEinblendung = false,
+  ledeAls = 'p',
+  einblenden = true,
   bildunterschrift,
   streifen = false,
-  class: klasse,
 } = Astro.props;
+const textseite = Astro.props.typ === 'name' && (Astro.props.textseite ?? false);
+const klasse = Astro.props.class;
 const hatBild = Astro.slots.has('bild');
-const einblendung = (art: string) => (ohneEinblendung ? undefined : art);
+const einblendung = (art: 'words' | 'fade' | 'img') => (einblenden ? art : undefined);
 ---
 
 <section
-  class:list={['page-hero', `page-hero--${typ}`, { 'page-hero--text': text }, klasse, 'grid']}
+  class:list={['page-hero', `page-hero--${typ}`, { 'page-hero--text': textseite }, klasse, 'grid']}
   aria-labelledby={titelId}
 >
   <h1 class="page-hero__title" id={titelId} data-reveal={einblendung('words')}>
     <slot name="titel" />
   </h1>
-  {ledeBlock ? (
+  {ledeAls === 'div' ? (
     <div class="page-hero__lede">
       <slot name="lede" />
     </div>
@@ -47,9 +55,9 @@ const einblendung = (art: string) => (ohneEinblendung ? undefined : art);
     </p>
   )}
   {hatBild && (
-    <figure class:list={['page-hero__media', { 'page-hero__media--strip': streifen }]} data-reveal="img">
+    <figure class:list={['page-hero__media', { 'page-hero__media--strip': streifen }]} data-reveal={einblendung('img')}>
       <slot name="bild" />
-      <figcaption>{bildunterschrift}</figcaption>
+      {bildunterschrift && <figcaption>{bildunterschrift}</figcaption>}
     </figure>
   )}
   <slot />
@@ -209,6 +217,9 @@ const einblendung = (art: string) => (ohneEinblendung ? undefined : art);
     }
     .page-hero--meta .page-hero__media :global(img) {
       aspect-ratio: 4 / 3;
+    }
+    .page-hero__media--strip :global(img) {
+      min-height: 150px;
     }
     .page-hero--flaeche {
       padding-bottom: calc(var(--section) * 0.5);
