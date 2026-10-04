@@ -8,6 +8,8 @@ export default defineConfig({
   // aktuelles.astro → dist/aktuelles.html, von Cloudflare als /aktuelles ausgeliefert
   build: { format: 'file', inlineStylesheets: 'never' },
   trailingSlash: 'never',
+  // Globale Stile für die responsiven Bilder (max-width bei constrained)
+  image: { responsiveStyles: true },
   // Astro 7 entfernt sonst Leerzeichen zwischen Inline-Elementen (Standard 'jsx')
   compressHTML: true,
   vite: {
