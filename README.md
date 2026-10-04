@@ -45,13 +45,22 @@ Bis zum Go-live liefert die Seite `X-Robots-Tag: noindex, nofollow` aus (`public
 ```
 astro.config.mjs      statisch, build.format 'file' (aktuelles.astro → /aktuelles), compressHTML
 wrangler.jsonc        Worker kwm-redesign, Assets aus dist/, 404-Seite, Previews
-src/layouts/          BaseLayout.astro: Kopf, Stylesheets, Skripte, Header und Footer
+src/layouts/          BaseLayout.astro: Kopf, Skripte, Header und Footer (kein CSS-Import)
 src/components/       Header, Footer, InquiryBand (Anfrage-Leiste), InquiryForm (Anfrageformular)
 src/data/             kontakt.ts (Telefon, Mail, Zeiten, Adresse), navigation.ts (Menü, Fußlinks)
 src/pages/            eine .astro-Datei pro Seite
-public/               CSS, JS, Schriften, Bilder, _headers, _redirects, robots.txt (aus dem Prototyp übernommen; wird in Phase C gebündelt)
+src/styles/           basis.css (bindet global.css, pages.css, expander.css ein), seiten/ (Seiten-CSS), signaturen/ (signaturen.css und sig-*.css)
+public/               JS, Schriften (fonts.css), Bilder, _headers, _redirects, robots.txt (kein CSS mehr; Rest wird in Phase C gebündelt)
 tests/                Playwright-Tests (siehe oben)
 konzept/              Konzepte, Pläne, Berichte; figures.json = Bilderliste der alten WordPress-Seite
 .shots/               Skripte für Screenshots zur Sichtprüfung (Bilder werden nicht eingecheckt)
 archiv/               abgeschlossene Stände: HTML-Prototyp (V1–V3), frühe Entwurfs-Dokumente
 ```
+
+## CSS-Reihenfolge
+
+Jede Seite importiert in dieser Reihenfolge: `../styles/basis.css`, ihr Seiten-CSS aus `../styles/seiten/` (falls vorhanden), `../styles/signaturen/signaturen.css`. Das Layout importiert kein CSS. Nur `fonts.css` bleibt ein `<link>` im Layout.
+
+Warum: Die Kaskade lebt von der Reihenfolge (Grundstile, dann Seite, dann Signaturen). Vite legt gemeinsam genutzte Stile sonst in einen Chunk, der im HTML hinter dem Seiten-CSS steht. Deshalb trennt `codeSplitting.groups` in `astro.config.mjs` die Chunks `basis` und `signaturen`, und `build.inlineStylesheets: 'never'` verhindert, dass kleines Seiten-CSS als `<style>` vor alle Links rutscht. Kaskaden-Ebenen (`@layer`) taugen hier nicht, weil sie die Spezifität umkehren.
+
+Gesichert durch den Test „Stylesheet-Reihenfolge“ in `tests/routen.spec.ts`: Er prüft auf allen Seiten, dass `fonts.css`, `basis`, höchstens ein Seiten-Chunk und `signaturen` in dieser Reihenfolge geladen werden und kein `<style>` im Head steht.
