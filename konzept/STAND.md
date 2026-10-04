@@ -4,12 +4,14 @@ Kurzüberblick: was fertig ist, was läuft, was als Nächstes kommt. Wird bei je
 
 Stand: 04.10.2026, abends
 
-## Jetzt gerade
+## Jetzt gerade (Pause ab 04.10.2026, nachts)
 
-| Läuft | Was passiert | Wo |
+Laufende Agenten werden noch fertig, danach starte ich nichts Neues. Weiter geht es in der nächsten Sitzung mit „Als Nächstes“.
+
+| Strang | Stand | Wo |
 |---|---|---|
-| **Feinschliff, Teil 2** (kleine Korrekturen nach DESIGN.md) | Teil 1 ist fertig und geprüft: Porträt am Handy untereinander, Gesicht frei; Feuer-Text läuft bis unten mit; beide Bilder schärfer. Vorschau: `https://phase-b3-feinschliff-kwm-redesign.entwicklung-7f3.workers.dev` | Branch `phase-b3-feinschliff`, Ordner `../KWM-phase-b3` |
-| **Bausteine, Teil 1b** (Abschnittskopf, Kapitelkopf, Einleitung, Fließtext) | Seitenkopf und Sprungleiste sind fertig und geprüft. Jetzt folgen die nächsten vier Bausteine. | Branch `phase-d1-geruest`, Ordner `../KWM-phase-d` |
+| **Feinschliff** (sichtbar) | Teil 1 (Porträt, Feuer, Schärfe) und Teil 2 (Korrekturen nach DESIGN.md) fertig und geprüft. Teil 3 (Raster, °C) läuft bzw. wartet auf Prüfung. Vorschau: https://phase-b3-feinschliff-kwm-redesign.entwicklung-7f3.workers.dev | Branch `phase-b3-feinschliff`, Ordner `../KWM-phase-b3`, Plan `konzept/PLAN-PHASE-B3.md` (im Branch) |
+| **Bausteine, Teil 1** (unsichtbar) | Seitenkopf, Sprungleiste, Abschnittskopf, Kapitelrahmen, Fließtext fertig und geprüft. Zitat-Baustein (alle großen Sätze, 6–7 Varianten) fertig, Prüfung steht aus. Danach PR. | Branch `phase-d1-geruest`, Ordner `../KWM-phase-d` |
 
 ## Fertig (wartet auf deine Abnahme)
 
@@ -29,19 +31,11 @@ Alle PRs sind Entwürfe und bauen aufeinander auf. Gemergt wird in dieser Reihen
 
 ## Als Nächstes
 
-1. **Feinschliff, Teil 2 bis 4**: kleine Korrekturen nach DESIGN.md:
-   - Rand der Unterzeile bei den 99 Schalen
-   - doppelte Linie bei Besuch
-   - Überschrift und Abstand der Orte
-   - Schriftschnitt beim Meisterstücke-Satz
-   - Farben der Nebentexte, „1300 °C“, „Mehr erfahren“
-   - Raster: Lebensweg, Links der Aktuell-Karten, Fußzeile
-
-   Danach misst ein Agent die Dichte am Handy, und du bekommst einen Vorschlag mit Vorher- und Nachher-Screens.
-2. **Bausteine, Teil 1 fertig**: danach der Zitat-Baustein, dann der PR.
-3. **Handy kürzer, als Vergleich**: eigene Vorschau neben dem sauberen Stand, Ziel etwa −25 % am Handy, Desktop bleibt; die Reise und alle starken Elemente bleiben. Dazu eine Vergleichsseite mit beiden Links und Screens.
+1. **Prüfungen nachholen**: Feinschliff Teil 3 und Zitat-Baustein (je Sonnet). Danach Entwurfs-PR „Feinschliff“ (Teil 1–3) und Entwurfs-PR „Bausteine Teil 1“.
+2. **Handy kürzer, als Vergleich**: eigener Branch vom sauberen Feinschliff-Stand mit eigener Vorschau. Ziel etwa −25 % am Handy, der Desktop bleibt. Die Reise und alle starken Elemente bleiben, Orte nur behutsam. Dazu eine Vergleichsseite mit beiden Links und Screens. Plan: `PLAN-PHASE-B3.md`, Aufgabe B3-5.
+3. **Zitate angleichen** (sichtbar, mit Vergleich): Der Zitat-Baustein zeigt, wo dieselbe Rolle in verschiedenen Varianten steht. Angeglichen wird je Stelle mit einer Zeile.
 4. **Konzept-Vergleiche für Inhalte**: Ausstellung mit Flyer-Scan (drei Darstellungen), Galerien (Startseite oder eigene Unterseite).
-5. **Bausteine, Teil 2 bis 5**: Karten, Listen, Aufklapper, Formular, Bilder; Daten-Dateien nur für das, was später in Sanity kommt (Ausstellungen samt Flyer und Bildern, Orte bzw. Galerien; Werke später).
+5. **Bausteine, Teil 2 bis 5**: Karten, Listen, Aufklapper, Formular, Bilder. Daten-Dateien nur für das, was später in Sanity kommt: Ausstellungen samt Flyer und Bildern, Orte bzw. Galerien; Werke später.
 6. **SEO und Sicherheit**: Sitemap, Vorschaubilder für Links, strukturierte Daten, Sicherheits-Header. `noindex` bleibt bis zum Go-live.
 
 ## Warum in Schritten und nicht alles beim Umzug
