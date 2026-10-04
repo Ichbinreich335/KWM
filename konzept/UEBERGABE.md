@@ -1,6 +1,6 @@
 # Übergabe: Website und Lager-App für die Keramische Werkstatt Margaretenhöhe (KWM)
 
-Stand: 02.10.2026, **v3 nach externer Prüfung**. Abschnitt 0 ist maßgeblich und hat Vorrang vor älteren Aussagen weiter unten.
+Stand: 02.10.2026, **v3 nach externer Prüfung**; Website-Stand ergänzt am 04.10.2026. Abschnitt 0 ist maßgeblich und hat Vorrang vor älteren Aussagen weiter unten.
 
 ## 0. Aktueller Stand (v3, nach externer Prüfung) – Entscheidung: Softr-Test, Baserow Reserve
 
@@ -61,6 +61,21 @@ Kennzeichnung in diesem Abschnitt: [V] = heute (02.10.2026) vom externen Prüfer
   - Die Werkstatt arbeitet in vorgefertigten Ansichten.
   - Das Risiko, dass jemand Ansichten oder Felder verstellt, fangen Snapshots ab.
 - Erst wenn beides scheitert → Eigenbau auf Cloudflare (D1, R2, Access).
+
+### Website: Stand Astro-Umbau (04.10.2026)
+- **Phase A fertig, wartet auf Abnahme:** Die V3-Website läuft 1:1 als statische Astro-Seite (Branch `astro-umbau`, Draft-PR #4, Vorschau `https://astro-umbau-kwm-redesign.entwicklung-7f3.workers.dev`). Bericht: `konzept/ASTRO-BERICHT.md`. Das Entwurf-Panel ist schon entfernt. Der alte Prototyp liegt in `archiv/`.
+- **Was der Admin tun oder abnehmen muss:** immer aktuell in `konzept/ADMIN-OFFEN.md`.
+- **Arbeitsweise (Admin, 04.10.2026):** Opus plant jede Phase fein und orchestriert; Sonnet-Subagents führen aus; Opus nur für sehr schwere Fälle und die Endprüfung. Pro Phase ein Branch mit Draft-PR und Vorschau; der Admin nimmt gesammelt ab.
+- **Phasen:**
+
+| Phase | Inhalt | Plan | Stand |
+|---|---|---|---|
+| A | Astro-Gerüst 1:1 | `konzept/PLAN-ASTRO-UMBAU.md` §7 | fertig, Abnahme offen |
+| B | Varianten festschreiben (B-1), Fehler aus dem Audit beheben (B-2) | `konzept/PLAN-PHASE-B.md` | in Arbeit (Branch `phase-b-varianten`) |
+| C | Asset-Pipeline: CSS/JS gebündelt, TypeScript strict, Bilder über `astro:assets`, Schriften über die Fonts API | `PLAN-ASTRO-UMBAU.md` §9, Feinplanung folgt | offen |
+| D | Komponenten-Bibliothek nach `DESIGN.md` §11, Inhalte als typisierte Daten in Sanity-Form | §10, Feinplanung folgt | offen |
+| E | Technisches SEO und Härtung (Sitemap, Canonical/OG, JSON-LD, Sicherheits-Header, CSP) | §11, Feinplanung folgt | offen |
+| 2–5 | Sanity, Formular-Worker, Einwilligung + GTM, Go-live | `konzept/AUFTRAG-ASTRO.md`, je eigener Plan | offen |
 
 ### Sonstiges
 - Die MCP-Server stehen in `.mcp.json` (Astro, Cloudflare, Sanity, Softr). In dieser Cloud-Umgebung blockiert das Netzwerk sie. Lokal oder nach einer Freigabe der Domains funktionieren sie.
