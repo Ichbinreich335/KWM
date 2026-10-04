@@ -20,7 +20,7 @@ import { Check, Loader2, Minus, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { AUSSER_HAUS_ORT, EDITION_PROGRAMM, MANUFAKTUR_PROGRAMM, PAGE_SIZE, ROHLING, isAusserHaus } from "../shared/konstanten";
 import { type Opt, type RawItem, activeOptions, asOpts, compareNr, freshItems, link, modellLabel, parseNumber, str, useAllPages } from "../shared/daten";
-import { AddNew, ChoiceChips, ErrorText, FIELD_CLASS, FieldLabel, GroupedSelect, Hint, OptionSelect, PANEL_CLASS, PageHeader, PhotoPicker, SearchPick, TEXTAREA_CLASS, Tabs } from "../shared/ui";
+import { AddNew, ChoiceChips, ErrorText, FIELD_CLASS, FieldLabel, GroupedSelect, Hint, OptionSelect, PANEL_CLASS, PageHeader, PhotoPicker, STICKY_BOTTOM, SearchPick, TEXTAREA_CLASS, Tabs } from "../shared/ui";
 
 const ds = datasource.define({ unikate: "unikate", edition: "edition", glasuren: "glasuren", kuenstler: "kuenstler", lagerorte: "lagerorte", partner: "partner", modelle: "modelle" });
 const glasurNeu = q.select({ name: "OuhBi" });
@@ -747,17 +747,20 @@ export default function Block() {
               </p>
             )}
             {canCreate ? (
-              <Button type="submit" size="lg" className="w-full h-14 rounded-md text-lg" disabled={busy}>
-                {busy ? (
-                  <>
-                    <Loader2 className="w-5 h-5 mr-2 animate-spin" aria-hidden /> Wird gespeichert …
-                  </>
-                ) : existingRow && art === "edition" ? (
-                  "Anzahl erhöhen"
-                ) : (
-                  "Speichern"
-                )}
-              </Button>
+              // Am Handy klebt Speichern unten, damit es nach den Pflichtangaben ohne Scrollen erreichbar ist.
+              <div className={`sticky ${STICKY_BOTTOM} z-10 sm:static`}>
+                <Button type="submit" size="lg" className="w-full h-14 rounded-md text-lg shadow-lg sm:shadow-none" disabled={busy}>
+                  {busy ? (
+                    <>
+                      <Loader2 className="w-5 h-5 mr-2 animate-spin" aria-hidden /> Wird gespeichert …
+                    </>
+                  ) : existingRow && art === "edition" ? (
+                    "Anzahl erhöhen"
+                  ) : (
+                    "Speichern"
+                  )}
+                </Button>
+              </div>
             ) : (
               <p className="text-base text-muted-foreground">Du hast keine Berechtigung, Stücke zu erfassen.</p>
             )}

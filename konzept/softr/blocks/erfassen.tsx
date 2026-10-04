@@ -103,6 +103,10 @@ const FIELD_CLASS = "h-12 rounded-md text-base md:text-base";
 const TEXTAREA_CLASS = "rounded-md text-base md:text-base";
 const INPUT_CLASS = "w-full h-12 rounded-md border border-input bg-background px-3 text-base";
 const PANEL_CLASS = "rounded-lg border bg-card";
+
+// Klebende Leisten am unteren Rand: am Handy über Softrs Navigationsleiste (ca. 80 px), ab Tablet am Rand.
+const STICKY_BOTTOM = "bottom-[calc(5.5rem+env(safe-area-inset-bottom))] sm:bottom-4";
+
 const CHIP_BASE = "inline-flex items-center justify-center gap-2 min-h-11 px-3.5 rounded-md border text-base whitespace-nowrap transition-colors disabled:opacity-60";
 const CHIP_IDLE = "bg-background hover:bg-muted border-input";
 const CHIP_ACTIVE = "bg-primary text-primary-foreground border-primary";
@@ -292,7 +296,7 @@ function PageHeader({ title, description, actions }: { title: string; descriptio
         <h1 className="text-2xl font-semibold">{title}</h1>
         {description && <p className="text-base text-muted-foreground mt-0.5">{description}</p>}
       </div>
-      {actions && <div className="flex flex-wrap gap-2">{actions}</div>}
+      {actions && <div className="flex flex-wrap gap-2 w-full sm:w-auto">{actions}</div>}
     </div>
   );
 }
@@ -1131,17 +1135,20 @@ export default function Block() {
               </p>
             )}
             {canCreate ? (
-              <Button type="submit" size="lg" className="w-full h-14 rounded-md text-lg" disabled={busy}>
-                {busy ? (
-                  <>
-                    <Loader2 className="w-5 h-5 mr-2 animate-spin" aria-hidden /> Wird gespeichert …
-                  </>
-                ) : existingRow && art === "edition" ? (
-                  "Anzahl erhöhen"
-                ) : (
-                  "Speichern"
-                )}
-              </Button>
+              // Am Handy klebt Speichern unten, damit es nach den Pflichtangaben ohne Scrollen erreichbar ist.
+              <div className={`sticky ${STICKY_BOTTOM} z-10 sm:static`}>
+                <Button type="submit" size="lg" className="w-full h-14 rounded-md text-lg shadow-lg sm:shadow-none" disabled={busy}>
+                  {busy ? (
+                    <>
+                      <Loader2 className="w-5 h-5 mr-2 animate-spin" aria-hidden /> Wird gespeichert …
+                    </>
+                  ) : existingRow && art === "edition" ? (
+                    "Anzahl erhöhen"
+                  ) : (
+                    "Speichern"
+                  )}
+                </Button>
+              </div>
             ) : (
               <p className="text-base text-muted-foreground">Du hast keine Berechtigung, Stücke zu erfassen.</p>
             )}

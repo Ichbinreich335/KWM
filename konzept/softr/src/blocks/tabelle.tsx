@@ -12,7 +12,7 @@ import { ArrowDown, ArrowUp, Bookmark, ChevronDown, ChevronLeft, ChevronRight, C
 import { toast } from "sonner";
 import { PAGE_SIZE, VERKAUFT } from "../shared/konstanten";
 import { type Attachment, type RawItem, asAttachments, asOpts, downloadCsv, euro, formatDate, lookupValue, num, parseNumber, printTable, str, thumb, today, useAllPages, zahl } from "../shared/daten";
-import { DIALOG_CLASS, DoneButton, EmptyState, ErrorState, ExportMenu, FIELD_CLASS, ListRow, LoadingState, PANEL_CLASS, PageHeader, PanelHeader, SearchField, StatusBadge, Tabs, Thumb } from "../shared/ui";
+import { DIALOG_CLASS, DoneButton, EmptyState, ErrorState, ExportMenu, FIELD_CLASS, ListRow, LoadingState, PANEL_CLASS, PageHeader, PanelHeader, SCROLL_ROW, SearchField, StatusBadge, Tabs, Thumb } from "../shared/ui";
 
 const ds = datasource.define({ unikate: "unikate", edition: "edition", ansichten: "ansichten" });
 
@@ -918,7 +918,7 @@ export default function Block() {
           description={`${zahl.format(visibleRows.length)} von ${zahl.format(tabRows.length)} Einträgen`}
           actions={
             <>
-              <div className="flex w-full sm:w-80">
+              <div className="flex flex-1 min-w-0 sm:flex-none sm:w-80">
                 <SearchField
                   label="Suche"
                   placeholder="Suchen: Name, Nummer, Glasur …"
@@ -945,28 +945,30 @@ export default function Block() {
           onChange={switchTab}
         />
 
-        <div className="flex flex-wrap items-center gap-2">
-          {quickKeys.map((key) => (
-            <QuickFilter
-              key={key}
-              label={quickLabel(key, tab)}
-              options={optionsFor(key)}
-              value={quick[key] ?? []}
-              onChange={(v) => {
-                setQuick((qq) => ({ ...qq, [key]: v }));
-                changed();
-              }}
-            />
-          ))}
-          <Button variant={activeConditions.length ? "secondary" : "ghost"} className="h-11 text-base" onClick={() => (conditions.length ? setFilterOpen((o) => !o) : addCondition())} aria-expanded={filterOpen}>
-            <SlidersHorizontal className="w-5 h-5 mr-2" aria-hidden />
-            Weitere Filter{activeConditions.length ? ` (${activeConditions.length})` : ""}
-          </Button>
-          {anythingSet && (
-            <Button variant="ghost" className="h-11 text-base underline-offset-4 hover:underline" onClick={reset}>
-              Zurücksetzen
+        <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
+          <div className={`${SCROLL_ROW} sm:contents`}>
+            {quickKeys.map((key) => (
+              <QuickFilter
+                key={key}
+                label={quickLabel(key, tab)}
+                options={optionsFor(key)}
+                value={quick[key] ?? []}
+                onChange={(v) => {
+                  setQuick((qq) => ({ ...qq, [key]: v }));
+                  changed();
+                }}
+              />
+            ))}
+            <Button variant={activeConditions.length ? "secondary" : "ghost"} className="h-11 text-base" onClick={() => (conditions.length ? setFilterOpen((o) => !o) : addCondition())} aria-expanded={filterOpen}>
+              <SlidersHorizontal className="w-5 h-5 mr-2" aria-hidden />
+              Weitere Filter{activeConditions.length ? ` (${activeConditions.length})` : ""}
             </Button>
-          )}
+            {anythingSet && (
+              <Button variant="ghost" className="h-11 text-base underline-offset-4 hover:underline" onClick={reset}>
+                Zurücksetzen
+              </Button>
+            )}
+          </div>
           <div className="flex flex-wrap items-center gap-2 sm:ml-auto">
             <Popover>
               <PopoverTrigger asChild>
@@ -990,7 +992,7 @@ export default function Block() {
                 </Button>
               </PopoverContent>
             </Popover>
-            <select aria-label="Gespeicherte Ansicht" value={viewId} onChange={(e) => (e.target.value ? applyView(e.target.value) : setViewId(""))} className={`${selectClass} max-w-60`}>
+            <select aria-label="Gespeicherte Ansicht" value={viewId} onChange={(e) => (e.target.value ? applyView(e.target.value) : setViewId(""))} className={`${selectClass} flex-1 min-w-0 sm:flex-none sm:max-w-60`}>
               <option value="">Gespeicherte Ansichten</option>
               {ansichten.map((v) => (
                 <option key={v.id} value={v.id}>

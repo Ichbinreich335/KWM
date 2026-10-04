@@ -170,6 +170,9 @@ const FIELD_CLASS = "h-12 rounded-md text-base md:text-base";
 
 const PANEL_CLASS = "rounded-lg border bg-card";
 
+// Am Handy eine Zeile zum seitlich Wischen statt mehrerer umbrochener Reihen, ab Tablet umbrechen.
+const SCROLL_ROW = "flex gap-2 py-0.5 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:flex-wrap sm:overflow-visible";
+
 // Reiter: der einzige Umschalter der App (Erfassen, Bestand, Stammdaten). Unterstrichen, am Handy seitlich wischbar.
 function Tabs<K extends string>({ label, tabs, value, onChange }: { label: string; tabs: { key: K; label: string; count?: number }[]; value: K; onChange: (key: K) => void }) {
   return (
@@ -233,7 +236,7 @@ function PageHeader({ title, description, actions }: { title: string; descriptio
         <h1 className="text-2xl font-semibold">{title}</h1>
         {description && <p className="text-base text-muted-foreground mt-0.5">{description}</p>}
       </div>
-      {actions && <div className="flex flex-wrap gap-2">{actions}</div>}
+      {actions && <div className="flex flex-wrap gap-2 w-full sm:w-auto">{actions}</div>}
     </div>
   );
 }
@@ -315,10 +318,10 @@ function ExportMenu({ onCsv, onPdf, disabled }: { onCsv: () => void; onPdf: () =
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" className="h-12 text-base" disabled={disabled}>
-          <Download className="w-5 h-5 mr-2" aria-hidden />
-          Exportieren
-          <ChevronDown className="w-4 h-4 ml-1" aria-hidden />
+        <Button variant="outline" className="h-12 w-12 px-0 text-base sm:w-auto sm:px-4" disabled={disabled} aria-label="Exportieren">
+          <Download className="w-5 h-5 sm:mr-2" aria-hidden />
+          <span className="hidden sm:inline">Exportieren</span>
+          <ChevronDown className="hidden sm:block w-4 h-4 ml-1" aria-hidden />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56">
@@ -1237,7 +1240,7 @@ export default function Block() {
           description={`${zahl.format(visibleRows.length)} von ${zahl.format(tabRows.length)} Einträgen`}
           actions={
             <>
-              <div className="flex w-full sm:w-80">
+              <div className="flex flex-1 min-w-0 sm:flex-none sm:w-80">
                 <SearchField
                   label="Suche"
                   placeholder="Suchen: Name, Nummer, Glasur …"
@@ -1264,28 +1267,30 @@ export default function Block() {
           onChange={switchTab}
         />
 
-        <div className="flex flex-wrap items-center gap-2">
-          {quickKeys.map((key) => (
-            <QuickFilter
-              key={key}
-              label={quickLabel(key, tab)}
-              options={optionsFor(key)}
-              value={quick[key] ?? []}
-              onChange={(v) => {
-                setQuick((qq) => ({ ...qq, [key]: v }));
-                changed();
-              }}
-            />
-          ))}
-          <Button variant={activeConditions.length ? "secondary" : "ghost"} className="h-11 text-base" onClick={() => (conditions.length ? setFilterOpen((o) => !o) : addCondition())} aria-expanded={filterOpen}>
-            <SlidersHorizontal className="w-5 h-5 mr-2" aria-hidden />
-            Weitere Filter{activeConditions.length ? ` (${activeConditions.length})` : ""}
-          </Button>
-          {anythingSet && (
-            <Button variant="ghost" className="h-11 text-base underline-offset-4 hover:underline" onClick={reset}>
-              Zurücksetzen
+        <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
+          <div className={`${SCROLL_ROW} sm:contents`}>
+            {quickKeys.map((key) => (
+              <QuickFilter
+                key={key}
+                label={quickLabel(key, tab)}
+                options={optionsFor(key)}
+                value={quick[key] ?? []}
+                onChange={(v) => {
+                  setQuick((qq) => ({ ...qq, [key]: v }));
+                  changed();
+                }}
+              />
+            ))}
+            <Button variant={activeConditions.length ? "secondary" : "ghost"} className="h-11 text-base" onClick={() => (conditions.length ? setFilterOpen((o) => !o) : addCondition())} aria-expanded={filterOpen}>
+              <SlidersHorizontal className="w-5 h-5 mr-2" aria-hidden />
+              Weitere Filter{activeConditions.length ? ` (${activeConditions.length})` : ""}
             </Button>
-          )}
+            {anythingSet && (
+              <Button variant="ghost" className="h-11 text-base underline-offset-4 hover:underline" onClick={reset}>
+                Zurücksetzen
+              </Button>
+            )}
+          </div>
           <div className="flex flex-wrap items-center gap-2 sm:ml-auto">
             <Popover>
               <PopoverTrigger asChild>
@@ -1309,7 +1314,7 @@ export default function Block() {
                 </Button>
               </PopoverContent>
             </Popover>
-            <select aria-label="Gespeicherte Ansicht" value={viewId} onChange={(e) => (e.target.value ? applyView(e.target.value) : setViewId(""))} className={`${selectClass} max-w-60`}>
+            <select aria-label="Gespeicherte Ansicht" value={viewId} onChange={(e) => (e.target.value ? applyView(e.target.value) : setViewId(""))} className={`${selectClass} flex-1 min-w-0 sm:flex-none sm:max-w-60`}>
               <option value="">Gespeicherte Ansichten</option>
               {ansichten.map((v) => (
                 <option key={v.id} value={v.id}>

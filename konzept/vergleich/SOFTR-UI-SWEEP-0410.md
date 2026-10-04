@@ -80,3 +80,13 @@ Grundlage: Feedback des Admins zu den Screens vom 04.10. und der Skill `impeccab
 1. **R2 und Secrets einrichten:** Schritte in `konzept/softr/sicherung/README.md`. Danach einmal *Softr-Sicherung → Run workflow*. Nächtlich läuft es erst, wenn der Branch im Hauptbranch ist.
 2. **App-Icon hochladen:** Softr Studio → Settings → Mobile app (PWA) → Icon → `icon-512.png`.
 3. **Vorschau ansehen:** Bestand am Handy (Kacheln), Inventur, Exportieren → PDF, Übersicht → Datenpflege.
+
+## Runde 6: Handy-Ansicht entschlackt (04.10.)
+
+- **Grundsatz:** Am Handy wird erfasst und im Bestand nachgesehen. Tabelle, Export und Spalten sind Rechner-Werkzeuge. Am Handy sieht man deshalb weniger Bedienelemente und mehr Inhalt. Am Rechner bleibt alles wie bisher.
+- **Bestand am Handy:** Die Status- bzw. Zustand-Knöpfe stehen in einer Zeile zum seitlichen Wischen statt in 2–3 Reihen. Darunter Suche und ein Filter-Knopf mit Zahl der aktiven Filter. Der Knopf öffnet ein Blatt von unten mit Typ, Künstler:in und Sortierung (bei Editionsware: Programm), als native Auswahllisten des Telefons. Tabelle-Link und Export sind am Handy ausgeblendet, Inventur steht oben im Kopf. Statt 7 Reihen Bedienelemente sind es 4.
+- **Auswahllisten:** Einfachauswahl aus Listen bleibt die native Auswahl des Telefons (iOS-Rad). Sie ist bekannt, groß und barrierefrei. Eigene Aufklapp-Menüs gibt es nur, wo mehrere Werte gewählt werden (Schnellfilter der Tabelle).
+- **Erfassen am Handy:** Speichern klebt unten über der Navigationsleiste und ist nach den Pflichtangaben ohne Scrollen erreichbar. Die Knöpfe für Typ und Status bleiben sichtbar (ein Tipp statt zwei).
+- **Tabelle am Handy:** Die Schnellfilter stehen in einer Wischzeile. Gespeicherte Ansichten und Speichern teilen sich eine Zeile, Export ist nur ein Symbol neben der Suche.
+- **Inventur-Leiste:** Sie klebt jetzt über Softrs Navigationsleiste und wird nicht mehr von ihr verdeckt.
+- **Prüfung:** Typprüfung grün. Lokaler Render-Test am Handy (Filter-Knopf, Blatt mit drei Auswahllisten, Zahl am Knopf, Zurücksetzen, Inventur im Kopf) und am Rechner (Auswahllisten in der Zeile, kein Filter-Knopf). Prüfsummen der hochgeladenen Blöcke stimmen. Die echte Vorschau ist von hier aus weiter gesperrt.

@@ -5,7 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { DialogClose, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { AlertTriangle, Camera, Check, ChevronDown, ChevronRight, Download, FileSpreadsheet, ImageOff, LayoutGrid, List, Loader2, Plus, Printer, Search, X } from "lucide-react";
+import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
+import { AlertTriangle, Camera, Check, ChevronDown, ChevronRight, Download, FileSpreadsheet, ImageOff, LayoutGrid, List, Loader2, Plus, Printer, Search, SlidersHorizontal, X } from "lucide-react";
 import { STATUS_ACTIVE, STATUS_BADGE } from "../shared/konstanten";
 import { type Attachment, type Opt, type ThumbSize, thumb } from "../shared/daten";
 
@@ -15,6 +16,25 @@ export const FIELD_CLASS = "h-12 rounded-md text-base md:text-base";
 export const TEXTAREA_CLASS = "rounded-md text-base md:text-base";
 export const INPUT_CLASS = "w-full h-12 rounded-md border border-input bg-background px-3 text-base";
 export const PANEL_CLASS = "rounded-lg border bg-card";
+// Am Handy eine Zeile zum seitlich Wischen statt mehrerer umbrochener Reihen, ab Tablet umbrechen.
+export const SCROLL_ROW = "flex gap-2 py-0.5 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:flex-wrap sm:overflow-visible";
+// Klebende Leisten am unteren Rand: am Handy über Softrs Navigationsleiste (ca. 80 px), ab Tablet am Rand.
+export const STICKY_BOTTOM = "bottom-[calc(5.5rem+env(safe-area-inset-bottom))] sm:bottom-4";
+
+const MOBILE_QUERY = "(max-width: 639px)";
+
+// Handy oder größer. Für Bedienelemente, die am Handy anders aufgebaut sind (Filter im Blatt von unten).
+export function useIsMobile(): boolean {
+  const [mobile, setMobile] = useState(() => window.matchMedia?.(MOBILE_QUERY).matches ?? false);
+  useEffect(() => {
+    const media = window.matchMedia?.(MOBILE_QUERY);
+    if (!media) return;
+    const update = () => setMobile(media.matches);
+    media.addEventListener("change", update);
+    return () => media.removeEventListener("change", update);
+  }, []);
+  return mobile;
+}
 
 const CHIP_BASE = "inline-flex items-center justify-center gap-2 min-h-11 px-3.5 rounded-md border text-base whitespace-nowrap transition-colors disabled:opacity-60";
 const CHIP_IDLE = "bg-background hover:bg-muted border-input";
@@ -47,7 +67,7 @@ export function ChoiceChips({ label, options, value, onChange, statusColors, dis
 // Filter als Knopfreihe mit Anzahl, z. B. Im Haus 5 · Außer Haus 6. Ein Tipp, Zahlen sofort sichtbar.
 export function FilterChips<K extends string>({ label, options, value, onChange }: { label: string; options: { key: K; label: string; count?: number }[]; value: K; onChange: (key: K) => void }) {
   return (
-    <div role="radiogroup" aria-label={label} className="flex flex-wrap gap-2">
+    <div role="radiogroup" aria-label={label} className={SCROLL_ROW}>
       {options.map((o) => (
         <Chip key={o.key} role="radio" active={value === o.key} onClick={() => onChange(o.key)}>
           {o.label}
@@ -240,7 +260,7 @@ export function PageHeader({ title, description, actions }: { title: string; des
         <h1 className="text-2xl font-semibold">{title}</h1>
         {description && <p className="text-base text-muted-foreground mt-0.5">{description}</p>}
       </div>
-      {actions && <div className="flex flex-wrap gap-2">{actions}</div>}
+      {actions && <div className="flex flex-wrap gap-2 w-full sm:w-auto">{actions}</div>}
     </div>
   );
 }
@@ -462,10 +482,10 @@ export function ExportMenu({ onCsv, onPdf, disabled }: { onCsv: () => void; onPd
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" className="h-12 text-base" disabled={disabled}>
-          <Download className="w-5 h-5 mr-2" aria-hidden />
-          Exportieren
-          <ChevronDown className="w-4 h-4 ml-1" aria-hidden />
+        <Button variant="outline" className="h-12 w-12 px-0 text-base sm:w-auto sm:px-4" disabled={disabled} aria-label="Exportieren">
+          <Download className="w-5 h-5 sm:mr-2" aria-hidden />
+          <span className="hidden sm:inline">Exportieren</span>
+          <ChevronDown className="hidden sm:block w-4 h-4 ml-1" aria-hidden />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56">
@@ -492,7 +512,7 @@ export function useAnsicht(): [Ansicht, (a: Ansicht) => void] {
     } catch {
       // Speicher gesperrt (privates Fenster): Standard nach Bildschirmbreite.
     }
-    return window.matchMedia?.("(max-width: 639px)").matches ? "kacheln" : "liste";
+    return window.matchMedia?.(MOBILE_QUERY).matches ? "kacheln" : "liste";
   });
   const choose = (a: Ansicht) => {
     setAnsicht(a);
@@ -523,5 +543,53 @@ export function AnsichtToggle({ value, onChange }: { value: Ansicht; onChange: (
       {item("liste", "Als Liste", <List className="w-5 h-5" aria-hidden />)}
       {item("kacheln", "Als Kacheln", <LayoutGrid className="w-5 h-5" aria-hidden />)}
     </div>
+  );
+}
+
+// Filter-Knopf am Handy. Die Zahl zeigt, wie viele Filter gerade greifen.
+export function FilterButton({ count, onClick }: { count: number; onClick: () => void }) {
+  return (
+    <Button variant={count ? "secondary" : "outline"} className="relative h-12 w-12 px-0 shrink-0" aria-label={count ? `Filter, ${count} aktiv` : "Filter"} onClick={onClick}>
+      <SlidersHorizontal className="w-5 h-5" aria-hidden />
+      {count > 0 && <span className="absolute -top-1.5 -right-1.5 min-w-5 h-5 px-1 rounded-full bg-primary text-primary-foreground text-xs font-medium leading-5 tabular-nums">{count}</span>}
+    </Button>
+  );
+}
+
+// Filter am Handy als Blatt von unten (wischbar). Auswahllisten darin öffnen die Auswahl des Telefons.
+export function FilterSheet({
+  open,
+  onOpenChange,
+  resultText,
+  canReset,
+  onReset,
+  children,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  resultText: string;
+  canReset: boolean;
+  onReset: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <Drawer open={open} onOpenChange={onOpenChange}>
+      {/* Hoher z-index: Das Blatt muss über Softrs eigener Navigationsleiste liegen. */}
+      <DrawerContent lang="de" className="z-[99999]">
+        <DrawerHeader className="text-left">
+          <DrawerTitle className="text-xl">Filter</DrawerTitle>
+          <DrawerDescription className="text-base">Gilt sofort für die Liste.</DrawerDescription>
+        </DrawerHeader>
+        <div className="px-4 space-y-5">{children}</div>
+        <DrawerFooter className="pt-6 pb-[calc(1rem+env(safe-area-inset-bottom))]">
+          <DrawerClose asChild>
+            <Button className="h-12 text-base">{resultText}</Button>
+          </DrawerClose>
+          <Button variant="ghost" className="h-12 text-base" disabled={!canReset} onClick={onReset}>
+            Filter zurücksetzen
+          </Button>
+        </DrawerFooter>
+      </DrawerContent>
+    </Drawer>
   );
 }

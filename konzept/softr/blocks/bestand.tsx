@@ -6,9 +6,10 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { AlertTriangle, Camera, Check, ChevronDown, ChevronRight, ClipboardList, Download, FileSpreadsheet, ImageOff, Images, LayoutGrid, List, Loader2, Minus, Pencil, Plus, Printer, Search, Star, Table2, X } from "lucide-react";
+import { AlertTriangle, Camera, Check, ChevronDown, ChevronRight, ClipboardList, Download, FileSpreadsheet, ImageOff, Images, LayoutGrid, List, Loader2, Minus, Pencil, Plus, Printer, Search, SlidersHorizontal, Star, Table2, X } from "lucide-react";
 import { toast } from "sonner";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 
 const PAGE_SIZE = 100;
 const VERFUEGBAR = "verfügbar";
@@ -215,6 +216,28 @@ const FIELD_CLASS = "h-12 rounded-md text-base md:text-base";
 const TEXTAREA_CLASS = "rounded-md text-base md:text-base";
 const INPUT_CLASS = "w-full h-12 rounded-md border border-input bg-background px-3 text-base";
 const PANEL_CLASS = "rounded-lg border bg-card";
+
+// Am Handy eine Zeile zum seitlich Wischen statt mehrerer umbrochener Reihen, ab Tablet umbrechen.
+const SCROLL_ROW = "flex gap-2 py-0.5 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:flex-wrap sm:overflow-visible";
+
+// Klebende Leisten am unteren Rand: am Handy über Softrs Navigationsleiste (ca. 80 px), ab Tablet am Rand.
+const STICKY_BOTTOM = "bottom-[calc(5.5rem+env(safe-area-inset-bottom))] sm:bottom-4";
+
+const MOBILE_QUERY = "(max-width: 639px)";
+
+// Handy oder größer. Für Bedienelemente, die am Handy anders aufgebaut sind (Filter im Blatt von unten).
+function useIsMobile(): boolean {
+  const [mobile, setMobile] = useState(() => window.matchMedia?.(MOBILE_QUERY).matches ?? false);
+  useEffect(() => {
+    const media = window.matchMedia?.(MOBILE_QUERY);
+    if (!media) return;
+    const update = () => setMobile(media.matches);
+    media.addEventListener("change", update);
+    return () => media.removeEventListener("change", update);
+  }, []);
+  return mobile;
+}
+
 const CHIP_BASE = "inline-flex items-center justify-center gap-2 min-h-11 px-3.5 rounded-md border text-base whitespace-nowrap transition-colors disabled:opacity-60";
 const CHIP_IDLE = "bg-background hover:bg-muted border-input";
 const CHIP_ACTIVE = "bg-primary text-primary-foreground border-primary";
@@ -246,7 +269,7 @@ function ChoiceChips({ label, options, value, onChange, statusColors, disabled }
 // Filter als Knopfreihe mit Anzahl, z. B. Im Haus 5 · Außer Haus 6. Ein Tipp, Zahlen sofort sichtbar.
 function FilterChips<K extends string>({ label, options, value, onChange }: { label: string; options: { key: K; label: string; count?: number }[]; value: K; onChange: (key: K) => void }) {
   return (
-    <div role="radiogroup" aria-label={label} className="flex flex-wrap gap-2">
+    <div role="radiogroup" aria-label={label} className={SCROLL_ROW}>
       {options.map((o) => (
         <Chip key={o.key} role="radio" active={value === o.key} onClick={() => onChange(o.key)}>
           {o.label}
@@ -415,7 +438,7 @@ function PageHeader({ title, description, actions }: { title: string; descriptio
         <h1 className="text-2xl font-semibold">{title}</h1>
         {description && <p className="text-base text-muted-foreground mt-0.5">{description}</p>}
       </div>
-      {actions && <div className="flex flex-wrap gap-2">{actions}</div>}
+      {actions && <div className="flex flex-wrap gap-2 w-full sm:w-auto">{actions}</div>}
     </div>
   );
 }
@@ -556,10 +579,10 @@ function ExportMenu({ onCsv, onPdf, disabled }: { onCsv: () => void; onPdf: () =
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" className="h-12 text-base" disabled={disabled}>
-          <Download className="w-5 h-5 mr-2" aria-hidden />
-          Exportieren
-          <ChevronDown className="w-4 h-4 ml-1" aria-hidden />
+        <Button variant="outline" className="h-12 w-12 px-0 text-base sm:w-auto sm:px-4" disabled={disabled} aria-label="Exportieren">
+          <Download className="w-5 h-5 sm:mr-2" aria-hidden />
+          <span className="hidden sm:inline">Exportieren</span>
+          <ChevronDown className="hidden sm:block w-4 h-4 ml-1" aria-hidden />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56">
@@ -586,7 +609,7 @@ function useAnsicht(): [Ansicht, (a: Ansicht) => void] {
     } catch {
       // Speicher gesperrt (privates Fenster): Standard nach Bildschirmbreite.
     }
-    return window.matchMedia?.("(max-width: 639px)").matches ? "kacheln" : "liste";
+    return window.matchMedia?.(MOBILE_QUERY).matches ? "kacheln" : "liste";
   });
   const choose = (a: Ansicht) => {
     setAnsicht(a);
@@ -617,6 +640,54 @@ function AnsichtToggle({ value, onChange }: { value: Ansicht; onChange: (a: Ansi
       {item("liste", "Als Liste", <List className="w-5 h-5" aria-hidden />)}
       {item("kacheln", "Als Kacheln", <LayoutGrid className="w-5 h-5" aria-hidden />)}
     </div>
+  );
+}
+
+// Filter-Knopf am Handy. Die Zahl zeigt, wie viele Filter gerade greifen.
+function FilterButton({ count, onClick }: { count: number; onClick: () => void }) {
+  return (
+    <Button variant={count ? "secondary" : "outline"} className="relative h-12 w-12 px-0 shrink-0" aria-label={count ? `Filter, ${count} aktiv` : "Filter"} onClick={onClick}>
+      <SlidersHorizontal className="w-5 h-5" aria-hidden />
+      {count > 0 && <span className="absolute -top-1.5 -right-1.5 min-w-5 h-5 px-1 rounded-full bg-primary text-primary-foreground text-xs font-medium leading-5 tabular-nums">{count}</span>}
+    </Button>
+  );
+}
+
+// Filter am Handy als Blatt von unten (wischbar). Auswahllisten darin öffnen die Auswahl des Telefons.
+function FilterSheet({
+  open,
+  onOpenChange,
+  resultText,
+  canReset,
+  onReset,
+  children,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  resultText: string;
+  canReset: boolean;
+  onReset: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <Drawer open={open} onOpenChange={onOpenChange}>
+      {/* Hoher z-index: Das Blatt muss über Softrs eigener Navigationsleiste liegen. */}
+      <DrawerContent lang="de" className="z-[99999]">
+        <DrawerHeader className="text-left">
+          <DrawerTitle className="text-xl">Filter</DrawerTitle>
+          <DrawerDescription className="text-base">Gilt sofort für die Liste.</DrawerDescription>
+        </DrawerHeader>
+        <div className="px-4 space-y-5">{children}</div>
+        <DrawerFooter className="pt-6 pb-[calc(1rem+env(safe-area-inset-bottom))]">
+          <DrawerClose asChild>
+            <Button className="h-12 text-base">{resultText}</Button>
+          </DrawerClose>
+          <Button variant="ghost" className="h-12 text-base" disabled={!canReset} onClick={onReset}>
+            Filter zurücksetzen
+          </Button>
+        </DrawerFooter>
+      </DrawerContent>
+    </Drawer>
   );
 }
 
@@ -1406,7 +1477,7 @@ function InventurView({ rows, onApply, onClose }: { rows: Edition[]; onApply: (c
         </section>
       ))}
 
-      <div className="sticky bottom-3 z-10">
+      <div className={`sticky ${STICKY_BOTTOM} z-10`}>
         <div className={`${PANEL_CLASS} shadow-md p-3 flex flex-wrap items-center gap-3`}>
           <span className="flex-1 text-base">
             {zahl.format(gezaehlt.length)} gezählt · <strong>{zahl.format(changes.length)}</strong> {changes.length === 1 ? "Abweichung" : "Abweichungen"}
@@ -1554,6 +1625,8 @@ export default function Block() {
   const [zustandFilter, setZustandFilter] = useState<ZustandKey>("alle");
   const [programmFilter, setProgrammFilter] = useState<ProgrammKey>("");
   const [inventur, setInventur] = useState(false);
+  const [filterSheet, setFilterSheet] = useState(false);
+  const isMobile = useIsMobile();
   const [ansicht, setAnsicht] = useAnsicht();
   const [limit, setLimit] = useState(LIST_STEP);
   const [pendingEdition, setPendingEdition] = useState("");
@@ -1716,6 +1789,59 @@ export default function Block() {
     }
   }
 
+  // Filter-Auswahllisten: am Rechner in einer Zeile, am Handy im Blatt von unten (dann mit sichtbarer Beschriftung).
+  const typAuswahl = (id?: string) => (
+    <select id={id} aria-label={id ? undefined : "Typ"} value={typFilter} onChange={(e) => setTypFilter(e.target.value)} className={INPUT_CLASS}>
+      <option value="">Alle Typen</option>
+      {typen.map((t) => (
+        <option key={t.id} value={t.label}>
+          {t.label}
+        </option>
+      ))}
+    </select>
+  );
+  const kuenstlerAuswahl = (id?: string) => (
+    <select id={id} aria-label={id ? undefined : "Künstler:in"} value={kuenstlerFilter} onChange={(e) => setKuenstlerFilter(e.target.value)} className={INPUT_CLASS}>
+      <option value="">Alle Künstler:innen</option>
+      {kuenstlerImBestand.map((k) => (
+        <option key={k.id} value={k.id}>
+          {k.label}
+        </option>
+      ))}
+    </select>
+  );
+  const sortAuswahl = (id?: string) => (
+    <select id={id} aria-label={id ? undefined : "Sortierung"} value={sort} onChange={(e) => setSort(e.target.value as SortKey)} className={INPUT_CLASS}>
+      {SORTS.map((s) => (
+        <option key={s.key} value={s.key}>
+          {s.label}
+        </option>
+      ))}
+    </select>
+  );
+  const programmAuswahl = (id?: string) => (
+    <select id={id} aria-label={id ? undefined : "Programm"} value={programmFilter} onChange={(e) => setProgrammFilter(e.target.value as ProgrammKey)} className={INPUT_CLASS}>
+      <option value="">Alle Programme</option>
+      <option value={EDITION_PROGRAMM}>Editionen</option>
+      <option value={MANUFAKTUR_PROGRAMM}>Manufakturprogramm</option>
+    </select>
+  );
+  const filterCount = isEdition ? (programmFilter ? 1 : 0) : [typFilter, kuenstlerFilter].filter(Boolean).length;
+  function resetFilters() {
+    if (isEdition) setProgrammFilter("");
+    else {
+      setTypFilter("");
+      setKuenstlerFilter("");
+    }
+  }
+  const searchPlaceholder = isEdition ? "Nummer, Modell, Glasur, Ort" : "Name, Nummer, Glasur, Ort";
+  const inventurButton =
+    isEdition && !inventur && editionUpdate.enabled ? (
+      <Button variant="outline" className="h-12 text-base" onClick={() => setInventur(true)}>
+        <ClipboardList className="w-5 h-5 mr-2" aria-hidden /> Inventur
+      </Button>
+    ) : undefined;
+
   return (
     <div className="container pt-6 pb-28 sm:pb-8">
       <div className="content space-y-4" lang="de">
@@ -1723,18 +1849,23 @@ export default function Block() {
           title="Bestand"
           description={isEdition ? `${zahl.format(stueckGesamt)} Stück in ${zahl.format(visibleEdition.length)} Posten` : `${zahl.format(visible.length)} von ${zahl.format(unikate.length)} Unikaten`}
           actions={
-            <>
-              <Button asChild variant="ghost" className="h-11 text-base">
-                <a href="/tabelle">
-                  <Table2 className="w-5 h-5 mr-2" aria-hidden /> Tabelle
-                </a>
-              </Button>
-              <ExportMenu
-                onCsv={() => (isEdition ? exportEdition(visibleEdition) : exportUnikate(visible))}
-                onPdf={exportPdf}
-                disabled={isEdition ? visibleEdition.length === 0 : visible.length === 0}
-              />
-            </>
+            isMobile ? (
+              inventurButton
+            ) : (
+              <>
+                <Button asChild variant="ghost" className="h-11 text-base">
+                  <a href="/tabelle">
+                    <Table2 className="w-5 h-5 mr-2" aria-hidden /> Tabelle
+                  </a>
+                </Button>
+                {inventurButton}
+                <ExportMenu
+                  onCsv={() => (isEdition ? exportEdition(visibleEdition) : exportUnikate(visible))}
+                  onPdf={exportPdf}
+                  disabled={isEdition ? visibleEdition.length === 0 : visible.length === 0}
+                />
+              </>
+            )
           }
         />
 
@@ -1754,27 +1885,10 @@ export default function Block() {
         />
 
         {isEdition ? (
-          <>
-            <FilterChips label="Zustand" options={zustandChips} value={zustandFilter} onChange={setZustandFilter} />
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-[minmax(0,1fr)_16rem_auto]">
-              <div className="flex">
-                <SearchField label="Suche" placeholder="Suchen: Nummer, Modell, Glasur, Ort" value={search} onChange={setSearch} />
-              </div>
-              <select aria-label="Programm" value={programmFilter} onChange={(e) => setProgrammFilter(e.target.value as ProgrammKey)} className={INPUT_CLASS}>
-                <option value="">Alle Programme</option>
-                <option value={EDITION_PROGRAMM}>Editionen</option>
-                <option value={MANUFAKTUR_PROGRAMM}>Manufakturprogramm</option>
-              </select>
-              {!inventur && editionUpdate.enabled && (
-                <Button variant="outline" className="h-12 text-base" onClick={() => setInventur(true)}>
-                  <ClipboardList className="w-5 h-5 mr-2" aria-hidden /> Inventur
-                </Button>
-              )}
-            </div>
-          </>
+          <FilterChips label="Zustand" options={zustandChips} value={zustandFilter} onChange={setZustandFilter} />
         ) : (
-          <>
-            <div className="flex items-start justify-between gap-3">
+          <div className="flex items-start gap-3">
+            <div className="flex-1 min-w-0">
               <FilterChips
                 label="Status"
                 options={tabs}
@@ -1784,37 +1898,64 @@ export default function Block() {
                   setLimit(LIST_STEP);
                 }}
               />
-              <AnsichtToggle value={ansicht} onChange={setAnsicht} />
             </div>
-            <div className="grid grid-cols-2 gap-3 lg:grid-cols-[minmax(0,1fr)_10rem_12rem_11rem]">
-              <div className="col-span-2 lg:col-span-1 flex">
-                <SearchField label="Suche" placeholder="Suchen: Name, Nummer, Glasur, Ort" value={search} onChange={setSearch} />
+            <AnsichtToggle value={ansicht} onChange={setAnsicht} />
+          </div>
+        )}
+
+        {isMobile ? (
+          <div className="flex gap-3">
+            <SearchField label="Suche" placeholder={searchPlaceholder} value={search} onChange={setSearch} />
+            <FilterButton count={filterCount} onClick={() => setFilterSheet(true)} />
+          </div>
+        ) : isEdition ? (
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-[minmax(0,1fr)_16rem]">
+            <div className="flex">
+              <SearchField label="Suche" placeholder={searchPlaceholder} value={search} onChange={setSearch} />
+            </div>
+            {programmAuswahl()}
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 gap-3 lg:grid-cols-[minmax(0,1fr)_10rem_12rem_11rem]">
+            <div className="col-span-2 lg:col-span-1 flex">
+              <SearchField label="Suche" placeholder={searchPlaceholder} value={search} onChange={setSearch} />
+            </div>
+            {typAuswahl()}
+            {kuenstlerAuswahl()}
+            {sortAuswahl()}
+          </div>
+        )}
+
+        {isMobile && (
+          <FilterSheet
+            open={filterSheet}
+            onOpenChange={setFilterSheet}
+            resultText={isEdition ? `${zahl.format(visibleEdition.length)} Posten anzeigen` : `${zahl.format(visible.length)} ${visible.length === 1 ? "Stück" : "Stücke"} anzeigen`}
+            canReset={filterCount > 0}
+            onReset={resetFilters}
+          >
+            {isEdition ? (
+              <div>
+                <FieldLabel htmlFor="f-programm">Programm</FieldLabel>
+                {programmAuswahl("f-programm")}
               </div>
-              <select aria-label="Typ" value={typFilter} onChange={(e) => setTypFilter(e.target.value)} className={INPUT_CLASS}>
-                <option value="">Alle Typen</option>
-                {typen.map((t) => (
-                  <option key={t.id} value={t.label}>
-                    {t.label}
-                  </option>
-                ))}
-              </select>
-              <select aria-label="Künstler:in" value={kuenstlerFilter} onChange={(e) => setKuenstlerFilter(e.target.value)} className={INPUT_CLASS}>
-                <option value="">Alle Künstler:innen</option>
-                {kuenstlerImBestand.map((k) => (
-                  <option key={k.id} value={k.id}>
-                    {k.label}
-                  </option>
-                ))}
-              </select>
-              <select aria-label="Sortierung" value={sort} onChange={(e) => setSort(e.target.value as SortKey)} className={INPUT_CLASS}>
-                {SORTS.map((s) => (
-                  <option key={s.key} value={s.key}>
-                    {s.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </>
+            ) : (
+              <>
+                <div>
+                  <FieldLabel htmlFor="f-typ">Typ</FieldLabel>
+                  {typAuswahl("f-typ")}
+                </div>
+                <div>
+                  <FieldLabel htmlFor="f-kuenstler">Künstler:in</FieldLabel>
+                  {kuenstlerAuswahl("f-kuenstler")}
+                </div>
+                <div>
+                  <FieldLabel htmlFor="f-sort">Sortierung</FieldLabel>
+                  {sortAuswahl("f-sort")}
+                </div>
+              </>
+            )}
+          </FilterSheet>
         )}
 
         {failed ? (

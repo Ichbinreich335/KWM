@@ -43,7 +43,9 @@ import {
   ExportMenu,
   FIELD_CLASS,
   FieldLabel,
+  FilterButton,
   FilterChips,
+  FilterSheet,
   INPUT_CLASS,
   ListRow,
   LoadingState,
@@ -52,12 +54,14 @@ import {
   PageHeader,
   PanelHeader,
   PhotoPicker,
+  STICKY_BOTTOM,
   SearchField,
   SearchPick,
   StatusBadge,
   TEXTAREA_CLASS,
   Tabs,
   useAnsicht,
+  useIsMobile,
 } from "../shared/ui";
 
 const ds = datasource.define({ unikate: "unikate", edition: "edition", kuenstler: "kuenstler", glasuren: "glasuren", lagerorte: "lagerorte", partner: "partner" });
@@ -846,7 +850,7 @@ function InventurView({ rows, onApply, onClose }: { rows: Edition[]; onApply: (c
         </section>
       ))}
 
-      <div className="sticky bottom-3 z-10">
+      <div className={`sticky ${STICKY_BOTTOM} z-10`}>
         <div className={`${PANEL_CLASS} shadow-md p-3 flex flex-wrap items-center gap-3`}>
           <span className="flex-1 text-base">
             {zahl.format(gezaehlt.length)} gezählt · <strong>{zahl.format(changes.length)}</strong> {changes.length === 1 ? "Abweichung" : "Abweichungen"}
@@ -994,6 +998,8 @@ export default function Block() {
   const [zustandFilter, setZustandFilter] = useState<ZustandKey>("alle");
   const [programmFilter, setProgrammFilter] = useState<ProgrammKey>("");
   const [inventur, setInventur] = useState(false);
+  const [filterSheet, setFilterSheet] = useState(false);
+  const isMobile = useIsMobile();
   const [ansicht, setAnsicht] = useAnsicht();
   const [limit, setLimit] = useState(LIST_STEP);
   const [pendingEdition, setPendingEdition] = useState("");
@@ -1156,6 +1162,59 @@ export default function Block() {
     }
   }
 
+  // Filter-Auswahllisten: am Rechner in einer Zeile, am Handy im Blatt von unten (dann mit sichtbarer Beschriftung).
+  const typAuswahl = (id?: string) => (
+    <select id={id} aria-label={id ? undefined : "Typ"} value={typFilter} onChange={(e) => setTypFilter(e.target.value)} className={INPUT_CLASS}>
+      <option value="">Alle Typen</option>
+      {typen.map((t) => (
+        <option key={t.id} value={t.label}>
+          {t.label}
+        </option>
+      ))}
+    </select>
+  );
+  const kuenstlerAuswahl = (id?: string) => (
+    <select id={id} aria-label={id ? undefined : "Künstler:in"} value={kuenstlerFilter} onChange={(e) => setKuenstlerFilter(e.target.value)} className={INPUT_CLASS}>
+      <option value="">Alle Künstler:innen</option>
+      {kuenstlerImBestand.map((k) => (
+        <option key={k.id} value={k.id}>
+          {k.label}
+        </option>
+      ))}
+    </select>
+  );
+  const sortAuswahl = (id?: string) => (
+    <select id={id} aria-label={id ? undefined : "Sortierung"} value={sort} onChange={(e) => setSort(e.target.value as SortKey)} className={INPUT_CLASS}>
+      {SORTS.map((s) => (
+        <option key={s.key} value={s.key}>
+          {s.label}
+        </option>
+      ))}
+    </select>
+  );
+  const programmAuswahl = (id?: string) => (
+    <select id={id} aria-label={id ? undefined : "Programm"} value={programmFilter} onChange={(e) => setProgrammFilter(e.target.value as ProgrammKey)} className={INPUT_CLASS}>
+      <option value="">Alle Programme</option>
+      <option value={EDITION_PROGRAMM}>Editionen</option>
+      <option value={MANUFAKTUR_PROGRAMM}>Manufakturprogramm</option>
+    </select>
+  );
+  const filterCount = isEdition ? (programmFilter ? 1 : 0) : [typFilter, kuenstlerFilter].filter(Boolean).length;
+  function resetFilters() {
+    if (isEdition) setProgrammFilter("");
+    else {
+      setTypFilter("");
+      setKuenstlerFilter("");
+    }
+  }
+  const searchPlaceholder = isEdition ? "Nummer, Modell, Glasur, Ort" : "Name, Nummer, Glasur, Ort";
+  const inventurButton =
+    isEdition && !inventur && editionUpdate.enabled ? (
+      <Button variant="outline" className="h-12 text-base" onClick={() => setInventur(true)}>
+        <ClipboardList className="w-5 h-5 mr-2" aria-hidden /> Inventur
+      </Button>
+    ) : undefined;
+
   return (
     <div className="container pt-6 pb-28 sm:pb-8">
       <div className="content space-y-4" lang="de">
@@ -1163,18 +1222,23 @@ export default function Block() {
           title="Bestand"
           description={isEdition ? `${zahl.format(stueckGesamt)} Stück in ${zahl.format(visibleEdition.length)} Posten` : `${zahl.format(visible.length)} von ${zahl.format(unikate.length)} Unikaten`}
           actions={
-            <>
-              <Button asChild variant="ghost" className="h-11 text-base">
-                <a href="/tabelle">
-                  <Table2 className="w-5 h-5 mr-2" aria-hidden /> Tabelle
-                </a>
-              </Button>
-              <ExportMenu
-                onCsv={() => (isEdition ? exportEdition(visibleEdition) : exportUnikate(visible))}
-                onPdf={exportPdf}
-                disabled={isEdition ? visibleEdition.length === 0 : visible.length === 0}
-              />
-            </>
+            isMobile ? (
+              inventurButton
+            ) : (
+              <>
+                <Button asChild variant="ghost" className="h-11 text-base">
+                  <a href="/tabelle">
+                    <Table2 className="w-5 h-5 mr-2" aria-hidden /> Tabelle
+                  </a>
+                </Button>
+                {inventurButton}
+                <ExportMenu
+                  onCsv={() => (isEdition ? exportEdition(visibleEdition) : exportUnikate(visible))}
+                  onPdf={exportPdf}
+                  disabled={isEdition ? visibleEdition.length === 0 : visible.length === 0}
+                />
+              </>
+            )
           }
         />
 
@@ -1194,27 +1258,10 @@ export default function Block() {
         />
 
         {isEdition ? (
-          <>
-            <FilterChips label="Zustand" options={zustandChips} value={zustandFilter} onChange={setZustandFilter} />
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-[minmax(0,1fr)_16rem_auto]">
-              <div className="flex">
-                <SearchField label="Suche" placeholder="Suchen: Nummer, Modell, Glasur, Ort" value={search} onChange={setSearch} />
-              </div>
-              <select aria-label="Programm" value={programmFilter} onChange={(e) => setProgrammFilter(e.target.value as ProgrammKey)} className={INPUT_CLASS}>
-                <option value="">Alle Programme</option>
-                <option value={EDITION_PROGRAMM}>Editionen</option>
-                <option value={MANUFAKTUR_PROGRAMM}>Manufakturprogramm</option>
-              </select>
-              {!inventur && editionUpdate.enabled && (
-                <Button variant="outline" className="h-12 text-base" onClick={() => setInventur(true)}>
-                  <ClipboardList className="w-5 h-5 mr-2" aria-hidden /> Inventur
-                </Button>
-              )}
-            </div>
-          </>
+          <FilterChips label="Zustand" options={zustandChips} value={zustandFilter} onChange={setZustandFilter} />
         ) : (
-          <>
-            <div className="flex items-start justify-between gap-3">
+          <div className="flex items-start gap-3">
+            <div className="flex-1 min-w-0">
               <FilterChips
                 label="Status"
                 options={tabs}
@@ -1224,37 +1271,64 @@ export default function Block() {
                   setLimit(LIST_STEP);
                 }}
               />
-              <AnsichtToggle value={ansicht} onChange={setAnsicht} />
             </div>
-            <div className="grid grid-cols-2 gap-3 lg:grid-cols-[minmax(0,1fr)_10rem_12rem_11rem]">
-              <div className="col-span-2 lg:col-span-1 flex">
-                <SearchField label="Suche" placeholder="Suchen: Name, Nummer, Glasur, Ort" value={search} onChange={setSearch} />
+            <AnsichtToggle value={ansicht} onChange={setAnsicht} />
+          </div>
+        )}
+
+        {isMobile ? (
+          <div className="flex gap-3">
+            <SearchField label="Suche" placeholder={searchPlaceholder} value={search} onChange={setSearch} />
+            <FilterButton count={filterCount} onClick={() => setFilterSheet(true)} />
+          </div>
+        ) : isEdition ? (
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-[minmax(0,1fr)_16rem]">
+            <div className="flex">
+              <SearchField label="Suche" placeholder={searchPlaceholder} value={search} onChange={setSearch} />
+            </div>
+            {programmAuswahl()}
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 gap-3 lg:grid-cols-[minmax(0,1fr)_10rem_12rem_11rem]">
+            <div className="col-span-2 lg:col-span-1 flex">
+              <SearchField label="Suche" placeholder={searchPlaceholder} value={search} onChange={setSearch} />
+            </div>
+            {typAuswahl()}
+            {kuenstlerAuswahl()}
+            {sortAuswahl()}
+          </div>
+        )}
+
+        {isMobile && (
+          <FilterSheet
+            open={filterSheet}
+            onOpenChange={setFilterSheet}
+            resultText={isEdition ? `${zahl.format(visibleEdition.length)} Posten anzeigen` : `${zahl.format(visible.length)} ${visible.length === 1 ? "Stück" : "Stücke"} anzeigen`}
+            canReset={filterCount > 0}
+            onReset={resetFilters}
+          >
+            {isEdition ? (
+              <div>
+                <FieldLabel htmlFor="f-programm">Programm</FieldLabel>
+                {programmAuswahl("f-programm")}
               </div>
-              <select aria-label="Typ" value={typFilter} onChange={(e) => setTypFilter(e.target.value)} className={INPUT_CLASS}>
-                <option value="">Alle Typen</option>
-                {typen.map((t) => (
-                  <option key={t.id} value={t.label}>
-                    {t.label}
-                  </option>
-                ))}
-              </select>
-              <select aria-label="Künstler:in" value={kuenstlerFilter} onChange={(e) => setKuenstlerFilter(e.target.value)} className={INPUT_CLASS}>
-                <option value="">Alle Künstler:innen</option>
-                {kuenstlerImBestand.map((k) => (
-                  <option key={k.id} value={k.id}>
-                    {k.label}
-                  </option>
-                ))}
-              </select>
-              <select aria-label="Sortierung" value={sort} onChange={(e) => setSort(e.target.value as SortKey)} className={INPUT_CLASS}>
-                {SORTS.map((s) => (
-                  <option key={s.key} value={s.key}>
-                    {s.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </>
+            ) : (
+              <>
+                <div>
+                  <FieldLabel htmlFor="f-typ">Typ</FieldLabel>
+                  {typAuswahl("f-typ")}
+                </div>
+                <div>
+                  <FieldLabel htmlFor="f-kuenstler">Künstler:in</FieldLabel>
+                  {kuenstlerAuswahl("f-kuenstler")}
+                </div>
+                <div>
+                  <FieldLabel htmlFor="f-sort">Sortierung</FieldLabel>
+                  {sortAuswahl("f-sort")}
+                </div>
+              </>
+            )}
+          </FilterSheet>
         )}
 
         {failed ? (

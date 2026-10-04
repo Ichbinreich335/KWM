@@ -264,7 +264,7 @@ function PageHeader({ title, description, actions }: { title: string; descriptio
         <h1 className="text-2xl font-semibold">{title}</h1>
         {description && <p className="text-base text-muted-foreground mt-0.5">{description}</p>}
       </div>
-      {actions && <div className="flex flex-wrap gap-2">{actions}</div>}
+      {actions && <div className="flex flex-wrap gap-2 w-full sm:w-auto">{actions}</div>}
     </div>
   );
 }
