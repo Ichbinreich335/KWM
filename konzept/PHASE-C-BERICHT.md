@@ -66,3 +66,13 @@ Manufaktur: Leistung 99/99, LCP 2.088 → 2.012 ms, 183 → 176 KB.
 **Prüfhilfe:** `OPTIK_TOLERANZ` (Standard 0,002) erlaubt bei künftigen Bildänderungen einen gezielten Lauf mit höherer Toleranz; in C3 war er nicht nötig.
 
 **Hinweis:** Astro kodiert WebP neu (Qualität 80). Sollte bei Detailbildern eine Weichheit auffallen, lässt sich die Qualität zentral anheben (`image.service.config`).
+
+## C4 – Schriften über die Fonts API (Branch `phase-c4-schriften`)
+
+**Ergebnis:** Die drei Schriftfamilien (Jost, Libre Caslon Display, Libre Caslon Text) sind in `astro.config.mjs` über Astros Fonts API registriert; die Dateien liegen in `src/assets/fonts/` und werden gehasht aus `/_astro/fonts/` ausgeliefert (dauerhaft gecacht). Astro erzeugt zusätzlich angepasste Ersatzschriften, die das Springen beim Laden verringern. `public/fonts/` und `fonts.css` sind weg. Sichtbar ändert sich nichts: Optik 26/26, Text 13/13, Layout 250 Bildflächen ohne Abweichung.
+
+**Gleich geblieben, nachgeprüft:** dieselben 8 `@font-face`-Regeln (Gewichte, Stile, Unicode-Bereiche Zeichen für Zeichen, `font-display: swap`); genau zwei vorgeladene Dateien wie vorher (Libre Caslon Display und Jost, jeweils der Latin-Teil).
+
+**Abweichung vom Plan (begründet):** Astros lokaler Font-Anbieter kennt keine Subset-Angabe; die eingebaute Vorlade-Funktion hätte auch die Latin-Extended-Dateien vorgeladen (4 statt 2). Die zwei Preloads stehen deshalb von Hand im Layout, mit den gehashten URLs aus `fontData` (offizielle Astro-Schnittstelle). Die Latin-Variante muss in `astro.config.mjs` als erste je Familie stehen; fehlt sie, bricht der Build mit klarer Meldung ab. Ein Test prüft auf allen Seiten, dass genau Display und Jost vorgeladen werden und jeweils die Latin-Datei.
+
+**Ersatzkette:** Die frühere Kette „Display → Caslon Text → Georgia“ ist entfallen, weil die Fonts-API-Variablen ihre Ersatzschriften selbst mitbringen. Gemessen: Libre Caslon Display enthält jedes Zeichen, das in Display-Texten vorkommt, außer dem geschützten Bindestrich (U+2011, „Young‑Jae“), den auch Caslon Text nicht hat; Chromium zeichnet ihn wie vorher aus der Display-Schrift. Ein dekorativer Pfeil (Chronik-Hinweis, mobil) steht ausdrücklich auf der Systemschrift, damit er wie vorher aussieht.
