@@ -2,6 +2,7 @@
 import Bild from '../components/Bild.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import InquiryBand from '../components/InquiryBand.astro';
+import SubNav from '../components/SubNav.astro';
 import '../styles/basis.css';
 import '../styles/seiten/page-meisterstuecke.css';
 import '../styles/signaturen/signaturen.css';
@@ -55,12 +56,15 @@ import '../styles/signaturen/signaturen.css';
       </div>
     </section>
 
-    <nav class="subnav" aria-label="Kapitel dieser Seite">
-      <a href="#schalen">Schalen</a>
-      <a href="#arbeitsweise">Arbeitsweise</a>
-      <a href="#kummen">Kummen</a>
-      <a href="#vasen">Vasen</a>
-    </nav>
+    <SubNav
+      label="Kapitel dieser Seite"
+      eintraege={[
+        { href: '#schalen', text: 'Schalen' },
+        { href: '#arbeitsweise', text: 'Arbeitsweise' },
+        { href: '#kummen', text: 'Kummen' },
+        { href: '#vasen', text: 'Vasen' },
+      ]}
+    />
 
     {/* Schalen */}
     <section class="chapter" id="schalen" aria-labelledby="schalen-title">

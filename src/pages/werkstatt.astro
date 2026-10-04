@@ -2,6 +2,7 @@
 import Bild from '../components/Bild.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import InquiryBand from '../components/InquiryBand.astro';
+import SubNav from '../components/SubNav.astro';
 import '../styles/basis.css';
 import '../styles/seiten/page-werkstatt.css';
 import '../styles/signaturen/signaturen.css';
@@ -35,14 +36,17 @@ import '../styles/signaturen/signaturen.css';
       </figure>
     </section>
 
-    <nav class="subnav" aria-label="Kapitel dieser Seite">
-      <a href="#arbeitsweise">Arbeitsweise</a>
-      <a href="#feuer">Glasurfarben</a>
-      <a href="#chronik">Chronik</a>
-      <a href="#team">Team</a>
-      <a href="#auszeichnungen">Auszeichnungen</a>
-      <a href="#zollverein">Zeche Zollverein</a>
-    </nav>
+    <SubNav
+      label="Kapitel dieser Seite"
+      eintraege={[
+        { href: '#arbeitsweise', text: 'Arbeitsweise' },
+        { href: '#feuer', text: 'Glasurfarben' },
+        { href: '#chronik', text: 'Chronik' },
+        { href: '#team', text: 'Team' },
+        { href: '#auszeichnungen', text: 'Auszeichnungen' },
+        { href: '#zollverein', text: 'Zeche Zollverein' },
+      ]}
+    />
 
     {/* Arbeitsweise */}
     <section class="chapter" id="arbeitsweise" aria-labelledby="method-title">

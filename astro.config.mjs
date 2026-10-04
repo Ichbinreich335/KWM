@@ -120,7 +120,7 @@ export default defineConfig({
               { name: 'signaturen', test: /\/src\/styles\/signaturen\// },
               {
                 name: 'basis',
-                test: /\/src\/styles\/(basis|global|pages|expander)\.css|virtual:astro:image-styles\.css/,
+                test: /\/src\/styles\/(basis|global|pages|expander)\.css|\/src\/components\/[^/]+\.astro\?astro&type=style|virtual:astro:image-styles\.css/,
               },
             ],
           },

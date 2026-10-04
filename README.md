@@ -67,6 +67,8 @@ Jede Seite importiert in dieser Reihenfolge: `../styles/basis.css`, ihr Seiten-C
 
 Warum: Die Kaskade lebt von der Reihenfolge (Grundstile, dann Seite, dann Signaturen). Vite legt gemeinsam genutzte Stile sonst in einen Chunk, der im HTML hinter dem Seiten-CSS steht. Deshalb trennt `codeSplitting.groups` in `astro.config.mjs` die Chunks `basis` und `signaturen`, und `build.inlineStylesheets: 'never'` verhindert, dass kleines Seiten-CSS als `<style>` vor alle Links rutscht. Kaskaden-Ebenen (`@layer`) taugen hier nicht, weil sie die Spezifität umkehren. Die Bildstile von Astro (`image.responsiveStyles`) sind in den Chunk `basis` eingemischt und liegen in `@layer astro.images`; diese Ebene steht unter allem CSS des Projekts ohne Ebene und kann es deshalb nie überschreiben (darum ist `@layer` dort unbedenklich, im Projekt-CSS aber nicht).
 
+Komponenten-Stile (`<style>` in `src/components/*.astro`) sind pro Komponente gescoped (`scopedStyleStrategy: 'where'`, keine zusätzliche Spezifität) und liegen ebenfalls im Chunk `basis`. Sie stehen damit vor dem Seiten-CSS und den Signaturen und werden von deren gleich spezifischen Regeln überschrieben, genau wie vorher die Regeln in `pages.css`. Inhalte, die eine Seite per Slot einsetzt (auch `Bild`), gehören zum Gültigkeitsbereich der Seite, nicht der Komponente: Sie erreicht die Komponente nur mit `:global()`.
+
 Gesichert durch den Test „Stylesheet-Reihenfolge“ in `tests/routen.spec.ts`: Er prüft auf allen Seiten, dass `basis`, höchstens ein Seiten-Chunk und `signaturen` in dieser Reihenfolge geladen werden und im Head nur die drei Schrift-Stile der Fonts API stehen. Der Test „Schriften“ stellt sicher, dass genau zwei Dateien vorgeladen werden und beide die latin-Teilmenge sind.
 
 ## Schriften

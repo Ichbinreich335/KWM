@@ -3,6 +3,7 @@ import { getImage } from 'astro:assets';
 import Bild from '../components/Bild.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import InquiryBand from '../components/InquiryBand.astro';
+import SubNav from '../components/SubNav.astro';
 import '../styles/basis.css';
 import '../styles/seiten/page-manufaktur.css';
 import '../styles/signaturen/signaturen.css';
@@ -115,12 +116,15 @@ const glasurBild = async (src: string) =>
       </div>
     </section>
 
-    <nav class="subnav" aria-label="Kapitel dieser Seite">
-      <a href="#geschirr">Geschirr</a>
-      <a href="#edition">Edition</a>
-      <a href="#farben">Farben</a>
-      <a href="#arbeitsweise">Arbeitsweise</a>
-    </nav>
+    <SubNav
+      label="Kapitel dieser Seite"
+      eintraege={[
+        { href: '#geschirr', text: 'Geschirr' },
+        { href: '#edition', text: 'Edition' },
+        { href: '#farben', text: 'Farben' },
+        { href: '#arbeitsweise', text: 'Arbeitsweise' },
+      ]}
+    />
 
     {/* Geschirr */}
     <section class="chapter" id="geschirr" aria-labelledby="geschirr-title">

@@ -2,6 +2,7 @@
 import Bild from '../components/Bild.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import InquiryBand from '../components/InquiryBand.astro';
+import SubNav from '../components/SubNav.astro';
 import '../styles/basis.css';
 import '../styles/seiten/page-young-jae-lee.css';
 import '../styles/signaturen/signaturen.css';
@@ -35,15 +36,18 @@ import '../styles/signaturen/signaturen.css';
       </figure>
     </section>
 
-    <nav class="subnav" aria-label="Kapitel dieser Seite">
-      <a href="#haltung">Haltung</a>
-      <a href="#biografie">Biografie</a>
-      <a href="#texte">Texte</a>
-      <a href="#ausstellungen">Ausstellungen</a>
-      <a href="#sammlungen">Sammlungen</a>
-      <a href="#auszeichnungen">Auszeichnungen</a>
-      <a href="#publikationen">Publikationen</a>
-    </nav>
+    <SubNav
+      label="Kapitel dieser Seite"
+      eintraege={[
+        { href: '#haltung', text: 'Haltung' },
+        { href: '#biografie', text: 'Biografie' },
+        { href: '#texte', text: 'Texte' },
+        { href: '#ausstellungen', text: 'Ausstellungen' },
+        { href: '#sammlungen', text: 'Sammlungen' },
+        { href: '#auszeichnungen', text: 'Auszeichnungen' },
+        { href: '#publikationen', text: 'Publikationen' },
+      ]}
+    />
 
     {/* Haltung */}
     <section class="stance grid" id="haltung" aria-labelledby="stance-title">
