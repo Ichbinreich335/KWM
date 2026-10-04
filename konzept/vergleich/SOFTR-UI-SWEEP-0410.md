@@ -61,3 +61,22 @@ Grundlage: Feedback des Admins zu den Screens vom 04.10. und der Skill `impeccab
 - **Bestand:** Status-Knöpfe mit Zahl wie früher, auf Wunsch des Admins. Editionsware mit Zustand-Knöpfen und Programm.
 - **Datenstand sicher:** Alle Mengenänderungen rechnen auf dem frisch geladenen Server-Wert (zwei Geräte gleichzeitig). Keine doppelten Editionszeilen. Löschen in Stammdaten prüft frisch, ob etwas darauf verweist. Artikelnummern sind eindeutig.
 - **Prüfung:** Typprüfung grün. Lokaler Render-Test mit Katalogdaten: Gruppen und Sortierung, feste Glasur, Pflichtglasur, Weiterzählen bei geändertem Server-Wert (12 + 1 = 13), Rückgängig, Löschschutz in beiden Richtungen. Prüfung in der echten Vorschau weiter offen (Netzsperre).
+
+## Runde 5: Export, Kacheln, Inventur, Sicherung (04.10.)
+
+- **Exportieren** statt „CSV“ in Tabelle und Bestand: Menü mit „Excel (CSV-Datei)“ und „PDF / Drucken“. Die Druckansicht übernimmt sichtbare Spalten, Filter (als Untertitel) und Summen. Ist genau ein Partner gefiltert, heißt sie „Liste ‹Partner›“ (Kommissionsliste). Softr selbst kann keinen PDF-Export, nur über die Fremd-Integration DocsAutomator im Workflow (kostet Aktionen).
+- **Kacheln oder Liste** im Bestand (Unikate): Umschalter rechts neben den Status-Knöpfen. Am Handy Standard Kacheln, am Rechner Liste, die Wahl merkt sich das Gerät. Kachel mit Hauptbild, Status, Fotoanzahl bei mehreren Fotos.
+- **Hauptbild:** Das erste Foto ist das Hauptbild. In der Detailansicht „Als Hauptbild verwenden“. Neue Fotos werden hinten angehängt, das Hauptbild bleibt.
+- **Inventur** (Editionsware): Knopf neben dem Programm-Filter, nur für Bearbeitungsberechtigte. Gezählte Menge je Posten, gruppiert nach Lagerort, Abweichungen sofort sichtbar. Zahlen bleiben bis zur Übernahme auf dem Gerät. Übernommen wird gesammelt nach Bestätigung, und nur, wo sich der Bestand seit dem Zählen nicht geändert hat.
+- **Datenpflege** (Übersicht, eingeklappt unten): Unikate ohne Foto oder Preis, Außer Haus ohne Partner, Editionsposten mit 0 Stück, Modelle ohne VK-Preis. Jeder Eintrag verlinkt.
+- **Speicherstand** (Stammdaten, unten): „Datenbank: X von 1.000 Einträgen (Free-Plan)“, ab 80 % gelb. Die 1.000 sind eine vorsichtige Annahme, Softr nennt die Free-Grenze nicht eindeutig.
+- **Zähler „Verwendungen“ in der Datenbank: nicht umgesetzt.** Die Verknüpfungen von Unikaten und Editionsware zu Künstler:innen, Glasuren, Lagerorten und Partnern haben keinen Rückverweis, und Softr kann ihn nachträglich nicht anlegen. Der Löschschutz in Stammdaten zählt deshalb weiter frisch beim Löschen.
+- **Nächtliche Sicherung** nach Cloudflare R2: `konzept/softr/sicherung/` und `.github/workflows/softr-sicherung.yml`, Wiederherstellung per Knopf in GitHub Actions (`softr-wiederherstellung.yml`, ohne Haken nur Anzeige). Gegen eine Test-API und lokalen S3-Speicher geprüft: Sicherung, Foto-Entdopplung, Vergleich und Zurückschreiben nur der Unterschiede.
+- **Handy-App (PWA):** In Softr eingeschaltet. App-Icon liegt in `konzept/softr/app-icon/icon-512.png`.
+- **Prüfung:** Typprüfung grün. Lokaler Render-Test: Kacheln am Handy und Liste am Rechner, Druckansicht mit Titel, Untertitel und Summen, Inventur-Übernahme mit Konfliktfall, Datenpflege, Speicherstand. Hochgeladene Blöcke per SHA-256 mit dem Repo abgeglichen. Prüfung in der echten Vorschau weiter offen (Netzsperre `*.softr.app`).
+
+### Was der Admin tun muss (Runde 5)
+
+1. **R2 und Secrets einrichten:** Schritte in `konzept/softr/sicherung/README.md`. Danach einmal *Softr-Sicherung → Run workflow*. Nächtlich läuft es erst, wenn der Branch im Hauptbranch ist.
+2. **App-Icon hochladen:** Softr Studio → Settings → Mobile app (PWA) → Icon → `icon-512.png`.
+3. **Vorschau ansehen:** Bestand am Handy (Kacheln), Inventur, Exportieren → PDF, Übersicht → Datenpflege.
