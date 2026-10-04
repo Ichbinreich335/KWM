@@ -20,6 +20,7 @@ npm run check                     # Prettier, ESLint, astro check, Build – mus
 npm run test:ausgangsstand        # Referenz-Screens aus dem Prototyp erzeugen (tests/__screens__/, nicht im Repo)
 npm test                          # alle Playwright-Tests gegen dist/ unter wrangler dev
 BASIS_URL=https://… npm test      # dieselben Tests gegen eine Vorschau- oder Produktions-URL
+OPTIK_TOLERANZ=0.02 npm run test:optik   # höhere Toleranz (Standard 0.002), z. B. wenn Bilder neu berechnet wurden
 ```
 
 | Test                             | Prüft                                                                                                                |
