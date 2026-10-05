@@ -1,0 +1,365 @@
+/* Konzept-Vergleiche (nur unter /konzept/, wird nicht gemergt) */
+
+.konzept-hinweis {
+  background: var(--ground-2);
+  padding: clamp(20px, 3vw, 36px);
+  margin-inline: var(--m);
+  display: grid;
+  gap: var(--g);
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+}
+.konzept-hinweis__kopf {
+  grid-column: 1 / -1;
+}
+.konzept-hinweis__titel {
+  font-family: var(--f-display);
+  font-size: var(--t-h3);
+  line-height: var(--t-h3-lh);
+  margin-bottom: 8px;
+}
+.konzept-hinweis__text,
+.konzept-hinweis li {
+  font-size: var(--t-small);
+  line-height: var(--t-small-lh);
+}
+.konzept-hinweis__text {
+  margin: 0;
+  color: var(--ink-2);
+}
+.konzept-hinweis__spalte {
+  grid-column: span 4;
+}
+.konzept-hinweis__label {
+  font-size: var(--t-meta);
+  line-height: var(--t-meta-lh);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+  margin-bottom: 8px;
+}
+.konzept-hinweis ul {
+  margin: 0;
+  padding-left: 1.1em;
+  list-style: disc;
+}
+.konzept-hinweis li + li {
+  margin-top: 6px;
+}
+.konzept-hinweis__fuss {
+  grid-column: 1 / -1;
+  border-top: 1px solid var(--hair);
+  padding-top: 12px;
+}
+.konzept-hinweis__fuss .link-arrow {
+  margin-block: 0;
+}
+
+.konzept-seite {
+  padding-block: var(--section);
+}
+
+/* Flyer A: Bild unter den Fakten */
+.flyer-bild {
+  margin: 0;
+  max-width: 420px;
+}
+.flyer-bild img {
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--hair);
+}
+
+/* Flyer B: kleine Vorschau, öffnet den Dialog */
+.flyer-vorschau {
+  display: inline-flex;
+  align-items: center;
+  gap: 16px;
+  min-height: 44px;
+  padding: 8px 16px 8px 8px;
+  background: var(--ground-2);
+  border: 1px solid var(--hair);
+  color: var(--ink);
+  font: inherit;
+  font-size: var(--t-small);
+  line-height: var(--t-small-lh);
+  cursor: pointer;
+  text-align: left;
+}
+.flyer-vorschau img {
+  width: 96px;
+  height: auto;
+  flex: none;
+  border: 1px solid var(--hair);
+}
+.flyer-vorschau:hover {
+  border-color: var(--ink);
+}
+.flyer-vorschau:focus-visible,
+.flyer-dialog__zu:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+.flyer-vorschau .arrow {
+  width: 0.85em;
+  height: 0.85em;
+}
+
+.flyer-dialog {
+  padding: 0;
+  border: 0;
+  background: var(--ground);
+  color: var(--ink);
+  width: min(92vw, 820px);
+  max-width: none;
+  max-height: 94dvh;
+  overflow: auto;
+}
+.flyer-dialog::backdrop {
+  background: rgba(18, 18, 18, 0.72);
+}
+.flyer-dialog__leiste {
+  position: sticky;
+  top: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 6px 12px 6px 20px;
+  background: var(--ground);
+  border-bottom: 1px solid var(--hair);
+  font-size: var(--t-meta);
+  line-height: var(--t-meta-lh);
+  color: var(--ink-2);
+}
+.flyer-dialog__zu {
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 16px;
+  border: 1px solid var(--ink);
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-size: var(--t-small);
+  line-height: var(--t-small-lh);
+  cursor: pointer;
+}
+.flyer-dialog__zu:hover {
+  background: var(--ink);
+  color: var(--ground);
+}
+.flyer-dialog img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+body:has(.flyer-dialog[open]) {
+  overflow: hidden;
+}
+
+/* Vergleichsseite */
+.vergleich {
+  padding-bottom: var(--section);
+}
+.vergleich__frage {
+  padding-top: var(--section);
+}
+.vergleich__karten {
+  list-style: none;
+  margin: var(--head-gap) var(--m) 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--g);
+}
+.vergleich__karten--zwei {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.vergleich__karte {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  border-top: 1px solid var(--ink);
+  padding-top: 16px;
+}
+.vergleich__karte h3 {
+  font-family: var(--f-display);
+  font-size: var(--t-h3);
+  line-height: var(--t-h3-lh);
+  font-weight: 400;
+  margin: 0;
+}
+.vergleich__screens {
+  display: grid;
+  grid-template-columns: 3fr 1fr;
+  gap: 12px;
+  align-items: start;
+}
+.vergleich__screens img {
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--hair);
+}
+.vergleich__karte p {
+  margin: 0;
+  font-size: var(--t-small);
+  line-height: var(--t-small-lh);
+}
+.vergleich__karte ul {
+  margin: 0;
+  padding-left: 1.1em;
+  list-style: disc;
+  font-size: var(--t-small);
+  line-height: var(--t-small-lh);
+}
+.vergleich__karte li + li {
+  margin-top: 6px;
+}
+.vergleich__label {
+  font-size: var(--t-meta);
+  line-height: var(--t-meta-lh);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+  margin-bottom: 6px;
+}
+.vergleich__empfehlung {
+  margin: var(--head-gap) var(--m) 0;
+  padding-top: 16px;
+  border-top: 1px solid var(--hair);
+  font-size: var(--t-body);
+  line-height: var(--t-body-lh);
+}
+.vergleich__empfehlung span {
+  display: inline-block;
+  min-width: min(100%, 24em);
+  border-bottom: 1px solid var(--ink-2);
+}
+
+/* Galerien B: Unterseite */
+.galerie-vertretung {
+  padding-top: var(--section);
+}
+.galerie-vertretungen {
+  list-style: none;
+  margin: var(--head-gap) var(--m) 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--g);
+}
+.galerie-vertretungen > li {
+  border-top: 1px solid var(--ink);
+  padding-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.galerie-vertretungen h3 {
+  font-family: var(--f-display);
+  font-size: var(--t-h2);
+  line-height: var(--t-h2-lh);
+  font-weight: 400;
+  margin: 0;
+}
+.galerie-meta {
+  margin: 0;
+  font-size: var(--t-meta);
+  line-height: var(--t-meta-lh);
+  color: var(--ink-2);
+}
+.galerie-ausstellungen {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.galerie-ausstellungen li {
+  display: grid;
+  grid-template-columns: 4.5em 1fr;
+  gap: 12px;
+  padding: 10px 0;
+  border-top: 1px solid var(--hair);
+  font-size: var(--t-small);
+  line-height: var(--t-small-lh);
+}
+.galerie-ausstellungen .y {
+  font-size: var(--t-meta);
+  line-height: var(--t-meta-lh);
+  color: var(--ink-2);
+  font-variant-numeric: tabular-nums;
+  padding-top: 2px;
+}
+.galerie-haeuser {
+  padding-block: var(--section);
+}
+.galerie-haeuser__liste {
+  list-style: none;
+  margin: var(--head-gap) var(--m) 0;
+  padding: 0;
+  columns: 3;
+  column-gap: var(--g);
+}
+.galerie-haeuser__liste > li {
+  break-inside: avoid;
+  padding: 14px 0 18px;
+  border-top: 1px solid var(--hair);
+}
+.galerie-haeuser__stadt {
+  font-family: var(--f-display);
+  font-size: var(--t-h3);
+  line-height: var(--t-h3-lh);
+  font-weight: 400;
+  margin: 0 0 6px;
+}
+.galerie-haeuser__liste ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: var(--t-small);
+  line-height: var(--t-small-lh);
+  color: var(--ink-2);
+}
+
+/* Orte-Kopf: Zeile zu den Vertretungen */
+.orte__vertretung {
+  margin: 0;
+  font-size: var(--t-small);
+  line-height: var(--t-small-lh);
+  color: var(--on-coal-2);
+}
+.orte__vertretung a {
+  color: var(--on-coal);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  display: inline-block;
+  padding-block: 11px;
+  margin-block: -11px;
+}
+
+@media (max-width: 900px) {
+  .konzept-hinweis__spalte {
+    grid-column: 1 / -1;
+  }
+  .vergleich__karten,
+  .vergleich__karten--zwei,
+  .galerie-vertretungen {
+    grid-template-columns: 1fr;
+  }
+  .galerie-haeuser__liste {
+    columns: 2;
+  }
+}
+@media (max-width: 520px) {
+  .galerie-haeuser__liste {
+    columns: 1;
+  }
+}
+
+.konzept-hinweis__weiter {
+  margin: 16px var(--m) 0;
+}
+
+/* Langer Titel der Vergleichsseite in der Größe der Abschnittsüberschrift */
+.page-hero--konzept .page-hero__title {
+  font-size: var(--t-h2);
+  line-height: var(--t-h2-lh);
+}

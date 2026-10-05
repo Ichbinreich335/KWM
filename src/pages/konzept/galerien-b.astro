@@ -1,0 +1,87 @@
+---
+import Hinweis from '../../components/konzept/Hinweis.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { vertretungen, weitereHaeuser } from '../../data/konzept-galerien';
+import '../../styles/basis.css';
+import '../../styles/seiten/konzept.css';
+import '../../styles/signaturen/signaturen.css';
+---
+
+<BaseLayout
+  title="Variante B: Unterseite Galerien · Konzept"
+  description="Konzeptseite: eigene Unterseite für die Galerien, die Young-Jae Lee vertreten, und weitere Häuser. Nicht Teil der Website."
+  bodyClass="page-aktuelles"
+>
+  <main id="inhalt">
+    <section class="page-hero page-hero--name grid" aria-labelledby="page-title">
+      <h1 class="page-hero__title" id="page-title" data-reveal="words">Galerien</h1>
+      <p class="page-hero__lede" data-reveal="fade">
+        Zwei Galerien vertreten Young-Jae Lee. Dazu kommen Museen und Häuser, in denen ihre Werke zu sehen waren.
+      </p>
+    </section>
+
+    <section class="galerie-vertretung" aria-labelledby="vertretung-title">
+      <div class="chapter__head grid">
+        <h2 class="h2" id="vertretung-title" data-reveal="words">Vertretungen</h2>
+      </div>
+      <ul class="galerie-vertretungen">
+        {vertretungen.map((galerie) => (
+          <li>
+            <h3>{galerie.name}</h3>
+            <p class="galerie-meta">
+              {galerie.stadt}
+              {galerie.seit && <> · {galerie.seit}</>}
+              {galerie.adresse && <><br />{galerie.adresse}</>}
+            </p>
+            <ul class="galerie-ausstellungen" aria-label={`Letzte Ausstellungen, ${galerie.name}`}>
+              {galerie.ausstellungen.map((a) => (
+                <li>
+                  <span class="y">{a.jahr}</span>
+                  <span>{a.titel}</span>
+                </li>
+              ))}
+            </ul>
+            <a class="link-arrow" href={galerie.href}>Young-Jae Lee bei {galerie.name}</a>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <section class="galerie-haeuser" aria-labelledby="haeuser-title">
+      <div class="chapter__head grid">
+        <h2 class="h2" id="haeuser-title" data-reveal="words">Weitere Häuser</h2>
+        <p class="chapter__intro" data-reveal="fade">
+          Museen, Galerien und Kirchen, in denen Ausstellungen stattfanden, nach Stadt.
+        </p>
+      </div>
+      <ul class="galerie-haeuser__liste">
+        {weitereHaeuser.map((ort) => (
+          <li>
+            <h3 class="galerie-haeuser__stadt">{ort.stadt}</h3>
+            <ul>
+              {ort.haeuser.map((haus) => <li>{haus}</li>)}
+            </ul>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <div class="konzept-seite">
+      <Hinweis
+        titel="Variante B: Eigene Unterseite „Galerien“"
+        hochladen="Je Vertretung ein Eintrag (Name, Stadt, seit wann, Link zur Künstlerseite). Die Ausstellungen und Häuser kommen aus den Ausstellungsdaten."
+        vorteile={[
+          'Klare Antwort auf „Wer vertritt Young-Jae Lee?“ an einer Stelle.',
+          'Links zu den Künstlerseiten der Galerien, Platz für weitere Angaben.',
+        ]}
+        nachteile={[
+          'Zusätzliche Seite, die gepflegt werden muss und erreichbar sein will.',
+          'Nur die Orte-Kacheln zeigen die Galerien im Zusammenhang mit den Ausstellungen.',
+        ]}
+      />
+      <p class="konzept-hinweis__weiter">
+        <a class="link-arrow" href="/konzept/galerien-b-orte">Orte-Abschnitt mit Link „Alle Galerien“ ansehen</a>
+      </p>
+    </div>
+  </main>
+</BaseLayout>

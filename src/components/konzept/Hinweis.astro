@@ -1,0 +1,32 @@
+---
+interface Props {
+  titel: string;
+  /** Was der Admin in Sanity hochlädt bzw. pflegt. */
+  hochladen: string;
+  vorteile: string[];
+  nachteile: string[];
+}
+const { titel, hochladen, vorteile, nachteile } = Astro.props;
+---
+
+<aside class="konzept-hinweis" aria-label="Hinweis zur Konzeptvariante">
+  <div class="konzept-hinweis__kopf">
+    <h2 class="konzept-hinweis__titel">{titel}</h2>
+    <p class="konzept-hinweis__text">Nur Konzeptseite, nicht Teil der Website.</p>
+  </div>
+  <div class="konzept-hinweis__spalte">
+    <p class="konzept-hinweis__label">In Sanity</p>
+    <p class="konzept-hinweis__text">{hochladen}</p>
+  </div>
+  <div class="konzept-hinweis__spalte">
+    <p class="konzept-hinweis__label">Vorteile</p>
+    <ul>{vorteile.map((v) => <li>{v}</li>)}</ul>
+  </div>
+  <div class="konzept-hinweis__spalte">
+    <p class="konzept-hinweis__label">Nachteile</p>
+    <ul>{nachteile.map((n) => <li>{n}</li>)}</ul>
+  </div>
+  <p class="konzept-hinweis__fuss">
+    <a class="link-arrow" href="/konzept">Zurück zu den Konzept-Vergleichen</a>
+  </p>
+</aside>

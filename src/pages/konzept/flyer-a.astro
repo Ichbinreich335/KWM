@@ -1,0 +1,33 @@
+---
+import Bild from '../../components/Bild.astro';
+import Hinweis from '../../components/konzept/Hinweis.astro';
+import KummerschalenSeite from '../../components/konzept/KummerschalenSeite.astro';
+---
+
+<KummerschalenSeite titel="Variante A: Flyer als Bild im Block">
+  <figure class="flyer-bild" slot="flyer" data-reveal="fade">
+    <Bild
+      src="/img/konzept/flyer-kummerschalen.png"
+      width="1240"
+      height="1748"
+      widths={[420, 840]}
+      sizes="(max-width: 900px) 90vw, 420px"
+      alt="Flyer zur Ausstellung „Kummerschalen“: Titel, Zeitraum 16. August bis 31. Oktober 2026, Willibrordi-Dom in Wesel (Platzhalter)"
+      loading="lazy"
+    />
+    <figcaption>Flyer zur Ausstellung</figcaption>
+  </figure>
+  <Hinweis
+    slot="hinweis"
+    titel="Variante A: Flyer als Bild direkt im Block"
+    hochladen="Ein Bild (PNG oder JPG, Hochformat) je Ausstellung. Alt-Text mit dem Flyertext oder eine Textfassung im Eintrag."
+    vorteile={[
+      'Sofort sichtbar, kein Klick nötig.',
+      'Einfachster Aufbau, ein Bildfeld in Sanity.',
+    ]}
+    nachteile={[
+      'Lädt mit der Seite mit (Ladezeit), bei mehreren Ausstellungen spürbar.',
+      'Kleine Schrift am Handy kaum lesbar, kein Vergrößern. Der Flyertext steckt im Bild: Alt-Text oder Textfassung nötig.',
+    ]}
+  />
+</KummerschalenSeite>

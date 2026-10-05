@@ -1,0 +1,23 @@
+---
+import Hinweis from '../../components/konzept/Hinweis.astro';
+import KummerschalenSeite from '../../components/konzept/KummerschalenSeite.astro';
+---
+
+<KummerschalenSeite titel="Variante C: Link auf ein PDF">
+  <p slot="flyer" data-reveal="fade">
+    <a class="link-arrow" href="/konzept/flyer-kummerschalen.pdf">Flyer (PDF, 1 Seite)</a>
+  </p>
+  <Hinweis
+    slot="hinweis"
+    titel="Variante C: Textlink auf ein PDF"
+    hochladen="Eine PDF-Datei je Ausstellung. Der Linktext nennt Format und Seitenzahl."
+    vorteile={[
+      'Keine Ladezeit für die Seite, der Flyer lädt nur bei Bedarf.',
+      'Text im PDF ist durchsuchbar und lässt sich vergrößern, auch druckbar.',
+    ]}
+    nachteile={[
+      'Verlässt die Seite, am Handy öffnet ein fremder PDF-Betrachter.',
+      'Ein PDF aus einem Scan hat keinen Text: Barrierefreie Textfassung nötig.',
+    ]}
+  />
+</KummerschalenSeite>

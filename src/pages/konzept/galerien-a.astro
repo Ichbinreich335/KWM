@@ -1,0 +1,39 @@
+---
+import Hinweis from '../../components/konzept/Hinweis.astro';
+import OrteSektion from '../../components/konzept/OrteSektion.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { vertretungen } from '../../data/konzept-galerien';
+import '../../styles/basis.css';
+import '../../styles/seiten/konzept.css';
+import '../../styles/signaturen/signaturen.css';
+
+const [jahn, greve] = vertretungen;
+---
+
+<BaseLayout
+  title="Variante A: Galerien in den Orten · Konzept"
+  description="Konzeptseite: Galerien nur in den Orten der Startseite. Nicht Teil der Website."
+  bodyClass="page-home"
+>
+  <main id="inhalt">
+    <div class="konzept-seite">
+      <Hinweis
+        titel="Variante A: Galerien nur in den Orten auf der Startseite"
+        hochladen="Nichts Neues: Die Häuser stehen je Ort in den Ausstellungsdaten. Die Vertretungen sind zwei Links im Orte-Kopf."
+        vorteile={[
+          'Keine zusätzliche Seite, nichts doppelt zu pflegen.',
+          'Besucher sehen die Galerien dort, wo sie die Ausstellungen sehen.',
+        ]}
+        nachteile={[
+          'Die zwei Vertretungen gehen zwischen den Kacheln unter, nur eine Zeile weist darauf hin.',
+          'Keine Adresse oder Künstlerseite je Galerie, nur der Link in der Zeile.',
+        ]}
+      />
+    </div>
+    <OrteSektion>
+      <p class="orte__vertretung" data-reveal="fade">
+        Vertreten durch <a href={jahn.href}>{jahn.name}, {jahn.stadt}</a>, und <a href={greve.href}>{greve.name}, {greve.stadt}</a>
+      </p>
+    </OrteSektion>
+  </main>
+</BaseLayout>

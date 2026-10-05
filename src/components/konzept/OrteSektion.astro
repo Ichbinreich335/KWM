@@ -1,0 +1,401 @@
+---
+import Bild from '../Bild.astro';
+---
+
+    {/* Orte: Ausstellungsorte im Bildraster (src/scripts/sig-orte.ts) */}
+    <section class="orte" id="orte" data-sig="orte" aria-labelledby="orte-title">
+      <div class="orte__head grid">
+        <h2 class="h2" id="orte-title" data-reveal="words">
+          Ausstellungsorte
+        </h2>
+        <div class="orte__aside">
+          <p data-reveal="fade">Ausstellungen seit 1980 in Europa, Korea, Japan und den USA.</p>
+          <a class="link-arrow" href="/young-jae-lee#ausstellungen">
+            Alle Ausstellungen
+          </a>
+          <slot />
+        </div>
+      </div>
+      {/* Absatz bleibt einzeilig: Umbrüche von Prettier setzen sonst ein Leerzeichen zwischen die Inline-Elemente */}
+      {/* prettier-ignore */}
+      <p class="orte__tip" data-orte-tip>Auf eine Stadt <span class="orte__tip-fine">klicken</span><span class="orte__tip-coarse">tippen</span>, um die Ausstellungen dort zu sehen.</p>
+      <ul class="orte__grid">
+        <li class="orte__tile orte__tile--xl">
+          <Bild
+            class="orte__img"
+            src="/img/kwm/schalen-trio-1400.webp"
+            width="1400"
+            height="652"
+            loading="lazy"
+            alt=""
+          />
+          <h3 class="orte__name">Köln</h3>
+          <p class="orte__meta">
+            <span>2018–2026</span>
+            <span>7 Ausstellungen</span>
+          </p>
+          <ul class="orte__houses" aria-label="Häuser in Köln">
+            <li>Museum für Ostasiatische Kunst</li>
+            <li>Galerie Karsten Greve</li>
+            <li>Kunst-Station Sankt Peter</li>
+            <li>Galerie Udo Adam-Pasquale</li>
+          </ul>
+          <ol class="orte__shows" aria-label="Ausstellungen in Köln" hidden>
+            <li>
+              <span class="orte__y">2026</span>
+              <span class="orte__h">Museum für Ostasiatische Kunst</span>
+              <span class="orte__t">„99 Schalen – ein Kosmos“</span>
+            </li>
+            <li>
+              <span class="orte__y">2024</span>
+              <span class="orte__h">Museum für Ostasiatische Kunst</span>
+              <span class="orte__t">„50 Jahre – 50 Schätze“</span>
+            </li>
+            <li>
+              <span class="orte__y">2023</span>
+              <span class="orte__h">Galerie Udo Adam-Pasquale, Köln-Sülz</span>
+            </li>
+            <li>
+              <span class="orte__y">2022</span>
+              <span class="orte__h">Kunst-Station Sankt Peter</span>
+              <span class="orte__t">„SIEBEN MAL SIEBEN“</span>
+            </li>
+            <li>
+              <span class="orte__y">2020</span>
+              <span class="orte__h">Galerie Karsten Greve</span>
+              <span class="orte__t">„Spinatschalen“</span>
+            </li>
+            <li>
+              <span class="orte__y">2020</span>
+              <span class="orte__h">Galerie Karsten Greve</span>
+              <span class="orte__t">Buchpräsentation „Das Grün in den Schalen“</span>
+            </li>
+            <li>
+              <span class="orte__y">2018</span>
+              <span class="orte__h">Galerie Karsten Greve</span>
+              <span class="orte__t">„Arbeiten in Keramik“</span>
+            </li>
+          </ol>
+        </li>
+        <li class="orte__tile orte__tile--xl">
+          <Bild class="orte__img" src="/img/kwm/regal.webp" width="954" height="905" loading="lazy" alt="" />
+          <h3 class="orte__name">München</h3>
+          <p class="orte__meta">
+            <span>2016–2026</span>
+            <span>6 Ausstellungen</span>
+          </p>
+          <ul class="orte__houses" aria-label="Häuser in München">
+            <li>Galerie Jahn und Jahn</li>
+            <li>Galerie Handwerk</li>
+            <li>Bayerischer Kunstgewerbeverein</li>
+          </ul>
+          <ol class="orte__shows" aria-label="Ausstellungen in München" hidden>
+            <li>
+              <span class="orte__y">2026</span>
+              <span class="orte__h">Galerie Jahn und Jahn</span>
+              <span class="orte__t">„Young-Jae Lee“</span>
+            </li>
+            <li>
+              <span class="orte__y">2025</span>
+              <span class="orte__h">Galerie Jahn und Jahn</span>
+              <span class="orte__t">„Young-Jae Lee: Keramik“</span>
+            </li>
+            <li>
+              <span class="orte__y">2024</span>
+              <span class="orte__h">Bayerischer Kunstgewerbeverein</span>
+            </li>
+            <li>
+              <span class="orte__y">2022</span>
+              <span class="orte__h">Galerie Jahn und Jahn</span>
+              <span class="orte__t">„Young-Jae LEE – Spindelvasen und Spinatschalen“</span>
+            </li>
+            <li>
+              <span class="orte__y">2020</span>
+              <span class="orte__h">Galerie Handwerk</span>
+              <span class="orte__t">„es grünt“</span>
+            </li>
+            <li>
+              <span class="orte__y">2016</span>
+              <span class="orte__h">Galerie Jahn</span>
+              <span class="orte__t">„Augenblicke“</span>
+            </li>
+          </ol>
+        </li>
+        <li class="orte__tile orte__tile--m orte__tile--full">
+          <Bild class="orte__img" src="/img/kwm/seladon-schalen.webp" width="900" height="600" loading="lazy" alt="" />
+          <h3 class="orte__name">Tokio</h3>
+          <p class="orte__meta">
+            <span>2016–2025</span>
+            <span>6 Ausstellungen</span>
+          </p>
+          <ul class="orte__houses" aria-label="Häuser in Tokio">
+            <li>Gallery Tokyo</li>
+            <li>LIVING MOTIF</li>
+          </ul>
+          <ol class="orte__shows" aria-label="Ausstellungen in Tokio" hidden>
+            <li>
+              <span class="orte__y">2025</span>
+              <span class="orte__h">Gallery Tokyo</span>
+              <span class="orte__t">„Lee Young-Jae“</span>
+            </li>
+            <li>
+              <span class="orte__y">2023</span>
+              <span class="orte__h">Gallery Tokyo</span>
+            </li>
+            <li>
+              <span class="orte__y">2021</span>
+              <span class="orte__h">Gallery Tokyo</span>
+            </li>
+            <li>
+              <span class="orte__y">2019</span>
+              <span class="orte__h">Gallery Tokyo</span>
+            </li>
+            <li>
+              <span class="orte__y">2017</span>
+              <span class="orte__h">Gallery Tokyo</span>
+            </li>
+            <li>
+              <span class="orte__y">2016</span>
+              <span class="orte__h">LIVING MOTIF</span>
+              <span class="orte__t">„Gefäße der Keramischen Werkstatt“</span>
+            </li>
+          </ol>
+        </li>
+        <li class="orte__tile orte__tile--m">
+          <Bild class="orte__img" src="/img/kwm/kummerschalen.webp" width="937" height="1040" loading="lazy" alt="" />
+          <h3 class="orte__name">Essen</h3>
+          <p class="orte__meta">
+            <span>2019–2025</span>
+            <span>4 Ausstellungen</span>
+          </p>
+          <ul class="orte__houses" aria-label="Häuser in Essen">
+            <li>Museum Folkwang</li>
+            <li>Kokerei Zollverein</li>
+            <li>Kunsthaus Essen</li>
+          </ul>
+          <ol class="orte__shows" aria-label="Ausstellungen in Essen" hidden>
+            <li>
+              <span class="orte__y">2025</span>
+              <span class="orte__h">Festival in Essen</span>
+              <span class="orte__t">„OPEN House“ – Future Heritage. Das Erbe von Morgen</span>
+            </li>
+            <li>
+              <span class="orte__y">2022</span>
+              <span class="orte__h">Kunsthaus Essen</span>
+              <span class="orte__t">„HOME! 3/5 Identitäten“</span>
+            </li>
+            <li>
+              <span class="orte__y">2019</span>
+              <span class="orte__h">Mischanlage Kokerei Zollverein</span>
+              <span class="orte__t">„MATERIAL ZU FORM – Körper zu Körper“</span>
+            </li>
+            <li>
+              <span class="orte__y">2019</span>
+              <span class="orte__h">Museum Folkwang</span>
+              <span class="orte__t">„Young-Jae Lee“</span>
+            </li>
+          </ol>
+        </li>
+        <li class="orte__tile orte__tile--m">
+          <Bild class="orte__img" src="/img/kwm/teeschale.webp" width="1200" height="1200" loading="lazy" alt="" />
+          <h3 class="orte__name">Korea</h3>
+          <p class="orte__meta">
+            <span>2017–2019</span>
+            <span>2 Ausstellungen</span>
+          </p>
+          <ul class="orte__houses" aria-label="Häuser in Korea">
+            <li>Gwangju Museum of Art</li>
+            <li>Ha Jung-woong Museum of Art</li>
+            <li>Shinsegae Gallery</li>
+          </ul>
+          <ol class="orte__shows" aria-label="Ausstellungen in Korea" hidden>
+            <li>
+              <span class="orte__y">2019</span>
+              <span class="orte__h">Gwangju Museum of Art und Ha Jung-woong Museum of Art</span>
+              <span class="orte__t">„Emptying, Filling and Emptying“</span>
+            </li>
+            <li>
+              <span class="orte__y">2017</span>
+              <span class="orte__h">Shinsegae Gallery in Daegu, Gwangju, Incheon und Busan</span>
+            </li>
+          </ol>
+        </li>
+        <li class="orte__tile orte__tile--s">
+          <Bild class="orte__img" src="/img/kwm/kugelvase.webp" width="600" height="400" loading="lazy" alt="" />
+          <h3 class="orte__name">Boston</h3>
+          <p class="orte__meta">
+            <span>2016–2022</span>
+            <span>3 Ausstellungen</span>
+          </p>
+          <ul class="orte__houses" aria-label="Häuser in Boston">
+            <li>Pucker Gallery</li>
+          </ul>
+          <ol class="orte__shows" aria-label="Ausstellungen in Boston" hidden>
+            <li>
+              <span class="orte__y">2022</span>
+              <span class="orte__h">Pucker Gallery</span>
+              <span class="orte__t">„Hope / Hoffnung – Works by Young-Jae Lee“</span>
+            </li>
+            <li>
+              <span class="orte__y">2019</span>
+              <span class="orte__h">Pucker Gallery</span>
+              <span class="orte__t">„Fine Choices 2019 Featuring Young-Jae Lee“</span>
+            </li>
+            <li>
+              <span class="orte__y">2016</span>
+              <span class="orte__h">Pucker Gallery</span>
+              <span class="orte__t">„WITNESS TO AN ANCIENT TRUTH“</span>
+            </li>
+          </ol>
+        </li>
+        <li class="orte__tile orte__tile--s">
+          <Bild class="orte__img" src="/img/kwm/schalen.webp" width="600" height="400" loading="lazy" alt="" />
+          <h3 class="orte__name">Krakau und Breslau</h3>
+          <p class="orte__meta">
+            <span>2016</span>
+            <span>3 Ausstellungen</span>
+          </p>
+          <ul class="orte__houses" aria-label="Häuser in Krakau und Breslau">
+            <li>Manggha Museum</li>
+            <li>Architekturmuseum Breslau</li>
+            <li>Galeria NEON</li>
+          </ul>
+          <ol class="orte__shows" aria-label="Ausstellungen in Krakau und Breslau" hidden>
+            <li>
+              <span class="orte__y">2016</span>
+              <span class="orte__h">Manggha Museum, Krakau</span>
+              <span class="orte__t">„Young-Jae Lee Schalen“</span>
+            </li>
+            <li>
+              <span class="orte__y">2016</span>
+              <span class="orte__h">Architekturmuseum Breslau</span>
+              <span class="orte__t">„Young-Jae Lee – Gefäße“</span>
+            </li>
+            <li>
+              <span class="orte__y">2016</span>
+              <span class="orte__h">Galeria NEON, Breslau</span>
+              <span class="orte__t">„Keramische Werkstatt Margaretenhöhe – Young-Jae Lee“</span>
+            </li>
+          </ol>
+        </li>
+        <li class="orte__tile orte__tile--s">
+          <Bild class="orte__img" src="/img/kwm/schale_gross.webp" width="600" height="400" loading="lazy" alt="" />
+          <h3 class="orte__name">Chemnitz</h3>
+          <p class="orte__meta">
+            <span>2024–2025</span>
+            <span>2 Ausstellungen</span>
+          </p>
+          <ul class="orte__houses" aria-label="Häuser in Chemnitz">
+            <li>Stadtkirche St. Jakobi</li>
+          </ul>
+          <ol class="orte__shows" aria-label="Ausstellungen in Chemnitz" hidden>
+            <li>
+              <span class="orte__y">2025</span>
+              <span class="orte__h">Stadtkirche St. Jakobi</span>
+              <span class="orte__t">„Young-Jae Lee: Vasen“</span>
+            </li>
+            <li>
+              <span class="orte__y">2024</span>
+              <span class="orte__h">Stadtkirche St. Jakobi</span>
+              <span class="orte__t">„Young-Jae Lee: SCHALEN“</span>
+            </li>
+          </ol>
+        </li>
+        <li class="orte__tile orte__tile--s">
+          <Bild class="orte__img" src="/img/kwm/schalen2.webp" width="600" height="400" loading="lazy" alt="" />
+          <h3 class="orte__name">Bonn</h3>
+          <p class="orte__meta">
+            <span>2019–2020</span>
+            <span>2 Ausstellungen</span>
+          </p>
+          <ul class="orte__houses" aria-label="Häuser in Bonn">
+            <li>Galerie Gisela Clement</li>
+            <li>ENTERVENTIONALE</li>
+          </ul>
+          <ol class="orte__shows" aria-label="Ausstellungen in Bonn" hidden>
+            <li>
+              <span class="orte__y">2020</span>
+              <span class="orte__h">ENTERVENTIONALE, Ausstellungsparcours</span>
+              <span class="orte__t">„ENTERVENTIONALE #2020“</span>
+            </li>
+            <li>
+              <span class="orte__y">2019</span>
+              <span class="orte__h">Galerie Gisela Clement</span>
+              <span class="orte__t">„Schönheit !?“</span>
+            </li>
+          </ol>
+        </li>
+        <li class="orte__tile orte__tile--s">
+          <Bild class="orte__img" src="/img/kwm/spindelvase1.webp" width="600" height="400" loading="lazy" alt="" />
+          <h3 class="orte__name">New York</h3>
+          <p class="orte__meta">
+            <span>2024</span>
+            <span>1 Ausstellung</span>
+          </p>
+          <ul class="orte__houses" aria-label="Häuser in New York">
+            <li>David Nolan Gallery</li>
+          </ul>
+          <ol class="orte__shows" aria-label="Ausstellungen in New York" hidden>
+            <li>
+              <span class="orte__y">2024</span>
+              <span class="orte__h">David Nolan Gallery</span>
+              <span class="orte__t">„Young-Jae Lee – Forms from the Earth“</span>
+            </li>
+          </ol>
+        </li>
+        <li class="orte__tile orte__tile--s">
+          <Bild class="orte__img" src="/img/kwm/kannen.webp" width="600" height="400" loading="lazy" alt="" />
+          <h3 class="orte__name">Düsseldorf</h3>
+          <p class="orte__meta">
+            <span>2024</span>
+            <span>1 Ausstellung</span>
+          </p>
+          <ul class="orte__houses" aria-label="Häuser in Düsseldorf">
+            <li>Hetjens-Museum</li>
+          </ul>
+          <ol class="orte__shows" aria-label="Ausstellungen in Düsseldorf" hidden>
+            <li>
+              <span class="orte__y">2024</span>
+              <span class="orte__h">Hetjens-Museum</span>
+              <span class="orte__t">„100 Jahre Keramische Werkstatt Margaretenhöhe – Young-Jae Lee im Hetjens“</span>
+            </li>
+          </ol>
+        </li>
+        <li class="orte__tile orte__tile--s">
+          <Bild class="orte__img" src="/img/kwm/schale2.webp" width="600" height="400" loading="lazy" alt="" />
+          <h3 class="orte__name">Wien</h3>
+          <p class="orte__meta">
+            <span>2016</span>
+            <span>1 Ausstellung</span>
+          </p>
+          <ul class="orte__houses" aria-label="Häuser in Wien">
+            <li>MAK – Museum für angewandte Kunst</li>
+          </ul>
+          <ol class="orte__shows" aria-label="Ausstellungen in Wien" hidden>
+            <li>
+              <span class="orte__y">2016</span>
+              <span class="orte__h">MAK – Österreichisches Museum für angewandte Kunst</span>
+              <span class="orte__t">„NICHT SCHÖN“</span>
+            </li>
+          </ol>
+        </li>
+        <li class="orte__tile orte__tile--s">
+          <Bild class="orte__img" src="/img/kwm/schalen3.webp" width="600" height="400" loading="lazy" alt="" />
+          <h3 class="orte__name">Zürich</h3>
+          <p class="orte__meta">
+            <span>2023</span>
+            <span>1 Ausstellung</span>
+          </p>
+          <ul class="orte__houses" aria-label="Häuser in Zürich">
+            <li>Raum 49</li>
+          </ul>
+          <ol class="orte__shows" aria-label="Ausstellungen in Zürich" hidden>
+            <li>
+              <span class="orte__y">2023</span>
+              <span class="orte__h">Raum 49</span>
+            </li>
+          </ol>
+        </li>
+      </ul>
+      <p class="orte__note">Städte und Zahlen nach der Ausstellungsliste 2016 bis 2026.</p>
+    </section>

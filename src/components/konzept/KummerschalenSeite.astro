@@ -1,0 +1,88 @@
+---
+import Bild from '../Bild.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import '../../styles/basis.css';
+import '../../styles/seiten/page-aktuelles.css';
+import '../../styles/seiten/konzept.css';
+import '../../styles/signaturen/signaturen.css';
+
+interface Props {
+  titel: string;
+}
+const { titel } = Astro.props;
+---
+
+<BaseLayout
+  title={`${titel} · Konzept Flyer`}
+  description="Konzeptseite: Darstellung eines Ausstellungsflyers. Nicht Teil der Website."
+  bodyClass="page-aktuelles"
+  nav="aktuelles"
+>
+  <main id="inhalt">
+    <section class="page-hero page-hero--name grid" aria-labelledby="page-title">
+      <h1 class="page-hero__title" id="page-title" data-reveal="words">Aktuelles</h1>
+      <p class="page-hero__lede" data-reveal="fade">
+        Liebe Freunde der Keramischen Werkstatt, besuchen Sie und freuen Sie sich auf die folgenden Ausstellungen.
+      </p>
+    </section>
+
+    <div id="ausstellungen">
+      <article class="feature feature--mirror grid" aria-labelledby="f-wesel">
+        <figure class="feature__media" data-reveal="img">
+          <Bild
+            src="/img/kwm/kummerschalen.webp"
+            width="937"
+            height="1040"
+            alt="Viele flache Schalen in Seladon, Schwarz und Rotbraun, auf dem Boden ausgelegt"
+            loading="lazy"
+          />
+          <figcaption>
+            Schalen von Young-Jae Lee · Fotografie: Christopher Clem Franken, © Kunst-Station Sankt Peter, Köln
+          </figcaption>
+        </figure>
+        <div class="feature__text">
+          <p class="feature__date" data-reveal="fade">
+            16. August –<br />
+            31. Oktober 2026
+          </p>
+          <h2 class="h2 feature__title" id="f-wesel" data-reveal="words">„Kummerschalen“</h2>
+          <p class="feature__lead" data-reveal="fade">
+            Der Niederrheinische Kunstverein zeigt in Kooperation mit der Evangelischen Kirchengemeinde Wesel
+            handgefertigte Schalen der international renommierten Keramikerin Young-Jae Lee.
+          </p>
+          <dl class="feature__facts" data-reveal="fade">
+            <div>
+              <dt>Ort</dt>
+              <dd>
+                Willibrordi-Dom
+                <br />
+                Großer Markt, 46483 Wesel
+              </dd>
+            </div>
+            <div>
+              <dt>Eröffnung</dt>
+              <dd>
+                Sonntag, 16. August 2026, 11 Uhr
+                <br />
+                Gottesdienst zur Ausstellung, 12.15 Uhr Eröffnung der Ausstellung. Die Künstlerin wird anwesend sein.
+              </dd>
+            </div>
+            <div>
+              <dt>Öffnungszeiten Dom</dt>
+              <dd>
+                Di–So 14.30–17.00 Uhr
+                <br />
+                Mi und Sa 10–12 Uhr
+              </dd>
+            </div>
+          </dl>
+          <slot name="flyer" />
+        </div>
+      </article>
+    </div>
+
+    <div class="konzept-seite">
+      <slot name="hinweis" />
+    </div>
+  </main>
+</BaseLayout>

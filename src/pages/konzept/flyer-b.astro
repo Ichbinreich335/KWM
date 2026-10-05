@@ -1,0 +1,70 @@
+---
+import Bild from '../../components/Bild.astro';
+import Hinweis from '../../components/konzept/Hinweis.astro';
+import KummerschalenSeite from '../../components/konzept/KummerschalenSeite.astro';
+
+const flyerAlt =
+  'Flyer zur Ausstellung „Kummerschalen“: Titel, Zeitraum 16. August bis 31. Oktober 2026, Willibrordi-Dom in Wesel (Platzhalter)';
+---
+
+<KummerschalenSeite titel="Variante B: Vorschau, die sich groß öffnet">
+  <div slot="flyer" data-reveal="fade">
+    <button type="button" class="flyer-vorschau" data-flyer-oeffnen aria-haspopup="dialog">
+      <Bild
+        src="/img/konzept/flyer-kummerschalen.png"
+        width="1240"
+        height="1748"
+        widths={[96, 192]}
+        sizes="96px"
+        alt=""
+        loading="lazy"
+      />
+      <span>Flyer ansehen</span>
+    </button>
+    <dialog class="flyer-dialog" data-flyer-dialog aria-label="Flyer zur Ausstellung „Kummerschalen“">
+      <div class="flyer-dialog__leiste">
+        <span>Flyer zur Ausstellung</span>
+        <button type="button" class="flyer-dialog__zu" data-flyer-schliessen>Schließen</button>
+      </div>
+      <Bild
+        src="/img/konzept/flyer-kummerschalen.png"
+        width="1240"
+        height="1748"
+        widths={[820, 1240]}
+        sizes="(max-width: 900px) 92vw, 820px"
+        alt={flyerAlt}
+        loading="lazy"
+      />
+    </dialog>
+  </div>
+  <Hinweis
+    slot="hinweis"
+    titel="Variante B: Kleine Vorschau, öffnet groß"
+    hochladen="Ein Bild (PNG oder JPG, Hochformat) je Ausstellung. Die Vorschau erzeugt die Website selbst. Alt-Text mit dem Flyertext nötig."
+    vorteile={[
+      'Block bleibt ruhig und schnell: Die Vorschau ist klein, das große Bild lädt erst beim Öffnen.',
+      'Am Handy gut lesbar, weil der Flyer die Breite des Bildschirms nutzt.',
+    ]}
+    nachteile={[
+      'Ein Klick mehr, etwas mehr Skript (Dialog mit Tastatur und Esc).',
+      'Flyertext steckt im Bild: Alt-Text oder Textfassung nötig.',
+    ]}
+  />
+</KummerschalenSeite>
+
+<script>
+  const dialog = document.querySelector<HTMLDialogElement>('[data-flyer-dialog]');
+  const ausloeser = document.querySelector<HTMLButtonElement>('[data-flyer-oeffnen]');
+  const schliessen = document.querySelector<HTMLButtonElement>('[data-flyer-schliessen]');
+
+  if (dialog && ausloeser && schliessen) {
+    ausloeser.addEventListener('click', () => dialog.showModal());
+    schliessen.addEventListener('click', () => dialog.close());
+    // Der Dialog hat keinen Innenabstand: Ein Klick, der den Dialog selbst trifft, liegt auf dem Hintergrund.
+    dialog.addEventListener('click', (ereignis) => {
+      if (ereignis.target === dialog) dialog.close();
+    });
+    // Fokus zurück auf den Auslöser (Esc und Schließen), ausdrücklich statt nur auf das Browserverhalten verlassen.
+    dialog.addEventListener('close', () => ausloeser.focus());
+  }
+</script>

@@ -1,0 +1,137 @@
+---
+import { Image } from 'astro:assets';
+import { bildMetadaten } from '../../data/bilder';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import '../../styles/basis.css';
+import '../../styles/seiten/konzept.css';
+import '../../styles/signaturen/signaturen.css';
+
+interface Variante {
+  name: string;
+  titel: string;
+  href: string;
+  linkText: string;
+  /** Dateiname der Screens ohne Endung und Zusatz, unter src/assets/img/konzept/screens/ */
+  screen: string;
+  beschreibung: string;
+  vorteile: string[];
+  nachteile: string[];
+}
+
+const flyer: Variante[] = [
+  {
+    name: 'A',
+    titel: 'Bild im Block',
+    href: '/konzept/flyer-a',
+    linkText: 'Variante A ansehen',
+    screen: 'flyer-a',
+    beschreibung: 'Der Flyer steht als Bild unter den Fakten der Ausstellung.',
+    vorteile: ['Sofort sichtbar, kein Klick', 'Einfachster Aufbau'],
+    nachteile: ['Lädt mit der Seite mit', 'Kleine Schrift am Handy, kein Vergrößern'],
+  },
+  {
+    name: 'B',
+    titel: 'Vorschau, öffnet groß',
+    href: '/konzept/flyer-b',
+    linkText: 'Variante B ansehen',
+    screen: 'flyer-b',
+    beschreibung: 'Eine kleine Vorschau mit Knopf „Flyer ansehen“ öffnet den Flyer groß in einem Fenster.',
+    vorteile: ['Block bleibt ruhig, großes Bild lädt erst beim Öffnen', 'Am Handy gut lesbar'],
+    nachteile: ['Ein Klick mehr', 'Etwas mehr Skript (Dialog)'],
+  },
+  {
+    name: 'C',
+    titel: 'Link auf ein PDF',
+    href: '/konzept/flyer-c',
+    linkText: 'Variante C ansehen',
+    screen: 'flyer-c',
+    beschreibung: 'Ein Textlink „Flyer (PDF, 1 Seite)“ führt auf eine PDF-Datei.',
+    vorteile: ['Keine Ladezeit für die Seite', 'Druckbar, Text vergrößerbar'],
+    nachteile: ['Verlässt die Seite, am Handy fremder PDF-Betrachter', 'Gescanntes PDF ohne Text: Textfassung nötig'],
+  },
+];
+
+const galerien: Variante[] = [
+  {
+    name: 'A',
+    titel: 'Galerien in den Orten',
+    href: '/konzept/galerien-a',
+    linkText: 'Variante A ansehen',
+    screen: 'galerien-a',
+    beschreibung: 'Wie heute: Galerien stehen als Häuser in den Orte-Kacheln, im Kopf eine Zeile zu den zwei Vertretungen.',
+    vorteile: ['Keine zusätzliche Seite', 'Galerien dort, wo die Ausstellungen sind'],
+    nachteile: ['Vertretungen gehen zwischen den Kacheln unter', 'Keine Künstlerseite oder Adresse je Galerie'],
+  },
+  {
+    name: 'B',
+    titel: 'Eigene Unterseite „Galerien“',
+    href: '/konzept/galerien-b',
+    linkText: 'Variante B ansehen',
+    screen: 'galerien-b',
+    beschreibung: 'Eigene Seite mit den zwei Vertretungen und den weiteren Häusern. Der Orte-Kopf verlinkt mit „Alle Galerien“.',
+    vorteile: ['Vertretungen mit Gewicht und Link zur Künstlerseite', 'Orte-Abschnitt bleibt ruhig'],
+    nachteile: ['Eine Seite mehr zu pflegen', 'Galerien an zwei Stellen, gemeinsame Quelle nötig'],
+  },
+];
+
+const gruppen = [
+  { id: 'flyer', titel: 'Flyer einer Ausstellung: Wie zeigen wir ihn?', varianten: flyer, klasse: '' },
+  { id: 'galerien', titel: 'Galerien: Nur in den Orten oder eigene Seite?', varianten: galerien, klasse: ' vergleich__karten--zwei' },
+];
+---
+
+<BaseLayout
+  title="Konzept-Vergleiche: Flyer und Galerien"
+  description="Konzeptseite: Varianten für Ausstellungsflyer und Galerien im Vergleich. Nicht Teil der Website."
+  bodyClass="page-aktuelles"
+>
+  <main id="inhalt">
+    <section class="page-hero page-hero--name page-hero--konzept grid" aria-labelledby="page-title">
+      <h1 class="page-hero__title" id="page-title" data-reveal="words">Konzept-Vergleiche: Flyer und Galerien</h1>
+      <p class="page-hero__lede" data-reveal="fade">
+        Zwei Fragen für das Sanity-Modell, jeweils als echte Seite zum Anklicken. Der Flyer ist ein Platzhalter, bis ein
+        Scan vorliegt.
+      </p>
+    </section>
+
+    <div class="vergleich">
+      {gruppen.map((gruppe) => (
+        <section class="vergleich__frage" aria-labelledby={`frage-${gruppe.id}`}>
+          <div class="chapter__head grid">
+            <h2 class="h2" id={`frage-${gruppe.id}`} data-reveal="words">{gruppe.titel}</h2>
+          </div>
+          <ul class={`vergleich__karten${gruppe.klasse}`}>
+            {gruppe.varianten.map((v) => (
+              <li class="vergleich__karte">
+                <h3>{`Variante ${v.name}: ${v.titel}`}</h3>
+                <div class="vergleich__screens">
+                  <Image
+                    src={bildMetadaten(`/img/konzept/screens/${v.screen}-desktop.jpg`)}
+                    alt={`Screen Desktop, Variante ${v.name}: ${v.titel}`}
+                    loading="lazy"
+                  />
+                  <Image
+                    src={bildMetadaten(`/img/konzept/screens/${v.screen}-mobil.jpg`)}
+                    alt={`Screen Handy, Variante ${v.name}: ${v.titel}`}
+                    loading="lazy"
+                  />
+                </div>
+                <p>{v.beschreibung}</p>
+                <div>
+                  <p class="vergleich__label">Vorteile</p>
+                  <ul>{v.vorteile.map((x) => <li>{x}</li>)}</ul>
+                </div>
+                <div>
+                  <p class="vergleich__label">Nachteile</p>
+                  <ul>{v.nachteile.map((x) => <li>{x}</li>)}</ul>
+                </div>
+                <a class="link-arrow" href={v.href}>{v.linkText}</a>
+              </li>
+            ))}
+          </ul>
+          <p class="vergleich__empfehlung">Empfehlung: <span></span></p>
+        </section>
+      ))}
+    </div>
+  </main>
+</BaseLayout>

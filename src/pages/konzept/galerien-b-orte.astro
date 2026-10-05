@@ -1,0 +1,34 @@
+---
+import Hinweis from '../../components/konzept/Hinweis.astro';
+import OrteSektion from '../../components/konzept/OrteSektion.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import '../../styles/basis.css';
+import '../../styles/seiten/konzept.css';
+import '../../styles/signaturen/signaturen.css';
+---
+
+<BaseLayout
+  title="Variante B: Orte mit Link auf die Galerien · Konzept"
+  description="Konzeptseite: Orte-Abschnitt mit Link auf die Unterseite Galerien. Nicht Teil der Website."
+  bodyClass="page-home"
+>
+  <main id="inhalt">
+    <div class="konzept-seite">
+      <Hinweis
+        titel="Variante B: Orte-Kopf mit Link „Alle Galerien“"
+        hochladen="Die Unterseite „Galerien“ braucht eigene Einträge je Vertretung (Name, Stadt, Link, seit wann). Die Häuser kommen weiter aus den Orten."
+        vorteile={[
+          'Die Vertretungen bekommen Platz und Gewicht, mit Link zur Künstlerseite.',
+          'Der Orte-Abschnitt bleibt ruhig, ein Link statt einer Zeile.',
+        ]}
+        nachteile={[
+          'Eine Seite mehr, die gepflegt und in der Navigation oder von den Orten aus gefunden werden muss.',
+          'Galerien stehen an zwei Stellen (Orte und Unterseite): Pflege über eine gemeinsame Quelle nötig.',
+        ]}
+      />
+    </div>
+    <OrteSektion>
+      <a class="link-arrow" href="/konzept/galerien-b">Alle Galerien</a>
+    </OrteSektion>
+  </main>
+</BaseLayout>
