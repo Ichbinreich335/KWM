@@ -9,11 +9,12 @@
     "deploy": "astro build && wrangler deploy",
     "format": "prettier --write .",
     "lint": "eslint .",
-    "check": "prettier --check . && eslint . && astro check && astro build",
+    "check": "prettier --check . && eslint . && astro check && npm run test:unit && astro build",
     "prototyp": "node archiv/prototyp/tools/build.mjs && python3 -m http.server 4392 -d archiv/prototyp/site",
     "test:ausgangsstand": "ZIEL=prototyp playwright test tests/optik.spec.ts --update-snapshots",
     "test:optik": "playwright test tests/optik.spec.ts",
-    "test": "playwright test"
+    "test": "playwright test",
+    "test:unit": "vitest run"
   },
   "repository": {
     "type": "git",
@@ -39,6 +40,7 @@
     "prettier-plugin-astro": "1.1.0",
     "typescript": "6.0.3",
     "typescript-eslint": "8.71.0",
+    "vitest": "^5.0.3",
     "wrangler": "^4.147.0"
   },
   "private": true,
