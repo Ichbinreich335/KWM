@@ -28,7 +28,7 @@ export const chronik: readonly ChronikEintrag[] = [
     titel: 'Bauhaus im Ruhrgebiet',
     text: 'Johannes Leßmann wird Nachfolger von Will Lammert. Er ist Schüler von Otto Lindig, dem bedeutenden Bauhaus-Keramiker. Die Werkstatt stellt ihr Fertigungsprogramm auf die Herstellung von Serienkeramik um und begründet bei strenger Einhaltung der Formgebungsprinzipien des Bauhauses die Tradition einer Manufaktur für anspruchsvolles Gebrauchsgeschirr. Es ist Leßmanns Verdienst, der Bauhaus-Idee im Ruhrgebiet Breitenwirkung verschafft zu haben.',
     kurztext:
-      'Johannes Leßmann, Schüler des Bauhaus-Keramikers Otto Lindig, stellt auf Serienkeramik um – und verschafft der Bauhaus-Idee im Ruhrgebiet Breitenwirkung.',
+      'Die Werkstatt wird zur Manufaktur für anspruchsvolles Gebrauchsgeschirr – und die Bauhaus-Idee findet im Ruhrgebiet Breitenwirkung.',
   },
   {
     jahr: '1933',
