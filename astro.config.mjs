@@ -119,7 +119,10 @@ export default defineConfig({
           // Eigene Chunks, damit die Reihenfolge Grundstile, Seiten-CSS, Signaturen im HTML erhalten bleibt
           codeSplitting: {
             groups: [
-              { name: 'signaturen', test: /\/src\/styles\/signaturen\// },
+              {
+                name: 'signaturen',
+                test: /\/src\/styles\/signaturen\/|\/src\/components\/Sig[^/]+\.astro\?astro&type=style/,
+              },
               {
                 name: 'basis',
                 test: /\/src\/styles\/(basis|global|pages)\.css|\/src\/components\/[^/]+\.astro\?astro&type=style|virtual:astro:image-styles\.css/,

@@ -1,0 +1,104 @@
+---
+interface Props {
+  /** Klasse für Platz und Größe im Footer */
+  class?: string;
+}
+
+const { class: klasse } = Astro.props;
+---
+
+<svg class={klasse} data-sig="logo" viewBox="0 0 237 128" aria-hidden="true" focusable="false">
+  <g class="sig-main">
+    <line data-a="0" data-b=".14" x1="2.13" y1="110.25" x2="234.76" y2="110.25"></line>
+    <line data-a=".06" data-b=".2" x1="2.13" y1="126.47" x2="234.76" y2="126.47"></line>
+    <line class="sig-butt" data-a=".2" data-b=".4" x1="118.44" y1="110.25" x2="118.44" y2="1.53"></line>
+    <path
+      class="sig-butt"
+      data-a=".4"
+      data-b=".72"
+      d="M196.09,110.25c0-42.89-34.77-77.66-77.66-77.66c-42.89,0-77.66,34.77-77.66,77.66"
+    ></path>
+    <line data-a=".72" data-b=".82" data-sym x1="80.47" y1="1.53" x2="157.1" y2="1.53"></line>
+    <polyline
+      class="sig-bevel"
+      data-a=".82"
+      data-b="1"
+      points="72.88,110.25 80.47,42.59 118.44,101.46 157.1,42.59 164.35,110.25"
+    ></polyline>
+  </g>
+</svg>
+
+<style is:global>
+  /* Signatur: logo. Das Logo zeichnet sich im Footer beim Scrollen selbst */
+  .footer__grid {
+    row-gap: clamp(32px, 4vw, 56px);
+  }
+
+  .footer__logo {
+    grid-column: 1 / 5;
+    grid-row: 1 / 3;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+    color: var(--on-coal);
+    fill: none;
+    stroke: currentColor;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    align-self: end;
+  }
+  .sig-main {
+    stroke-width: var(--sw, 2.4);
+  }
+  .sig-main .sig-butt {
+    stroke-linecap: butt;
+  }
+  .sig-main .sig-bevel {
+    stroke-linecap: butt;
+    stroke-linejoin: bevel;
+  }
+
+  .sig-main {
+    transition: none;
+  }
+
+  /* Infospalten rechts neben dem Logo, 2 × 2 */
+  .footer__col {
+    grid-column: span 3;
+    grid-row: auto;
+    align-self: start;
+  }
+  .footer__col:nth-of-type(1) {
+    grid-column: 7 / 10;
+    grid-row: 1;
+  }
+  .footer__col:nth-of-type(2) {
+    grid-column: 10 / 13;
+    grid-row: 1;
+  }
+  .footer__col:nth-of-type(3) {
+    grid-column: 7 / 10;
+    grid-row: 2;
+  }
+  .footer__col:nth-of-type(4) {
+    grid-column: 10 / 13;
+    grid-row: 2;
+  }
+
+  @media (max-width: 900px) {
+    .footer__logo {
+      grid-column: 1 / -1;
+      grid-row: auto;
+    }
+    .footer__col:nth-of-type(n) {
+      grid-column: span 6;
+      grid-row: auto;
+      align-self: start;
+    }
+  }
+  @media (max-width: 520px) {
+    .footer__col:nth-of-type(n) {
+      grid-column: 1 / -1;
+    }
+  }
+</style>
