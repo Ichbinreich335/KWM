@@ -43,6 +43,35 @@ const ortRoh = (teil: Partial<ORTE_QUERY_RESULT[number]>): ORTE_QUERY_RESULT[num
   ...teil,
 });
 
+describe('auftritteVon: Wortlaut der Liste', () => {
+  it('lässt den Kurznamen in Klammern beim Haus einer Ausstellung weg', () => {
+    const liste = auftritteVon(
+      'ort-koeln',
+      [],
+      [ausstellung({ haus: 'Museum für Ostasiatische Kunst (MOK)' })],
+      '2026-10-05',
+    );
+    expect(liste[0]?.haus).toBe('Museum für Ostasiatische Kunst');
+  });
+
+  it('nimmt das Feld Haus vor dem Galerie-Namen und lässt einen Titel mit dem Galerie-Namen weg', () => {
+    const liste = auftritteVon(
+      'ort-koeln',
+      [
+        archiv({
+          haus: 'Galerie Udo Adam-Pasquale, Köln-Sülz',
+          titel: 'Goldschmiede & Galerie Udo Adam-Pasquale',
+          galerie: { _id: 'g', _type: 'galerie', name: 'Galerie Udo Adam-Pasquale' },
+          ortId: 'ort-koeln',
+        }),
+      ],
+      [],
+      '2026-10-05',
+    );
+    expect(liste).toEqual([{ jahr: 2020, haus: 'Galerie Udo Adam-Pasquale, Köln-Sülz' }]);
+  });
+});
+
 describe('auftritteVon', () => {
   const eintraege = [
     archiv({

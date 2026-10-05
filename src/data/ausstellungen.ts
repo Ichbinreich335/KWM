@@ -15,8 +15,10 @@ export interface Foto extends BildAngabe {
 export type Art = 'Museum' | 'Kirche' | 'Galerie' | 'Werkstatt' | 'Messe';
 
 export interface Ausstellung {
-  /** Dokument-ID in Sanity; Anker und Bedienelemente der Seite leiten ihre Ids daraus ab */
+  /** Dokument-ID in Sanity; Bedienelemente der Seite leiten ihre Ids daraus ab */
   schluessel: string;
+  /** Stabiler Anker auf der Seite Aktuelles (`/aktuelles#…`): die Dokument-ID ohne das Präfix `ausstellung-` */
+  anker: string;
   titel: string;
   art: Art;
   /** Name des Hauses, wie die Zeile unter dem Titel ihn zeigt */
@@ -87,6 +89,7 @@ export function ausstellungAusSanity(roh: Roh): Ausstellung {
   const weitere = roh.bilder?.[0];
   return {
     schluessel: roh._id,
+    anker: roh._id.replace(/^ausstellung-/, ''),
     titel,
     art: ARTEN[art],
     haus,
@@ -145,12 +148,10 @@ export async function ladeAusstellungen(heute: string = heuteIso()): Promise<rea
   return kommend;
 }
 
-/** Ausstellungen der Seite Aktuelles: noch nicht beendet und mit eigenem Bild der Seite (weiteres Bild) */
+/** Ausstellungen der Seite Aktuelles: alle laufenden und kommenden */
 export async function ladeAktuelleSeite(heute: string = heuteIso()): Promise<readonly Ausstellung[]> {
   const roh = await abfrage<AUSSTELLUNGEN_QUERY_RESULT>('Ausstellungen', AUSSTELLUNGEN_QUERY);
-  return roh
-    .filter((eintrag) => (eintrag.bilder?.length ?? 0) > 0 && (eintrag.ende ?? '') >= heute)
-    .map(ausstellungAusSanity);
+  return roh.filter((eintrag) => (eintrag.ende ?? '') >= heute).map(ausstellungAusSanity);
 }
 
 export const heuteIso = (): string => new Date().toISOString().slice(0, 10);

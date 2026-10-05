@@ -44,6 +44,7 @@ const datum = zeitraumKurz(ausstellung.start, ausstellung.ende);
 
 {typ === 'eintrag' ? (
   <article
+    id={ausstellung.anker}
     class:list={['feature', gespiegelt && 'feature--mirror', 'grid']}
     aria-labelledby={`f-${ausstellung.schluessel}`}
   >

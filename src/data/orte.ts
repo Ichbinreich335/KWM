@@ -47,6 +47,9 @@ export const kachelGroesse = (reihenfolge: number): Pick<Ort, 'gewicht' | 'breit
 type OrtRoh = ORTE_QUERY_RESULT[number];
 type ArchivRoh = ARCHIV_QUERY_RESULT[number];
 
+/** Die Liste einer Kachel nennt das Haus ohne den Kurznamen in Klammern, zum Beispiel „Museum für Ostasiatische Kunst“ statt „… (MOK)“ */
+const ohneKurzname = (haus: string): string => haus.replace(/\s*\([^)]*\)$/, '');
+
 /** Auftritte eines Ortes: neueste zuerst, innerhalb eines Jahres Ausstellungen vor Archiv, dann in Listenreihenfolge */
 export function auftritteVon(
   ortId: string,
@@ -61,7 +64,7 @@ export function auftritteVon(
       rang: -1000 + i,
       auftritt: {
         jahr: Number(eintrag.start.slice(0, 4)),
-        haus: eintrag.galerie ?? eintrag.haus,
+        haus: ohneKurzname(eintrag.galerie ?? eintrag.haus),
         titel: eintrag.titel,
       },
     }));
@@ -69,12 +72,21 @@ export function auftritteVon(
     .filter((eintrag) => eintrag.ortId === ortId)
     .map((eintrag) => {
       const jahr = eintrag.beginnJahr ?? eintrag.jahr ?? 0;
-      const haus = eintrag.galerie?.name ?? eintrag.haus ?? eintrag.titel ?? '';
+      // Das Feld `haus` nennt das Haus so, wie die Liste der Kachel es zeigt; der Galerie-Name ist nur der Ersatz
+      const haus = eintrag.haus ?? eintrag.galerie?.name ?? eintrag.titel ?? '';
+      // Ein Titel, der nur den Namen der verknüpften Galerie enthält, wiederholt das Haus ebenfalls
+      const galerieName = eintrag.galerie?.name;
+      const nennt = (titel: string) =>
+        haus.includes(titel) || (galerieName !== undefined && titel.includes(galerieName));
       return {
         jahr,
         rang: eintrag.reihenfolge ?? 0,
         // Ein Titel, der nur das Haus wiederholt, steht nicht doppelt in der Liste
-        auftritt: { jahr, haus, ...(eintrag.titel && !haus.includes(eintrag.titel) ? { titel: eintrag.titel } : {}) },
+        auftritt: {
+          jahr,
+          haus,
+          ...(eintrag.titel && !nennt(eintrag.titel) ? { titel: eintrag.titel } : {}),
+        },
       };
     });
   return [...ausListe, ...archivListe]
