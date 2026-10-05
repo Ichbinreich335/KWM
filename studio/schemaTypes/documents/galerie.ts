@@ -1,5 +1,5 @@
 import { HomeIcon } from '@sanity/icons/Home';
-import { defineField, defineType } from 'sanity';
+import { defineArrayMember, defineField, defineType } from 'sanity';
 
 export const galerie = defineType({
   name: 'galerie',
@@ -14,16 +14,19 @@ export const galerie = defineType({
       validation: (rule) => rule.required().error('Bitte geben Sie den Namen ein.'),
     }),
     defineField({
-      name: 'stadt',
-      title: 'Stadt',
-      type: 'string',
-      validation: (rule) => rule.required().error('Bitte geben Sie die Stadt ein.'),
+      name: 'ort',
+      title: 'Ort',
+      description: 'Die Stadt der Galerie. Fehlt sie in der Liste, legen Sie unter „Orte und Galerien“ einen neuen Ort an.',
+      type: 'reference',
+      to: [{ type: 'ort' }],
+      validation: (rule) => rule.required().error('Bitte wählen Sie einen Ort.'),
     }),
     defineField({
       name: 'adresse',
       title: 'Adresse',
-      description: 'Straße, Hausnummer, Postleitzahl und Stadt.',
-      type: 'string',
+      description: 'Eine Zeile pro Abschnitt, zum Beispiel „Straße 1“ und darunter „7500 St. Moritz“.',
+      type: 'array',
+      of: [defineArrayMember({ type: 'string' })],
     }),
     defineField({
       name: 'link',
@@ -49,6 +52,6 @@ export const galerie = defineType({
     }),
   ],
   preview: {
-    select: { title: 'name', subtitle: 'stadt' },
+    select: { title: 'name', subtitle: 'ort.stadt' },
   },
 });

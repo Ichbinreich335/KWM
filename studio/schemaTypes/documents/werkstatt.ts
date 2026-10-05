@@ -61,6 +61,21 @@ export const werkstatt = defineType({
       validation: (rule) => rule.required().email().error('Bitte geben Sie eine gültige E-Mail-Adresse ein.'),
     }),
     defineField({
+      name: 'englischeSeite',
+      title: 'Englische Website',
+      description: 'Die Internetadresse der englischen Seite, mit „https://“ am Anfang.',
+      type: 'url',
+      fieldset: 'kontakt',
+      validation: (rule) => rule.uri({ scheme: ['http', 'https'] }),
+    }),
+    defineField({
+      name: 'nahverkehr',
+      title: 'Nahverkehr',
+      description: 'Die nächste Haltestelle, zum Beispiel „Haltestelle Katernberg Süd“.',
+      type: 'string',
+      fieldset: 'anschrift',
+    }),
+    defineField({
       name: 'oeffnungszeiten',
       title: 'Öffnungszeiten',
       description: 'Eine Zeile pro Zeitraum, zum Beispiel „Montag bis Freitag, 9 bis 17“.',

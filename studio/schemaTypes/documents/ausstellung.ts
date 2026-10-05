@@ -1,6 +1,6 @@
 import { CalendarIcon } from '@sanity/icons/Calendar';
 import { defineArrayMember, defineField, defineType } from 'sanity';
-import { altFeld, bildOptionen, nachweisFeld } from '../objects/bild';
+import { altFeld, bildOptionen, bildunterschriftFeld, nachweisFeld } from '../objects/bild';
 
 export const ausstellung = defineType({
   name: 'ausstellung',
@@ -26,6 +26,7 @@ export const ausstellung = defineType({
       options: {
         list: [
           { title: 'Museum', value: 'museum' },
+          { title: 'Kirche', value: 'kirche' },
           { title: 'Galerie', value: 'galerie' },
           { title: 'Werkstatt', value: 'werkstatt' },
           { title: 'Messe', value: 'messe' },
@@ -61,8 +62,10 @@ export const ausstellung = defineType({
     defineField({
       name: 'eroeffnung',
       title: 'Eröffnung',
-      description: 'Wann ist die Eröffnung? Zum Beispiel „Samstag, 10. Oktober, 15 Uhr“. Leer lassen, wenn es keine gibt.',
-      type: 'string',
+      description:
+        'Eine Zeile pro Abschnitt, zum Beispiel „Sonntag, 16. August 2026, 11 Uhr“ und darunter „Gottesdienst zur Ausstellung, 12.15 Uhr Eröffnung“. Leer lassen, wenn es keine Eröffnung gibt.',
+      type: 'array',
+      of: [defineArrayMember({ type: 'string' })],
     }),
     defineField({
       name: 'ort',
@@ -92,16 +95,31 @@ export const ausstellung = defineType({
     defineField({
       name: 'adresse',
       title: 'Adresse',
-      description: 'Straße, Hausnummer, Postleitzahl und Stadt.',
-      type: 'string',
+      description: 'Eine Zeile pro Abschnitt, zum Beispiel „Universitätsstraße 100“ und darunter „50674 Köln“.',
+      type: 'array',
+      of: [defineArrayMember({ type: 'string' })],
       fieldset: 'ortAngaben',
     }),
     defineField({
       name: 'oeffnungszeiten',
       title: 'Öffnungszeiten',
-      description: 'Wann ist die Ausstellung geöffnet? Zum Beispiel „Di–So 10–18 Uhr“.',
-      type: 'text',
-      rows: 3,
+      description: 'Eine Zeile pro Zeitraum, zum Beispiel „Di–So 14.30–17.00 Uhr“ und darunter „Mi und Sa 10–12 Uhr“.',
+      type: 'array',
+      of: [defineArrayMember({ type: 'string' })],
+    }),
+    defineField({
+      name: 'oeffnungszeitenBezeichnung',
+      title: 'Überschrift der Öffnungszeiten',
+      description: 'Nur ausfüllen, wenn es nicht einfach „Öffnungszeiten“ heißen soll, zum Beispiel „Öffnungszeiten Dom“ oder „Geöffnet“.',
+      type: 'string',
+      hidden: ({ document }) => !(document?.oeffnungszeiten as unknown[] | undefined)?.length,
+    }),
+    defineField({
+      name: 'kooperation',
+      title: 'In Kooperation mit',
+      description: 'Eine Zeile pro Partner, zum Beispiel „Joachim Kern (Mode)“. Leer lassen, wenn es keine Partner gibt.',
+      type: 'array',
+      of: [defineArrayMember({ type: 'string' })],
     }),
     defineField({
       name: 'beschreibung',
@@ -140,22 +158,22 @@ export const ausstellung = defineType({
     defineField({
       name: 'hauptbild',
       title: 'Hauptbild',
-      description: 'Das wichtigste Foto der Ausstellung. Mit dem Fadenkreuz („Hotspot“) legen Sie fest, was beim Zuschneiden immer sichtbar bleibt.',
+      description: 'Das wichtigste Foto der Ausstellung. Jedes Foto braucht eine Bildbeschreibung und einen Bildnachweis. Mit dem Fadenkreuz („Hotspot“) legen Sie fest, was beim Zuschneiden immer sichtbar bleibt.',
       type: 'image',
       options: bildOptionen,
-      fields: [altFeld, nachweisFeld],
+      fields: [altFeld, bildunterschriftFeld, nachweisFeld],
       validation: (rule) => rule.required().error('Bitte laden Sie ein Hauptbild hoch.'),
     }),
     defineField({
       name: 'bilder',
       title: 'Weitere Bilder',
-      description: 'Zusätzliche Fotos. Jedes braucht eine Bildbeschreibung und einen Nachweis.',
+      description: 'Zusätzliche Fotos, zum Beispiel Ansichten der Ausstellung. Jedes braucht eine Bildbeschreibung und einen Bildnachweis.',
       type: 'array',
       of: [
         defineArrayMember({
           type: 'image',
           options: bildOptionen,
-          fields: [altFeld, nachweisFeld],
+          fields: [altFeld, bildunterschriftFeld, nachweisFeld],
         }),
       ],
     }),
@@ -174,9 +192,28 @@ export const ausstellung = defineType({
     defineField({
       name: 'link',
       title: 'Link zur Ausstellung',
-      description: 'Die Internetadresse des Hauses oder der Ausstellung, mit „https://“ am Anfang.',
-      type: 'url',
-      validation: (rule) => rule.uri({ scheme: ['http', 'https'] }),
+      description: 'Ein Verweis auf die Seite des Hauses oder auf eine Seite dieser Website. Leer lassen, wenn es keinen gibt.',
+      type: 'object',
+      fields: [
+        defineField({
+          name: 'text',
+          title: 'Text des Links',
+          description: 'Zum Beispiel „Zur Ausstellung im MOK“.',
+          type: 'string',
+          validation: (rule) => rule.required().error('Bitte geben Sie an, was auf dem Link stehen soll.'),
+        }),
+        defineField({
+          name: 'url',
+          title: 'Internetadresse',
+          description: 'Mit „https://“ am Anfang. Für eine Seite dieser Website genügt zum Beispiel „/besuch“.',
+          type: 'url',
+          validation: (rule) =>
+            rule
+              .required()
+              .uri({ scheme: ['http', 'https'], allowRelative: true })
+              .error('Bitte geben Sie eine Internetadresse mit „https://“ oder eine Seite wie „/besuch“ ein.'),
+        }),
+      ],
     }),
     defineField({
       name: 'spotlight',

@@ -28,6 +28,8 @@ export type Werkstatt = {
   adresszusatz?: string;
   telefon: string;
   email: string;
+  englischeSeite?: string;
+  nahverkehr?: string;
   oeffnungszeiten?: Array<{
     wochentage: string;
     von: string;
@@ -89,15 +91,17 @@ export type Ausstellung = {
   _updatedAt: string;
   _rev: string;
   titel: string;
-  art: 'museum' | 'galerie' | 'werkstatt' | 'messe';
+  art: 'museum' | 'kirche' | 'galerie' | 'werkstatt' | 'messe';
   start: string;
   ende: string;
-  eroeffnung?: string;
+  eroeffnung?: Array<string>;
   ort: OrtReference;
   galerie?: GalerieReference;
   haus: string;
-  adresse?: string;
-  oeffnungszeiten?: string;
+  adresse?: Array<string>;
+  oeffnungszeiten?: Array<string>;
+  oeffnungszeitenBezeichnung?: string;
+  kooperation?: Array<string>;
   beschreibung?: Array<{
     children?: Array<{
       marks?: Array<string>;
@@ -122,6 +126,7 @@ export type Ausstellung = {
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
     alt: string;
+    bildunterschrift?: string;
     nachweis: string;
     _type: 'image';
   };
@@ -131,6 +136,7 @@ export type Ausstellung = {
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
     alt: string;
+    bildunterschrift?: string;
     nachweis: string;
     _type: 'image';
     _key: string;
@@ -143,7 +149,10 @@ export type Ausstellung = {
     alt: string;
     _type: 'image';
   };
-  link?: string;
+  link?: {
+    text: string;
+    url: string;
+  };
   spotlight?: boolean;
 };
 
@@ -170,8 +179,8 @@ export type Galerie = {
   _updatedAt: string;
   _rev: string;
   name: string;
-  stadt: string;
-  adresse?: string;
+  ort: OrtReference;
+  adresse?: Array<string>;
   link?: string;
   vertretung?: boolean;
   vertretungSeit?: number;

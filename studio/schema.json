@@ -83,6 +83,20 @@
         },
         "optional": false
       },
+      "englischeSeite": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
+      },
+      "nahverkehr": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
+      },
       "oeffnungszeiten": {
         "type": "objectAttribute",
         "value": {
@@ -409,6 +423,10 @@
             },
             {
               "type": "string",
+              "value": "kirche"
+            },
+            {
+              "type": "string",
               "value": "galerie"
             },
             {
@@ -440,7 +458,10 @@
       "eroeffnung": {
         "type": "objectAttribute",
         "value": {
-          "type": "string"
+          "type": "array",
+          "of": {
+            "type": "string"
+          }
         },
         "optional": true
       },
@@ -470,14 +491,37 @@
       "adresse": {
         "type": "objectAttribute",
         "value": {
-          "type": "string"
+          "type": "array",
+          "of": {
+            "type": "string"
+          }
         },
         "optional": true
       },
       "oeffnungszeiten": {
         "type": "objectAttribute",
         "value": {
+          "type": "array",
+          "of": {
+            "type": "string"
+          }
+        },
+        "optional": true
+      },
+      "oeffnungszeitenBezeichnung": {
+        "type": "objectAttribute",
+        "value": {
           "type": "string"
+        },
+        "optional": true
+      },
+      "kooperation": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "array",
+          "of": {
+            "type": "string"
+          }
         },
         "optional": true
       },
@@ -666,6 +710,13 @@
               },
               "optional": false
             },
+            "bildunterschrift": {
+              "type": "objectAttribute",
+              "value": {
+                "type": "string"
+              },
+              "optional": true
+            },
             "nachweis": {
               "type": "objectAttribute",
               "value": {
@@ -728,6 +779,13 @@
                   "type": "string"
                 },
                 "optional": false
+              },
+              "bildunterschrift": {
+                "type": "objectAttribute",
+                "value": {
+                  "type": "string"
+                },
+                "optional": true
               },
               "nachweis": {
                 "type": "objectAttribute",
@@ -816,7 +874,23 @@
       "link": {
         "type": "objectAttribute",
         "value": {
-          "type": "string"
+          "type": "object",
+          "attributes": {
+            "text": {
+              "type": "objectAttribute",
+              "value": {
+                "type": "string"
+              },
+              "optional": false
+            },
+            "url": {
+              "type": "objectAttribute",
+              "value": {
+                "type": "string"
+              },
+              "optional": false
+            }
+          }
         },
         "optional": true
       },
@@ -959,17 +1033,21 @@
         },
         "optional": false
       },
-      "stadt": {
+      "ort": {
         "type": "objectAttribute",
         "value": {
-          "type": "string"
+          "type": "inline",
+          "name": "ort.reference"
         },
         "optional": false
       },
       "adresse": {
         "type": "objectAttribute",
         "value": {
-          "type": "string"
+          "type": "array",
+          "of": {
+            "type": "string"
+          }
         },
         "optional": true
       },
