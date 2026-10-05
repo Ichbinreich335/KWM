@@ -1,5 +1,13 @@
 /* Werkstatt: Seiten-spezifische Kompositionen */
 
+/* Personen (PersonCard) */
+.people {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 56px var(--g);
+  padding-inline: var(--m);
+}
+
 /* Panorama-Band im Seitenkopf */
 .page-hero__media--strip img {
   object-position: 30% 50%;

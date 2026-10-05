@@ -1,5 +1,21 @@
 /* Meisterstücke */
 
+/* Werkkatalog */
+.catalog {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: clamp(40px, 5vw, 72px) var(--g);
+  padding-inline: var(--m);
+}
+.catalog__quote {
+  grid-column: span 6;
+}
+@media (max-width: 900px) {
+  .catalog__quote {
+    grid-column: 1 / -1;
+  }
+}
+
 .ms-intro {
   padding-block: var(--section);
   row-gap: 40px;

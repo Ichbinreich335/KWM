@@ -55,6 +55,59 @@ const { glasuren } = Astro.props;
 <style is:global>
   /* Signatur: farbskala */
 
+  /* Grundstil der Bänder */
+  .scale {
+    display: flex;
+  }
+  .scale__band {
+    flex: 1 1 0;
+    background: var(--c);
+    color: var(--t);
+    position: relative;
+    overflow: hidden;
+    transition: flex-grow var(--dur-zoom) var(--ease);
+  }
+  .scale:hover .scale__band {
+    flex-grow: 0.8;
+  }
+  .scale .scale__band:hover {
+    flex-grow: 2.6;
+  }
+  .scale__sample {
+    position: absolute;
+    left: clamp(12px, 1.4vw, 22px);
+    top: clamp(14px, 2vw, 26px);
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.18);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .scale__band {
+      transition: none;
+    }
+  }
+
+  @media (max-width: 900px) {
+    .scale {
+      flex-direction: column;
+      height: auto;
+    }
+    .scale__band {
+      min-height: 84px;
+    }
+    .scale:hover .scale__band,
+    .scale .scale__band:hover {
+      flex-grow: 1;
+    }
+    .scale__sample {
+      left: auto;
+      right: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+  }
+
   /* Farbskala: Glasur-Testkacheln. Ohne Skript bleiben es Flächen in der gemessenen Grundfarbe. */
   .scale {
     display: flex;

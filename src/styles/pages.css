@@ -9,34 +9,12 @@
   padding-top: 0;
 }
 
-/* Werk- und Produktkatalog */
-.catalog {
-  display: grid;
-  grid-template-columns: repeat(12, minmax(0, 1fr));
-  gap: clamp(40px, 5vw, 72px) var(--g);
-  padding-inline: var(--m);
-}
-.catalog__quote {
-  grid-column: span 6;
-}
-
 /* Quelle unter einem Zitat */
 .prose__source {
   font-family: var(--f-sans);
   font-size: var(--t-meta);
   line-height: var(--t-meta-lh);
   color: var(--ink-2);
-}
-
-/* Personen */
-.people {
-  display: grid;
-  grid-template-columns: repeat(12, minmax(0, 1fr));
-  gap: 56px var(--g);
-  padding-inline: var(--m);
-}
-.person {
-  grid-column: span 4;
 }
 
 /* Anker: dunkler Abschnitt im Rhythmus der Seite, genau einer pro Unterseite (DESIGN.md, Abschnittstypen) */
@@ -51,44 +29,6 @@
 .on-anker ::selection {
   background: var(--on-coal);
   color: var(--coal);
-}
-
-/* Abschlussband mit Anfrage: Fläche, damit es nicht an den Anker des Footers stößt */
-.anfrage-band {
-  background: var(--ground-2);
-  padding-block: clamp(48px, 6vw, 88px);
-  row-gap: 16px;
-  align-items: center;
-  --cover: var(--ground-2);
-}
-.anfrage-band__text {
-  grid-column: 1 / 8;
-  margin: 0;
-  font-family: var(--f-text);
-  font-size: var(--t-h3);
-  line-height: var(--t-h3-lh);
-  text-wrap: balance;
-}
-.anfrage-band__actions {
-  grid-column: 9 / 13;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px 28px;
-  align-items: center;
-}
-.anfrage-band__hint {
-  grid-column: 1 / 8;
-  margin: 0;
-  font-size: var(--t-small);
-  line-height: var(--t-small-lh);
-  color: var(--ink-2);
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0 20px;
-  align-items: center;
-}
-.anfrage-band__hint:empty {
-  display: none;
 }
 
 /* Fehlerseite: Wege zurück in Fließtextgröße */
@@ -109,23 +49,6 @@
   background: var(--ground-2);
   color: var(--ink);
   --cover: var(--ground-2);
-}
-
-@media (max-width: 900px) {
-  .catalog__quote,
-  .person {
-    grid-column: 1 / -1;
-  }
-  .anfrage-band__text,
-  .anfrage-band__actions,
-  .anfrage-band__hint {
-    grid-column: 1 / -1;
-  }
-}
-@media (min-width: 901px) and (max-width: 1200px) {
-  .person {
-    grid-column: span 6;
-  }
 }
 
 /* Textstile als Klassen (DESIGN §3): Seiten setzen keine Schriftgrößen, Schriften oder Zeilenhöhen selbst, sie wählen einen Stil */

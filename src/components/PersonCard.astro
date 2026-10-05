@@ -27,6 +27,20 @@ const { person } = Astro.props;
 </article>
 
 <style>
+  /* Platzierung im Raster .people (Seite Werkstatt): drei, mittelgroß zwei, mobil eine Spalte */
+  .person {
+    grid-column: span 4;
+  }
+  @media (max-width: 900px) {
+    .person {
+      grid-column: 1 / -1;
+    }
+  }
+  @media (min-width: 901px) and (max-width: 1200px) {
+    .person {
+      grid-column: span 6;
+    }
+  }
   .person {
     border-top: 1px solid var(--ink);
     padding-top: 18px;

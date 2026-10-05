@@ -27,7 +27,16 @@ const { werk } = Astro.props;
 </li>
 
 <style>
-  /* Platzierung im Seitenraster: global.css (.works__grid) */
+  /* Platzierung im Raster der Werkschau (.works__grid, Startseite) */
+  .piece {
+    grid-column: span 4;
+  }
+  @media (max-width: 900px) {
+    .piece {
+      grid-column: span 6;
+    }
+  }
+
   .piece a {
     display: block;
     text-decoration: none;
