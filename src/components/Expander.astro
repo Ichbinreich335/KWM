@@ -1,0 +1,292 @@
+---
+interface Props {
+  id: string;
+  /** `row`: Zeile mit Jahr, Teaser und Plus (Jahresarchiv). `lang`: großer Knopf über die ganze Breite, offen bleibt die Leiste oben stehen. */
+  art: 'row' | 'lang';
+  /** `row`: die Jahreszahl. `lang`: die Beschriftung des Knopfes. */
+  titel: string;
+  /** Nur `row`: Teaser in der geschlossenen Zeile */
+  teaser?: string;
+  class?: string | undefined;
+}
+
+const { id, art, titel, teaser, class: klasse } = Astro.props;
+const panelId = `${id}-liste`;
+---
+
+{/* Ohne JavaScript bleibt der Inhalt offen sichtbar, der Knopf ist dann ausgeblendet. */}
+<kwm-expander class:list={['expander', `expander--${art}`, klasse]} id={id}>
+  <h3 class="expander__bar">
+    <button type="button" class="expander__btn" aria-expanded="false" aria-controls={panelId}>
+      {art === 'row' ? (
+        <>
+          <span class="expander__num">{titel}</span>
+          <span class="expander__teaser">{teaser}</span>
+        </>
+      ) : (
+        <>
+          <span class="expander__label">{titel}</span>
+          <span class="expander__state" aria-hidden="true">
+            Schließen
+          </span>
+        </>
+      )}
+      <span class="expander__icon" aria-hidden="true"></span>
+    </button>
+  </h3>
+  <div class="expander__panel" id={panelId}>
+    <div class="expander__inner">
+      <slot />
+    </div>
+  </div>
+</kwm-expander>
+
+<script>
+  // Auf- und Zuklappen je Element. Lang: beim Schließen springt die Ansicht ruhig zurück an den Knopf.
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  class KwmExpander extends HTMLElement {
+    private button: HTMLButtonElement | null = null;
+
+    connectedCallback() {
+      this.button = this.querySelector<HTMLButtonElement>('.expander__btn');
+      if (!this.button) return;
+      this.setOpen(this.button.getAttribute('aria-expanded') === 'true');
+      this.button.addEventListener('click', this.toggle);
+      // Sprung auf einen Anker im Inhalt (auch aus alten Jahres-Links) öffnet das Element
+      this.openFromHash();
+      window.addEventListener('hashchange', this.openFromHash);
+    }
+
+    disconnectedCallback() {
+      this.button?.removeEventListener('click', this.toggle);
+      window.removeEventListener('hashchange', this.openFromHash);
+    }
+
+    private setOpen(open: boolean) {
+      this.classList.toggle('is-open', open);
+      this.button?.setAttribute('aria-expanded', String(open));
+    }
+
+    private stickyTop() {
+      const bar = this.querySelector('.expander__bar');
+      return bar ? parseFloat(getComputedStyle(bar).top) || 0 : 0;
+    }
+
+    private toggle = () => {
+      const open = !this.classList.contains('is-open');
+      if (
+        !open &&
+        this.classList.contains('expander--lang') &&
+        this.getBoundingClientRect().top < this.stickyTop() - 1
+      ) {
+        this.scrollIntoView({ block: 'start', behavior: reduced.matches ? 'auto' : 'smooth' });
+      }
+      this.setOpen(open);
+    };
+
+    private openFromHash = () => {
+      if (location.hash.length <= 1) return;
+      const target = document.getElementById(decodeURIComponent(location.hash.slice(1)));
+      if (target && this.contains(target)) this.setOpen(true);
+    };
+  }
+
+  if (!customElements.get('kwm-expander')) customElements.define('kwm-expander', KwmExpander);
+</script>
+
+<style>
+  .expander {
+    display: block;
+    --expander-time: 0.5s;
+  }
+  .expander__bar {
+    margin: 0;
+    font: inherit;
+  }
+  .expander__btn {
+    display: grid;
+    width: 100%;
+    min-height: 44px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+    transition: background-color var(--expander-time) var(--ease);
+  }
+  .expander__btn:hover {
+    background: var(--ground-2);
+  }
+  .expander__btn:focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: -2px;
+  }
+  :global(html:not(.js)) .expander__btn {
+    display: none;
+  }
+
+  /* Plus, das sich beim Öffnen zum Minus dreht */
+  .expander__icon {
+    position: relative;
+    width: 18px;
+    height: 18px;
+    flex: none;
+  }
+  .expander__icon::before,
+  .expander__icon::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    height: 1px;
+    background: currentColor;
+    transition: transform var(--expander-time) var(--ease);
+  }
+  .expander__icon::after {
+    transform: rotate(90deg);
+  }
+  .expander.is-open > .expander__bar .expander__icon::after {
+    transform: rotate(0deg);
+  }
+
+  /* Höhe: grid-template-rows 0fr nach 1fr, unsichtbar erst nach dem Schließen */
+  .expander__panel {
+    display: grid;
+    grid-template-rows: 1fr;
+  }
+  .expander__inner {
+    min-height: 0;
+    overflow: hidden;
+  }
+  :global(.js) .expander__panel {
+    grid-template-rows: 0fr;
+    visibility: hidden;
+    transition:
+      grid-template-rows var(--expander-time) var(--ease),
+      visibility 0s linear var(--expander-time);
+  }
+  :global(.js) .expander.is-open > .expander__panel {
+    grid-template-rows: 1fr;
+    visibility: visible;
+    transition-delay: 0s;
+  }
+
+  /* Zeile: Jahr groß links, Teaser in der Mitte, Plus rechts */
+  .expander--row {
+    border-bottom: 1px solid var(--hair);
+  }
+  .expander--row .expander__btn {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--g);
+    align-items: baseline;
+    padding: 22px 0 20px;
+  }
+  .expander__num {
+    grid-column: 1 / 4;
+    font-family: var(--f-display);
+    font-size: var(--t-h2);
+    line-height: var(--t-h2-lh);
+    letter-spacing: -0.02em;
+    font-variant-numeric: lining-nums;
+    transition: transform 0.6s var(--ease);
+  }
+  .expander--row .expander__btn:hover .expander__num {
+    transform: translateX(10px);
+  }
+  .expander__teaser {
+    grid-column: 4 / 11;
+    font-size: var(--t-small);
+    line-height: var(--t-small-lh);
+    color: var(--ink-2);
+  }
+  .expander--row .expander__icon {
+    grid-column: 12 / 13;
+    justify-self: end;
+  }
+
+  /* Lang: großer Knopf über die ganze Breite. Offen bleibt die Leiste beim Scrollen unter Kopf und Sprungleiste stehen */
+  .expander--lang > .expander__bar {
+    border-top: 1px solid var(--ink);
+    border-bottom: 1px solid var(--hair);
+    background: var(--ground);
+  }
+  .expander--lang .expander__btn {
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    align-items: center;
+    gap: 0 clamp(14px, 2vw, 28px);
+    min-height: 72px;
+    padding: 14px 4px;
+  }
+  .expander__label {
+    font-family: var(--f-display);
+    font-size: var(--t-h3);
+    line-height: var(--t-h3-lh);
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+  .expander__state {
+    font-size: var(--t-small);
+    line-height: var(--t-small-lh);
+    color: var(--ink-2);
+    opacity: 0;
+    transition: opacity var(--expander-time) var(--ease);
+  }
+  .expander.is-open > .expander__bar .expander__state {
+    opacity: 1;
+  }
+  .expander--lang .expander__icon {
+    width: 22px;
+    height: 22px;
+  }
+  .expander--lang.is-open > .expander__bar {
+    position: sticky;
+    top: calc(var(--head) + var(--subnav));
+    z-index: 30;
+    border-bottom-color: var(--ink);
+    transition: top 0.6s var(--ease);
+  }
+  :global(.masthead.is-hidden ~ main) .expander--lang.is-open > .expander__bar {
+    top: var(--subnav);
+  }
+  :global(html:not(:has(.subnav))) .expander--lang.is-open > .expander__bar {
+    top: var(--head);
+  }
+  :global(html:not(:has(.subnav)) .masthead.is-hidden ~ main) .expander--lang.is-open > .expander__bar {
+    top: 0;
+  }
+
+  @media (max-width: 900px) {
+    .expander__num {
+      grid-column: 1 / 5;
+    }
+    .expander__teaser {
+      grid-column: 5 / 12;
+    }
+  }
+  @media (max-width: 520px) {
+    .expander__teaser {
+      display: none;
+    }
+    .expander--lang .expander__btn {
+      min-height: 64px;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .expander {
+      --expander-time: 0s;
+    }
+    :global(.js) .expander__panel,
+    .expander__icon::before,
+    .expander__icon::after,
+    .expander__num,
+    .expander__state,
+    .expander--lang.is-open > .expander__bar {
+      transition: none;
+    }
+  }
+</style>

@@ -1,5 +1,4 @@
 /* Young-Jae Lee: Seiten-spezifische Kompositionen */
-
 .yjl-hero .page-hero__media img {
   object-position: 30% 40%;
 }
@@ -106,49 +105,10 @@
   border-top: 1px solid var(--hair);
 }
 
-/* Alle Ausstellungen seit 1980: Aufklapper aus expander.css (--lang), hier die Liste */
+/* Alle Ausstellungen seit 1980: Aufklapper und Liste in YearArchive, hier nur die Platzierung im Raster */
 #alle-ausstellungen {
   grid-column: 1 / -1;
   margin-top: var(--head-gap);
-}
-.exh-archive {
-  padding-bottom: 28px;
-}
-.exh-year {
-  display: grid;
-  grid-template-columns: repeat(12, minmax(0, 1fr));
-  column-gap: var(--g);
-  padding: 22px 0 6px;
-  border-bottom: 1px solid var(--hair);
-  scroll-margin-top: calc(var(--head) + var(--subnav) + 80px);
-}
-.exh-year:last-child {
-  border-bottom: 0;
-}
-.exh-year__num {
-  grid-column: 1 / 4;
-  margin: 0;
-  font-family: var(--f-display);
-  font-weight: 400;
-  font-size: var(--t-statement);
-  line-height: var(--t-statement-lh);
-  letter-spacing: -0.02em;
-  font-variant-numeric: lining-nums;
-}
-.exh-year__list {
-  grid-column: 4 / 11;
-}
-.exh-year__list li {
-  padding: 11px 0;
-  border-top: 1px solid var(--hair);
-  font-size: var(--t-small);
-  line-height: var(--t-small-lh);
-  max-width: 68ch;
-  text-wrap: pretty;
-}
-.exh-year__list li:first-child {
-  border-top: 0;
-  padding-top: 4px;
 }
 .page-yjl #publikationen {
   padding-bottom: var(--section);
@@ -185,12 +145,5 @@
   .page-yjl .datelist__year {
     font-size: var(--t-numeral);
     line-height: var(--t-numeral-lh);
-  }
-  .exh-year__num {
-    grid-column: 1 / -1;
-    padding-bottom: 6px;
-  }
-  .exh-year__list {
-    grid-column: 1 / -1;
   }
 }

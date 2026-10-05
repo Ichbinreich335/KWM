@@ -1,5 +1,4 @@
-/* Aktuelles: große Ausstellungs-Features, Jahresarchiv, Veröffentlichungen */
-
+/* Aktuelles: Abschnittsabstände (Jahresarchiv und Features sind Komponenten) */
 #veroeffentlichungen {
   padding-bottom: var(--section);
 }
@@ -8,71 +7,4 @@
 .feature-band {
   margin-top: var(--section);
   padding-bottom: var(--section);
-}
-
-/* Jahresarchiv: Aufklapper aus expander.css (--row), hier nur der Inhalt */
-.years {
-  padding-inline: var(--m);
-}
-.year__list {
-  display: grid;
-  grid-template-columns: repeat(12, minmax(0, 1fr));
-  column-gap: var(--g);
-  padding: 4px 0 36px;
-}
-.year__list ul {
-  grid-column: 4 / 11;
-}
-.year__list li {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 4px 24px;
-  padding: 12px 0;
-  border-top: 1px solid var(--hair);
-  font-size: var(--t-small);
-  line-height: var(--t-small-lh);
-}
-.year__list li:first-child {
-  border-top: 0;
-}
-.year__list .t {
-  font-family: var(--f-text);
-  font-size: var(--t-body);
-  line-height: var(--t-body-lh);
-}
-.year__list .p {
-  grid-column: 1 / 2;
-  font-size: var(--t-small);
-  line-height: var(--t-small-lh);
-  color: var(--ink-2);
-}
-.year__list .d {
-  grid-column: 2;
-  grid-row: 1 / 3;
-  font-size: var(--t-meta);
-  line-height: var(--t-meta-lh);
-  color: var(--ink-2);
-  text-align: right;
-  font-variant-numeric: tabular-nums;
-  white-space: nowrap;
-}
-.year__list .link-arrow {
-  grid-column: 4 / 11;
-  margin-top: 18px;
-  justify-self: start;
-}
-
-@media (max-width: 900px) {
-  .year__list ul,
-  .year__list .link-arrow {
-    grid-column: 1 / -1;
-  }
-  .year__list li {
-    grid-template-columns: 1fr;
-  }
-  .year__list .d {
-    grid-column: 1;
-    grid-row: auto;
-    text-align: left;
-  }
 }

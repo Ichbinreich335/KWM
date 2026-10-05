@@ -63,3 +63,33 @@ test('Kein Entwurf-Panel, feste Fassung der Startseite', async ({ page }) => {
   await expect(page.locator('.komposition')).toHaveCount(0);
   await expect(page.getByRole('button', { name: /Entwurf/ })).toHaveCount(0);
 });
+
+test('Expander (Zeile): Enter öffnet und schließt, Tab überspringt den geschlossenen Inhalt', async ({ page }) => {
+  await page.goto('/aktuelles');
+  const erster = page.locator('#jahr-2026 .expander__btn');
+  const zweiter = page.locator('#jahr-2025 .expander__btn');
+  const inhalt = page.locator('#jahr-2026-liste');
+  await expect(erster).toHaveAttribute('aria-expanded', 'false');
+  await expect(inhalt).toBeHidden();
+  await erster.focus();
+  await page.keyboard.press('Tab');
+  await expect(zweiter).toBeFocused();
+  await erster.focus();
+  await page.keyboard.press('Enter');
+  await expect(erster).toHaveAttribute('aria-expanded', 'true');
+  await expect(inhalt).toBeVisible();
+  await page.keyboard.press('Tab');
+  await expect(inhalt.locator('a').first()).toBeFocused();
+  await erster.focus();
+  await page.keyboard.press('Space');
+  await expect(erster).toHaveAttribute('aria-expanded', 'false');
+  await expect(inhalt).toBeHidden();
+});
+
+test('Expander (lang): Sprung auf ein Jahr im Archiv öffnet die Gesamtliste', async ({ page }) => {
+  await page.goto('/young-jae-lee#ausst-1991');
+  const liste = page.locator('#alle-ausstellungen');
+  await expect(liste).toHaveClass(/is-open/);
+  await expect(liste.locator('.expander__btn')).toHaveAttribute('aria-expanded', 'true');
+  await expect(page.locator('#ausst-1991')).toBeVisible();
+});

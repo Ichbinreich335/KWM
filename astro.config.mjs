@@ -112,6 +112,8 @@ export default defineConfig({
   ],
   vite: {
     build: {
+      // Keine Skripte im HTML: Kleine Komponenten-Skripte (Custom Elements) würden sonst inline stehen, das braucht später eine CSP-Ausnahme
+      assetsInlineLimit: 0,
       rolldownOptions: {
         output: {
           // Eigene Chunks, damit die Reihenfolge Grundstile, Seiten-CSS, Signaturen im HTML erhalten bleibt
@@ -120,7 +122,7 @@ export default defineConfig({
               { name: 'signaturen', test: /\/src\/styles\/signaturen\// },
               {
                 name: 'basis',
-                test: /\/src\/styles\/(basis|global|pages|expander)\.css|\/src\/components\/[^/]+\.astro\?astro&type=style|virtual:astro:image-styles\.css/,
+                test: /\/src\/styles\/(basis|global|pages)\.css|\/src\/components\/[^/]+\.astro\?astro&type=style|virtual:astro:image-styles\.css/,
               },
             ],
           },

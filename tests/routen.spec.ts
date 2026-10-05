@@ -79,14 +79,15 @@ test('Stylesheet-Reihenfolge: Grundstile, Seiten-CSS, Signaturen, nur die Schrif
   }
 });
 
-test('Chunk basis: Komponenten-Stile stehen nach global, pages und expander', async ({ request }) => {
+test('Chunk basis: Komponenten-Stile stehen nach global und pages', async ({ request }) => {
   const html = await (await request.get('/werkstatt')).text();
   const basis = html.match(/\/_astro\/basis\.[^"]+\.css/)?.[0] ?? '';
   const css = await (await request.get(basis)).text();
   const komponenten = css.indexOf(':where(.astro-');
-  expect(komponenten, 'Komponenten-Stile müssen nach global/pages/expander stehen').toBeGreaterThan(
-    css.lastIndexOf('.expander'),
-  );
+  // .footer__mark steht in global.css, .not-found__links in pages.css, beide ohne Komponenten-Gegenstück
+  for (const selektor of ['.footer__mark', '.not-found__links']) {
+    expect(css.lastIndexOf(selektor), `${selektor} muss vor den Komponenten-Stilen stehen`).toBeLessThan(komponenten);
+  }
 });
 
 test('Schriften: genau zwei Preloads, Libre Caslon Display und Jost, jeweils die latin-Datei', async ({ page }) => {

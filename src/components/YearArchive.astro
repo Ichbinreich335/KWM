@@ -1,0 +1,189 @@
+---
+import Expander from './Expander.astro';
+import type { ArchivJahr, AusstellungsJahr } from '../data/archiv';
+
+type Props =
+  | {
+      /** `auswahl`: ein Aufklapper je Jahr mit Titel, Ort und Zeitraum (Seite Aktuelles) */
+      typ: 'auswahl';
+      jahre: readonly ArchivJahr[];
+    }
+  | {
+      /** `gesamt`: ein langer Aufklapper mit allen Jahren als Zeilen (Seite Young-Jae Lee) */
+      typ: 'gesamt';
+      jahre: readonly AusstellungsJahr[];
+      id: string;
+      /** Beschriftung des Knopfes */
+      titel: string;
+    };
+
+const props = Astro.props;
+---
+
+{props.typ === 'auswahl' ? (
+  <div class="years">
+    {props.jahre.map((jahr) => (
+      <Expander art="row" class="year" id={`jahr-${jahr.jahr}`} titel={jahr.jahr} teaser={jahr.teaser}>
+        <div class="year__list">
+          <ul>
+            {jahr.eintraege.map((eintrag) => (
+              <li>
+                <span class="t">{eintrag.titel}</span>
+                <span class="p">
+                  {eintrag.ort}
+                  {eintrag.link && (
+                    <>
+                      {' '}
+                      ·{' '}
+                      <a class="tap" href={eintrag.link.href}>
+                        {eintrag.link.text}
+                      </a>
+                    </>
+                  )}
+                </span>
+                <span class="d">{eintrag.datum}</span>
+              </li>
+            ))}
+          </ul>
+          <a class="link-arrow" href={jahr.alle.href}>
+            {jahr.alle.text}
+          </a>
+        </div>
+      </Expander>
+    ))}
+  </div>
+) : (
+  <Expander art="lang" id={props.id} titel={props.titel}>
+    <ol class="exh-archive">
+      {props.jahre.map((jahr) => (
+        <li class="exh-year" id={`ausst-${jahr.jahr}`}>
+          <h3 class="exh-year__num">{jahr.jahr}</h3>
+          <ul class="exh-year__list">
+            {jahr.eintraege.map((zeile) => (
+              <li>{zeile}</li>
+            ))}
+          </ul>
+        </li>
+      ))}
+    </ol>
+  </Expander>
+)}
+
+<style>
+  /* Jahresarchiv: Aufklapper aus expander.css (--row), hier nur der Inhalt */
+  .years {
+    padding-inline: var(--m);
+  }
+  .year__list {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--g);
+    padding: 4px 0 36px;
+  }
+  .year__list ul {
+    grid-column: 4 / 11;
+  }
+  .year__list li {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 4px 24px;
+    padding: 12px 0;
+    border-top: 1px solid var(--hair);
+    font-size: var(--t-small);
+    line-height: var(--t-small-lh);
+  }
+  .year__list li:first-child {
+    border-top: 0;
+  }
+  .year__list .t {
+    font-family: var(--f-text);
+    font-size: var(--t-body);
+    line-height: var(--t-body-lh);
+  }
+  .year__list .p {
+    grid-column: 1 / 2;
+    font-size: var(--t-small);
+    line-height: var(--t-small-lh);
+    color: var(--ink-2);
+  }
+  .year__list .d {
+    grid-column: 2;
+    grid-row: 1 / 3;
+    font-size: var(--t-meta);
+    line-height: var(--t-meta-lh);
+    color: var(--ink-2);
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  .year__list .link-arrow {
+    grid-column: 4 / 11;
+    margin-top: 18px;
+    justify-self: start;
+  }
+
+  @media (max-width: 900px) {
+    .year__list ul,
+    .year__list .link-arrow {
+      grid-column: 1 / -1;
+    }
+    .year__list li {
+      grid-template-columns: 1fr;
+    }
+    .year__list .d {
+      grid-column: 1;
+      grid-row: auto;
+      text-align: left;
+    }
+  }
+
+  .exh-archive {
+    padding-bottom: 28px;
+  }
+  .exh-year {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--g);
+    padding: 22px 0 6px;
+    border-bottom: 1px solid var(--hair);
+    scroll-margin-top: calc(var(--head) + var(--subnav) + 80px);
+  }
+  .exh-year:last-child {
+    border-bottom: 0;
+  }
+  .exh-year__num {
+    grid-column: 1 / 4;
+    margin: 0;
+    font-family: var(--f-display);
+    font-weight: 400;
+    font-size: var(--t-statement);
+    line-height: var(--t-statement-lh);
+    letter-spacing: -0.02em;
+    font-variant-numeric: lining-nums;
+  }
+  .exh-year__list {
+    grid-column: 4 / 11;
+  }
+  .exh-year__list li {
+    padding: 11px 0;
+    border-top: 1px solid var(--hair);
+    font-size: var(--t-small);
+    line-height: var(--t-small-lh);
+    max-width: 68ch;
+    text-wrap: pretty;
+  }
+  .exh-year__list li:first-child {
+    border-top: 0;
+    padding-top: 4px;
+  }
+
+  @media (max-width: 900px) {
+    .exh-year__num {
+      grid-column: 1 / -1;
+      padding-bottom: 6px;
+    }
+    .exh-year__list {
+      grid-column: 1 / -1;
+    }
+  }
+</style>
