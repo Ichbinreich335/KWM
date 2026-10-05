@@ -20,38 +20,136 @@ const gezeigt = kurz ? eintraege.filter((eintrag) => eintrag.kurztext) : eintrae
 const zeitraum = `${gezeigt[0]?.jahr} bis ${gezeigt[gezeigt.length - 1]?.jahr}`;
 ---
 
-<section class="chronicle" id={id} aria-labelledby={titelId}>
-  <div class="chronicle__body grid">
-    <div class="chronicle__intro">
-      <h2 class="h2" id={titelId} data-reveal="words">
-        {titel}
-      </h2>
-      <p class="chronicle__lede" data-reveal="fade">
-        {lede}
-      </p>
-      <p class="chronicle__span" data-reveal="fade">
-        {zeitraum}
-      </p>
-      {link && <LinkArrow href={link.href}>{link.text}</LinkArrow>}
-      <p class="chronicle__hint" aria-hidden="true">
-        Wischen
-      </p>
+<kwm-chronik>
+  <section class="chronicle" id={id} aria-labelledby={titelId}>
+    <div class="chronicle__body grid">
+      <div class="chronicle__intro">
+        <h2 class="h2" id={titelId} data-reveal="words">
+          {titel}
+        </h2>
+        <p class="chronicle__lede" data-reveal="fade">
+          {lede}
+        </p>
+        <p class="chronicle__span" data-reveal="fade">
+          {zeitraum}
+        </p>
+        {link && <LinkArrow href={link.href}>{link.text}</LinkArrow>}
+        <p class="chronicle__hint" aria-hidden="true">
+          Wischen
+        </p>
+      </div>
+      <ol class="chronicle__list" aria-label="Chronik der Werkstatt">
+        {gezeigt.map((eintrag) => (
+          <li class:list={{ 'chronicle__item--quiet': eintrag.leise }}>
+            <span class="chronicle__year">{eintrag.jahr}</span>
+            <div class="chronicle__what">
+              <h3 class="chronicle__title">{eintrag.titel}</h3>
+              <p>{kurz ? eintrag.kurztext : eintrag.text}</p>
+            </div>
+          </li>
+        ))}
+      </ol>
     </div>
-    <ol class="chronicle__list" aria-label="Chronik der Werkstatt">
-      {gezeigt.map((eintrag) => (
-        <li class:list={{ 'chronicle__item--quiet': eintrag.leise }}>
-          <span class="chronicle__year">{eintrag.jahr}</span>
-          <div class="chronicle__what">
-            <h3 class="chronicle__title">{eintrag.titel}</h3>
-            <p>{kurz ? eintrag.kurztext : eintrag.text}</p>
-          </div>
-        </li>
-      ))}
-    </ol>
-  </div>
-</section>
+  </section>
+</kwm-chronik>
+
+<script>
+  // Chronik: Die Linie zeichnet sich strikt nacheinander an die Lesehöhe gebunden, jeder Punkt füllt sich, wenn sie ihn
+  // erreicht. Am Handy ist die Chronik eine Wischreihe: Ein Punkt füllt sich, sobald seine Karte ins Bild ragt.
+  import { MOBIL_ABFRAGE, reducedMotion } from '../scripts/keramik';
+
+  const READ_LINE = 0.62;
+  const SWIPE_EDGE = 8; // Punkt füllt sich, sobald seine Karte so weit in die Wischleiste ragt (px)
+  const SWIPE_VISIBLE = 0.9; // Wischleiste zählt als sichtbar, wenn ihre Oberkante über dieser Bildschirmhöhe liegt
+
+  class KwmChronik extends HTMLElement {
+    private abort: AbortController | null = null;
+    private einblenden: IntersectionObserver | null = null;
+
+    connectedCallback() {
+      const chronicle = this.querySelector<HTMLElement>('.chronicle__list');
+      if (!chronicle) return;
+      this.abort = new AbortController();
+      const { signal } = this.abort;
+      const items = [...chronicle.querySelectorAll('li')];
+      const reduced = reducedMotion();
+
+      // Einträge blenden beim Scrollen ein, wie alle [data-reveal] (main.ts)
+      const io = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((e) => {
+            if (!e.isIntersecting) return;
+            e.target.classList.add('is-in');
+            io.unobserve(e.target);
+          });
+        },
+        { rootMargin: '0px 0px -10% 0px', threshold: 0.12 },
+      );
+      items.forEach((li) => io.observe(li));
+      this.einblenden = io;
+
+      // Wischreihe: nur dort Tabstopp, wo sie wirklich scrollt (Handy), nicht am Desktop
+      const wischbar = () => {
+        if (chronicle.scrollWidth > chronicle.clientWidth) chronicle.setAttribute('tabindex', '0');
+        else chronicle.removeAttribute('tabindex');
+      };
+      wischbar();
+      addEventListener('resize', wischbar, { passive: true, signal });
+
+      const swipe = window.matchMedia(MOBIL_ABFRAGE);
+      let framed = false;
+      const paint = () => {
+        framed = false;
+        if (swipe.matches) {
+          const box = chronicle.getBoundingClientRect();
+          const shown = box.top < innerHeight * SWIPE_VISIBLE;
+          items.forEach((li) =>
+            li.classList.toggle('is-on', shown && li.getBoundingClientRect().left < box.right - SWIPE_EDGE),
+          );
+          return;
+        }
+        const line = innerHeight * READ_LINE;
+        const first = chronicle.firstElementChild;
+        if (!first) return;
+        const dotY = parseFloat(getComputedStyle(first, '::before').top) + 5.5;
+        items.forEach((li) => {
+          const box = li.getBoundingClientRect();
+          li.classList.toggle('is-on', line >= box.top + dotY);
+          if (!reduced && li !== items[items.length - 1])
+            li.style.setProperty('--seg', Math.min(1, Math.max(0, (line - (box.top + dotY)) / box.height)).toFixed(3));
+        });
+      };
+      const schedule = () => {
+        if (!framed) {
+          framed = true;
+          requestAnimationFrame(paint);
+        }
+      };
+      if (reduced) {
+        items.forEach((li) => li.classList.add('is-on'));
+        return;
+      }
+      addEventListener('scroll', schedule, { passive: true, signal });
+      addEventListener('resize', schedule, { passive: true, signal });
+      chronicle.addEventListener('scroll', schedule, { passive: true, signal });
+      paint();
+    }
+
+    disconnectedCallback() {
+      this.abort?.abort();
+      this.einblenden?.disconnect();
+    }
+  }
+
+  if (!customElements.get('kwm-chronik')) customElements.define('kwm-chronik', KwmChronik);
+</script>
 
 <style>
+  /* Hülle für das Skript, ohne eigenen Kasten */
+  kwm-chronik {
+    display: contents;
+  }
+
   /* Chronik: Erzählung statt Tabelle, Zeitstrahl in Spalte 6 bis 12, links der Einstieg bleibt stehen */
   .chronicle {
     --yr: var(--t-statement);

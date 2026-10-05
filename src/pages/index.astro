@@ -9,10 +9,10 @@ import { einzelwerk, stueckBezeichnung, werkschau } from '../data/werke';
 import { anfrageLink } from '../lib/anfrage-link';
 import SigAktuell from '../components/SigAktuell.astro';
 import { ausstellungen } from '../data/ausstellungen';
-import { tagAusIso, tagFormat } from '../lib/status';
 import { hinweise } from '../data/hinweise';
 import { kontakt } from '../data/kontakt';
 import Hours from '../components/Hours.astro';
+import Kosmos from '../components/Kosmos.astro';
 import PlaceGrid from '../components/PlaceGrid.astro';
 import { kacheln } from '../data/orte';
 import { wagnerQuelle } from '../data/texte';
@@ -30,12 +30,9 @@ import BauhausStation from '../components/BauhausStation.astro';
 import SigFarbskala from '../components/SigFarbskala.astro';
 import { glasuren } from '../data/glasuren';
 
-// 99 Schalen: Satz und Link kommen aus der Ausstellung im MOK; vorbei ist sie im Browser ausgeblendet (main.ts)
+// 99 Schalen: Satz und Link kommen aus der Ausstellung im MOK (Kosmos.astro)
 const mok = ausstellungen.find((eintrag) => eintrag.schluessel === 'mok');
 if (!mok) throw new Error('Ausstellung „mok“ fehlt in den Daten');
-const mokHaus = mok.haus.replace(/\s*\(.*\)$/, '');
-const zuSehen = `Zu sehen im ${mokHaus}, ${mok.stadt}, bis ${tagFormat(tagAusIso(mok.ende))} ${tagAusIso(mok.ende).getFullYear()}`;
-const mokLink = `/aktuelles#f-${mok.schluessel}`;
 ---
 
 <BaseLayout
@@ -179,34 +176,7 @@ const mokLink = `/aktuelles#f-${mok.schluessel}`;
           aus Teilchen um eine leere Mitte, eine kleine Milchstraße voll schimmernder Gefäße.“
         </Statement>
       </SectionHead>
-      <div class="cosmos__floor">
-        <div class="cosmos__stage" data-cosmos>
-          <canvas
-            class="cosmos__canvas"
-            role="img"
-            aria-label="Neunundneunzig Schalen von oben gesehen, in einem Ring um eine leere Mitte angeordnet, jede mit eigener Glasur"
-          ></canvas>
-          <div class="cosmos__center">
-            <p class="cosmos__count" data-cosmos-readout>
-              99 Schalen
-            </p>
-            <p class="cosmos__show" data-start={mok.start} data-end={mok.ende}>
-              {zuSehen}
-            </p>
-            <LinkArrow href={mokLink} data-start={mok.start} data-end={mok.ende}>
-              Zur Ausstellung
-            </LinkArrow>
-          </div>
-        </div>
-        <div class="cosmos__caption">
-          <p class="cosmos__show" data-start={mok.start} data-end={mok.ende}>
-            {zuSehen}
-          </p>
-          <LinkArrow href={mokLink} data-start={mok.start} data-end={mok.ende}>
-            Zur Ausstellung
-          </LinkArrow>
-        </div>
-      </div>
+      <Kosmos ausstellung={mok} />
     </section>
 
     {/* Farben: die sechs Glasuren des Geschirrs, alle Teile untereinander kombinierbar */}

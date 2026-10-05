@@ -11,11 +11,10 @@ const { glasuren } = Astro.props;
 ---
 
 {/* Grund- und Schriftfarbe jeder Kachel stehen als Klasse `scale__band--<schluessel>` im Stil unten (Test: glasuren.test.ts) */}
-<div
+<kwm-farbskala
   class="scale"
   role="group"
   aria-label="Die sechstonige Farbskala des Geschirrs: Glasurproben, antippen zum Vergrößern"
-  data-sig="farbskala"
 >
   {glasuren.map((glasur) => (
     <button
@@ -38,7 +37,20 @@ const { glasuren } = Astro.props;
       </span>
     </button>
   ))}
-</div>
+</kwm-farbskala>
+
+<script>
+  // Farbskala: Glasurkacheln zeichnen, antippen öffnet ein Band (Modul sig-farbskala)
+  import init from '../scripts/sig-farbskala';
+
+  class KwmFarbskala extends HTMLElement {
+    connectedCallback() {
+      init(this);
+    }
+  }
+
+  if (!customElements.get('kwm-farbskala')) customElements.define('kwm-farbskala', KwmFarbskala);
+</script>
 
 <style is:global>
   /* Signatur: farbskala */

@@ -542,6 +542,7 @@ body::after {
 
 /* Kosmos */
 .cosmos__floor {
+  display: block;
   padding-block: clamp(24px, 4vw, 56px);
   overflow: hidden;
 }

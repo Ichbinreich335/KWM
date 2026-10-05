@@ -12,13 +12,82 @@ interface Props {
 const { beschriftung, eintraege } = Astro.props;
 ---
 
-<nav class="subnav" aria-label={beschriftung}>
-  {eintraege.map(({ href, text }) => (
-    <a href={href}>{text}</a>
-  ))}
-</nav>
+<kwm-sprungleiste>
+  <nav class="subnav" aria-label={beschriftung}>
+    {eintraege.map(({ href, text }) => (
+      <a href={href}>{text}</a>
+    ))}
+  </nav>
+</kwm-sprungleiste>
+
+<script>
+  // Sprungleiste: markiert den Abschnitt, der gerade gelesen wird, und holt seinen Eintrag in die Mitte der Leiste.
+  // Läuft die Leiste seitlich weiter, blendet sie den Rand aus (data-more).
+  import { reducedMotion } from '../scripts/keramik';
+
+  class KwmSprungleiste extends HTMLElement {
+    private abort: AbortController | null = null;
+    private beobachter: IntersectionObserver | null = null;
+
+    connectedCallback() {
+      const subnav = this.querySelector<HTMLElement>('.subnav');
+      if (!subnav) return;
+      this.abort = new AbortController();
+      const { signal } = this.abort;
+      const reduced = reducedMotion();
+
+      const fade = () => {
+        const max = subnav.scrollWidth - subnav.clientWidth;
+        const parts = [];
+        if (max > 1 && subnav.scrollLeft > 1) parts.push('start');
+        if (max > 1 && subnav.scrollLeft < max - 1) parts.push('end');
+        subnav.dataset.more = parts.join(' ');
+      };
+      subnav.addEventListener('scroll', fade, { passive: true, signal });
+      addEventListener('resize', fade, { passive: true, signal });
+      fade();
+
+      const subLinks = [...subnav.querySelectorAll<HTMLAnchorElement>('a[href^="#"]')];
+      const byId = new Map(
+        subLinks.map((a): [string, HTMLAnchorElement] => [(a.getAttribute('href') ?? '').slice(1), a]),
+      );
+      this.beobachter = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((e) => {
+            const current = e.isIntersecting && byId.get(e.target.id);
+            if (!current) return;
+            subLinks.forEach((a) => {
+              a.classList.toggle('is-current', a === current);
+              if (a === current) a.setAttribute('aria-current', 'true');
+              else a.removeAttribute('aria-current');
+            });
+            const left = current.offsetLeft - (subnav.clientWidth - current.offsetWidth) / 2;
+            subnav.scrollTo({ left, behavior: reduced ? 'auto' : 'smooth' });
+          });
+        },
+        { rootMargin: '-35% 0px -60% 0px' },
+      );
+      byId.forEach((_, id) => {
+        const ziel = document.getElementById(id);
+        if (ziel) this.beobachter?.observe(ziel);
+      });
+    }
+
+    disconnectedCallback() {
+      this.abort?.abort();
+      this.beobachter?.disconnect();
+    }
+  }
+
+  if (!customElements.get('kwm-sprungleiste')) customElements.define('kwm-sprungleiste', KwmSprungleiste);
+</script>
 
 <style>
+  /* Hülle für das Skript, ohne eigenen Kasten: die Leiste klebt weiter am Seitenfluss (position: sticky) */
+  kwm-sprungleiste {
+    display: contents;
+  }
+
   /* Sprungmarken innerhalb einer Seite */
   .subnav {
     position: sticky;
@@ -44,7 +113,7 @@ const { beschriftung, eintraege } = Astro.props;
   :global(.masthead.is-hidden ~ main) .subnav {
     top: 0;
   }
-  /* Randausblendung zeigt, dass die Leiste seitlich weiterläuft (Attribut setzt main.ts) */
+  /* Randausblendung zeigt, dass die Leiste seitlich weiterläuft (data-more setzt das Skript oben) */
   .subnav[data-more='start'] {
     mask-image: linear-gradient(90deg, transparent, #000 40px);
   }

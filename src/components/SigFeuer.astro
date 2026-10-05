@@ -11,7 +11,7 @@ const { titel, einleitung, farben } = Astro.props;
 ---
 
 {/* Ohne Skript bleibt die Liste stehen; mit Skript ersetzt die Schale mit Auswahl Titel, Einleitung und Liste (sig-feuer.ts) */}
-<div class="feuer-farben" data-sig="feuer">
+<kwm-feuer class="feuer-farben">
   <h3 class="feuer-farben__title">{titel}</h3>
   <p class="feuer-farben__intro">{einleitung}</p>
   <ul class="feuer-farben__list">
@@ -22,7 +22,20 @@ const { titel, einleitung, farben } = Astro.props;
       </li>
     ))}
   </ul>
-</div>
+</kwm-feuer>
+
+<script>
+  // Feuer: eine Schale, vier Glasuren nach Metall und Atmosphäre (Modul sig-feuer)
+  import init from '../scripts/sig-feuer';
+
+  class KwmFeuer extends HTMLElement {
+    connectedCallback() {
+      init(this);
+    }
+  }
+
+  if (!customElements.get('kwm-feuer')) customElements.define('kwm-feuer', KwmFeuer);
+</script>
 
 <style is:global>
   /* Signatur: feuer – Ein Feuer, zwei Farben */

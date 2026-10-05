@@ -17,40 +17,61 @@ const weitere = ausstellungen.filter((eintrag) => !eintrag.spotlight);
 ---
 
 {/* Dunkler Abschnitt der Startseite; das Skript setzt Status und Hinweise nach dem Datum und lässt immer nur ein Detail offen (sig-aktuell.ts) */}
-<section class="aktuell on-anker" id="aktuelles" data-sig="aktuell" aria-labelledby="aktuell-title">
-  <div class="aktuell__head grid">
-    <h2 class="h2" id="aktuell-title" data-reveal="words">
-      Aktuell
-    </h2>
-    <LinkArrow class="aktuell__all" href="/aktuelles">
-      Alle Ausstellungen und Termine
-    </LinkArrow>
-  </div>
+<kwm-aktuell>
+  <section class="aktuell on-anker" id="aktuelles" aria-labelledby="aktuell-title">
+    <div class="aktuell__head grid">
+      <h2 class="h2" id="aktuell-title" data-reveal="words">
+        Aktuell
+      </h2>
+      <LinkArrow class="aktuell__all" href="/aktuelles">
+        Alle Ausstellungen und Termine
+      </LinkArrow>
+    </div>
 
-  {hinweise.map((hinweis) => (
-    <p class="aktuell__note" data-start={hinweis.von} data-end={hinweis.bis}>
-      {hinweis.text}
-    </p>
-  ))}
-
-  <ol class="aktuell__list">
-    {spotlights.map((eintrag) => (
-      <ExhibitionCard typ="spotlight" ausstellung={eintrag} />
-    ))}
-    <li class="aktuell__rest">
-      <p class="aktuell__hint" aria-hidden="true">
-        Wischen
+    {hinweise.map((hinweis) => (
+      <p class="aktuell__note" data-start={hinweis.von} data-end={hinweis.bis}>
+        {hinweis.text}
       </p>
-      <ol class="aktuell__reihe" aria-label="Weitere Ausstellungen" tabindex="0">
-        {weitere.map((eintrag) => (
-          <ExhibitionCard typ="kachel" ausstellung={eintrag} />
-        ))}
-      </ol>
-    </li>
-  </ol>
-</section>
+    ))}
+
+    <ol class="aktuell__list">
+      {spotlights.map((eintrag) => (
+        <ExhibitionCard typ="spotlight" ausstellung={eintrag} />
+      ))}
+      <li class="aktuell__rest">
+        <p class="aktuell__hint" aria-hidden="true">
+          Wischen
+        </p>
+        <ol class="aktuell__reihe" aria-label="Weitere Ausstellungen" tabindex="0">
+          {weitere.map((eintrag) => (
+            <ExhibitionCard typ="kachel" ausstellung={eintrag} />
+          ))}
+        </ol>
+      </li>
+    </ol>
+  </section>
+</kwm-aktuell>
+
+<script>
+  // Aktuell: Status je Ausstellung aus dem Datum, Details klappen auf (Modul sig-aktuell)
+  import init from '../scripts/sig-aktuell';
+
+  class KwmAktuell extends HTMLElement {
+    connectedCallback() {
+      const abschnitt = this.querySelector('.aktuell');
+      if (abschnitt) init(abschnitt);
+    }
+  }
+
+  if (!customElements.get('kwm-aktuell')) customElements.define('kwm-aktuell', KwmAktuell);
+</script>
 
 <style is:global>
+  /* Hülle für das Skript, ohne eigenen Kasten */
+  kwm-aktuell {
+    display: contents;
+  }
+
   /* Signatur: aktuell. Anker (dunkel): laufende und kommende Ausstellungen mit Foto, Details klappen darunter auf. */
   .aktuell {
     padding-block: var(--section);

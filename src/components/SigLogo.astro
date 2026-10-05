@@ -7,28 +7,49 @@ interface Props {
 const { class: klasse } = Astro.props;
 ---
 
-<svg class={klasse} data-sig="logo" viewBox="0 0 237 128" aria-hidden="true" focusable="false">
-  <g class="sig-main">
-    <line data-a="0" data-b=".14" x1="2.13" y1="110.25" x2="234.76" y2="110.25"></line>
-    <line data-a=".06" data-b=".2" x1="2.13" y1="126.47" x2="234.76" y2="126.47"></line>
-    <line class="sig-butt" data-a=".2" data-b=".4" x1="118.44" y1="110.25" x2="118.44" y2="1.53"></line>
-    <path
-      class="sig-butt"
-      data-a=".4"
-      data-b=".72"
-      d="M196.09,110.25c0-42.89-34.77-77.66-77.66-77.66c-42.89,0-77.66,34.77-77.66,77.66"
-    ></path>
-    <line data-a=".72" data-b=".82" data-sym x1="80.47" y1="1.53" x2="157.1" y2="1.53"></line>
-    <polyline
-      class="sig-bevel"
-      data-a=".82"
-      data-b="1"
-      points="72.88,110.25 80.47,42.59 118.44,101.46 157.1,42.59 164.35,110.25"
-    ></polyline>
-  </g>
-</svg>
+<kwm-logo>
+  <svg class={klasse} viewBox="0 0 237 128" aria-hidden="true" focusable="false">
+    <g class="sig-main">
+      <line data-a="0" data-b=".14" x1="2.13" y1="110.25" x2="234.76" y2="110.25"></line>
+      <line data-a=".06" data-b=".2" x1="2.13" y1="126.47" x2="234.76" y2="126.47"></line>
+      <line class="sig-butt" data-a=".2" data-b=".4" x1="118.44" y1="110.25" x2="118.44" y2="1.53"></line>
+      <path
+        class="sig-butt"
+        data-a=".4"
+        data-b=".72"
+        d="M196.09,110.25c0-42.89-34.77-77.66-77.66-77.66c-42.89,0-77.66,34.77-77.66,77.66"
+      ></path>
+      <line data-a=".72" data-b=".82" data-sym x1="80.47" y1="1.53" x2="157.1" y2="1.53"></line>
+      <polyline
+        class="sig-bevel"
+        data-a=".82"
+        data-b="1"
+        points="72.88,110.25 80.47,42.59 118.44,101.46 157.1,42.59 164.35,110.25"
+      ></polyline>
+    </g>
+  </svg>
+</kwm-logo>
+
+<script>
+  // Logo: zeichnet sich beim Scrollen selbst (Modul sig-logo)
+  import init from '../scripts/sig-logo';
+
+  class KwmLogo extends HTMLElement {
+    connectedCallback() {
+      const svg = this.querySelector('svg');
+      if (svg) init(svg);
+    }
+  }
+
+  if (!customElements.get('kwm-logo')) customElements.define('kwm-logo', KwmLogo);
+</script>
 
 <style is:global>
+  /* Hülle für das Skript, ohne eigenen Kasten: das Logo bleibt Rasterelement des Footers */
+  kwm-logo {
+    display: contents;
+  }
+
   /* Signatur: logo. Das Logo zeichnet sich im Footer beim Scrollen selbst */
   .footer__grid {
     row-gap: var(--head-gap);

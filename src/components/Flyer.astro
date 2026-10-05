@@ -24,7 +24,7 @@ const seiten = [
 ---
 
 {/* Flyer: Vorschau oder Textlink öffnet ein natives <dialog> mit beiden Seiten (sig-flyer.ts). Ohne Skript bleibt der Auslöser wirkungslos und ist ausgeblendet. */}
-<div class:list={['flyer', `flyer--${modus}`]} data-sig="flyer">
+<kwm-flyer class:list={['flyer', `flyer--${modus}`]}>
   {modus === 'vorschau' ? (
     <ul class="flyer__vorschau" aria-label={`Flyer zur Ausstellung ${lesetitel}`}>
       {seiten.map(({ name, label, bild }) => (
@@ -94,7 +94,20 @@ const seiten = [
       ))}
     </div>
   </dialog>
-</div>
+</kwm-flyer>
+
+<script>
+  // Flyer: Auslöser öffnen den Dialog mit Vorder- und Rückseite (Modul sig-flyer)
+  import init from '../scripts/sig-flyer';
+
+  class KwmFlyer extends HTMLElement {
+    connectedCallback() {
+      init(this);
+    }
+  }
+
+  if (!customElements.get('kwm-flyer')) customElements.define('kwm-flyer', KwmFlyer);
+</script>
 
 <style>
   /* Ohne Skript tut der Auslöser nichts: ausblenden */

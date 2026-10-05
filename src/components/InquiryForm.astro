@@ -12,7 +12,7 @@ if (turnstileWarnung) Astro.logger.warn(turnstileWarnung);
      Das Modul prüft die Felder mit den Regeln aus src/lib/anfrage.ts und schickt sie per POST an /api/anfrage (Worker).
      Das Turnstile-Widget wird erst beim ersten Antippen eines Feldes geladen.
      Vorschau-Build (Branch ungleich main): kein Widget, der Worker versendet nichts und meldet Erfolg; ein Hinweis sagt das. */}
-<div class="anfrage" data-sig="anfrage" data-sitekey={turnstileSitekey} data-vorschau={vorschauBuild ? '' : undefined}>
+<kwm-anfrage class="anfrage" data-sitekey={turnstileSitekey} data-vorschau={vorschauBuild ? '' : undefined}>
   <p class="anfrage__nojs">
     Bitte schreiben Sie uns an <a href={`${kontakt.mailHref}?subject=Anfrage`}>{kontakt.mail}</a> oder rufen Sie an:{' '}
     <a href={kontakt.telefonHref}>{kontakt.telefon}</a>.
@@ -136,11 +136,25 @@ if (turnstileWarnung) Astro.logger.warn(turnstileWarnung);
       Weitere Anfrage senden
     </button>
   </div>
-</div>
+</kwm-anfrage>
+
+<script>
+  // Anfrage: Felder prüfen, Turnstile beim ersten Antippen laden, per POST an /api/anfrage senden (Modul sig-anfrage)
+  import init from '../scripts/sig-anfrage';
+
+  class KwmAnfrage extends HTMLElement {
+    connectedCallback() {
+      init(this);
+    }
+  }
+
+  if (!customElements.get('kwm-anfrage')) customElements.define('kwm-anfrage', KwmAnfrage);
+</script>
 
 <style is:global>
   /* Anfrage-Formular: Felder mit Unterstrich, 0 Radius, Labels über dem Feld */
   .anfrage {
+    display: block;
     max-width: 560px;
   }
   .anfrage__nojs {
