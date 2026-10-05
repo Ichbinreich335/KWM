@@ -73,15 +73,21 @@ const trennbar = (name: string) => name.replace(/(\p{L})teller/u, '$1\u00ADtelle
           In der Tradition des Bauhauses.
         </span>
       </h2>
-      <Figure class="herkunft__bild" unterschrift="Serienware vor dem ersten Brand · Foto: Haydar Koyupinar">
-        <Bild
-          src="/img/kwm/regal.webp"
-          width="954"
-          height="905"
-          loading="lazy"
-          sizes="(min-width: 900px) 34vw, 100vw"
-          alt="Regal voller ungebrannter Tassen, Schalen, Teller und Krüge aus dem Manufakturprogramm"
-        />
+      <Figure
+        class="herkunft__bild"
+        einblendung={false}
+        unterschrift="Serienware vor dem ersten Brand · Foto: Haydar Koyupinar"
+      >
+        <div data-reveal="img">
+          <Bild
+            src="/img/kwm/regal.webp"
+            width="954"
+            height="905"
+            loading="lazy"
+            sizes="(min-width: 900px) 34vw, 100vw"
+            alt="Regal voller ungebrannter Tassen, Schalen, Teller und Krüge aus dem Manufakturprogramm"
+          />
+        </div>
       </Figure>
       <div class="herkunft__text">
         <p data-reveal="fade">
@@ -268,7 +274,8 @@ const trennbar = (name: string) => name.replace(/(\p{L})teller/u, '$1\u00ADtelle
     grid-column: 5 / 9;
   }
   .herkunft__text :global(.link-arrow) {
-    grid-column: 5 / 9;
+    grid-column: 9 / 13;
+    grid-row: 1;
     justify-self: start;
     color: var(--ink);
   }
