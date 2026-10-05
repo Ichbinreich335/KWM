@@ -47,7 +47,7 @@ Ausnahmen beim Rohwert: Schlagschatten (`rgba(0,0,0,.18)` am Farbskala-Mini-Gef�
 |---|---|---|---|---|---|---|
 | Mega | `--t-mega` | Display | 3 rem bis 6 rem (15,5 vw) bis 900 px, danach 12,4 vw bis 13 rem | 0,9 | `--ink` / `--on-coal` | Name „Young-Jae Lee“, Titel der Name-Köpfe (Aktuelles, 404) |
 | Wortmarke | `--t-wordmark` | Display | 17,6 vw | 0,74 | `--on-coal` | „Margaretenhöhe“ im Footer, unten beschnitten |
-| Marke | `--t-marke` | Display | 6 rem bis 22 rem (24 vw) | 0,8 | `--ink` | Jahreszahl als Bildelement, nur Bauhaus-Station (Entwurf 4 und 2) |
+| Marke | `--t-marke` | Display | 6 rem bis 22 rem (24 vw) | 0,8 | `--ink` | Jahreszahl als Bildelement, nur Bauhaus-Station („Seit“ und der übrige Satz in Aussage-Größe auf ihrer Grundlinie) |
 | Seitentitel | `--t-title` | Display | 2,5 rem bis 7 rem (7 vw) | 0,95 | `--ink` / `--on-coal` | `.page-hero__title` (Minimum kleiner als `--t-display`, damit „Zahlungsmöglichkeiten“ bei 360 px passt) |
 | Zäsur | `--t-display` | Display | 3 rem bis 7 rem (7 vw) | 0,95 | `--ink` / `--on-coal` | Zitat-Zäsur Young-Jae Lee, Glasurname |
 | Abschnitt | `--t-h2` | Display | 2,3 rem bis 4,6 rem (4,6 vw) | 1,02 | `--ink` / `--on-coal` | `.h2`, Einstiegstitel, Jahreszahl im Archiv, Öffnungszeiten groß, Orts-Kachel XL |
@@ -114,7 +114,7 @@ Größen bei 1440 px: Mega 179, Seitentitel 101, Abschnitt 66, Aussage 52, Lede 
 |---|---|---|---|
 | 1 | Einstieg: Zitat und Kummerschalen-Foto | hell | Haltung in einem Satz und einem Bild |
 | 2 | Aktuell: Spotlight mit Details, weitere zum Aufklappen, Hinweiszeile | Anker | Was jetzt zu sehen ist und wo. Häufigster Besuchsgrund |
-| 3 | Bauhaus-Station (`BauhausStation`): 1927 als Marke über der Tafel mit vier Tellern (Entwurf 4; `?bauhaus=2|3` zum Vergleich) | hell | Herkunft und Gebrauch: woher die Formen kommen und wofür sie da sind |
+| 3 | Bauhaus-Station (`BauhausStation`): „Seit 1927 in der Tradition des Bauhauses.“ mit 1927 als Marke, darunter die Tafel mit vier Tellern | hell | Herkunft und Gebrauch: woher die Formen kommen und wofür sie da sind |
 | 4 | Young-Jae Lee: Name, Porträt mit Catoir-Zitat (haftend), Jahn-Zitat, Lebensweg | hell, Bild | Die Person hinter den Stücken |
 | 5 | Ausstellungsorte | Anker | Reichweite und Anerkennung (Museen, Galerien) |
 | 6 | Meisterstücke: Einzelwerk (zwei Schalen aus „99 Schalen – ein Kosmos“) und Auswahl | hell | Die Unikate selbst. Bilder statt Worte |
@@ -272,8 +272,8 @@ Jede wiederverwendbare Komponente hat einen künftigen Astro-Namen (`src/compone
 | `ChapterHead` | Kapitel einer Unterseite mit Einleitung (`.chapter__intro`) | Abschnitt, Begleittext | hell, Fläche, Anker | `css/pages.css` (`.chapter`), alle Unterseiten |
 | `Statement` | Zitat oder Aussage groß, mit Quelle | Aussage oder Seitentitel (`pullquote`), Meta (Quelle) | hell, Fläche, Anker; `--bild` (`.zaesur`: Bild links, Satz rechts) | `.pullquote`, `.stance__quote`, `.zaesur`, `.catalog__quote`, `.mf-intro__rule`, `.sticky-bild__quote`, `.statement` |
 | `Lede` | Einleitender Absatz einer Seite oder eines Abschnitts | Lede, Begleittext (Spalten) | hell | `.page-hero__lede` (bleibt Teil von `PageHero`); die Startseite kommt ohne Einleitungssatz aus |
-| `BauhausStation` | Bauhaus-Station der Startseite: Entwurf 4 (1927 über der Tafel), zum Vergleich 2 (1927 mit Regal) und 3 (Tafel) | Marke (1927), Aussage, Begleittext, Titel (Satz) | ohne Angabe 4, `?bauhaus=2|3`; nach der Entscheidung bleibt ein Entwurf ohne Umschalter | `src/components/BauhausStation.astro` |
-| `TellerTafel` | Tafel wie im Musterkatalog: vier Teller von oben, darunter Programmnummer, Name, Maß; am Rechner genau unter den Tellern, am Handy 2 × 2 | Titel (Nummer), Meta | ein Look; Daten aus `manufaktur.ts` | `src/components/TellerTafel.astro` |
+| `BauhausStation` | Bauhaus-Station der Startseite: eine Überschrift als Satz mit 1927 als Marke, Herkunftssatz, `TellerTafel`, Grundsatz und Link | Marke (1927), Aussage, Begleittext, Titel (Grundsatz) | ein Look | `src/components/BauhausStation.astro` |
+| `TellerTafel` | Tafel wie im Musterkatalog: vier Teller von oben, darunter Programmnummer, Name, Maß; am Rechner genau unter den Tellern, am Handy 2 × 2 | Titel (Nummer), Meta | ein Look, nur Bauhaus-Station; Daten aus `manufaktur.ts` | `src/components/TellerTafel.astro` |
 | `Prose` | Fließtext mit Quelle, begrenzte Zeilenlänge | Fließtext, Meta (Quelle) | hell, Anker | `.legal__body` (Rechtsseiten, `src/components/Prose.astro`); `.stance__text` bleibt Seiten-CSS |
 
 Statement kennt vier Typen nach Rolle, nicht nach Fundstelle: `aussage` (eigene Aussage der Werkstatt, Display, Statement-Größe), `zitat` (kurzes Fremdzitat mit Quelle, Text-Schnitt in Titelgröße), `zitat-lang` (langes Fremdzitat mit Quelle, Text-Schnitt in Zitatgröße, auch auf dunklem Grund oder Foto) und `gross` (Zäsur, höchstens eine je Seite). Die Quelle erbt ihre Farbe über `--ink-2` aus dem Umfeld.

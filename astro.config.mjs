@@ -95,7 +95,7 @@ export default defineConfig({
       // Kopf-Skript in BaseLayout.astro (is:inline); tests/sicherheit.spec.ts rechnet den Hash nach
       scriptDirective: {
         resources: ["'self'", 'https://challenges.cloudflare.com'],
-        hashes: ['sha256-qwnyPLcEKlnADXkvbwvNTce3L18JHt3hpnvEGt2jUUI='],
+        hashes: ['sha256-bzycTj6gg2/wtgss/NQeh2E42eImIs6BuefgIDZCIRI='],
       },
     },
   },

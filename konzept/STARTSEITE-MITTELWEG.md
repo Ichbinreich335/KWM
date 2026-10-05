@@ -1,12 +1,14 @@
 # Startseite „Mittelweg“ (Gesamtstand plus Teile der Bauhaus-Variante)
 
+**Endstand (05.10.2026, vom Admin abgenommen):** Bauhaus-Station als Entwurf 4 („Seit 1927 in der Tradition des Bauhauses.“ mit 1927 als Marke über der Teller-Tafel), Farbskala als eigener Abschnitt vor dem Feuer, zwei Schalen als Meisterstück-Bild. Der Vorschau-Umschalter (`?bauhaus=`) und die verworfenen Entwürfe 1 bis 3 sind entfernt; sie stehen in der Git-Historie (Entwurf 1 bis `25f14f0`, Entwürfe 2 und 3 bis zum Commit vor der Abnahme). Das Kopf-Skript in `BaseLayout.astro` ist wieder wie im Gesamtstand.
+
 Stand: 05.10.2026. Branch `startseite-mittelweg` (Basis `gesamtstand`, seit Runde 2 a81c9d2), Vorschau https://startseite-mittelweg-kwm-redesign.entwicklung-7f3.workers.dev. Auftrag: Admin-Entscheidungen vom 05.10.2026 in `.superpowers/sdd/MITTELWEG/progress.md`. Die Seite unterscheidet sich vom Gesamtstand nur auf der Startseite und auf /young-jae-lee (ein Satz ergänzt, siehe Abschnitt 6).
 
-## 0. Runde 2 (Admin-Feedback 05.10.2026): Empfehlung
+## 0. Runde 2 (Admin-Feedback 05.10.2026): Empfehlung (umgesetzt und abgenommen)
 
 **Feedback:** Entwurf 1 (Grundsätze) verworfen. Entwurf 2 (1927) trägt durch die Zahl, Entwurf 3 (Teller-Tafel) ist schön, weil er die Funktion zeigt. Frage nach einem Mittelweg aus 2 und 3. Die Farbskala fehlt. Die Teeschale als Meisterstück gefällt nicht.
 
-**Empfehlung, gebaut als Entwurf 4 (jetzt Standard, `?bauhaus=4` oder ohne Angabe):**
+**Empfehlung, gebaut als Entwurf 4 und abgenommen:**
 1. **Bauhaus-Station = 1927 über der Tafel.** Oben die Jahreszahl als Marke, rechts auf ihrer Grundlinie „In der Tradition des Bauhauses.“ und ein Satz zu Leßmann. Darunter die vier Teller mit Programmnummer, Name und Maß, darunter der Grundsatz „Jedes Stück muss gut zu drehen sein und auch zu benutzen.“. Herkunft und Gebrauch stehen in einem Abschnitt: woher die Formen kommen und wofür sie da sind. Das Regal aus Entwurf 2 entfällt hier, die Tafel ist das stärkere Bild, und zwei Fotos würden die Zahl schwächen.
 2. **Farbskala als eigener ruhiger Abschnitt gegen Ende, nicht in der Bauhaus-Station.** „Sechs Glasuren, ein Geschirr.“ steht zwischen 99 Schalen und Feuer, dort, wo der Manufaktur-Block im Gesamtstand stand.
    - Die Farbskala ist eine interaktive Signatur und füllt zwei Drittel der Bildschirmhöhe. Zusammen mit Zahl und Tafel würde die Station rund zweieinhalb Bildschirme lang, gleich nach Aktuell. Die Person (Young-Jae Lee) rückte weit nach unten, und auf einem Bildschirm stünden zwei starke Elemente (DESIGN.md §1: eine Signatur je Bildschirm).
@@ -15,7 +17,7 @@ Stand: 05.10.2026. Branch `startseite-mittelweg` (Basis `gesamtstand`, seit Rund
    - Der Admin erinnert die Farbskala „gegen Ende“; dort wirkt sie als ruhiger Ausklang des Geschirrs.
 3. **Kein dritter Weg „oben etwas anderes, Manufaktur und Meisterstücke lassen“:** Ein eigener Manufaktur-Block mit Regal, Kurzfakten und Krügen war genau der Text- und Bildballast, den der Admin aus der Startseite haben wollte. Tafel (oben) und Farben (unten) erzählen die Manufaktur mit zwei Bildern und drei Sätzen.
 
-Entwurf 1 ist entfernt. Entwürfe 2 und 3 bleiben zum Vergleich (`?bauhaus=2`, `?bauhaus=3`), der Abschnitt Farben steht in allen Fassungen.
+Nach der Abnahme: „Seit“ klein vor der 1927, damit die Überschrift ein Satz ist; Umschalter und Entwürfe 1 bis 3 entfernt.
 
 ## 1. Abschnittsfolge
 
@@ -23,7 +25,7 @@ Entwurf 1 ist entfernt. Entwürfe 2 und 3 bleiben zum Vergleich (`?bauhaus=2`, `
 |---|---|---|---|
 | 1 | Einstieg: Wagner-Zitat, Kummerschalen | hell | unverändert |
 | 2 | Aktuell | Anker | unverändert |
-| 3 | **Bauhaus-Station** (Entwurf 4: 1927 über der Tafel; `?bauhaus=2|3` zum Vergleich) | hell | neu; ersetzt Einleitungssatz und Zwei Linien |
+| 3 | **Bauhaus-Station** („Seit 1927 …“ über der Teller-Tafel) | hell | neu; ersetzt Einleitungssatz und Zwei Linien |
 | 4 | Young-Jae Lee: Name, haftendes Porträt mit Catoir, Jahn, Lebensweg | hell, Bild | Jahn nur noch einmal (der Satz zum koreanischen Erbe entfällt hier) |
 | 5 | Ausstellungsorte | Anker | rückt vor die Meisterstücke |
 | 6 | Meisterstücke: Einzelwerk und sechs Werke | hell | Aufbau wie bisher, neues Einzelbild (zwei Schalen aus dem MOK-Foto), höchstens zwei Drittel Bildschirmhöhe |
@@ -37,44 +39,36 @@ Entfallen: Meditation (steht auf /meisterstuecke), Einleitungssatz und Zwei Lini
 
 **Hell und Dunkel, am Bild geprüft** (`startseite-mittelweg/nachher-1440.jpg`): hell, Anker (Aktuell), hell (Bauhaus), hell mit großem dunklem Porträt, Anker (Orte), hell (Meisterstücke, 99 Schalen, Farben mit den sechs Glasurbändern), dunkles Bild (Feuer), Fläche (Chronik), hell, Anker (Footer). Nie zwei Anker hintereinander. Zwischen Aktuell und Orte liegen rund 3.400 px, aber das haftende Porträt ist am Rechner selbst ein dunkles Vollbild und gibt dort Halt. Nach den Orten folgen gut drei Bildschirme hell; sie tragen sich über die Werkfotos und den farbigen Ring und enden im dunklen Feuer. Ich habe deshalb nichts umgefärbt: Eine Fläche für die Bauhaus-Station oder die 99 Schalen würde zusammen mit der Chronik „Fläche, Bild, Fläche“ ergeben und den Rhythmus unruhiger machen. Die Orte bleiben dunkel (Vorgabe).
 
-**Regel `--werk-max` (66 svh) mit den Tokens abgeglichen:** neu in `global.css` neben `--section` und `--head-gap`, in DESIGN.md §4 als „Bildgröße nach Rolle“. Greift bei allen Werkbildern der Startseite: Einzelwerk Meisterstücke (vorher bis 680 px hoch, jetzt höchstens 594 px bei 900 px Bildschirmhöhe), Bilder der drei Bauhaus-Entwürfe. Die Werkschau (etwa 315 px) und das Spotlight bei Aktuell liegen ohnehin darunter. Ausgenommen sind Stimmungsbilder: Einstieg, Feuer, Orte und das haftende Porträt am Rechner (Admin: Haft-Element bleibt). Am Handy steht das Porträt 1:1 mit Rand und bleibt unter zwei Dritteln.
+**Regel `--werk-max` (66 svh) mit den Tokens abgeglichen:** neu in `global.css` neben `--section` und `--head-gap`, in DESIGN.md §4 als „Bildgröße nach Rolle“. Greift bei allen Werkbildern der Startseite: Einzelwerk Meisterstücke (vorher bis 680 px hoch, jetzt höchstens 594 px bei 900 px Bildschirmhöhe), Teller-Tafel der Bauhaus-Station. Die Werkschau (etwa 315 px) und das Spotlight bei Aktuell liegen ohnehin darunter. Ausgenommen sind Stimmungsbilder: Einstieg, Feuer, Orte und das haftende Porträt am Rechner (Admin: Haft-Element bleibt). Am Handy steht das Porträt 1:1 mit Rand und bleibt unter zwei Dritteln.
 
-## 2. Die Bauhaus-Station: Entwurf 4 (Standard), 2 und 3 zum Vergleich
+## 2. Die Bauhaus-Station
 
-Gemeinsam: Raster aus 12 Spalten, Haarlinien als Rasterkanten, Farbwelt und Schriften der Seite, keine Bauhaus-Zitate als Stil (kein Rot-Gelb-Blau, keine Grundformen-Symbole, keine Grotesk), keine Farbstreifen, keine Glasurbühne. Umschaltung: Das Kopf-Skript setzt bei `?bauhaus=2|3` `data-bauhaus` an `<html>`, bevor die Seite zeichnet; CSS zeigt den passenden Entwurf. Ohne Angabe (und ohne JavaScript) erscheint Entwurf 4; `?bauhaus=1` und unbekannte Werte zeigen ebenfalls 4. Kein Sprung, CSP-konform (Hash in `astro.config.mjs`), Test in `tests/verhalten.spec.ts`. Nach der Entscheidung entfallen Umschalter, die zwei anderen Entwürfe und ggf. das Bild `teller-reihe.webp` bzw. die Rolle `--t-marke`.
+Gemeinsamer Rahmen aller Entwürfe: Raster aus 12 Spalten, Haarlinien als Rasterkanten, Farbwelt und Schriften der Seite, keine Bauhaus-Zitate als Stil (kein Rot-Gelb-Blau, keine Grundformen-Symbole, keine Grotesk), keine Farbstreifen, keine Glasurbühne.
 
-### Entwurf 4 „1927 und Tafel“ (Standard, Kombination aus 2 und 3)
-- **Idee:** Herkunft und Gebrauch in einem Abschnitt. Die Jahreszahl als Marke (Spalte 1–7), rechts auf ihrer Grundlinie Satz und Herkunft (Spalte 8–12), Haarlinie, dann die Tafel mit vier Tellern und ihrer Legende, darunter der Grundsatz des Programms.
-- **Texte und Quellen:** Chronik 1927 (Leßmann, Lindig, „bei strenger Einhaltung der Formgebungsprinzipien des Bauhauses“), Vorgabe „Jedes Stück muss gut zu drehen sein und auch zu benutzen.“ (`/manufaktur`), Teller Nr. 15, 16, 14, 13 aus `manufaktur.ts`.
-- **Bild:** `teller-reihe.webp` (siehe Entwurf 3), Komponente `TellerTafel` (von 3 und 4 geteilt).
-- **Screens:** `startseite-mittelweg/entwurf-4-1440.jpg`, `entwurf-4-390.jpg`.
-- Entwurf 1 „Grundsätze“ ist nach dem Feedback entfernt (Bild klein und grau, Liste zu textlastig).
+### Endstand: „Seit 1927“ und Tafel (Entwurf 4)
+- **Idee:** Herkunft und Gebrauch in einem Abschnitt. Die Überschrift ist ein Satz: „Seit“ klein auf der Grundlinie der großen 1927 (Spalte 1–7), „in der Tradition des Bauhauses.“ schließt rechts an (Spalte 8–12), darunter ein Satz zu Leßmann. Eine `h2`, Screenreader lesen „Seit 1927 in der Tradition des Bauhauses.“ (Test in `tests/verhalten.spec.ts`). Haarlinie, dann die Tafel mit vier Tellern und ihrer Legende, darunter der Grundsatz des Programms und der Link zum Manufakturprogramm.
+- **Texte und Quellen:** Chronik 1927 (Leßmann, Lindig, „bei strenger Einhaltung der Formgebungsprinzipien des Bauhauses“), Vorgabe „Jedes Stück muss gut zu drehen sein und auch zu benutzen.“ (`/manufaktur`), Teller Nr. 15, 16, 14, 13 aus `manufaktur.ts`, Zuordnung nach der alten Seite `/manufakturprogramm/geschirr-2/`.
+- **Bild:** neue Aufnahme der Werkstatt vom Oktober 2026, https://kwm-1924.de/wp-content/uploads/2026/10/1013-1016-Teller-plates-scaled.jpg (2560 × 1709), beschnitten auf 2560 × 1060 als `teller-reihe.webp`, Grund auf den Seitengrund `#F8F7F4` ausgeglichen. Nachweis fehlt. Komponente `TellerTafel`: am Rechner steht die Legende genau unter den Tellern, am Handy 2 × 2.
+- **Rolle „Marke“** (`--t-marke`, 6 bis 22 rem) für die Jahreszahl, in DESIGN.md eingetragen.
+- **Screens:** `startseite-mittelweg/bauhaus-1440.jpg`, `bauhaus-1024.jpg`, `bauhaus-390.jpg`.
 
-### Entwurf 2 „1927“ (Herkunft, Typofoto)
-- **Idee:** Die Jahreszahl wird zur Marke, wie im Typofoto der Bauhaus-Drucksachen: große Zahl und Foto auf einer gemeinsamen Unterkante, darunter zwei Sätze im selben Raster. Das Regal mit ungebrannter Serienware zeigt, was Leßmann 1927 einführte: Serie, Norm, Wiederholung.
-- **Texte und Quellen:** Chronik 1927 und 1986 (`src/data/chronik.ts`, Langtexte): Leßmann, Schüler Otto Lindigs, Umstellung auf Serienkeramik „bei strenger Einhaltung der Formgebungsprinzipien des Bauhauses“; 1986 Wiederaufnahme des Manufakturprogramms durch Young-Jae Lee und Hildegard Eggemann; Blindstempel seit 1930.
-- **Bild:** `regal.webp` (954 × 905), Foto: Haydar Koyupinar. Ein historisches Werkstattfoto gibt es weder im Repo noch auf der alten Seite (komplette WordPress-Mediathek geprüft, älteste Bilder 2023; `BILDPLAN.md` A12: bei Stadtarchiv, Zollverein oder Ruhr Museum anfragen). Mit einem solchen Foto würde dieser Entwurf am stärksten.
-- **Neu:** Textrolle „Marke“ (`--t-marke`, 6 bis 22 rem) für die Jahreszahl, in DESIGN.md eingetragen.
-- **Screens:** `entwurf-2-1440.jpg`, `entwurf-2-390.jpg`.
-
-### Entwurf 3 „Tafel“ (Form folgt Gebrauch)
-- **Idee:** Eine Tafel wie im Musterkatalog: vier Teller aus dem Programm in einer Reihe von oben, darunter genau unter jedem Stück Programmnummer, Name und Maß. Gleiche Grundform in abgestuften Größen, jede Größe ein Gebrauch (Brotschmier-, Ess-, Brot-, Unterteller). Das Foto ist freigestellt, sein Grund ist auf den Seitengrund `#F8F7F4` ausgeglichen (Vignette korrigiert), die Teller liegen also direkt auf der Seite.
-- **Texte und Quellen:** Grundsatz „Jedes Stück muss gut zu drehen sein …“ im Kopf, „Alle Teile eines Geschirrs …“ darunter; Nummern, Namen, Maße aus `src/data/manufaktur.ts` (Teller Nr. 15, 16, 14, 13), Zuordnung nach der alten Seite `/manufakturprogramm/geschirr-2/`.
-- **Bild:** neue Aufnahme der Werkstatt vom Oktober 2026, https://kwm-1924.de/wp-content/uploads/2026/10/1013-1016-Teller-plates-scaled.jpg (2560 × 1709), beschnitten auf 2560 × 1060 als `teller-reihe.webp`. Nachweis fehlt.
-- **Screens:** `entwurf-3-1440.jpg`, `entwurf-3-390.jpg`.
+### Verworfene Entwürfe (Kurzfassung)
+- **1 „Grundsätze“:** drei nummerierte Grundsätze neben der Teekanne. Verworfen („sieht schlecht aus“).
+- **2 „1927“:** Jahreszahl als Marke neben dem Regal mit Serienware, darunter Chronik 1927 und 1986. Die Zahl trug, sie ist in den Endstand eingegangen. Ein historisches Werkstattfoto gibt es weder im Repo noch auf der alten Seite (`BILDPLAN.md` A12).
+- **3 „Tafel“:** Teller-Tafel mit Programmnummern. Die Funktion ist in den Endstand eingegangen.
 
 ### Inspiration (Refero, Stile angesehen)
 | Beispiel | Übernommen | Bewusst nicht |
 |---|---|---|
-| [19–86](https://19-86.fr) | Zahl als Monument, Haarlinien als Ordnung (Entwurf 2) | leichte Grotesk, Tabellenkopf |
+| [19–86](https://19-86.fr) | Zahl als Monument, Haarlinien als Ordnung (1927) | leichte Grotesk, Tabellenkopf |
 | [Gustavo Faria](https://gustavo.work) | schmale Informationsspalte neben großer Jahreszahl | gerissene Bildkanten |
 | [MDF Italia Contract](https://contract.mdfitalia.com/en) | „Key values“ als wenige Grundsätze im Raster (Entwurf 1, verworfen) | Kreisgrafiken |
-| [B—Line](https://www.b-line.it), [V–A–C](https://v-a-c.org/en) | Objekte im gleichen Licht, eine Beschriftung je Objekt (Entwurf 3) | Versalien-Labels, Mono-Schrift |
+| [B—Line](https://www.b-line.it), [V–A–C](https://v-a-c.org/en) | Objekte im gleichen Licht, eine Beschriftung je Objekt (Tafel) | Versalien-Labels, Mono-Schrift |
 
 Dazu als Bauhaus-Herkunft der Mittel: Typofoto (Moholy-Nagy), Musterkatalog mit Modellnummern. Beides als Prinzip, nicht als Optik.
 
 ### Seitenweite Mittel
-- **Umgesetzt:** `--werk-max` für alle Werkbilder (ruhig, ordnet das Größenverhältnis Werk zu Stimmung); Haarlinie unter jedem Abschnittskopf bleibt die eine Rasterkante der Seite, die drei Entwürfe nutzen dieselbe Linie (Kopf, Grundsätze, Tafel-Unterkante, Text unter der Jahreszahl).
+- **Umgesetzt:** `--werk-max` für alle Werkbilder (ruhig, ordnet das Größenverhältnis Werk zu Stimmung); Haarlinie unter jedem Abschnittskopf bleibt die eine Rasterkante der Seite, die Bauhaus-Station nutzt dieselbe Linie (unter dem Kopf und unter der Tafel-Legende).
 - **Geprüft und verworfen:** Abschnittsnummern (01, 02 …) – die Abschnitte sind keine Abfolge, Nummern wären Dekoration; sichtbare Rasterlinien – laut und technisch, unser Raster ordnet unsichtbar; Grotesk für Überschriften – Bauhaus-Klischee, bricht mit Caslon; zusätzliche Kicker oder Marken über Überschriften – DESIGN.md verbietet sie.
 
 ## 3. Meisterstück-Einstiegsbild
@@ -95,7 +89,7 @@ Gemessen mit Playwright (Chromium, reduzierte Bewegung, fester Tag 04.10.2026): 
 |---|---:|---:|---:|---|---:|---:|---:|
 | Einstieg | 45 | 900 | 1.032 | Einstieg | 45 | 900 | 1.032 |
 | Aktuell | 131 | 1.615 | 1.529 | Aktuell | 131 | 1.615 | 1.529 |
-| Einleitungssatz, Zwei Linien | 86 | 882 | 900 | **Bauhaus** Entwurf 4 (2 / 3) | 63 (56 / 55) | 1.568 (882 / 1.340) | 924 (996 / 786) |
+| Einleitungssatz, Zwei Linien | 86 | 882 | 900 | **Bauhaus** | 64 | 1.568 | 924 |
 | Young-Jae Lee | 180 | 2.475 | 2.007 | Young-Jae Lee | 141 | 2.434 | 1.762 |
 | Meisterstücke | 90 | 2.017 | 1.229 | Ausstellungsorte | 87 | 1.786 | 1.767 |
 | Ausstellungsorte | 87 | 1.786 | 1.767 | Meisterstücke | 103 | 2.058 | 1.286 |
@@ -105,9 +99,9 @@ Gemessen mit Playwright (Chromium, reduzierte Bewegung, fester Tag 04.10.2026): 
 | Feuer | 44 | 1.440 | 1.266 | Feuer | 44 | 1.440 | 1.266 |
 | Chronik | 166 | 1.596 | 748 | Chronik | 166 | 1.596 | 748 |
 | Besuch | 96 | 1.341 | 1.580 | Besuch | 96 | 1.341 | 1.580 |
-| **12 Abschnitte** | **1.179** | **19.054** | **16.939** | **11 Abschnitte** (Entwurf 4) | **979** | **17.929** | **15.037** |
+| **12 Abschnitte** | **1.179** | **19.054** | **16.939** | **11 Abschnitte** | **979** | **17.929** | **15.037** |
 
-- Runde 2 (Entwurf 4 mit Farben): Text −17 %, Seite am Rechner −6 %, am Handy −11 %. Der Abschnitt Farben kostet rund 1.170 px, die Station 4 ist rund 600 px höher als Entwurf 1. Runde 1 (Entwurf 1, ohne Farben) lag bei −23 % / −15 % / −17 %.
+- Endstand: Text −17 %, Seite am Rechner −6 %, am Handy −11 %. Der Abschnitt Farben kostet rund 1.170 px. Runde 1 (Entwurf 1, ohne Farben) lag bei −23 % / −15 % / −17 %.
 - Gesamthöhe = ganze Seite mit Footer. Die Unterschiede zur Messung der Bauhaus-Variante kommen von der reduzierten Bewegung.
 - Bilder: `startseite-mittelweg/vorher-1440.jpg`, `nachher-1440.jpg`, `vorher-390.jpg`, `nachher-390.jpg` (Ganzseiten-Screens in Spalten), `meisterstuecke-1440.jpg`.
 - Konsole ohne Fehler, kein waagrechtes Scrollen bei 390 px (Chromium und WebKit, alle drei Entwürfe).
@@ -127,7 +121,7 @@ Nichts geht verloren (Volltextsuche in `src/`):
 | Catoir „Sie erzählte von den Zeremonien …“ | bleibt im haftenden Porträt; vollständig auf /young-jae-lee |
 | Meditation „Die Herstellung jedes neuen Gefäßes gleicht einer Meditation.“ samt Absatz | /meisterstuecke |
 | Manufaktur „Keiner Mode …“, „Unter Rückbesinnung … 25 Grundelemente …“, „Jedes Stück muss gut zu drehen sein …“, Farbskala-Satz | /manufaktur, /werkstatt; die beiden Vorgaben auch in der Bauhaus-Station |
-| Regal „Vor dem ersten Brand“, Krüge | /manufaktur (Zäsur, Geschirr); Regal auch in Entwurf 2 |
+| Regal „Vor dem ersten Brand“, Krüge | /manufaktur (Zäsur, Geschirr), /werkstatt |
 | Kurzfakten (Masse, Brände, Programm, Gebrauch) | /manufaktur, Arbeitsweise; /werkstatt |
 
 **Technisch entfallen** (nur von der alten Startseite genutzt): Signatur Farbskala (`SigFarbskala`, `sig-farbskala.ts`, Daten `glasuren` und Test), `FactsTable`, `kurzfakten`, Statement-Typ `lede`, Bilder `01-seladon-gefaess.webp` und `spindelvase-einzeln-1200.webp`. Wiederherstellbar aus `e0330a3`.
@@ -155,5 +149,5 @@ Links (jeweils am Rechner und am Handy öffnen):
 ## 8. Offen
 
 - **Bildrechte:** zwei Schalen bzw. MOK-Foto (Fotograf offen, vermutlich Museum), Teller-Foto Oktober 2026 (Fotograf nicht belegt). Vor dem Livegang klären. Die Teeschale ist jetzt belegt (Foto: Edi Baumann), wird aber nicht mehr verwendet.
-- **Historisches Werkstattfoto** für Entwurf 2: Anfrage bei Archiven (BILDPLAN A12).
+- **Historisches Werkstattfoto** (z. B. für die Bauhaus-Station oder die Chronik): Anfrage bei Archiven (BILDPLAN A12).
 - Nach der Wahl: Umschalter und die nicht gewählten Entwürfe entfernen, Kopf-Skript und CSP-Hash zurücksetzen, Optik-Referenzen neu.

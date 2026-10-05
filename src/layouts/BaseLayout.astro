@@ -74,7 +74,7 @@ const vorgeladeneSchriften = (['--font-caslon-display', '--font-jost'] as const)
     <Font cssVariable="--font-jost" />
     {strukturiert && <StrukturierteDaten bild={vorschaubild} />}
     <slot name="head" />
-    {/* Muss vor dem ersten Rendern laufen (Logo-Zeichnung einmal pro Sitzung, Entwurfswahl ohne Sprung), daher inline */}
+    {/* Muss vor dem ersten Rendern laufen (Logo-Zeichnung einmal pro Sitzung), daher inline */}
     <script is:inline>
       document.documentElement.classList.add('js');
       try {
@@ -85,9 +85,6 @@ const vorgeladeneSchriften = (['--font-caslon-display', '--font-jost'] as const)
       } catch {
         document.documentElement.classList.add('logo-draw');
       }
-      // Vorschau: Entwurf der Bauhaus-Station auf der Startseite (?bauhaus=2 oder 3), entfällt nach der Entscheidung
-      const bauhaus = new URLSearchParams(location.search).get('bauhaus');
-      if (bauhaus === '2' || bauhaus === '3') document.documentElement.dataset.bauhaus = bauhaus;
     </script>
   </head>
   <body class={bodyClass}>
