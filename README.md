@@ -16,7 +16,7 @@ npm run preview                   # baut dist/ und startet wrangler dev (wie in 
 ## Prüfen
 
 ```bash
-npm run check                     # Prettier, ESLint, astro check, Build – muss vor jedem Merge grün sein (CI prüft dasselbe)
+npm run check                     # Prettier, ESLint, astro check, Unit-Tests (Vitest), Build – muss vor jedem Merge grün sein (CI prüft dasselbe)
 npm run test:ausgangsstand        # Referenz-Screens aus dem Prototyp erzeugen (tests/__screens__/, nicht im Repo)
 npm test                          # alle Playwright-Tests gegen dist/ unter wrangler dev
 BASIS_URL=https://… npm test      # dieselben Tests gegen eine Vorschau- oder Produktions-URL
@@ -47,11 +47,11 @@ Bis zum Go-live liefert die Seite `X-Robots-Tag: noindex, nofollow` aus (`public
 astro.config.mjs      statisch, build.format 'file' (aktuelles.astro → /aktuelles), compressHTML
 wrangler.jsonc        Worker kwm-redesign, Assets aus dist/, 404-Seite, Previews
 src/layouts/          BaseLayout.astro: Kopf, Skripte, Header und Footer (kein CSS-Import)
-src/components/       Header, Footer, InquiryBand (Anfrage-Leiste), InquiryForm (Anfrageformular), Bild (jedes Bild, rendert `<Image>` aus `astro:assets`)
-src/data/             kontakt.ts (Telefon, Mail, Zeiten, Adresse), navigation.ts (Menü, Fußlinks), bilder.ts (löst Bildpfade zu Bilddaten auf)
+src/components/       Komponenten nach DESIGN.md §11 (Gerüst, Köpfe, Statement, Einträge wie ExhibitionCard, WorkCard, WareCard, FactsList, DateList, PubList, PersonCard, Steps), Bild (jedes Bild, rendert `<Image>` aus `astro:assets`)
+src/data/             Inhalte in der Form des Sanity-Modells: ausstellungen.ts, hinweise.ts, werke.ts, manufaktur.ts, team.ts, texte.ts, vita.ts, werkstatt.ts, anfahrt.ts, arbeitsweise.ts; dazu kontakt.ts, navigation.ts, bilder.ts (löst Bildpfade auf), typen.ts (gemeinsame Typen)
 src/pages/            eine .astro-Datei pro Seite
 src/styles/           basis.css (bindet global.css, pages.css, expander.css ein), seiten/ (Seiten-CSS), signaturen/ (signaturen.css und sig-*.css)
-src/scripts/          Browser-Skripte (TypeScript): main, signaturen (lädt die sig-* als eigene Chunks), expander, keramik (gemeinsame Typen und Daten); das Layout bindet sie als ein verarbeitetes Skript ein
+src/scripts/          Browser-Skripte (TypeScript, Unit-Tests `*.test.ts` mit Vitest: `npm run test:unit`): status (Ausstellungsstatus aus dem Datum), zeitraum, anfrage-link, main, signaturen (lädt die sig-* als eigene Chunks), expander, keramik (gemeinsame Typen und Daten); das Layout bindet sie als ein verarbeitetes Skript ein
 src/assets/fonts/     Selbst gehostete Schriften (woff2, je Teilmenge latin und latin-ext); registriert in `astro.config.mjs` (`fonts`), eingebunden über `<Font>` im Layout
 src/assets/img/       Bilder, nur über `<Bild src="/img/…">` einbinden (Pfad ohne `src/assets`)
 public/               Favicon (`img/kwm/logo.svg`), _headers, _redirects, robots.txt (kein CSS mehr; Rest wird in Phase C gebündelt)

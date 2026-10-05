@@ -264,14 +264,14 @@ Jede wiederverwendbare Komponente hat einen künftigen Astro-Namen (`src/compone
 
 | Komponente | Zweck | Textstile | Varianten | Fundstellen |
 |---|---|---|---|---|
-| `ExhibitionCard` | Ausstellung mit Bild, Datum, Titel, Ort, Fakten | Meta (Datum, Status), Titel, Begleittext (Ort, Text), Aussage (Spotlight) | Spotlight (groß), Eintrag (gespiegelt wechselnd), Kachel (4:3, ein Link) | `.aktuell__item` (Startseite, `css/sig-aktuell.css`), `.feature` (Aktuelles, `css/page-aktuelles.css`), `.now__item` (Vorversion Startseite) |
-| `WorkCard` | Einzelwerk mit Bild, Name, Maßen, Anfrage-Link | Titel oder Zitat klein (Name), Meta (Jahr, Maße, Anfrage) | `catalog__item--wide` (Meta-Spalte links, Bild 4–12), Reihe (gleiche Formate) | `.catalog__item` (`css/pages.css`, `css/page-meisterstuecke.css`), `.piece` (`styles.css`) |
-| `WareCard` | Geschirrserie mit Bild, Titel, Größenliste | Titel, Begleittext (Liste), Meta (Nummern) | Satz (`.set`), Edition | `.ware`, `.set` (`css/page-manufaktur.css`) |
-| `FactsList` | Werkangaben und Fakten: Label links, Wert rechts, Haarlinien | Meta (Label, Versalien), Fließtext oder Begleittext (Wert) | hell, Anker; breit (`.craft__detail--wide`) | `.facts` (`styles.css`), `.method__facts`, `.place__info`, `.aktuell__facts`, `.feature__facts` |
-| `DateList` | Liste mit Jahr links, Text rechts | Jahreszahl, Begleittext, Meta | hell, Fläche | `.datelist` (`css/pages.css`), Young-Jae Lee, Manufaktur, Werkstatt |
-| `PubList` | Veröffentlichungen und Texte mit Autor, Titel, Auszug | Titel, Meta, Begleittext | `pubs`, `texts` | `.pubs`, `.pub`, `.texts` (`css/page-aktuelles.css`, `css/page-young-jae-lee.css`) |
-| `PersonCard` | Mensch der Werkstatt mit Rolle und Text | Titel (Name), Meta (Rolle), Begleittext | Reihe (`.team-strip`) | `.person` (`css/pages.css`, `css/page-werkstatt.css`) |
-| `Steps` | Arbeitsschritte, nummeriert | Titel, Begleittext | hell, Anker | `.steps` (`css/page-meisterstuecke.css`), `.route__steps` (Anfahrt) |
+| `ExhibitionCard` | Ausstellung mit Bild, Datum, Titel, Ort, Fakten | Meta (Datum, Status), Titel, Begleittext (Ort, Text), Aussage (Spotlight) | `spotlight` (groß, Details offen), `kachel` (Startseite, Details klappen auf), `eintrag` (Seite Aktuelles, `gespiegelt` wechselnd); Daten aus `src/data/ausstellungen.ts` | `.aktuell__item` (Startseite, `css/sig-aktuell.css`), `.feature` (Aktuelles, `css/page-aktuelles.css`), `.now__item` (Vorversion Startseite) |
+| `WorkCard` | Einzelwerk mit Bild, Name, Maßen, Anfrage-Link | Titel oder Zitat klein (Name), Meta (Jahr, Maße, Anfrage) | `katalog` (`breite`: standard, halb, breit mit Meta-Spalte links), `stimmung` (Bild ohne Werk), `reihe` (Werkschau der Startseite); Daten aus `src/data/werke.ts`, Anfrage-Link über `anfrage-link.ts` | `.catalog__item` (`css/pages.css`, `css/page-meisterstuecke.css`), `.piece` (`styles.css`) |
+| `WareCard` | Geschirrserie mit Bild, Titel, Größenliste | Titel, Begleittext (Liste), Meta (Nummern) | Satz (`.set`, auch `breit`, `kontur`, nur Text); `WareGroup` bündelt die Sätze einer Warengruppe (Geschirr, Edition) | `.ware`, `.set` (`css/page-manufaktur.css`) |
+| `FactsList` | Werkangaben und Fakten: Label links, Wert rechts, Haarlinien | Meta (Label, Versalien), Fließtext oder Begleittext (Wert) | `tafel`, `ort`, `raster`, `zeile-hell`, `zeile-anker` (je ein bestehender Look, siehe Komponente) | `.facts` (`styles.css`), `.method__facts`, `.place__info`, `.aktuell__facts`, `.feature__facts` |
+| `DateList` | Liste mit Jahr links, Text rechts | Jahreszahl, Begleittext, Meta | `liste` (nummeriert), `definition` (Stichwort links); hell, Fläche | `.datelist` (`css/pages.css`), Young-Jae Lee, Manufaktur, Werkstatt |
+| `PubList` | Veröffentlichungen und Texte mit Autor, Titel, Auszug | Titel, Meta, Begleittext | `artikel` (Aktuelles), `literatur`, `essays` (Young-Jae Lee) | `.pubs`, `.pub`, `.texts` (`css/page-aktuelles.css`, `css/page-young-jae-lee.css`) |
+| `PersonCard` | Mensch der Werkstatt mit Rolle und Text | Titel (Name), Meta (Rolle), Begleittext | Reihe in `.people` (Seite) | `.person` (`css/pages.css`, `css/page-werkstatt.css`) |
+| `Steps` | Arbeitsschritte, nummeriert | Titel, Begleittext | `arbeitsschritte` (Bild bleibt stehen), `folge` (nummerierte Wegbeschreibung) | `.steps` (`css/page-meisterstuecke.css`), `.route__steps` (Anfahrt) |
 
 ### Aufklappen und Archive
 
