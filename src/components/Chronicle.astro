@@ -130,18 +130,18 @@ const zeitraum = `${gezeigt[0]?.jahr} bis ${gezeigt.at(-1)?.jahr}`;
     z-index: 2;
     background: var(--ink);
   }
-  .js .chronicle__year::before {
+  :global(.js) .chronicle__year::before {
     scale: 0;
     transition: scale 0.45s var(--ease-pop);
   }
-  .js .chronicle__list li.is-on .chronicle__year::before {
+  :global(.js) .chronicle__list li.is-on .chronicle__year::before {
     scale: 1;
   }
-  .js .chronicle__year {
+  :global(.js) .chronicle__year {
     color: var(--ink-2);
     transition: color 0.6s var(--ease);
   }
-  .js .chronicle__list li.is-on .chronicle__year {
+  :global(.js) .chronicle__list li.is-on .chronicle__year {
     color: var(--ink);
   }
   .chronicle__list li:not(:last-child)::after {
@@ -181,18 +181,18 @@ const zeitraum = `${gezeigt[0]?.jahr} bis ${gezeigt.at(-1)?.jahr}`;
     margin: 0;
     text-wrap: pretty;
   }
-  .js .chronicle__list li {
+  :global(.js) .chronicle__list li {
     opacity: 0;
     transform: translateY(18px);
     transition:
       opacity 1.2s var(--ease),
       transform 1.4s var(--ease);
   }
-  .js .chronicle__list li.is-in {
+  :global(.js) .chronicle__list li.is-in {
     opacity: 1;
     transform: none;
   }
-  .js .chronicle__list li::after {
+  :global(.js) .chronicle__list li::after {
     transform: scaleY(var(--seg, 0));
   }
   .chronicle__hint {
@@ -238,7 +238,7 @@ const zeitraum = `${gezeigt[0]?.jahr} bis ${gezeigt.at(-1)?.jahr}`;
       padding: 36px 24px 0 0;
       scroll-snap-align: start;
     }
-    .js .chronicle__list li {
+    :global(.js) .chronicle__list li {
       opacity: 1;
       transform: none;
       transition: none;
@@ -248,7 +248,7 @@ const zeitraum = `${gezeigt[0]?.jahr} bis ${gezeigt.at(-1)?.jahr}`;
       --dot-left: 0px;
     }
     .chronicle__list li:not(:last-child)::after,
-    .js .chronicle__list li:not(:last-child)::after {
+    :global(.js) .chronicle__list li:not(:last-child)::after {
       top: calc(var(--dot) / 2);
       left: var(--dot);
       width: calc(100% - var(--dot));
@@ -261,14 +261,14 @@ const zeitraum = `${gezeigt[0]?.jahr} bis ${gezeigt.at(-1)?.jahr}`;
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .js .chronicle__list li,
-    .js .chronicle__list li::after {
+    :global(.js) .chronicle__list li,
+    :global(.js) .chronicle__list li::after {
       transition: none;
       transform: none;
       opacity: 1;
     }
-    .js .chronicle__year,
-    .js .chronicle__year::before {
+    :global(.js) .chronicle__year,
+    :global(.js) .chronicle__year::before {
       transition: none;
     }
   }
@@ -277,7 +277,7 @@ const zeitraum = `${gezeigt[0]?.jahr} bis ${gezeigt.at(-1)?.jahr}`;
   .chronicle__item--quiet .chronicle__what {
     color: var(--ink-2);
   }
-  .js .chronicle__list .chronicle__item--quiet.is-on .chronicle__year {
+  :global(.js) .chronicle__list .chronicle__item--quiet.is-on .chronicle__year {
     color: var(--ink-2);
   }
 </style>

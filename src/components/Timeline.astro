@@ -86,11 +86,11 @@ const { stationen, weiter } = Astro.props;
     background: var(--ink);
     translate: 0 -50%;
   }
-  .js .journey li::after {
+  :global(.js) .journey li::after {
     scale: 0;
     transition: scale 0.45s var(--ease-pop);
   }
-  .js .journey li.is-on::after {
+  :global(.js) .journey li.is-on::after {
     scale: 1;
   }
   .journey__year {
@@ -119,7 +119,7 @@ const { stationen, weiter } = Astro.props;
     margin: 0;
     justify-self: start;
   }
-  .js .journey {
+  :global(.js) .journey {
     --p: 0;
   }
   .journey-track {
@@ -161,13 +161,13 @@ const { stationen, weiter } = Astro.props;
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .js .journey li::after {
+    :global(.js) .journey li::after {
       transition: none;
     }
-    .js .journey {
+    :global(.js) .journey {
       --p: 1;
     }
-    .js .journey li::after {
+    :global(.js) .journey li::after {
       scale: 1;
     }
   }
