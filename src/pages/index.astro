@@ -10,7 +10,7 @@ import { kurzfakten } from '../data/manufaktur';
 import WorkTile from '../components/WorkTile.astro';
 import { stueckBezeichnung, werk, werkschau } from '../data/werke';
 import { anfrageLink } from '../scripts/anfrage-link';
-import ExhibitionCard from '../components/ExhibitionCard.astro';
+import SigAktuell from '../components/SigAktuell.astro';
 import { ausstellungen } from '../data/ausstellungen';
 import { hinweise } from '../data/hinweise';
 import { kontakt } from '../data/kontakt';
@@ -72,28 +72,7 @@ import '../styles/signaturen/signaturen.css';
     </section>
 
     {/* Aktuell: laufende und kommende Ausstellungen mit Flyer und Angaben, aufklappbar ohne Unterseite */}
-    <section class="aktuell" id="aktuelles" data-sig="aktuell" aria-labelledby="aktuell-title">
-      <div class="aktuell__head grid">
-        <h2 class="h2" id="aktuell-title" data-reveal="words">
-          Aktuell
-        </h2>
-        <LinkArrow class="aktuell__all" href="/aktuelles">
-          Alle Ausstellungen und Termine
-        </LinkArrow>
-      </div>
-
-      {hinweise.map((hinweis) => (
-        <p class="aktuell__note" data-start={hinweis.von} data-end={hinweis.bis}>
-          {hinweis.text}
-        </p>
-      ))}
-
-      <ol class="aktuell__list">
-        {ausstellungen.map((eintrag) => (
-          <ExhibitionCard typ={eintrag.spotlight ? 'spotlight' : 'kachel'} ausstellung={eintrag} />
-        ))}
-      </ol>
-    </section>
+    <SigAktuell {ausstellungen} {hinweise} />
 
     {/* Lede */}
     <section class="lede grid" aria-label="Über die Werkstatt">
