@@ -195,3 +195,37 @@ Grundlage: Feedback des Admins zu den Screens vom 04.10. und der Skill `impeccab
 - **Stammdaten, Tabelle:** „Personen“ statt „Künstler:innen“, Serie „Geschirr“ statt „Manufakturprogramm“. Tabelle ohne Künstler-Spalte, für Geschirr und Edition Gedreht/Glasiert von, Maße, Partner, Außer Haus.
 - **Build:** `build.mjs` erkennt Namen nach dem Spread-Operator (`...name`).
 - **Prüfung:** Typprüfung und Einheitlichkeit grün. Funktionstests Mengenlager, Runde 14 (neue Glasur, Ausstellen) und Erfassen Runde 14 grün. Screens 390/1440 px unter `konzept/vergleich/runde14/`, gefunden und behoben: zu langer Knopftext „Weitere Angaben …“ am Handy, fehlendes „neu anlegen“ bei wenigen Glasuren.
+
+## Runde 15: Aufräumen, schnellere Abläufe, Meisterstücke (05.10.)
+
+- **Anlass:** Der Admin hat das Problem noch einmal geschärft:
+  - Niemand weiß, wie viel wovon in welcher Glasur und welchem Zustand da ist.
+  - Stücke aus verschiedenen Bränden sind nicht zusammen verkaufbar.
+  - Eingetragen wird 1–2× am Tag am Rechner.
+  - Kein Zwischenstand „im Ofen“, kein Buchungsprotokoll.
+- **Parallelbetrieb:** Der neue Stand läuft auf versteckten Testseiten `/v2-…` mit eigenen Blöcken. Die Live-Blöcke bleiben auf Runde 14. Rücksprung siehe `konzept/softr/RUECKSPRUNG.md`.
+- **Übersicht:**
+  - Ohne Kopftext.
+  - Datenpflege zählt nur Editionen ohne VK.
+  - Reservierungen haben eine Zeile je Posten.
+  - Gemeinsamer Block „Außer Haus“ für Meisterstücke und Edition.
+- **Bestand:**
+  - Glasurzeile in der Liste.
+  - Reservieren direkt aus der Brandzeile.
+  - Box „Zum Nachglasieren“.
+  - Kürzerer Glasieren-Dialog mit Brand-Chips und „Mehr“.
+  - „Rückgabe bis“ beim Ausstellen.
+  - Werkangaben für Meisterstücke.
+- **Erfassen:**
+  - Modellsuche.
+  - Edition startet glasiert.
+  - „Noch eins wie dieses“.
+  - „Weitere Angaben zeigen“ unter Anzahl.
+  - Gedreht von volle Breite, wenn nicht glasiert.
+- **Tabelle:** Reiter Alle | Geschirr | Edition | Meisterstücke mit eigenen Spalten und Summe je Reiter.
+- **Neue Bausteine:** `SuchAuswahl` (ui.tsx) und `glasurZeile` (mengen.ts).
+- **Prüfung:**
+  - Typprüfung und Einheitlichkeit grün.
+  - Funktionstests grün: Erfassen Runde 14/15, Brand-Reservieren, Nachglasieren, Brand-Chips, Tabellen-Reiter.
+  - Screens 390/1440 px unter `konzept/vergleich/runde15/`.
+  - Die Datumsfelder zeigen im Test-Browser das US-Format. Das liegt an der Browser-Sprache des Tests, Geräte mit deutscher Sprache zeigen TT.MM.JJJJ.

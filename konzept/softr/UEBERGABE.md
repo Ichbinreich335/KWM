@@ -22,6 +22,57 @@ Für die nächste Session. Zuerst `CLAUDE.md`, `konzept/SOFTR-AUFTRAG.md` und `k
 | `/uebersicht` | `16450fdc-1469-49fb-8785-acac62a5c953` | `uebersicht.tsx` | `c62602bd-dd73-44d6-9625-b59aec539939` | unikate, edition, partner | keine |
 | `/stammdaten` | `c8a4fadb-196f-4712-b649-816e0f1ebd5e` | `stammdaten.tsx` | `451b0d69-677c-4f15-9f15-87cae9021028` | kuenstler, glasuren, modelle, partner, lagerorte, unikate, edition | alle ADD → LOGGED_IN_USERS |
 
+## Stand 05.10.2026 (Runde 15, Aufräumen und schnellere Abläufe, gilt vor allem darunter)
+Läuft **nur auf versteckten Testseiten**. Die Live-Seiten oben sind unverändert auf Runde 14 (Rücksprung: `RUECKSPRUNG.md`, Git `90bbed1`).
+
+| Testseite | Page-ID | Block-ID | Datenquellen | Aktionsrechte |
+|---|---|---|---|---|
+| `/v2-erfassen` | `6c80f38a-35c2-48d4-b08b-9424c8e906c6` | `9c1f2e6f-230e-40cb-8992-24e078b5107d` | unikate, edition, glasuren, kuenstler, lagerorte, partner, modelle | alle ADD → LOGGED_IN_USERS; Einstellung „bestand-link“ → `/v2-bestand` |
+| `/v2-bestand` | `5291a171-fbaa-418b-99d6-092b36e12d13` | `8f49e0c5-2243-4dcd-9ef8-b86de07fb384` | unikate, edition, kuenstler, glasuren, lagerorte, partner, modelle | alle ADD → LOGGED_IN_USERS |
+| `/v2-uebersicht` | `d72ae0f5-b7d2-42bd-bb25-199721c4babe` | `88b4049a-d3e8-4fad-97b4-3c6e1540acc8` | unikate, edition, partner, modelle | keine |
+| `/v2-tabelle` | `09e3064a-b6c6-4f5b-ba7e-6bf64bd2223f` | `d51b99a4-57c1-404c-a08b-e9aeb243a2a7` | unikate, edition, ansichten | alle ADD → LOGGED_IN_USERS |
+
+- Testseiten stehen nicht im Menü. Links innerhalb der Blöcke (z. B. Übersicht → Bestand) führen auf die Live-Seiten. Zum Testen die Vorschau-Links je Testseite nutzen.
+- Neue Felder (nur ergänzt): Editionsbestand „Rückgabe bis“ `nBkRl`; Unikate „Ort“ `6YbfO`, „Brennart“ `8D0WI`, „Glasurrezept“ `XhsmV`.
+- Die Übersicht braucht jetzt zusätzlich die Datenquelle `modelle` (Editionen ohne VK-Preis). Beim Umschalten an `/` anschließen.
+
+**Umgesetzt (Runde 15):**
+- **Begriffe:** Unikate heißen in der Oberfläche überall „Meisterstücke“. Die Datenbank bleibt.
+- **Übersicht:**
+  - Kein Kopftext.
+  - Datenpflege zählt nur Editionen ohne VK-Preis.
+  - Reservierungen zeigen je Posten eine Zeile.
+  - Neuer Block „Außer Haus“ für Meisterstücke und Edition, nach Partner sortiert, früheste Rückgabe zuerst.
+  - Fristen für Edition stehen in „Zu erledigen“.
+- **Bestand:**
+  - Die Listenzeile zeigt die Glasuren („Rostbraun 16 (9 aus einem Brand) · Weiß 6“).
+  - Im Modellfenster führt ein Tipp auf die Brandzeile direkt zum Reservieren.
+  - Neue Box „Zum Nachglasieren: N geschrüht“ mit Knopf „Glasieren“.
+  - Glasieren ist kürzer: Brand als Chips (Heute, die letzten drei Brände, Anderes Datum). Glasiert von, Reserviert und Lagerort liegen unter „Mehr“.
+  - Ausstellen fragt „Rückgabe bis“ ab.
+  - Meisterstücke haben Werkangaben (Ort, Brennart, Glasurrezept), eingeklappt im Bearbeiten-Fenster. Sie werden nur angezeigt, wenn sie gefüllt sind.
+- **Erfassen:**
+  - Modellsuche (Nummer oder Name).
+  - Edition startet mit Zustand glasiert.
+  - „Weitere Angaben zeigen“ steht unter Anzahl.
+  - Nach dem Speichern gibt es „Noch eins wie dieses“: Modell, Zustand, Brand und Lagerort bleiben stehen.
+  - Edition mit Status hat das Feld „Rückgabe bis“.
+- **Tabelle:**
+  - Reiter Alle | Geschirr | Edition | Meisterstücke, jeweils mit passenden Spalten und Summe.
+  - Bei Geschirr und Edition sind Glasur und Brand sichtbar.
+  - Alte gespeicherte Ansichten (Art „unikat“) werden umgedeutet.
+- **Stammdaten:** keine Testseite. Beim Umschalten nur die Wortänderung „Meisterstücke“ mit hochladen.
+
+**Umschalten (nur auf Anweisung des Admins):**
+1. Den Code aus `blocks/` in die Live-Blöcke laden (erfassen, bestand, uebersicht, tabelle, stammdaten).
+   - Die Live-Blöcke stehen auf `90bbed1`. Deshalb geht das per `vibe_coding_block_update_code_search_replace` mit dem Diff `90bbed1` → `HEAD`.
+   - Danach die SHA prüfen.
+2. An die Übersicht die Datenquelle `modelle` anschließen. Die Aktionsrechte wie in der Tabelle oben setzen.
+3. Veröffentlichen.
+4. Die Testseiten löschen (nur mit OK).
+
+**Rücksprung:** siehe `RUECKSPRUNG.md`.
+
 ## Stand 05.10.2026 (Runde 14, Feedback Admin, gilt vor allem darunter)
 Runde 13 und 14 sind hochgeladen, aber **nicht veröffentlicht** (Freigabe Admin offen).
 

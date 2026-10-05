@@ -7,8 +7,8 @@ Die App läuft in Softr (`kwm-lager.softr.app`, später `lager.<KWM-Domain>.de`,
 - `src/shared/`: **gemeinsame Bauteile, nur hier ändern.**
   - `konstanten.ts`: Status-Werte
   - `daten.ts`: Feldwerte umwandeln, Datum, Zahlen, CSV
-  - `mengen.ts`: **Mengenlager** für Geschirr und Edition. Ein Posten ist eindeutig durch Modell, Zustand (roh, geschrüht, glasiert), Glasur, Brand, Reservierung, Status mit Partner (ausgestellt, in Kommission) sowie gedreht und glasiert von. `nachModell` fasst je Modell zusammen (wie die Lagerliste der Werkstatt), `brandGruppen` zählt je Glasur die freie Ware nach Brand („zusammen verkaufbar“), `planeUmbuchung` plant Glasieren, Reservieren, Ausstellen und Ausbuchen auf dem frisch geladenen Stand
-  - `ui.tsx`: **Grundbausteine** `Knopf`, `Feld`, `Textfeld`, `Stueckzahl`, `TextMitVorschlag`, `AktionKnopf`, `GlasurWahl` (Glasuren des Modells, andere wählen oder neu anlegen), `Auswahl`, `SchalterFeld`, `Ankreuzfeld`, `Etikett` sowie `PANEL_CLASS` (Box), `DIALOG_CLASS` (Fenster), `POPOVER_CLASS` (Menü), Status-Farben. Außerdem Auswahl-Knopf, Knopfreihe, Reiter, Status-Badge, Felder, Auswahlliste, Foto-Vorschau und Foto-Auswahl, „+ Neu“, Kachel, Bereich, Listenzeile, Seitenkopf, Fenster-Kopf, Zustände für Laden, Fehler und „leer“
+  - `mengen.ts`: **Mengenlager** für Geschirr und Edition. Ein Posten ist eindeutig durch Modell, Zustand (roh, geschrüht, glasiert), Glasur, Brand, Reservierung, Status mit Partner (ausgestellt, in Kommission) sowie gedreht und glasiert von. `nachModell` fasst je Modell zusammen (wie die Lagerliste der Werkstatt), `brandGruppen` zählt je Glasur die freie Ware nach Brand („zusammen verkaufbar“), `glasurZeile` zeigt je Modell die Glasuren mit Stückzahl und größtem Brand (z. B. „Rostbraun 16 (9 aus einem Brand)“), `planeUmbuchung` plant Glasieren, Reservieren, Ausstellen und Ausbuchen auf dem frisch geladenen Stand. Ausgestellte Posten tragen zusätzlich „Rückgabe bis“
+  - `ui.tsx`: **Grundbausteine** `Knopf`, `Feld`, `Textfeld`, `Stueckzahl`, `TextMitVorschlag`, `AktionKnopf`, `GlasurWahl` (Glasuren des Modells, andere wählen oder neu anlegen), `SuchAuswahl` (Suchfeld mit Trefferliste, z. B. Modellwahl beim Erfassen), `Auswahl`, `SchalterFeld`, `Ankreuzfeld`, `Etikett` sowie `PANEL_CLASS` (Box), `DIALOG_CLASS` (Fenster), `POPOVER_CLASS` (Menü), Status-Farben. Außerdem Auswahl-Knopf, Knopfreihe, Reiter, Status-Badge, Felder, Auswahlliste, Foto-Vorschau und Foto-Auswahl, „+ Neu“, Kachel, Bereich, Listenzeile, Seitenkopf, Fenster-Kopf, Zustände für Laden, Fehler und „leer“
 - `src/blocks/`: Quelltext je Block. Bauteile werden mit `import { … } from "../shared/…"` eingebunden.
 - `blocks/`: **erzeugt, nicht von Hand ändern.** Softr kompiliert jeden Block als einzelne Datei und kann keinen Code zwischen Blöcken teilen. `build.mjs` setzt deshalb die benutzten Bauteile in jeden Block ein und lässt ungenutzte weg.
 
@@ -19,6 +19,10 @@ Die App läuft in Softr (`kwm-lager.softr.app`, später `lager.<KWM-Domain>.de`,
 | `src/blocks/tabelle.tsx` | `/tabelle` | Tabelle – alle Objekte frei filterbar |
 | `src/blocks/uebersicht.tsx` | `/` | Übersicht – Dashboard |
 | `src/blocks/stammdaten.tsx` | `/stammdaten` | Stammdaten – Personen, Glasuren, Modelle, Partner, Lagerorte |
+
+In der Oberfläche heißen Unikate **Meisterstücke**. Tabelle und Feldnamen in der Datenbank bleiben „Unikate“.
+
+**Testseiten (Runde 15):** Bis zum Umschalten laufen die neuen Stände parallel auf versteckten Seiten `/v2-erfassen`, `/v2-bestand`, `/v2-uebersicht`, `/v2-tabelle` mit eigenen Blöcken auf derselben Datenbank. IDs, Umschalten und Rücksprung: `UEBERGABE.md` und `RUECKSPRUNG.md`.
 
 ## Ablauf bei einer Änderung
 
