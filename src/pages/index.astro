@@ -14,6 +14,7 @@ import ExhibitionCard from '../components/ExhibitionCard.astro';
 import { ausstellungen } from '../data/ausstellungen';
 import { hinweise } from '../data/hinweise';
 import { kontakt } from '../data/kontakt';
+import Hours from '../components/Hours.astro';
 import PlaceGrid from '../components/PlaceGrid.astro';
 import { kacheln } from '../data/orte';
 import Timeline from '../components/Timeline.astro';
@@ -513,23 +514,7 @@ import '../styles/signaturen/signaturen.css';
       </SectionHead>
       <div class="visit__body grid">
         <div class="visit__info">
-          <table class="hours">
-            <caption class="visually-hidden">Öffnungszeiten</caption>
-            <tbody>
-              <tr>
-                <th scope="row">Montag bis Freitag</th>
-                <td>9–17 Uhr</td>
-              </tr>
-              <tr>
-                <th scope="row">Samstag</th>
-                <td>11–15 Uhr</td>
-              </tr>
-              <tr>
-                <th scope="row">Sonst</th>
-                <td>nach Vereinbarung</td>
-              </tr>
-            </tbody>
-          </table>
+          <Hours typ="tabelle" />
           <p class="visit__actions">
             <LinkArrow href={kontakt.telefonHref}>Lieber anrufen: {kontakt.telefon}</LinkArrow>
             <LinkArrow href="/besuch">Anfahrt und Besuch</LinkArrow>

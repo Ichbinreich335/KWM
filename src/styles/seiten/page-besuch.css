@@ -22,34 +22,6 @@
   row-gap: 32px;
   align-items: start;
 }
-.visit-hours__times {
-  border-top: 1px solid var(--ink);
-}
-.visit-hours__row {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: baseline;
-  gap: 24px;
-  padding: 22px 0 20px;
-  border-bottom: 1px solid var(--hair);
-}
-.visit-hours__day {
-  font-size: var(--t-small);
-  line-height: var(--t-small-lh);
-  color: var(--ink-2);
-}
-.visit-hours__time {
-  font-family: var(--f-display);
-  font-size: var(--t-h2);
-  line-height: var(--t-h2-lh);
-  letter-spacing: -0.02em;
-  font-variant-numeric: lining-nums;
-  text-align: right;
-}
-.visit-hours__time--small {
-  font-size: var(--t-h3);
-  line-height: var(--t-h3-lh);
-}
 .visit-hours__place {
   grid-column: 1 / 6;
 }

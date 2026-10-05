@@ -1109,26 +1109,6 @@ body::after {
   row-gap: 40px;
   align-items: start;
 }
-.hours {
-  grid-column: 1 / 7;
-  border-collapse: collapse;
-  width: 100%;
-  font-size: var(--t-body);
-  line-height: var(--t-body-lh);
-}
-.hours th,
-.hours td {
-  text-align: left;
-  font-weight: 400;
-  padding: 16px 0;
-  border-bottom: 1px solid var(--hair);
-}
-.hours th {
-  width: calc(50% + var(--g) / 2);
-}
-.hours td {
-  font-variant-numeric: tabular-nums;
-}
 .visit__actions {
   grid-column: 7 / 13;
   display: flex;
@@ -1577,7 +1557,6 @@ body::after {
   .artist__heritage {
     grid-column: 1 / -1;
   }
-  .hours,
   .visit__actions {
     grid-column: 1 / -1;
   }

@@ -9,6 +9,7 @@ import SectionHead from '../components/SectionHead.astro';
 import Bild from '../components/Bild.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import InquiryForm from '../components/InquiryForm.astro';
+import Hours from '../components/Hours.astro';
 import PageHero from '../components/PageHero.astro';
 import '../styles/seiten/page-besuch.css';
 import '../styles/signaturen/signaturen.css';
@@ -33,20 +34,7 @@ const zeitenKurzWort = oeffnungszeitKurz(kontakt.oeffnungszeiten, 'kurzWort').jo
         senden wir Ihnen natürlich gerne weitere Informationen oder ein Angebot zu. Selbstverständlich können Sie unsere
         Werkstatt auch besuchen.
       </Fragment>
-      <div class="visit-hours__times" data-reveal="fade" role="group" aria-label="Öffnungszeiten">
-        <div class="visit-hours__row">
-          <span class="visit-hours__day">Montag bis Freitag</span>
-          <span class="visit-hours__time">9–17 Uhr</span>
-        </div>
-        <div class="visit-hours__row">
-          <span class="visit-hours__day">Samstag</span>
-          <span class="visit-hours__time">11–15 Uhr</span>
-        </div>
-        <div class="visit-hours__row">
-          <span class="visit-hours__day">Ansonsten</span>
-          <span class="visit-hours__time visit-hours__time--small">nach Vereinbarung</span>
-        </div>
-      </div>
+      <Hours typ="liste" />
     </PageHero>
 
     {/* Adresse */}
