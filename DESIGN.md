@@ -74,6 +74,7 @@ Größen bei 1440 px: Mega 179, Seitentitel 101, Abschnitt 66, Aussage 52, Lede 
 - **Abschnittsabstand:** `--section` = `clamp(80px, 10vw, 168px)` oben und unten. Abschnitte wählen keine eigenen Abstände, Ausnahmen gelten nur für Vollbild-Signaturen.
 - **Kopf zu Inhalt:** `--head-gap` = `clamp(32px, 4vw, 56px)`. Gilt für Abschnittsköpfe und für den Seitenkopf zum Bild.
 - **Bildformate:** Kachel 4:3, Werk 3:2, Porträt 4:5, Panorama frei. In einer Reihe immer dasselbe Format.
+- **Bildgröße nach Rolle:** Werk- und Porträtbilder höchstens zwei Drittel der Bildschirmhöhe (`--werk-max` = 66 svh) und mit Luft drumherum, nie randlos. Stimmungsbilder (Feuer, Einstieg, Orte) dürfen randlos und groß sein.
 
 ## 5. Abschnittstypen und Rhythmus
 
@@ -110,16 +111,16 @@ Größen bei 1440 px: Mega 179, Seitentitel 101, Abschnitt 66, Aussage 52, Lede 
 | 1 | Einstieg: Zitat und Kummerschalen-Foto, ein Satz, zwei Links | hell | Haltung in einem Satz und einem Bild |
 | 2 | Aktuell: Spotlight mit Details, weitere zum Aufklappen, Hinweiszeile | Anker | Was jetzt zu sehen ist und wo. Häufigster Besuchsgrund |
 | 3 | Bauhaus: Grundformen (Teller, Schale, Krug) und Farbskala im selben Raster | hell | Das Prinzip des Hauses als Bild: wenige Formen, sechs Farben, alles kombinierbar |
-| 4 | Young-Jae Lee: Name, Porträt mit einem Satz, Lebensweg | hell, Bild | Die Person hinter den Stücken |
-| 5 | Meisterstücke: Einzelwerk groß und Auswahl | hell | Die Unikate selbst. Bilder statt Worte |
+| 4 | Young-Jae Lee: Name, Porträt (Spalte 1–7) mit Kritikerzitat daneben, Lebensweg | hell | Die Person hinter den Stücken |
+| 5 | Meisterstücke: Einzelwerk mit Meta-Spalte (Name links, Bild Spalte 4–9) und Auswahl | hell | Die Unikate selbst. Bilder statt Worte |
 | 6 | Ausstellungsorte | Anker | Reichweite und Anerkennung (Museen, Galerien) |
-| 7 | 99 Schalen: ein Satz und der Ring | Fläche | Wiederholung und Differenz. Warum keine wie die andere ist |
+| 7 | 99 Schalen: Wagner-Zitat und der Ring auf hellem Grund | hell | Wiederholung und Differenz. Warum keine wie die andere ist |
 | 8 | Feuer | Bild | Der Brand als Moment, ein kurzer Bildwechsel |
 | 9 | Chronik, hundert Jahre: nur Jahr und Titel | Fläche | Herkunft des Hauses. Die Überschrift bleibt stehen, die Jahre ziehen vorbei |
 | 10 | Besuch und Anfrage | hell | Kommen oder schreiben: Öffnungszeiten und Formular |
 | 11 | Footer | Anker | Kontakt, Logo, Wortmarke |
 
-**Regel für die Startseite:** ein Abschnitt, ein Satz, ein Bild. Begleittexte höchstens zwei Zeilen. Was erklärt, steht auf der Unterseite. Konzept und Herleitung: `konzept/STARTSEITE-BAUHAUS.md`.
+**Regel für die Startseite:** ein Abschnitt, ein Satz, ein Bild. Kritikerzitate (Catoir, Jahn, Wagner) bleiben, weil sie die Kunstrichtung zeigen, aber jedes Zitat nur einmal auf der Website. Sätze der Werkstatt stehen in der Stimme der Werkstatt („wir“), nicht als Zitat der Leiterin. Begleittexte höchstens zwei Zeilen. Was erklärt, steht auf der Unterseite. Konzept und Herleitung: `konzept/STARTSEITE-BAUHAUS.md`.
 
 **Grundformen** (`.principle__forms`, nur Startseite): drei Fotos des Manufakturprogramms im Format 3:2, je 4 Spalten, gleiches Licht und gleicher Grund, Beschriftung nur mit dem Namen (Zitat klein, Display). Darunter die Farbskala mit denselben Spaltenkanten (je 2 Spalten). Mobil untereinander. Daten: `grundformen` in `src/data/manufaktur.ts`.
 
@@ -224,7 +225,7 @@ Sticky unter dem Header, mobil seitlich scrollbar mit Randausblendung. Der aktiv
 - **Kein Scroll-Hijacking.** Sticky mit Scroll-Steuerung ist erlaubt, wenn die Scrollgeschwindigkeit unverändert bleibt.
 - **Punkte füllen sich, wenn die Linie sie erreicht.** Gemeinsame Animation für Lebensweg und Chronik: Ring hohl, Füllung (`scale` 0 auf 1, 0,45 s, `--ease-pop` mit leichtem Überziehen) über die Klasse `.is-on`. Rückwärts leert sich der Punkt wieder. Reduzierte Bewegung: sofort gefüllt.
 - **Lebensweg** (`.journey`, Startseite): Ohne Sticky. Linie und Punkte füllen sich mit dem Scrollfortschritt von links nach rechts (voll, wenn der Strahl ~35 % von oben erreicht), reversibel. Darunter der Link „Zum ganzen Werdegang“.
-- **Feuer** (`.sticky-bild--feuer`) und **Porträt** (`.sticky-bild--portrait`): Der Text steht oben im Bild fest (sticky, Abstand `--head` + `--head-gap`), das Bild läuft darunter durch, am Ende zieht der Text mit. Der Textbereich ist nur so hoch wie der Text, er haftet also bis unten ans Bild. Feuer 160 svh (mobil 150 svh); Porträt 140 svh, Zitat in Lede-Größe rechts. Porträt mobil (bis 900 px): Bild (1:1 mit Seitenrand statt randlos 4:5, ohne Abdunklung und Parallax; ruhiger und kleiner, das Gesicht bleibt frei) und Zitat auf Kohle untereinander, ohne Sticky.
+- **Feuer** (`.sticky-bild--feuer`): Der Text steht oben im Bild fest (sticky, Abstand `--head` + `--head-gap`), das Bild läuft darunter durch, am Ende zieht der Text mit. Der Textbereich ist nur so hoch wie der Text, er haftet also bis unten ans Bild. 160 svh (mobil 150 svh). Das Porträt der Startseite steht dagegen als Werkbild ruhig im Raster (Bildgröße nach Rolle, Abschnitt 4).
 - **Feuer:** Abschnitt 160 svh (mobil 150 svh), Bild füllt ihn. Der weiße Text steht oben links (Rand `--m`, oben `--head` + `--head-gap`) und bleibt stehen, bis das Bild durch ist. Abdunklung oben links für Kontrast ≥ 4,5:1. Zur Chronik folgt der volle Abschnittsabstand.
 - **Chronik-Punkte** (`.chronicle`): Die Linie zeichnet sich scrollgebunden, jeder Punkt füllt sich beim Erreichen, die Jahreszahl wechselt von `--ink-2` zu `--ink`. Mobil (Wischleiste) füllen sich die Punkte, sobald ihre Karte in die Leiste ragt, und nur, wenn die Leiste sichtbar ist.
 

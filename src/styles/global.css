@@ -36,6 +36,8 @@
   --subnav: 50px;
   --section: clamp(80px, 10vw, 168px);
   --head-gap: clamp(32px, 4vw, 56px);
+  /* Werk- und Porträtbilder höchstens zwei Drittel der Bildschirmhöhe, mit Luft drumherum; Stimmungsbilder dürfen randlos */
+  --werk-max: 66svh;
 
   /* Textstile (Rollenskala, siehe DESIGN.md „Textstile“). Größen nur hier definieren, überall sonst die Rolle verwenden. */
   --t-mega: clamp(3.4rem, 12.4vw, 13rem);
@@ -439,6 +441,14 @@ body::after {
 .principle {
   padding-block: var(--section);
 }
+.principle__voice {
+  margin: 0;
+  font-family: var(--f-text);
+  font-size: var(--t-quote);
+  line-height: var(--t-quote-lh);
+  color: var(--ink);
+  text-wrap: balance;
+}
 .principle__forms {
   row-gap: var(--head-gap);
   padding-bottom: var(--head-gap);
@@ -491,28 +501,23 @@ body::after {
   padding-bottom: var(--section);
 }
 .works__single {
-  grid-column: 1 / 9;
+  grid-column: 4 / 10;
   background: var(--ground-2);
 }
 .works__single img {
   width: 100%;
   aspect-ratio: 5 / 4;
+  max-height: var(--werk-max);
   object-fit: cover;
   object-position: 50% 85%;
   mix-blend-mode: multiply;
 }
-.works__single-text {
-  grid-column: 9 / 13;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-}
 .works__single-meta {
+  grid-column: 1 / 4;
+  align-self: start;
   display: grid;
   gap: 20px;
   justify-items: start;
-  padding-top: 20px;
-  border-top: 1px solid var(--ink);
 }
 .works__single-name {
   font-family: var(--f-display);
@@ -530,8 +535,11 @@ body::after {
 }
 @media (max-width: 900px) {
   .works__single,
-  .works__single-text {
+  .works__single-meta {
     grid-column: 1 / -1;
+  }
+  .works__single-meta {
+    order: 1;
   }
 }
 
@@ -549,6 +557,24 @@ body::after {
 }
 .artist__name > span {
   grid-column: 1 / -1;
+}
+.artist__spread {
+  align-items: end;
+  row-gap: 32px;
+}
+.artist__portrait {
+  grid-column: 1 / 8;
+}
+.artist__portrait img {
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  max-height: var(--werk-max);
+  object-fit: cover;
+  object-position: 30% 40%;
+}
+.artist__story {
+  grid-column: 9 / 13;
+  padding-bottom: 40px;
 }
 .works {
   padding-block: var(--section);
@@ -568,6 +594,12 @@ body::after {
 /* 99 Schalen */
 .rep {
   padding-top: var(--section);
+}
+.rep__head {
+  padding-bottom: var(--head-gap);
+}
+.rep__quote {
+  grid-column: 1 / 10;
 }
 
 /* Kosmos */
@@ -1072,6 +1104,16 @@ body::after {
   }
   .artist__name {
     white-space: normal;
+  }
+  .artist__portrait,
+  .artist__story {
+    grid-column: 1 / -1;
+  }
+  .rep__quote {
+    grid-column: 1 / -1;
+  }
+  .artist__story {
+    padding-bottom: 0;
   }
   .visit__actions {
     grid-column: 1 / -1;
