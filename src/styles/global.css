@@ -36,12 +36,17 @@
   --subnav: 50px;
   --section: clamp(80px, 10vw, 168px);
   --head-gap: clamp(32px, 4vw, 56px);
+  /* Werk- und Porträtbilder höchstens zwei Drittel der Bildschirmhöhe, mit Luft drumherum; Stimmungsbilder dürfen randlos */
+  --werk-max: 66svh;
 
   /* Textstile (Rollenskala, siehe DESIGN.md „Textstile“). Größen nur hier definieren, überall sonst die Rolle verwenden. */
   --t-mega: clamp(3.4rem, 12.4vw, 13rem);
   --t-mega-lh: 0.9;
   --t-wordmark: 17.6vw;
   --t-wordmark-lh: 0.74;
+  /* Jahreszahl als Bildelement (Bauhaus-Station, Entwurf 2), keine Leseschrift */
+  --t-marke: clamp(6rem, 24vw, 22rem);
+  --t-marke-lh: 0.8;
   --t-display: clamp(3rem, 7vw, 7rem);
   /* Seitentitel (PageHero): kleineres Minimum, damit lange Komposita wie „Zahlungsmöglichkeiten“ bei 360 px passen */
   --t-title: clamp(2.5rem, 7vw, 7rem);
@@ -87,9 +92,8 @@
   :root {
     --t-mega: clamp(3rem, 15.5vw, 6rem);
   }
-  /* Startseite: große Aussagen und Zitate eine Stufe kleiner, damit sie am Handy nicht wuchtig stehen */
+  /* Startseite: große Aussagen eine Stufe kleiner, damit sie am Handy nicht wuchtig stehen */
   .page-home {
-    --t-lede: clamp(1.45rem, 5.6vw, 1.65rem);
     --t-statement: clamp(1.75rem, 7vw, 2rem);
   }
 }
@@ -429,32 +433,10 @@ body::after {
   margin: 0;
 }
 
-/* Lede */
-.lede {
-  padding-block: var(--section);
-  row-gap: var(--head-gap);
-}
 /* Zwei helle Abschnitte hintereinander: der Abstand zählt nur einmal */
-.lede + .artist,
-.artist + .works {
+.bauhaus + .artist,
+.works + .rep {
   padding-top: 0;
-}
-.lede__text {
-  grid-column: 1 / 11;
-}
-.lede__col {
-  font-size: var(--t-small);
-  line-height: var(--t-small-lh);
-  color: var(--ink-2);
-  margin: 0;
-  max-width: 42ch;
-  align-self: start;
-}
-.lede__col--a {
-  grid-column: 7 / 10;
-}
-.lede__col--b {
-  grid-column: 10 / 13;
 }
 
 /* Meisterstücke: ein Einzelwerk groß vor der Werkschau, Werkangaben in der Meta-Spalte */
@@ -470,6 +452,7 @@ body::after {
 .works__single img {
   width: 100%;
   aspect-ratio: 1;
+  max-height: var(--werk-max);
   object-fit: cover;
   mix-blend-mode: multiply;
 }
@@ -513,70 +496,6 @@ body::after {
   }
 }
 
-/* Zwei Linien: Abzweig zu Meisterstücken und Manufaktur */
-.lines {
-  grid-column: 1 / -1;
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  border-top: 1px solid var(--ink);
-  border-bottom: 1px solid var(--hair);
-}
-.lines__item {
-  display: grid;
-  align-content: start;
-  gap: 10px;
-  padding: clamp(20px, 2.4vw, 32px) var(--g) clamp(24px, 3vw, 40px);
-  text-decoration: none;
-  transition:
-    background-color var(--dur-hover) var(--ease-soft),
-    color var(--dur-hover) var(--ease-soft);
-}
-.lines__name {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 16px;
-  font-family: var(--f-display);
-  font-size: var(--t-h2);
-  line-height: var(--t-h2-lh);
-  letter-spacing: -0.02em;
-}
-.lines__name::after {
-  content: '';
-  width: 0.5em;
-  height: 0.5em;
-  flex: none;
-  background: currentColor;
-  -webkit-mask: var(--arrow) center / contain no-repeat;
-  mask: var(--arrow) center / contain no-repeat;
-  transition: transform var(--dur-hover) var(--ease-soft);
-}
-.lines__what {
-  font-size: var(--t-small);
-  line-height: var(--t-small-lh);
-  color: var(--ink-2);
-  max-width: 36ch;
-  text-wrap: pretty;
-  transition: color var(--dur-hover) var(--ease-soft);
-}
-.lines__item:hover,
-.lines__item:focus-visible {
-  background: var(--ink);
-  color: var(--ground);
-}
-.lines__item:focus-visible {
-  outline: var(--focus-ring) solid var(--accent-on-coal);
-  outline-offset: -4px;
-}
-.lines__item:hover .lines__what,
-.lines__item:focus-visible .lines__what {
-  color: var(--on-coal-2);
-}
-.lines__item:hover .lines__name::after,
-.lines__item:focus-visible .lines__name::after {
-  transform: translateX(6px);
-}
-
 /* Young-Jae Lee */
 .artist {
   padding-block: var(--section);
@@ -592,13 +511,6 @@ body::after {
 .artist__name > span {
   grid-column: 1 / -1;
 }
-.artist__cite {
-  display: block;
-  font-size: var(--t-meta);
-  line-height: var(--t-meta-lh);
-  color: var(--ink-2);
-  margin-top: 10px;
-}
 .artist__body {
   row-gap: 48px;
   align-items: start;
@@ -606,13 +518,6 @@ body::after {
 }
 .artist__quote {
   grid-column: 1 / 9;
-}
-.artist__heritage {
-  grid-column: 10 / 13;
-  font-size: var(--t-small);
-  line-height: var(--t-small-lh);
-  color: var(--ink-2);
-  padding-top: 12px;
 }
 .works {
   padding-block: var(--section);
@@ -632,40 +537,6 @@ body::after {
 /* 99 Schalen */
 .rep {
   padding-top: var(--section);
-}
-
-/* Meditation: Haltung und Arbeitsweise */
-.med {
-  padding-top: var(--section);
-}
-.med__grid {
-  row-gap: 24px;
-  grid-template-rows: auto 1fr;
-  align-items: start;
-}
-.med__quote {
-  grid-column: 1 / 8;
-  grid-row: 1;
-}
-.med__body {
-  grid-column: 1 / 7;
-  grid-row: 2;
-}
-.med__body p {
-  max-width: 46ch;
-  color: var(--ink-2);
-  margin: 0;
-}
-.med__media {
-  grid-column: 8 / -1;
-  grid-row: 1 / 3;
-  margin: 0;
-}
-.med__media img {
-  width: 100%;
-  aspect-ratio: 4 / 3;
-  object-fit: cover;
-  object-position: 68% 50%;
 }
 
 /* Kosmos */
@@ -736,91 +607,6 @@ body::after {
   border-radius: 50%;
   background: var(--c);
   flex: none;
-}
-
-/* Manufaktur */
-.craft {
-  padding-block: var(--section);
-}
-.craft__rule {
-  font-family: var(--f-text);
-  font-size: var(--t-body);
-  line-height: var(--t-body-lh);
-  color: var(--ink);
-}
-.scale {
-  display: flex;
-}
-.scale__band {
-  flex: 1 1 0;
-  background: var(--c);
-  color: var(--t);
-  position: relative;
-  overflow: hidden;
-  transition: flex-grow var(--dur-zoom) var(--ease);
-}
-.scale:hover .scale__band {
-  flex-grow: 0.8;
-}
-.scale .scale__band:hover {
-  flex-grow: 2.6;
-}
-.scale__sample {
-  position: absolute;
-  left: clamp(12px, 1.4vw, 22px);
-  top: clamp(14px, 2vw, 26px);
-  border-radius: 50%;
-  object-fit: cover;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.18);
-}
-.scale__note {
-  padding-top: 16px;
-}
-.scale__note span {
-  grid-column: 1 / 8;
-  font-size: var(--t-small);
-  line-height: var(--t-small-lh);
-  color: var(--ink-2);
-  max-width: 70ch;
-}
-.craft__detail {
-  padding-top: var(--section);
-  align-items: start;
-  row-gap: 48px;
-}
-.craft__media {
-  grid-column: 1 / 7;
-  margin-left: calc(var(--m) * -1);
-}
-.craft__media img {
-  width: 100%;
-  aspect-ratio: 1;
-  object-fit: cover;
-}
-.craft__detail--wide .craft__media {
-  grid-column: 1 / 8;
-  grid-row: 1 / span 2;
-}
-.craft__detail--wide .facts {
-  grid-column: 9 / 13;
-  grid-row: 1;
-}
-.craft__detail--wide .craft__media3 {
-  grid-column: 9 / 13;
-  grid-row: 2;
-  align-self: end;
-  margin: 0;
-}
-.craft__media3 img {
-  width: 100%;
-  aspect-ratio: 3 / 2;
-  object-fit: cover;
-}
-.craft__media figcaption {
-  padding-left: var(--m);
-}
-.facts {
-  grid-column: 10 / 13;
 }
 
 /* Besuch */
@@ -1043,9 +829,6 @@ body::after {
     animation: none;
     stroke-dashoffset: 0;
   }
-  .scale__band {
-    transition: none;
-  }
 }
 
 /* ---------- Responsive ---------- */
@@ -1059,12 +842,6 @@ body::after {
   }
   .brand__name {
     display: none;
-  }
-  .lede__col--a {
-    grid-column: 5 / 9;
-  }
-  .lede__col--b {
-    grid-column: 9 / 13;
   }
 }
 
@@ -1244,40 +1021,14 @@ body::after {
     grid-row: 2;
     padding: 20px 0 16px;
   }
-  .lines {
-    grid-template-columns: 1fr;
-  }
-  .lines__item + .lines__item {
-    border-left: 0;
-    border-top: 1px solid var(--hair);
-  }
-  .lede {
-    row-gap: 32px;
-  }
-  .lede__text,
-  .lede__col--a,
-  .lede__col--b,
-  .lines {
-    grid-column: 1 / -1;
-  }
   .artist__name {
     white-space: normal;
   }
-  .artist__quote,
-  .artist__heritage {
+  .artist__quote {
     grid-column: 1 / -1;
   }
   .visit__actions {
     grid-column: 1 / -1;
-  }
-  .med__grid {
-    grid-template-rows: none;
-  }
-  .med__quote,
-  .med__body,
-  .med__media {
-    grid-column: 1 / -1;
-    grid-row: auto;
   }
   .cosmos__stage {
     width: 100%;
@@ -1293,50 +1044,6 @@ body::after {
     display: block;
     text-align: center;
     padding: 24px var(--m) 0;
-  }
-  .scale {
-    flex-direction: column;
-    height: auto;
-  }
-  .scale__band {
-    min-height: 84px;
-  }
-  .scale:hover .scale__band,
-  .scale .scale__band:hover {
-    flex-grow: 1;
-  }
-  .scale__sample {
-    left: auto;
-    right: 16px;
-    top: 50%;
-    transform: translateY(-50%);
-  }
-  .scale__note span {
-    grid-column: 1 / -1;
-  }
-  .craft__media,
-  .craft__detail--wide .craft__media {
-    grid-column: 1 / -1;
-    grid-row: auto;
-    margin-inline: calc(var(--m) * -1);
-  }
-  .craft__detail--wide .facts {
-    grid-column: 1 / -1;
-    grid-row: auto;
-  }
-  .craft__detail--wide .craft__media3 {
-    grid-column: 1 / -1;
-    grid-row: auto;
-  }
-  .facts {
-    grid-column: 1 / -1;
-  }
-  /* Handy: das zweite Foto entfällt, es steht auf /manufaktur */
-  .craft__media3 {
-    display: none;
-  }
-  .craft__media img {
-    aspect-ratio: 4 / 3;
   }
   .works__statement {
     display: none;
