@@ -36,6 +36,7 @@ Rahmen, Höhe und Schrift jedes Elements stehen genau einmal in `ui.tsx`. Seiten
 - ein Block eine Rahmenfarbe (`border-…`, `divide-…`, `LINE`) oder einen eigenen umrandeten Kasten baut (Ausnahme: Warnfarbe `destructive`),
 - eine Seite ihre Wurzel selbst baut statt `SEITE_CLASS`/`SEITE_BREIT_CLASS` (verhindert seitliches Verschieben am Handy),
 - ein Block selbst `overflow-auto` oder `overflow-x-auto` setzt. Wischzeilen laufen nur über `SCROLL_ROW` bzw. `WISCHEN` (sperrt die senkrechte Achse), Tabellen über `TABLE_PANEL_CLASS`,
+- ein Bedienelement nur am Rechner erscheint (`hidden sm:inline-flex` u. Ä.). Handy und Rechner zeigen dieselben Angaben, Filter liegen auf beiden hinter dem Filterknopf. Ausnahmen: Tabelle am Rechner statt Karten am Handy (`hidden sm:block`/`sm:hidden`) und Werkzeuge der Tabelle über `NUR_TABELLE`,
 - Dialog, Popover, Ausklappmenü oder Blatt ohne `DIALOG_CLASS` bzw. `POPOVER_CLASS` geöffnet werden,
 - in `ui.tsx` ein Rahmen ohne `LINE` steht (Ausnahmen: Status-Farben, Chips, `destructive`, `primary`, `transparent`) oder ein shadcn-Element außerhalb seines Grundbausteins vorkommt.
 

@@ -2,13 +2,12 @@
 import { forwardRef, useEffect, useMemo, useRef, useState } from "react";
 import { datasource, q, useFieldOptions, useRecords, useRecordUpdate, useUpload } from "@/lib/datasource";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { AlertTriangle, Camera, Check, ChevronDown, ChevronRight, ClipboardList, Download, FileSpreadsheet, ImageOff, Images, LayoutGrid, List, Loader2, Minus, Pencil, Plus, Printer, Search, SlidersHorizontal, Star, Table2, X } from "lucide-react";
+import { AlertTriangle, Camera, Check, ChevronRight, ClipboardList, ImageOff, Images, LayoutGrid, List, Loader2, Minus, Pencil, Plus, Search, SlidersHorizontal, Star, X } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 
 const PAGE_SIZE = 100;
@@ -115,22 +114,6 @@ function parseNumber(s: string): number | null {
   return Number.isFinite(n) ? n : null;
 }
 
-function csvCell(v: string): string {
-  return /[";\n\r]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v;
-}
-
-function downloadCsv(filename: string, header: string[], rows: string[][]) {
-  const csv = String.fromCharCode(0xfeff) + [header, ...rows].map((r) => r.map(csvCell).join(";")).join("\r\n");
-  const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  URL.revokeObjectURL(url);
-}
-
 function useAllPages(query: { hasNextPage?: boolean; isFetchingNextPage?: boolean; fetchNextPage: () => unknown }) {
   const { hasNextPage, isFetchingNextPage, fetchNextPage } = query;
   useEffect(() => {
@@ -138,63 +121,11 @@ function useAllPages(query: { hasNextPage?: boolean; isFetchingNextPage?: boolea
   }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 }
 
-function escapeHtml(v: string): string {
-  return v.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
-}
-
-type PrintColumn = { label: string; align?: "right" };
-
-// Druckansicht in einem eigenen Fenster, unabhängig von Navigation und Layout der App.
-// Im Druckdialog „Als PDF sichern“ wählen. false: Das Fenster wurde vom Browser blockiert.
-function printTable({ title, subtitle, columns, rows, footer }: { title: string; subtitle: string; columns: PrintColumn[]; rows: string[][]; footer?: string[] }): boolean {
-  const win = window.open("", "_blank");
-  if (!win) return false;
-  const cell = (tag: "th" | "td", v: string, c: PrintColumn) => `<${tag}${c.align === "right" ? ' class="r"' : ""}>${escapeHtml(v)}</${tag}>`;
-  const stand = new Date().toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" });
-  win.document.write(`<!doctype html><html lang="de"><head><meta charset="utf-8"><title>${escapeHtml(title)}</title>
-<style>
-  @page { size: A4; margin: 14mm 12mm; }
-  body { font: 10pt/1.35 system-ui, -apple-system, "Segoe UI", sans-serif; color: #111; margin: 0; }
-  header { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 1.5pt solid #111; padding-bottom: 6pt; margin-bottom: 10pt; }
-  h1 { font-size: 15pt; margin: 0; }
-  .sub { color: #555; margin-top: 2pt; }
-  .firma { text-align: right; color: #555; font-size: 9pt; }
-  table { width: 100%; border-collapse: collapse; }
-  th { text-align: left; font-weight: 600; border-bottom: 1pt solid #111; padding: 4pt 6pt; }
-  td { border-bottom: 0.5pt solid #ccc; padding: 4pt 6pt; vertical-align: top; }
-  tfoot td { border-top: 1pt solid #111; border-bottom: none; font-weight: 600; }
-  .r { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
-  tr { break-inside: avoid; }
-  thead { display: table-header-group; }
-</style></head><body>
-<header><div><h1>${escapeHtml(title)}</h1><div class="sub">${escapeHtml(subtitle)}</div></div>
-<div class="firma">Keramische Werkstatt Margaretenhöhe<br>Stand ${stand} · ${rows.length} Einträge</div></header>
-<table><thead><tr>${columns.map((c) => cell("th", c.label, c)).join("")}</tr></thead>
-<tbody>${rows.map((r) => `<tr>${r.map((v, i) => cell("td", v, columns[i])).join("")}</tr>`).join("")}</tbody>
-${footer ? `<tfoot><tr>${footer.map((v, i) => cell("td", v, columns[i])).join("")}</tr></tfoot>` : ""}
-</table></body></html>`);
-  win.document.close();
-  win.focus();
-  // Je nach Browser kommt „load“ oder nicht; gedruckt wird genau einmal.
-  let printed = false;
-  const go = () => {
-    if (printed) return;
-    printed = true;
-    win.print();
-  };
-  win.onload = go;
-  window.setTimeout(go, 400);
-  return true;
-}
-
 // Die eine Rahmenfarbe der App: Flächen, Kacheln, Felder, Auswahlen, Knöpfe. Nur Trennlinien innerhalb einer Fläche bleiben heller.
 const LINE = "border-neutral-300";
 
 // Jedes Fenster (Dialog). Rahmen in der App-Rahmenfarbe.
 const DIALOG_CLASS = `w-[calc(100vw-2rem)] max-h-[90vh] overflow-y-auto rounded-lg border ${LINE} p-4 sm:p-6 [&>button:last-child]:hidden`;
-
-// Jedes aufklappende Menü (Popover, Ausklappliste).
-const POPOVER_CLASS = `border ${LINE}`;
 
 // md:text-base hebt das md:text-sm der shadcn-Felder auf, damit Eingabe und Auswahlliste gleich groß schreiben.
 const FIELD_CLASS = `h-12 min-w-0 rounded-md text-base md:text-base ${LINE}`;
@@ -285,19 +216,6 @@ function SchalterFeld({ id, label, hint, checked, onChange, lage = "" }: { id: s
 }
 
 const MOBILE_QUERY = "(max-width: 639px)";
-
-// Handy oder größer. Für Bedienelemente, die am Handy anders aufgebaut sind (Filter im Blatt von unten).
-function useIsMobile(): boolean {
-  const [mobile, setMobile] = useState(() => window.matchMedia?.(MOBILE_QUERY).matches ?? false);
-  useEffect(() => {
-    const media = window.matchMedia?.(MOBILE_QUERY);
-    if (!media) return;
-    const update = () => setMobile(media.matches);
-    media.addEventListener("change", update);
-    return () => media.removeEventListener("change", update);
-  }, []);
-  return mobile;
-}
 
 // Gewählt = gefüllt. Kein zusätzliches Symbol, damit der Knopf beim Antippen nicht breiter wird und nichts springt.
 // Mindestbreite, damit kurze Wörter (Sieb, Topf) nicht winzig wirken und die Reihen ruhiger aussehen.
@@ -509,7 +427,7 @@ function Thumb({ fotos, size = "small", className = "w-12 h-12 rounded-md" }: { 
 function PageHeader({ title, description, aside, actions }: { title: string; description?: string; aside?: React.ReactNode; actions?: React.ReactNode }) {
   return (
     <div className="flex flex-wrap items-end justify-between gap-x-4 gap-y-3">
-      <div className="flex items-end justify-between gap-4 min-w-0 flex-1 sm:flex-none">
+      <div className={`flex items-end justify-between gap-4 min-w-0 flex-1 ${actions ? "sm:flex-none" : ""}`}>
         <div className="min-w-0">
           <h1 className="text-2xl font-semibold">{title}</h1>
           {description && <p className="text-base text-muted-foreground mt-0.5">{description}</p>}
@@ -662,29 +580,6 @@ function PhotoPicker({ files, onChange, multiple, error }: { files: File[]; onCh
   );
 }
 
-// Export einer Liste: Excel-taugliche CSV-Datei oder Druckansicht (dort „Als PDF sichern“).
-function ExportMenu({ onCsv, onPdf, disabled }: { onCsv: () => void; onPdf: () => void; disabled?: boolean }) {
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Knopf variant="outline" className={`h-12 w-12 px-0 text-base sm:w-auto sm:px-4`} disabled={disabled} aria-label="Exportieren">
-          <Download className="w-5 h-5 sm:mr-2" aria-hidden />
-          <span className="hidden sm:inline">Exportieren</span>
-          <ChevronDown className="hidden sm:block w-4 h-4 ml-1" aria-hidden />
-        </Knopf>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className={`${POPOVER_CLASS} w-56`}>
-        <DropdownMenuItem className="min-h-11 text-base gap-2" onSelect={onCsv}>
-          <FileSpreadsheet className="w-5 h-5" aria-hidden /> Excel (CSV-Datei)
-        </DropdownMenuItem>
-        <DropdownMenuItem className="min-h-11 text-base gap-2" onSelect={onPdf}>
-          <Printer className="w-5 h-5" aria-hidden /> PDF / Drucken
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
-  );
-}
-
 type Ansicht = "liste" | "kacheln";
 const ANSICHT_KEY = "kwm-ansicht";
 
@@ -759,8 +654,8 @@ function FilterSheet({
 }) {
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      {/* Hoher z-index: Das Blatt muss über Softrs eigener Navigationsleiste liegen. */}
-      <DrawerContent lang="de" className={`z-[99999] ${LINE}`}>
+      {/* Hoher z-index: Das Blatt muss über Softrs eigener Navigationsleiste liegen. Am Rechner mittig und schmal statt bildschirmbreit. */}
+      <DrawerContent lang="de" className={`z-[99999] sm:mx-auto sm:max-w-lg ${LINE}`}>
         <DrawerHeader className="text-left">
           <DrawerTitle className="text-xl">Filter</DrawerTitle>
           <DrawerDescription className="text-base">Gilt sofort für die Liste.</DrawerDescription>
@@ -1014,59 +909,6 @@ function compare(a: Unikat, b: Unikat, key: SortKey): number {
     default:
       return b.erfasstAm.localeCompare(a.erfasstAm);
   }
-}
-
-function exportUnikate(list: Unikat[]) {
-  downloadCsv(
-    `unikate-${today()}.csv`,
-    ["Inventarnummer", "Name", "Typ", "Status", "Künstler:in", "Datum", "Gedreht von", "Glasiert von", "Glasur", "Maße", "Lagerort", "Partner", "Preis intern (€)", "Auf Website zeigen", "Notiz", "Erfasst am", "Verkauft am"],
-    list.map((u) => [
-      u.inv,
-      u.name,
-      u.typ,
-      u.status,
-      u.kuenstler?.label ?? "",
-      datumText(u),
-      u.gedreht?.label ?? "",
-      u.glasiert?.label ?? "",
-      u.glasur.map((g) => g.label).join(", "),
-      u.masse,
-      u.lagerort?.label ?? "",
-      u.galerie?.label ?? "",
-      u.preis === null ? "" : String(u.preis),
-      u.website ? "ja" : "nein",
-      u.notiz,
-      formatDate(u.erfasstAm),
-      formatDate(u.verkauftAm),
-    ]),
-  );
-}
-
-function printUnikate(list: Unikat[], untertitel: string): boolean {
-  return printTable({
-    title: "Unikate",
-    subtitle: untertitel,
-    columns: [{ label: "Inv.-Nr." }, { label: "Name" }, { label: "Typ" }, { label: "Status" }, { label: "Künstler:in" }, { label: "Ort / Partner" }, { label: "Preis", align: "right" }],
-    rows: list.map((u) => [u.inv, u.name, u.typ, u.status, u.kuenstler?.label ?? "", ortVon(u), u.preis === null ? "" : euro.format(u.preis)]),
-  });
-}
-
-function printEdition(list: Edition[], untertitel: string): boolean {
-  return printTable({
-    title: "Editionsware",
-    subtitle: untertitel,
-    columns: [{ label: "Modell" }, { label: "Zustand" }, { label: "Glasur" }, { label: "Lagerort" }, { label: "Anzahl", align: "right" }],
-    rows: list.map((e) => [e.modell, e.zustand, e.glasur, e.lagerort?.label ?? "", zahl.format(e.anzahl)]),
-    footer: ["Summe", "", "", "", zahl.format(list.reduce((n, e) => n + e.anzahl, 0))],
-  });
-}
-
-function exportEdition(list: Edition[]) {
-  downloadCsv(
-    `editionsbestand-${today()}.csv`,
-    ["Artikelnr.", "Modell", "Programm", "Typ", "Zustand", "Glasur", "Anzahl", "Lagerort", "Notiz"],
-    list.map((e) => [e.nr, e.modell, e.programm, e.typ, e.zustand, e.glasur, String(e.anzahl), e.lagerort?.label ?? "", e.notiz]),
-  );
 }
 
 type EditForm = {
@@ -1774,7 +1616,6 @@ export default function Block() {
   const [programmFilter, setProgrammFilter] = useState<ProgrammKey>("");
   const [inventur, setInventur] = useState(false);
   const [filterSheet, setFilterSheet] = useState(false);
-  const isMobile = useIsMobile();
   const [ansicht, setAnsicht] = useAnsicht();
   const [limit, setLimit] = useState(LIST_STEP);
   const [pendingEdition, setPendingEdition] = useState("");
@@ -1906,13 +1747,6 @@ export default function Block() {
     return offen;
   }
 
-  function exportPdf() {
-    const ok = isEdition
-      ? printEdition(visibleEdition, [activeZustand.key === "alle" ? "Alle Zustände" : activeZustand.label, programmFilter || "Alle Programme", term && `Suche „${term}“`].filter(Boolean).join(" · "))
-      : printUnikate(visible, [activeTab.label, typFilter, kuenstlerImBestand.find((k) => k.id === kuenstlerFilter)?.label, term && `Suche „${term}“`].filter(Boolean).join(" · "));
-    if (!ok) toast.error("Der Browser hat das Druckfenster blockiert. Bitte Pop-ups für diese Seite erlauben.");
-  }
-
   async function saveEdition(e: Edition, fields: { anzahl: number; lagerort: string[]; notiz: string }) {
     try {
       // Hat jemand die Anzahl geändert, seit das Fenster offen ist, nicht überschreiben, sondern melden.
@@ -1996,25 +1830,8 @@ export default function Block() {
         <PageHeader
           title="Bestand"
           description={isEdition ? `${zahl.format(stueckGesamt)} Stück in ${zahl.format(visibleEdition.length)} Posten` : `${zahl.format(visible.length)} von ${zahl.format(unikate.length)} Unikaten`}
-          // Am Handy steht der Ansichtsumschalter im Kopf, damit die Statuszeile die volle Breite hat.
-          aside={isMobile ? (isEdition ? inventurButton : <AnsichtToggle value={ansicht} onChange={setAnsicht} />) : undefined}
-          actions={
-            isMobile ? undefined : (
-              <>
-                <Knopf asChild variant="ghost" className="h-11 text-base">
-                  <a href="/tabelle">
-                    <Table2 className="w-5 h-5 mr-2" aria-hidden /> Tabelle
-                  </a>
-                </Knopf>
-                {inventurButton}
-                <ExportMenu
-                  onCsv={() => (isEdition ? exportEdition(visibleEdition) : exportUnikate(visible))}
-                  onPdf={exportPdf}
-                  disabled={isEdition ? visibleEdition.length === 0 : visible.length === 0}
-                />
-              </>
-            )
-          }
+          // Handy und Desktop gleich: Ansichtsumschalter bzw. Inventur im Kopf, Filter hinter dem Filterknopf.
+          aside={isEdition ? inventurButton : <AnsichtToggle value={ansicht} onChange={setAnsicht} />}
         />
 
         <Tabs
@@ -2035,76 +1852,51 @@ export default function Block() {
         {isEdition ? (
           <FilterChips label="Zustand" options={zustandChips} value={zustandFilter} onChange={setZustandFilter} />
         ) : (
-          <div className="flex items-start gap-3">
-            <div className="flex-1 min-w-0">
-              <FilterChips
-                label="Status"
-                options={tabs}
-                value={tab}
-                onChange={(key) => {
-                  setTab(key);
-                  setLimit(LIST_STEP);
-                }}
-              />
-            </div>
-            {!isMobile && <AnsichtToggle value={ansicht} onChange={setAnsicht} />}
-          </div>
+          <FilterChips
+            label="Status"
+            options={tabs}
+            value={tab}
+            onChange={(key) => {
+              setTab(key);
+              setLimit(LIST_STEP);
+            }}
+          />
         )}
 
-        {isMobile ? (
-          <div className="flex gap-3">
-            <SearchField label="Suche" placeholder={searchPlaceholder} value={search} onChange={setSearch} />
-            <FilterButton count={filterCount} onClick={() => setFilterSheet(true)} />
-          </div>
-        ) : isEdition ? (
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-[minmax(0,1fr)_16rem]">
-            <div className="flex">
-              <SearchField label="Suche" placeholder={searchPlaceholder} value={search} onChange={setSearch} />
-            </div>
-            {programmAuswahl()}
-          </div>
-        ) : (
-          <div className="grid grid-cols-2 gap-3 lg:grid-cols-[minmax(0,1fr)_10rem_12rem_11rem]">
-            <div className="col-span-2 lg:col-span-1 flex">
-              <SearchField label="Suche" placeholder={searchPlaceholder} value={search} onChange={setSearch} />
-            </div>
-            {typAuswahl()}
-            {kuenstlerAuswahl()}
-            {sortAuswahl()}
-          </div>
-        )}
+        <div className="flex gap-3">
+          <SearchField label="Suche" placeholder={searchPlaceholder} value={search} onChange={setSearch} />
+          <FilterButton count={filterCount} onClick={() => setFilterSheet(true)} />
+        </div>
 
-        {isMobile && (
-          <FilterSheet
-            open={filterSheet}
-            onOpenChange={setFilterSheet}
-            resultText={isEdition ? `${zahl.format(visibleEdition.length)} Posten anzeigen` : `${zahl.format(visible.length)} ${visible.length === 1 ? "Stück" : "Stücke"} anzeigen`}
-            canReset={filterCount > 0}
-            onReset={resetFilters}
-          >
-            {isEdition ? (
+        <FilterSheet
+          open={filterSheet}
+          onOpenChange={setFilterSheet}
+          resultText={isEdition ? `${zahl.format(visibleEdition.length)} Posten anzeigen` : `${zahl.format(visible.length)} ${visible.length === 1 ? "Stück" : "Stücke"} anzeigen`}
+          canReset={filterCount > 0}
+          onReset={resetFilters}
+        >
+          {isEdition ? (
+            <div>
+              <FieldLabel htmlFor="f-programm">Programm</FieldLabel>
+              {programmAuswahl("f-programm")}
+            </div>
+          ) : (
+            <>
               <div>
-                <FieldLabel htmlFor="f-programm">Programm</FieldLabel>
-                {programmAuswahl("f-programm")}
+                <FieldLabel htmlFor="f-typ">Typ</FieldLabel>
+                {typAuswahl("f-typ")}
               </div>
-            ) : (
-              <>
-                <div>
-                  <FieldLabel htmlFor="f-typ">Typ</FieldLabel>
-                  {typAuswahl("f-typ")}
-                </div>
-                <div>
-                  <FieldLabel htmlFor="f-kuenstler">Künstler:in</FieldLabel>
-                  {kuenstlerAuswahl("f-kuenstler")}
-                </div>
-                <div>
-                  <FieldLabel htmlFor="f-sort">Sortierung</FieldLabel>
-                  {sortAuswahl("f-sort")}
-                </div>
-              </>
-            )}
-          </FilterSheet>
-        )}
+              <div>
+                <FieldLabel htmlFor="f-kuenstler">Künstler:in</FieldLabel>
+                {kuenstlerAuswahl("f-kuenstler")}
+              </div>
+              <div>
+                <FieldLabel htmlFor="f-sort">Sortierung</FieldLabel>
+                {sortAuswahl("f-sort")}
+              </div>
+            </>
+          )}
+        </FilterSheet>
 
         {failed ? (
           <ErrorState text="Der Bestand konnte nicht geladen werden. Bitte die Seite neu laden." />

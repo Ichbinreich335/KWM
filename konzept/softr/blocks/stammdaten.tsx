@@ -309,7 +309,7 @@ function Thumb({ fotos, size = "small", className = "w-12 h-12 rounded-md" }: { 
 function PageHeader({ title, description, aside, actions }: { title: string; description?: string; aside?: React.ReactNode; actions?: React.ReactNode }) {
   return (
     <div className="flex flex-wrap items-end justify-between gap-x-4 gap-y-3">
-      <div className="flex items-end justify-between gap-4 min-w-0 flex-1 sm:flex-none">
+      <div className={`flex items-end justify-between gap-4 min-w-0 flex-1 ${actions ? "sm:flex-none" : ""}`}>
         <div className="min-w-0">
           <h1 className="text-2xl font-semibold">{title}</h1>
           {description && <p className="text-base text-muted-foreground mt-0.5">{description}</p>}

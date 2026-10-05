@@ -179,6 +179,10 @@ const WISCHEN = "overflow-x-auto overflow-y-hidden overscroll-x-contain [scrollb
 // Wie SEITE_CLASS, aber über die volle Breite (Tabelle).
 const SEITE_BREIT_CLASS = "w-full px-4 sm:px-6 pt-6 pb-28 sm:pb-8 overflow-x-clip";
 
+// Einzige Ausnahme von „Handy und Rechner zeigen dasselbe“: Werkzeuge der Tabellenansicht (z. B. Spaltenwahl).
+// Am Handy gibt es statt der Tabelle Karten, dort hätten sie keine Wirkung.
+const NUR_TABELLE = "hidden sm:inline-flex";
+
 // Am Handy eine Zeile zum seitlich Wischen statt mehrerer umbrochener Reihen, ab Tablet umbrechen.
 const SCROLL_ROW = `flex gap-2 py-0.5 ${WISCHEN} sm:flex-wrap sm:overflow-visible`;
 
@@ -316,7 +320,7 @@ function Thumb({ fotos, size = "small", className = "w-12 h-12 rounded-md" }: { 
 function PageHeader({ title, description, aside, actions }: { title: string; description?: string; aside?: React.ReactNode; actions?: React.ReactNode }) {
   return (
     <div className="flex flex-wrap items-end justify-between gap-x-4 gap-y-3">
-      <div className="flex items-end justify-between gap-4 min-w-0 flex-1 sm:flex-none">
+      <div className={`flex items-end justify-between gap-4 min-w-0 flex-1 ${actions ? "sm:flex-none" : ""}`}>
         <div className="min-w-0">
           <h1 className="text-2xl font-semibold">{title}</h1>
           {description && <p className="text-base text-muted-foreground mt-0.5">{description}</p>}
@@ -554,8 +558,8 @@ const COLUMNS: Col[] = [
   { key: "status", label: "Status / Zustand", type: "select", get: (r) => r.status || null, visible: true },
   { key: "anzahl", label: "Anzahl", type: "number", get: (r) => r.anzahl, visible: true, align: "right", only: "edition" },
   { key: "preis", label: "Preis intern", type: "number", get: (r) => r.preis, visible: true, align: "right", only: "unikat" },
-  { key: "vk", label: "VK-Preis", type: "number", get: (r) => r.vk, visible: true, align: "right", only: "edition" },
-  { key: "glasur", label: "Glasur", type: "multi", get: (r) => r.glasur, visible: true },
+  { key: "vk", label: "VK-Preis", type: "number", get: (r) => r.vk, visible: false, align: "right", only: "edition" },
+  { key: "glasur", label: "Glasur", type: "multi", get: (r) => r.glasur, visible: false },
   { key: "lagerort", label: "Lagerort", type: "select", get: (r) => r.lagerort || null, visible: true },
   { key: "kuenstler", label: "Künstler:in", type: "select", get: (r) => r.kuenstler || null, visible: false, only: "unikat" },
   { key: "gedreht", label: "Gedreht von", type: "select", get: (r) => r.gedreht || null, visible: false, only: "unikat" },
@@ -1406,7 +1410,7 @@ export default function Block() {
           <div className="flex flex-wrap items-center gap-2 sm:ml-auto">
             <Popover>
               <PopoverTrigger asChild>
-                <Knopf variant="outline" className="h-11 text-base hidden sm:inline-flex">
+                <Knopf variant="outline" className={`h-11 text-base ${NUR_TABELLE}`}>
                   <Columns3 className="w-5 h-5 mr-2" aria-hidden />
                   Spalten
                 </Knopf>

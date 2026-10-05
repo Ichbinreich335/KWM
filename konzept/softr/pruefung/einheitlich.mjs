@@ -12,6 +12,7 @@ const REGELN = [
   { re: /["`][^"`]*\bborder(?![-\w])(?![^"`]*border-destructive)[^"`]*["`]/, text: "Rahmen von Hand gebaut. Boxen nur über PANEL_CLASS bzw. PANEL_GRID_CLASS." },
   { re: /<(DialogContent|PopoverContent|DropdownMenuContent|DrawerContent)\b(?![^>]*(DIALOG_CLASS|POPOVER_CLASS))/, text: "Fenster oder Menü ohne gemeinsamen Stil. DIALOG_CLASS bzw. POPOVER_CLASS verwenden." },
   { re: /\bpb-28\b|className="(container|w-full px-4)\b/, text: "Seitenwurzel von Hand gebaut. SEITE_CLASS bzw. SEITE_BREIT_CLASS verwenden (verhindert seitliches Verschieben am Handy)." },
+  { re: /\bhidden (sm|md|lg|xl):(inline|inline-flex|flex|grid|table-cell)\b/, text: "Bedienelement nur am Rechner. Handy und Rechner zeigen dieselben Angaben; was am Handy verborgen ist, ist es am Rechner auch (Ausnahmen: Tabelle am Rechner und Karten am Handy über hidden sm:block bzw. sm:hidden; Werkzeuge der Tabelle über NUR_TABELLE)." },
   { re: /\boverflow-(x-)?(auto|scroll)\b/, text: "Eigener Scrollbereich. Wischzeilen nur über SCROLL_ROW bzw. WISCHEN, Tabellen über TABLE_PANEL_CLASS (sonst lässt sich der Inhalt auch senkrecht ziehen)." },
 ];
 

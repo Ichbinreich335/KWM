@@ -208,10 +208,6 @@ function latest(...dates: string[]): string {
   return dates.filter(Boolean).sort().at(-1) ?? "";
 }
 
-function tabelleLink(params: Record<string, string>): string {
-  return `/tabelle?${new URLSearchParams(params).toString()}`;
-}
-
 const AUSSER_HAUS_LINK = "/bestand?tab=kommission";
 
 function plural(n: number, eins: string, mehrere: string): string {
@@ -507,14 +503,6 @@ export default function Block() {
               <Section
                 title="Außer Haus"
                 description="Nach Partner, früheste Rückgabe zuerst"
-                actions={
-                  ausserHausGruppen.length > 0 && (
-                    <a href={tabelleLink({ status: `${KOMMISSION},${AUSGESTELLT}` })} className="hidden sm:inline-flex items-center min-h-11 text-base font-medium text-primary hover:underline underline-offset-4">
-                      Als Tabelle
-                      <ChevronRight className="w-4 h-4" aria-hidden />
-                    </a>
-                  )
-                }
               >
                 {ausserHausGruppen.length === 0 ? (
                   <EmptyState text="Zurzeit ist nichts außer Haus." />

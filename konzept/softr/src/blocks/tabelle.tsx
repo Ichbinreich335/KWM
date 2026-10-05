@@ -8,7 +8,7 @@ import { ArrowDown, ArrowUp, Bookmark, ChevronDown, ChevronLeft, ChevronRight, C
 import { toast } from "sonner";
 import { PAGE_SIZE, VERKAUFT } from "../shared/konstanten";
 import { type Attachment, type RawItem, asAttachments, asOpts, downloadCsv, euro, formatDate, lookupValue, num, parseNumber, printTable, str, thumb, today, useAllPages, zahl } from "../shared/daten";
-import { Ankreuzfeld, Auswahl, DIALOG_CLASS, DoneButton, EmptyState, ErrorState, ErrorText, Etikett, ExportMenu, Feld, FieldLabel, Knopf, ListRow, LoadingState, PageHeader, PANEL_CLASS, PanelHeader, POPOVER_CLASS, SCROLL_ROW, SearchField, SEITE_BREIT_CLASS, StatusBadge, TABLE_PANEL_CLASS, Tabs, Thumb } from "../shared/ui";
+import { Ankreuzfeld, Auswahl, DIALOG_CLASS, DoneButton, EmptyState, ErrorState, ErrorText, Etikett, ExportMenu, Feld, FieldLabel, Knopf, ListRow, LoadingState, NUR_TABELLE, PageHeader, PANEL_CLASS, PanelHeader, POPOVER_CLASS, SCROLL_ROW, SearchField, SEITE_BREIT_CLASS, StatusBadge, TABLE_PANEL_CLASS, Tabs, Thumb } from "../shared/ui";
 
 const ds = datasource.define({ unikate: "unikate", edition: "edition", ansichten: "ansichten" });
 
@@ -141,8 +141,8 @@ const COLUMNS: Col[] = [
   { key: "status", label: "Status / Zustand", type: "select", get: (r) => r.status || null, visible: true },
   { key: "anzahl", label: "Anzahl", type: "number", get: (r) => r.anzahl, visible: true, align: "right", only: "edition" },
   { key: "preis", label: "Preis intern", type: "number", get: (r) => r.preis, visible: true, align: "right", only: "unikat" },
-  { key: "vk", label: "VK-Preis", type: "number", get: (r) => r.vk, visible: true, align: "right", only: "edition" },
-  { key: "glasur", label: "Glasur", type: "multi", get: (r) => r.glasur, visible: true },
+  { key: "vk", label: "VK-Preis", type: "number", get: (r) => r.vk, visible: false, align: "right", only: "edition" },
+  { key: "glasur", label: "Glasur", type: "multi", get: (r) => r.glasur, visible: false },
   { key: "lagerort", label: "Lagerort", type: "select", get: (r) => r.lagerort || null, visible: true },
   { key: "kuenstler", label: "Künstler:in", type: "select", get: (r) => r.kuenstler || null, visible: false, only: "unikat" },
   { key: "gedreht", label: "Gedreht von", type: "select", get: (r) => r.gedreht || null, visible: false, only: "unikat" },
@@ -993,7 +993,7 @@ export default function Block() {
           <div className="flex flex-wrap items-center gap-2 sm:ml-auto">
             <Popover>
               <PopoverTrigger asChild>
-                <Knopf variant="outline" className="h-11 text-base hidden sm:inline-flex">
+                <Knopf variant="outline" className={`h-11 text-base ${NUR_TABELLE}`}>
                   <Columns3 className="w-5 h-5 mr-2" aria-hidden />
                   Spalten
                 </Knopf>

@@ -164,3 +164,14 @@ Grundlage: Feedback des Admins zu den Screens vom 04.10. und der Skill `impeccab
 - **Veröffentlicht:** https://kwm-lager.softr.app (vorher celestina80104.softr.app).
 - **Prüfung:** Typprüfung und Einheitlichkeit grün. Messung 390/1440 px ohne Befund. Rückfrage getestet. Funktionstests Erfassen, Bestand, Stammdaten, Tabelle und Übersicht grün. Prüfsummen aller fünf Blöcke stimmen, Aktionsrechte gesetzt. Screens unter `konzept/vergleich/runde11/`.
 
+## Runde 12: Rechner zeigt nicht mehr als das Handy (05.10.)
+
+- **Grundsatz:** Was am Handy verborgen ist, ist es am Rechner auch. Weniger auf einmal für die Mitarbeitenden.
+- **Bestand:**
+  - Typ, Künstler:in, Sortierung bzw. Programm liegen auch am Rechner hinter dem Filterknopf. Das Filterblatt ist am Rechner mittig und schmal.
+  - Ansichtsumschalter bzw. Inventur stehen auf beiden Größen rechts im Kopf.
+  - „Tabelle“-Link und Export im Bestand entfallen. Export (CSV/PDF) gibt es in der Tabelle mit denselben Filtern.
+- **Übersicht:** Der Link „Als Tabelle“ bei „Außer Haus“ entfällt (war nur am Rechner da).
+- **Tabelle:** Standardspalten wie die Handy-Karte (Nr., Name, Typ, Status, Anzahl, Preis, Lagerort). Glasur und VK-Preis sind über „Spalten“ zuschaltbar. „Spalten“ bleibt nur am Rechner, weil das Handy statt der Tabelle Karten zeigt (Baustein `NUR_TABELLE`).
+- **Regel im Build:** Ein Bedienelement nur für den Rechner (`hidden sm:inline-flex` u. Ä.) bricht den Build ab. `useIsMobile` ist entfernt: Seiten bauen nichts mehr je nach Bildschirmgröße um.
+- **Prüfung:** Typprüfung und Einheitlichkeit grün. Messung 390/1440 px ohne Befund. Funktionstests Bestand (Rechner und Handy), Tabelle und Übersicht grün. Screens unter `konzept/vergleich/runde12/`.

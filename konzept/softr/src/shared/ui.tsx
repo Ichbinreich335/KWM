@@ -37,6 +37,10 @@ export const WISCHEN = "overflow-x-auto overflow-y-hidden overscroll-x-contain [
 export const SEITE_CLASS = "container pt-6 pb-28 sm:pb-8 overflow-x-clip";
 // Wie SEITE_CLASS, aber über die volle Breite (Tabelle).
 export const SEITE_BREIT_CLASS = "w-full px-4 sm:px-6 pt-6 pb-28 sm:pb-8 overflow-x-clip";
+// Einzige Ausnahme von „Handy und Rechner zeigen dasselbe“: Werkzeuge der Tabellenansicht (z. B. Spaltenwahl).
+// Am Handy gibt es statt der Tabelle Karten, dort hätten sie keine Wirkung.
+export const NUR_TABELLE = "hidden sm:inline-flex";
+
 // Am Handy eine Zeile zum seitlich Wischen statt mehrerer umbrochener Reihen, ab Tablet umbrechen.
 export const SCROLL_ROW = `flex gap-2 py-0.5 ${WISCHEN} sm:flex-wrap sm:overflow-visible`;
 // Klebende Leisten am unteren Rand: am Handy knapp über Softrs Navigationsleiste (ca. 56 px), ab Tablet am Rand.
@@ -123,19 +127,6 @@ export function Etikett({ children }: { children: React.ReactNode }) {
 }
 
 const MOBILE_QUERY = "(max-width: 639px)";
-
-// Handy oder größer. Für Bedienelemente, die am Handy anders aufgebaut sind (Filter im Blatt von unten).
-export function useIsMobile(): boolean {
-  const [mobile, setMobile] = useState(() => window.matchMedia?.(MOBILE_QUERY).matches ?? false);
-  useEffect(() => {
-    const media = window.matchMedia?.(MOBILE_QUERY);
-    if (!media) return;
-    const update = () => setMobile(media.matches);
-    media.addEventListener("change", update);
-    return () => media.removeEventListener("change", update);
-  }, []);
-  return mobile;
-}
 
 // Gewählt = gefüllt. Kein zusätzliches Symbol, damit der Knopf beim Antippen nicht breiter wird und nichts springt.
 // Mindestbreite, damit kurze Wörter (Sieb, Topf) nicht winzig wirken und die Reihen ruhiger aussehen.
@@ -366,7 +357,7 @@ export function Thumb({ fotos, size = "small", className = "w-12 h-12 rounded-md
 export function PageHeader({ title, description, aside, actions }: { title: string; description?: string; aside?: React.ReactNode; actions?: React.ReactNode }) {
   return (
     <div className="flex flex-wrap items-end justify-between gap-x-4 gap-y-3">
-      <div className="flex items-end justify-between gap-4 min-w-0 flex-1 sm:flex-none">
+      <div className={`flex items-end justify-between gap-4 min-w-0 flex-1 ${actions ? "sm:flex-none" : ""}`}>
         <div className="min-w-0">
           <h1 className="text-2xl font-semibold">{title}</h1>
           {description && <p className="text-base text-muted-foreground mt-0.5">{description}</p>}
@@ -709,8 +700,8 @@ export function FilterSheet({
 }) {
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      {/* Hoher z-index: Das Blatt muss über Softrs eigener Navigationsleiste liegen. */}
-      <DrawerContent lang="de" className={`z-[99999] ${LINE}`}>
+      {/* Hoher z-index: Das Blatt muss über Softrs eigener Navigationsleiste liegen. Am Rechner mittig und schmal statt bildschirmbreit. */}
+      <DrawerContent lang="de" className={`z-[99999] sm:mx-auto sm:max-w-lg ${LINE}`}>
         <DrawerHeader className="text-left">
           <DrawerTitle className="text-xl">Filter</DrawerTitle>
           <DrawerDescription className="text-base">Gilt sofort für die Liste.</DrawerDescription>

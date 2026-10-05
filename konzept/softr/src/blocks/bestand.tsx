@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { datasource, q, useFieldOptions, useRecordUpdate, useRecords, useUpload } from "@/lib/datasource";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { Check, ClipboardList, ImageOff, Images, Loader2, Minus, Pencil, Plus, Star, Table2 } from "lucide-react";
+import { Check, ClipboardList, ImageOff, Images, Loader2, Minus, Pencil, Plus, Star } from "lucide-react";
 import { toast } from "sonner";
 import { AUSSER_HAUS_ORT, EDITION_PROGRAMM, MANUFAKTUR_PROGRAMM, PAGE_SIZE, RESERVIERT, ROHLING, VERFUEGBAR, VERKAUFT, isAusserHaus } from "../shared/konstanten";
 import {
@@ -12,11 +12,9 @@ import {
   asAttachments,
   asOpts,
   compareNr,
-  downloadCsv,
   euro,
   formatDate,
   freshItems,
-  printTable,
   link,
   lookupValue,
   modellLabel,
@@ -37,7 +35,6 @@ import {
   EmptyState,
   ErrorState,
   ErrorText,
-  ExportMenu,
   Feld,
   FieldLabel,
   FilterButton,
@@ -61,7 +58,6 @@ import {
   Tabs,
   Textfeld,
   useAnsicht,
-  useIsMobile,
   WISCHEN,
   ZusatzKnopf,
 } from "../shared/ui";
@@ -301,59 +297,6 @@ function compare(a: Unikat, b: Unikat, key: SortKey): number {
     default:
       return b.erfasstAm.localeCompare(a.erfasstAm);
   }
-}
-
-function exportUnikate(list: Unikat[]) {
-  downloadCsv(
-    `unikate-${today()}.csv`,
-    ["Inventarnummer", "Name", "Typ", "Status", "Künstler:in", "Datum", "Gedreht von", "Glasiert von", "Glasur", "Maße", "Lagerort", "Partner", "Preis intern (€)", "Auf Website zeigen", "Notiz", "Erfasst am", "Verkauft am"],
-    list.map((u) => [
-      u.inv,
-      u.name,
-      u.typ,
-      u.status,
-      u.kuenstler?.label ?? "",
-      datumText(u),
-      u.gedreht?.label ?? "",
-      u.glasiert?.label ?? "",
-      u.glasur.map((g) => g.label).join(", "),
-      u.masse,
-      u.lagerort?.label ?? "",
-      u.galerie?.label ?? "",
-      u.preis === null ? "" : String(u.preis),
-      u.website ? "ja" : "nein",
-      u.notiz,
-      formatDate(u.erfasstAm),
-      formatDate(u.verkauftAm),
-    ]),
-  );
-}
-
-function printUnikate(list: Unikat[], untertitel: string): boolean {
-  return printTable({
-    title: "Unikate",
-    subtitle: untertitel,
-    columns: [{ label: "Inv.-Nr." }, { label: "Name" }, { label: "Typ" }, { label: "Status" }, { label: "Künstler:in" }, { label: "Ort / Partner" }, { label: "Preis", align: "right" }],
-    rows: list.map((u) => [u.inv, u.name, u.typ, u.status, u.kuenstler?.label ?? "", ortVon(u), u.preis === null ? "" : euro.format(u.preis)]),
-  });
-}
-
-function printEdition(list: Edition[], untertitel: string): boolean {
-  return printTable({
-    title: "Editionsware",
-    subtitle: untertitel,
-    columns: [{ label: "Modell" }, { label: "Zustand" }, { label: "Glasur" }, { label: "Lagerort" }, { label: "Anzahl", align: "right" }],
-    rows: list.map((e) => [e.modell, e.zustand, e.glasur, e.lagerort?.label ?? "", zahl.format(e.anzahl)]),
-    footer: ["Summe", "", "", "", zahl.format(list.reduce((n, e) => n + e.anzahl, 0))],
-  });
-}
-
-function exportEdition(list: Edition[]) {
-  downloadCsv(
-    `editionsbestand-${today()}.csv`,
-    ["Artikelnr.", "Modell", "Programm", "Typ", "Zustand", "Glasur", "Anzahl", "Lagerort", "Notiz"],
-    list.map((e) => [e.nr, e.modell, e.programm, e.typ, e.zustand, e.glasur, String(e.anzahl), e.lagerort?.label ?? "", e.notiz]),
-  );
 }
 
 type EditForm = {
@@ -1061,7 +1004,6 @@ export default function Block() {
   const [programmFilter, setProgrammFilter] = useState<ProgrammKey>("");
   const [inventur, setInventur] = useState(false);
   const [filterSheet, setFilterSheet] = useState(false);
-  const isMobile = useIsMobile();
   const [ansicht, setAnsicht] = useAnsicht();
   const [limit, setLimit] = useState(LIST_STEP);
   const [pendingEdition, setPendingEdition] = useState("");
@@ -1193,13 +1135,6 @@ export default function Block() {
     return offen;
   }
 
-  function exportPdf() {
-    const ok = isEdition
-      ? printEdition(visibleEdition, [activeZustand.key === "alle" ? "Alle Zustände" : activeZustand.label, programmFilter || "Alle Programme", term && `Suche „${term}“`].filter(Boolean).join(" · "))
-      : printUnikate(visible, [activeTab.label, typFilter, kuenstlerImBestand.find((k) => k.id === kuenstlerFilter)?.label, term && `Suche „${term}“`].filter(Boolean).join(" · "));
-    if (!ok) toast.error("Der Browser hat das Druckfenster blockiert. Bitte Pop-ups für diese Seite erlauben.");
-  }
-
   async function saveEdition(e: Edition, fields: { anzahl: number; lagerort: string[]; notiz: string }) {
     try {
       // Hat jemand die Anzahl geändert, seit das Fenster offen ist, nicht überschreiben, sondern melden.
@@ -1283,25 +1218,8 @@ export default function Block() {
         <PageHeader
           title="Bestand"
           description={isEdition ? `${zahl.format(stueckGesamt)} Stück in ${zahl.format(visibleEdition.length)} Posten` : `${zahl.format(visible.length)} von ${zahl.format(unikate.length)} Unikaten`}
-          // Am Handy steht der Ansichtsumschalter im Kopf, damit die Statuszeile die volle Breite hat.
-          aside={isMobile ? (isEdition ? inventurButton : <AnsichtToggle value={ansicht} onChange={setAnsicht} />) : undefined}
-          actions={
-            isMobile ? undefined : (
-              <>
-                <Knopf asChild variant="ghost" className="h-11 text-base">
-                  <a href="/tabelle">
-                    <Table2 className="w-5 h-5 mr-2" aria-hidden /> Tabelle
-                  </a>
-                </Knopf>
-                {inventurButton}
-                <ExportMenu
-                  onCsv={() => (isEdition ? exportEdition(visibleEdition) : exportUnikate(visible))}
-                  onPdf={exportPdf}
-                  disabled={isEdition ? visibleEdition.length === 0 : visible.length === 0}
-                />
-              </>
-            )
-          }
+          // Handy und Desktop gleich: Ansichtsumschalter bzw. Inventur im Kopf, Filter hinter dem Filterknopf.
+          aside={isEdition ? inventurButton : <AnsichtToggle value={ansicht} onChange={setAnsicht} />}
         />
 
         <Tabs
@@ -1322,76 +1240,51 @@ export default function Block() {
         {isEdition ? (
           <FilterChips label="Zustand" options={zustandChips} value={zustandFilter} onChange={setZustandFilter} />
         ) : (
-          <div className="flex items-start gap-3">
-            <div className="flex-1 min-w-0">
-              <FilterChips
-                label="Status"
-                options={tabs}
-                value={tab}
-                onChange={(key) => {
-                  setTab(key);
-                  setLimit(LIST_STEP);
-                }}
-              />
-            </div>
-            {!isMobile && <AnsichtToggle value={ansicht} onChange={setAnsicht} />}
-          </div>
+          <FilterChips
+            label="Status"
+            options={tabs}
+            value={tab}
+            onChange={(key) => {
+              setTab(key);
+              setLimit(LIST_STEP);
+            }}
+          />
         )}
 
-        {isMobile ? (
-          <div className="flex gap-3">
-            <SearchField label="Suche" placeholder={searchPlaceholder} value={search} onChange={setSearch} />
-            <FilterButton count={filterCount} onClick={() => setFilterSheet(true)} />
-          </div>
-        ) : isEdition ? (
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-[minmax(0,1fr)_16rem]">
-            <div className="flex">
-              <SearchField label="Suche" placeholder={searchPlaceholder} value={search} onChange={setSearch} />
-            </div>
-            {programmAuswahl()}
-          </div>
-        ) : (
-          <div className="grid grid-cols-2 gap-3 lg:grid-cols-[minmax(0,1fr)_10rem_12rem_11rem]">
-            <div className="col-span-2 lg:col-span-1 flex">
-              <SearchField label="Suche" placeholder={searchPlaceholder} value={search} onChange={setSearch} />
-            </div>
-            {typAuswahl()}
-            {kuenstlerAuswahl()}
-            {sortAuswahl()}
-          </div>
-        )}
+        <div className="flex gap-3">
+          <SearchField label="Suche" placeholder={searchPlaceholder} value={search} onChange={setSearch} />
+          <FilterButton count={filterCount} onClick={() => setFilterSheet(true)} />
+        </div>
 
-        {isMobile && (
-          <FilterSheet
-            open={filterSheet}
-            onOpenChange={setFilterSheet}
-            resultText={isEdition ? `${zahl.format(visibleEdition.length)} Posten anzeigen` : `${zahl.format(visible.length)} ${visible.length === 1 ? "Stück" : "Stücke"} anzeigen`}
-            canReset={filterCount > 0}
-            onReset={resetFilters}
-          >
-            {isEdition ? (
+        <FilterSheet
+          open={filterSheet}
+          onOpenChange={setFilterSheet}
+          resultText={isEdition ? `${zahl.format(visibleEdition.length)} Posten anzeigen` : `${zahl.format(visible.length)} ${visible.length === 1 ? "Stück" : "Stücke"} anzeigen`}
+          canReset={filterCount > 0}
+          onReset={resetFilters}
+        >
+          {isEdition ? (
+            <div>
+              <FieldLabel htmlFor="f-programm">Programm</FieldLabel>
+              {programmAuswahl("f-programm")}
+            </div>
+          ) : (
+            <>
               <div>
-                <FieldLabel htmlFor="f-programm">Programm</FieldLabel>
-                {programmAuswahl("f-programm")}
+                <FieldLabel htmlFor="f-typ">Typ</FieldLabel>
+                {typAuswahl("f-typ")}
               </div>
-            ) : (
-              <>
-                <div>
-                  <FieldLabel htmlFor="f-typ">Typ</FieldLabel>
-                  {typAuswahl("f-typ")}
-                </div>
-                <div>
-                  <FieldLabel htmlFor="f-kuenstler">Künstler:in</FieldLabel>
-                  {kuenstlerAuswahl("f-kuenstler")}
-                </div>
-                <div>
-                  <FieldLabel htmlFor="f-sort">Sortierung</FieldLabel>
-                  {sortAuswahl("f-sort")}
-                </div>
-              </>
-            )}
-          </FilterSheet>
-        )}
+              <div>
+                <FieldLabel htmlFor="f-kuenstler">Künstler:in</FieldLabel>
+                {kuenstlerAuswahl("f-kuenstler")}
+              </div>
+              <div>
+                <FieldLabel htmlFor="f-sort">Sortierung</FieldLabel>
+                {sortAuswahl("f-sort")}
+              </div>
+            </>
+          )}
+        </FilterSheet>
 
         {failed ? (
           <ErrorState text="Der Bestand konnte nicht geladen werden. Bitte die Seite neu laden." />
