@@ -2,11 +2,12 @@
 import Bild from './Bild.astro';
 import LinkArrow from './LinkArrow.astro';
 import { hausName, ortZahlen, type Ort } from '../data/orte';
-import type { BildAngabe } from '../data/typen';
+import type { Foto } from '../data/typen';
+import { bildMetadaten } from '../lib/bilder';
 
 interface Props {
   /** Orte mit Kachel, in der Reihenfolge der Seite (`kacheln` aus `orte.ts`) */
-  orte: readonly (Ort & { bild: BildAngabe })[];
+  orte: readonly (Ort & { bild: Foto })[];
   titel: string;
   einleitung: string;
   link: { href: string; text: string };
@@ -15,6 +16,8 @@ interface Props {
 
 const { orte, titel, einleitung, link, fussnote } = Astro.props;
 const kachelKlasse = { gross: 'xl', mittel: 'm', klein: 's' } as const;
+// Größere Quellen rechnet Astro für die Kacheln auf diese Breite herunter
+const KACHEL_MAX = 1400;
 ---
 
 {/* Host ist ein Custom Element mit Rolle region statt section, damit Klassen und Rolle des Abschnitts bleiben */}
@@ -44,7 +47,7 @@ const kachelKlasse = { gross: 'xl', mittel: 'm', klein: 's' } as const;
             { 'orte__tile--full': ort.breitAmHandy },
           ]}
         >
-          <Bild class="orte__img" bild={ort.bild} />
+          <Bild class="orte__img" bild={ort.bild} width={Math.min(bildMetadaten(ort.bild.src).width, KACHEL_MAX)} />
           <h3 class="orte__name">{ort.stadt}</h3>
           <p class="orte__meta">
             <span>{zahlen.zeitraum}</span>

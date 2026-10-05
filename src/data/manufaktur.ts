@@ -1,7 +1,7 @@
 // Manufakturprogramm: Geschirr und Edition in Warengruppen, jede mit Sätzen aus Foto und Teileliste
 // (Sanity-Typ `manufakturteil`; Vorschlag: Foto je Satz, Teile als Liste). Keine Preise, kein Bestand.
 import { BRENNTEMPERATUR, grad } from './brenntemperatur';
-import type { BildAngabe, DatumEintrag, Regalfach } from './typen';
+import type { DatumEintrag, Foto, Regalfach } from './typen';
 
 export interface Teil {
   name: string;
@@ -13,7 +13,7 @@ export interface Teil {
 
 export interface Satz {
   /** Fehlt bei einem Satz, der nur aus Text besteht (Verweis auf ein Bild in einer anderen Gruppe) */
-  bild?: BildAngabe;
+  bild?: Foto;
   untertitel?: string;
   teile: readonly Teil[];
   /** Bild über die ganze Breite der Gruppe, Liste daneben */
@@ -480,7 +480,6 @@ export const regal: readonly Regalfach[] = [
       alt: 'Teller in Dunkelgrün, Hellgrün und Rostbraun, von oben gesehen',
     },
     beschriftung: 'Teller',
-    laden: 'prioritaet',
   },
   {
     bild: {
@@ -488,7 +487,6 @@ export const regal: readonly Regalfach[] = [
       alt: 'Krüge in Seladon und Beige und ein dunkelgrüner Becher',
     },
     beschriftung: 'Krüge und Kannen',
-    laden: 'prioritaet',
   },
   {
     bild: {
@@ -496,7 +494,6 @@ export const regal: readonly Regalfach[] = [
       alt: 'Teebecher und Trinkbecher in Beige, Seladon und Dunkelbraun',
     },
     beschriftung: 'Becher und Tassen',
-    laden: 'sofort',
   },
   {
     bild: {
@@ -504,6 +501,5 @@ export const regal: readonly Regalfach[] = [
       alt: 'Deckeldose und Deckeltöpfe in Dunkelbraun, Grau, Orange und Seladon',
     },
     beschriftung: 'Töpfe und Dosen',
-    laden: 'sofort',
   },
 ];

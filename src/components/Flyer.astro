@@ -1,6 +1,8 @@
 ---
 import type { Flyer } from '../data/ausstellungen';
 import { lesetitel as lesetitelVon } from '../lib/lesetitel';
+import type { Foto } from '../data/typen';
+import { bildMetadaten } from '../lib/bilder';
 import Bild from './Bild.astro';
 import LinkArrow from './LinkArrow.astro';
 
@@ -17,6 +19,9 @@ interface Props {
 const { flyer, titel, schluessel, modus } = Astro.props;
 const titelId = `flyer-${schluessel}-${modus}`;
 const lesetitel = lesetitelVon(titel);
+// Dialog: große Flyer in zwei Breiten (eine Spalte von 540 px, am Handy fast die ganze Breite); kleine bleiben in Eigengröße
+const DIALOG = { widths: [720, 1080], sizes: '(max-width: 900px) 92vw, 540px' } as const;
+const dialogBild = (bild: Foto) => (bildMetadaten(bild.src).width >= DIALOG.widths[1] ? DIALOG : {});
 const seiten = [
   { name: 'vorne', label: 'Vorderseite', bild: flyer.vorne },
   ...(flyer.hinten ? [{ name: 'hinten', label: 'Rückseite', bild: flyer.hinten }] : []),
@@ -59,7 +64,7 @@ const seiten = [
     <div class="flyer-dialog__seiten">
       {seiten.map(({ name, label, bild }) => (
         <figure class="flyer-dialog__seite" data-flyer-seite={name}>
-          <Bild bild={bild} />
+          <Bild bild={bild} {...dialogBild(bild)} />
           <figcaption>{label}</figcaption>
         </figure>
       ))}

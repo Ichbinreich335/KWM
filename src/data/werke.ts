@@ -1,7 +1,7 @@
 // Meisterstücke: Katalog der Seite Meisterstücke und Werkschau der Startseite (Sanity-Typ `werk`)
 // Keine Preise, kein Bestand, keine Lagerorte, keine Verfügbarkeit: nur freigegebene Angaben.
 import { BRENNTEMPERATUR, grad } from './brenntemperatur';
-import type { BildAngabe } from './typen';
+import type { Foto } from './typen';
 import { SCHMALES_LEERZEICHEN } from '../lib/zeichen';
 
 /** Eine Zeile der Werkangaben; Maße, Glasur, Brand, Ort und Jahr erscheinen mit ` · ` getrennt */
@@ -19,7 +19,7 @@ export interface Werk {
   /** Jahr im Kopf der Werkschau; im Katalog steht das Jahr in den Angaben */
   jahr?: string;
   angaben: readonly Angabe[];
-  bild: BildAngabe;
+  bild: Foto;
   /** Ziel der Kachel (Werkschau), sonst keine Verlinkung */
   verweis?: string;
 }
@@ -27,7 +27,7 @@ export interface Werk {
 /** Bild ohne Werk (Atmosphäre, Ausstellungsansicht) mit Unterschrift */
 export interface Stimmung {
   schluessel: string;
-  bild: BildAngabe;
+  bild: Foto;
   unterschrift: string;
 }
 

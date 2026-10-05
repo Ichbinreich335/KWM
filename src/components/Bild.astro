@@ -1,11 +1,11 @@
 ---
 import type { HTMLAttributes } from 'astro/types';
 import { Image } from 'astro:assets';
-import type { BildAngabe } from '../data/typen';
+import type { Foto } from '../data/typen';
 import { bildMetadaten } from '../lib/bilder';
 
 type Props = Omit<HTMLAttributes<'img'>, 'src' | 'srcset' | 'alt' | 'width' | 'height' | 'sizes'> & {
-  /** Eigengröße in Pixeln; ohne Angabe gelten die Maße aus `bild` bzw. die des Bildes selbst (ImageMetadata). */
+  /** Eigengröße in Pixeln; ohne Angabe gelten die Maße des Bildes selbst (ImageMetadata). */
   width?: number | `${number}` | undefined;
   height?: number | `${number}` | undefined;
   layout?: 'constrained' | 'full-width';
@@ -13,8 +13,8 @@ type Props = Omit<HTMLAttributes<'img'>, 'src' | 'srcset' | 'alt' | 'width' | 'h
   priority?: boolean;
 } & (
     | {
-        /** Bildangabe aus den Daten: Pfad, Alt-Text, Maße, `widths` und `sizes`; einzelne Props überschreiben sie. */
-        bild: BildAngabe;
+        /** Foto aus den Daten (Pfad und Alt-Text); `alt` überschreibt den Alt-Text. */
+        bild: Foto;
         src?: never;
         alt?: string;
       }
@@ -39,16 +39,10 @@ const { bild, src, alt, width, height, widths, sizes, layout = 'constrained', ..
 const pfad = src ?? bild?.src;
 const altText = alt ?? bild?.alt;
 if (pfad === undefined || altText === undefined) throw new Error('Bild braucht `src` und `alt` oder `bild`.');
-const breiten = widths ?? bild?.widths;
-const groessen = sizes ?? bild?.sizes;
-// Doku zu `widths`: „A `sizes` property must also be provided.“ Für Angaben aus den Daten prüft das der Build.
-if (breiten && !groessen) throw new Error(`Bild ${pfad}: widths ohne sizes`);
-const breite = width ?? bild?.breite;
-const hoehe = height ?? bild?.hoehe;
 // Maße nur weitergeben, wenn sie angegeben sind; sonst nimmt Astro sie aus den ImageMetadata
-const masse = { ...(breite !== undefined && { width: breite }), ...(hoehe !== undefined && { height: hoehe }) };
-const srcset =
-  breiten && groessen ? { widths: [...breiten], sizes: groessen } : { ...(groessen && { sizes: groessen }) };
+const masse = { ...(width !== undefined && { width }), ...(height !== undefined && { height }) };
+// Doku zu `widths`: „A `sizes` property must also be provided.“ (der Typ oben erzwingt das)
+const srcset = widths && sizes ? { widths: [...widths], sizes } : { ...(sizes && { sizes }) };
 
 // fit="fill": kein Zuschnitt durch Astro; das Seitenverhältnis kommt aus den Maßen (angegeben oder aus dem Bild) und CSS.
 ---

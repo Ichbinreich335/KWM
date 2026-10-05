@@ -1,6 +1,6 @@
 // Ausstellungsorte und Galerien (Sanity-Typen `ort` und `galerie`). Keine Preise, kein Bestand, keine Lagerorte.
 // Die Zahlen pro Ort (Zeitraum, Anzahl) werden aus den Auftritten berechnet, nicht gepflegt.
-import type { BildAngabe } from './typen';
+import type { Foto } from './typen';
 
 /** Galerie, die Young-Jae Lee zeigt oder vertritt (Sanity-Typ `galerie`; „Vertritt“ ist unbekannt und bleibt leer) */
 export interface Galerie {
@@ -33,7 +33,7 @@ export interface Ort {
   land: string;
   kurztext?: string;
   /** Ohne Bild gibt es keine Kachel */
-  bild?: BildAngabe;
+  bild?: Foto;
   /** Ergänzung zum Sanity-Modell (`reihenfolge` ist dort das Gewicht): Größe der Kachel im Raster */
   gewicht?: 'gross' | 'mittel' | 'klein';
   /** Ergänzung: Kachel läuft am Handy über die ganze Breite */
@@ -99,7 +99,7 @@ export const orte: readonly Ort[] = [
     schluessel: 'koeln',
     stadt: 'Köln',
     land: 'Deutschland',
-    bild: { src: '/img/kwm/schalen-trio.webp', alt: '', breite: 1400, hoehe: 652 },
+    bild: { src: '/img/kwm/schalen-trio.webp', alt: '' },
     gewicht: 'gross',
     reihenfolge: 1,
     haeuser: [
@@ -340,7 +340,7 @@ export const galerie = (schluessel: string): Galerie => {
 export const hausName = (haus: Haus): string => ('galerie' in haus ? galerie(haus.galerie).name : haus.name);
 
 /** Orte mit Kachel in der Reihenfolge der Seite */
-export const kacheln: readonly (Ort & { bild: BildAngabe })[] = orte
+export const kacheln: readonly (Ort & { bild: Foto })[] = orte
   .flatMap((ort) => (ort.bild ? [{ ...ort, bild: ort.bild }] : []))
   .sort((a, b) => a.reihenfolge - b.reihenfolge);
 

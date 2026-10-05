@@ -7,12 +7,14 @@ interface Props {
 }
 
 const { faecher } = Astro.props;
+// Das Regal steht im ersten Bildschirm: die ersten Fächer laden mit hoher Priorität, die übrigen ohne Verzögerung
+const PRIORITAET = 2;
 ---
 
 <ul class="shelf" data-reveal="img">
-  {faecher.map((fach) => (
+  {faecher.map((fach, i) => (
     <li class="shelf__item">
-      <Bild bild={fach.bild} {...(fach.laden === 'prioritaet' ? { priority: true } : { loading: 'eager' })} />
+      <Bild bild={fach.bild} {...(i < PRIORITAET ? { priority: true } : { loading: 'eager' })} />
     </li>
   ))}
 </ul>

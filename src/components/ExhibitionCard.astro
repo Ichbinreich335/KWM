@@ -5,6 +5,7 @@ import type { Fakt } from '../data/typen';
 import { heuteTag, statusText, tagAusIso } from '../lib/status';
 import { lesetitel as lesetitelVon } from '../lib/lesetitel';
 import { zeitraumKurz, zeitraumMitBis } from '../lib/zeitraum';
+import { bildMetadaten } from '../lib/bilder';
 import Bild from './Bild.astro';
 import FactsList from './FactsList.astro';
 import Flyer from './Flyer.astro';
@@ -21,6 +22,18 @@ interface Props {
 
 const { ausstellung, typ, gespiegelt = false, prioritaet = false } = Astro.props;
 const { fotos } = ausstellung;
+// Kachelbild: groß (spotlight, zwei Drittel der Breite) oder als Karte (ein Drittel); kleinere Quellen in Eigengröße
+const quelle = bildMetadaten(fotos.kachel.src).width;
+const kachelBild =
+  typ === 'spotlight'
+    ? {
+        width: Math.min(quelle, 1400),
+        widths: [960, 1400, quelle].filter((b) => b <= quelle),
+        sizes: '(min-width: 900px) 64vw, 100vw',
+      }
+    : quelle > 640
+      ? { width: 640, widths: [640, quelle], sizes: '(min-width: 900px) 31vw, 100vw' }
+      : {};
 // Der Browser berechnet den Status beim Laden neu (sig-aktuell.ts); das hier ist der Stand zum Bauzeitpunkt
 const status = statusText(tagAusIso(ausstellung.start), tagAusIso(ausstellung.ende), heuteTag());
 const zeitraum = zeitraumMitBis(ausstellung.start, ausstellung.ende);
@@ -51,7 +64,7 @@ const datum = zeitraumKurz(ausstellung.start, ausstellung.ende);
   >
     {fotos.haupt && (
       <figure class="feature__media" data-reveal="img">
-        <Bild bild={fotos.haupt} priority={prioritaet} />
+        <Bild bild={fotos.haupt} sizes="100vw" priority={prioritaet} />
         <figcaption>{fotos.haupt.unterschrift}</figcaption>
       </figure>
     )}
@@ -112,7 +125,7 @@ const datum = zeitraumKurz(ausstellung.start, ausstellung.ende);
   >
     <figure class="aktuell__media">
       <span class="aktuell__frame">
-        <Bild bild={fotos.kachel} />
+        <Bild bild={fotos.kachel} {...kachelBild} />
       </span>
       <figcaption>{fotos.kachel.unterschrift}</figcaption>
     </figure>
