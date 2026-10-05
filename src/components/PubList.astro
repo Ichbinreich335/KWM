@@ -1,5 +1,6 @@
 ---
 import type { Publikation, Text, Veroeffentlichung } from '../data/texte';
+import LinkArrow from './LinkArrow.astro';
 
 type Props = {
   /** Klassen für die Platzierung im Seitenraster, z. B. `grid__full` */
@@ -33,7 +34,7 @@ const { class: klasse } = props;
         <a href={eintrag.href}>
           <p class="pub__title">{eintrag.titel}</p>
           <p class="pub__meta">{eintrag.angabe}</p>
-          <span class="link-arrow">{eintrag.linkText}</span>
+          <LinkArrow als="span">{eintrag.linkText}</LinkArrow>
         </a>
       </article>
     ))}
@@ -65,16 +66,8 @@ const { class: klasse } = props;
         </h3>
         {eintrag.auszug && <p class="texts__excerpt">{eintrag.auszug}</p>}
         <p class="texts__links">
-          {eintrag.online && (
-            <a class="link-arrow" href={eintrag.online}>
-              Online lesen
-            </a>
-          )}
-          {eintrag.pdf && (
-            <a class="link-arrow" href={eintrag.pdf}>
-              PDF
-            </a>
-          )}
+          {eintrag.online && <LinkArrow href={eintrag.online}>Online lesen</LinkArrow>}
+          {eintrag.pdf && <LinkArrow href={eintrag.pdf}>PDF</LinkArrow>}
         </p>
       </li>
     ))}

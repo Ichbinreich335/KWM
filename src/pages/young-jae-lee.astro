@@ -1,5 +1,6 @@
 ---
 import '../styles/basis.css';
+import LinkArrow from '../components/LinkArrow.astro';
 import DateList from '../components/DateList.astro';
 import YearArchive from '../components/YearArchive.astro';
 import { ausstellungsarchiv } from '../data/archiv';
@@ -221,12 +222,8 @@ import '../styles/signaturen/signaturen.css';
     </ChapterHead>
 
     <InquiryBand text="Die Meisterstücke stammen alle aus der Hand Young‑Jae Lees, von ihr selbst gedreht, bemalt und glasiert.">
-      <a class="link-arrow" href="/meisterstuecke">
-        Meisterstücke ansehen
-      </a>{' '}
-      <a class="link-arrow" href="/aktuelles">
-        Ausstellungen 2026
-      </a>
+      <LinkArrow href="/meisterstuecke">Meisterstücke ansehen</LinkArrow>{' '}
+      <LinkArrow href="/aktuelles">Ausstellungen 2026</LinkArrow>
     </InquiryBand>
   </main>
 </BaseLayout>

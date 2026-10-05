@@ -1,5 +1,6 @@
 ---
 import '../styles/basis.css';
+import LinkArrow from '../components/LinkArrow.astro';
 import { BRENNTEMPERATUR, grad } from '../data/brenntemperatur';
 import Statement from '../components/Statement.astro';
 import ChapterHead from '../components/ChapterHead.astro';
@@ -189,10 +190,7 @@ import '../styles/signaturen/signaturen.css';
       text="Fragen zu einem Meisterstück oder Interesse an einem Erwerb? Wir senden Ihnen gerne weitere Informationen oder ein Angebot zu."
       stueck="Anfrage Meisterstücke"
     >
-      Nennen Sie uns gern das Stück, das Sie interessiert.{' '}
-      <a class="link-arrow" href="/besuch">
-        Besuch in der Werkstatt
-      </a>
+      Nennen Sie uns gern das Stück, das Sie interessiert. <LinkArrow href="/besuch">Besuch in der Werkstatt</LinkArrow>
     </InquiryBand>
   </main>
 </BaseLayout>

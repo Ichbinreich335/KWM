@@ -1,5 +1,6 @@
 ---
 import { kontakt } from '../data/kontakt';
+import LinkArrow from './LinkArrow.astro';
 import { anfrageLink } from '../scripts/anfrage-link';
 
 interface Props {
@@ -20,9 +21,7 @@ const hatHinweis = Astro.slots.has('default');
     <a class="button" href={href}>
       Anfrage schreiben
     </a>
-    <a class="link-arrow" href={kontakt.telefonHref}>
-      {kontakt.telefon}
-    </a>
+    <LinkArrow href={kontakt.telefonHref}>{kontakt.telefon}</LinkArrow>
   </div>
   {hatHinweis && (
     <p class="anfrage-band__hint" data-reveal="fade">

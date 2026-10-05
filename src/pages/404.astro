@@ -1,5 +1,6 @@
 ---
 import '../styles/basis.css';
+import LinkArrow from '../components/LinkArrow.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PageHero from '../components/PageHero.astro';
 import '../styles/signaturen/signaturen.css';
@@ -17,24 +18,16 @@ import '../styles/signaturen/signaturen.css';
         <p>Die Seite gibt es nicht oder nicht mehr. Vielleicht führt einer dieser Wege weiter.</p>
         <ul class="not-found__links">
           <li>
-            <a class="link-arrow" href="/">
-              Zur Startseite
-            </a>
+            <LinkArrow href="/">Zur Startseite</LinkArrow>
           </li>
           <li>
-            <a class="link-arrow" href="/meisterstuecke">
-              Meisterstücke
-            </a>
+            <LinkArrow href="/meisterstuecke">Meisterstücke</LinkArrow>
           </li>
           <li>
-            <a class="link-arrow" href="/manufaktur">
-              Manufaktur
-            </a>
+            <LinkArrow href="/manufaktur">Manufaktur</LinkArrow>
           </li>
           <li>
-            <a class="link-arrow" href="/besuch">
-              Besuch und Anfahrt
-            </a>
+            <LinkArrow href="/besuch">Besuch und Anfahrt</LinkArrow>
           </li>
         </ul>
       </Fragment>

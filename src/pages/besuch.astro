@@ -1,5 +1,6 @@
 ---
 import '../styles/basis.css';
+import LinkArrow from '../components/LinkArrow.astro';
 import Steps from '../components/Steps.astro';
 import { anfahrtAuto, oepnv } from '../data/anfahrt';
 import SectionHead from '../components/SectionHead.astro';
@@ -76,12 +77,8 @@ const zeitenKurzWort = oeffnungszeitKurz(kontakt.oeffnungszeiten, 'kurzWort').jo
           <a class="button" href={routeGoogle}>
             Route planen
           </a>
-          <a class="link-arrow" href={routeOsm}>
-            Route in OpenStreetMap öffnen
-          </a>
-          <a class="link-arrow" href={kontakt.telefonHref}>
-            {kontakt.telefon}
-          </a>
+          <LinkArrow href={routeOsm}>Route in OpenStreetMap öffnen</LinkArrow>
+          <LinkArrow href={kontakt.telefonHref}>{kontakt.telefon}</LinkArrow>
         </p>
       </div>
     </section>
@@ -178,15 +175,9 @@ const zeitenKurzWort = oeffnungszeitKurz(kontakt.oeffnungszeiten, 'kurzWort').jo
         </div>
       </dl>
       <p class="pay__links" data-reveal="fade">
-        <a class="link-arrow" href="/versand">
-          Verpackung und Transport
-        </a>
-        <a class="link-arrow" href="/agb">
-          AGB
-        </a>
-        <a class="link-arrow" href="/impressum">
-          Impressum
-        </a>
+        <LinkArrow href="/versand">Verpackung und Transport</LinkArrow>
+        <LinkArrow href="/agb">AGB</LinkArrow>
+        <LinkArrow href="/impressum">Impressum</LinkArrow>
       </p>
     </section>
   </main>

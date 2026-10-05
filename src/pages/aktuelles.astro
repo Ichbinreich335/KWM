@@ -1,5 +1,6 @@
 ---
 import '../styles/basis.css';
+import LinkArrow from '../components/LinkArrow.astro';
 import ChapterHead from '../components/ChapterHead.astro';
 import ExhibitionCard from '../components/ExhibitionCard.astro';
 import { ausstellung } from '../data/ausstellungen';
@@ -66,9 +67,7 @@ import '../styles/signaturen/signaturen.css';
     </ChapterHead>
 
     <InquiryBand text="Die Werkstatt ist offen. Besuchen Sie uns oder schreiben Sie uns.">
-      <a class="link-arrow" href="/besuch">
-        Öffnungszeiten und Anfahrt
-      </a>
+      <LinkArrow href="/besuch">Öffnungszeiten und Anfahrt</LinkArrow>
     </InquiryBand>
   </main>
 </BaseLayout>

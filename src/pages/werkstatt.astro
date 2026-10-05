@@ -1,5 +1,6 @@
 ---
 import '../styles/basis.css';
+import LinkArrow from '../components/LinkArrow.astro';
 import PersonCard from '../components/PersonCard.astro';
 import { team } from '../data/team';
 import FactsList from '../components/FactsList.astro';
@@ -95,9 +96,7 @@ import '../styles/signaturen/signaturen.css';
             Pflanzengefäße und Dosen. Es werden ausschließlich umweltschonende Materialien und Fertigungsverfahren
             angewendet. Alle Stücke sind spülmaschinenfest.
           </p>
-          <a class="link-arrow" href="/manufaktur">
-            Zum Manufakturprogramm
-          </a>
+          <LinkArrow href="/manufaktur">Zum Manufakturprogramm</LinkArrow>
         </div>
         <FactsList typ="raster" fakten={methodenfakten} einblenden />
       </div>
@@ -196,9 +195,9 @@ import '../styles/signaturen/signaturen.css';
             1933 zog die Werkstatt in ein Gebäude der Zeche Zollverein, 1987 in das Baulager der Zeche – heute
             Weltkulturerbe. Hier wird gedreht, glasiert und gebrannt, und hier können Sie die Werkstatt besuchen.
           </p>
-          <a class="link-arrow" href="/besuch" data-reveal="fade">
+          <LinkArrow href="/besuch" data-reveal="fade">
             Besuch &amp; Anfahrt
-          </a>
+          </LinkArrow>
         </div>
         <FactsList typ="ort" fakten={ortsfakten} einblenden />
       </div>
@@ -208,10 +207,7 @@ import '../styles/signaturen/signaturen.css';
       text="Fragen zur Werkstatt oder Interesse an Stücken aus unserem Programm? Wir senden Ihnen gerne weitere Informationen oder ein Angebot zu."
       stueck="Anfrage Werkstatt"
     >
-      Selbstverständlich können Sie unsere Werkstatt auch besuchen.{' '}
-      <a class="link-arrow" href="/besuch">
-        Besuch planen
-      </a>
+      Selbstverständlich können Sie unsere Werkstatt auch besuchen. <LinkArrow href="/besuch">Besuch planen</LinkArrow>
     </InquiryBand>
   </main>
 </BaseLayout>

@@ -1,5 +1,6 @@
 ---
 import '../styles/basis.css';
+import LinkArrow from '../components/LinkArrow.astro';
 import WareGroup from '../components/WareGroup.astro';
 import DateList from '../components/DateList.astro';
 import { arbeitsweise, gruppe } from '../data/manufaktur';
@@ -382,18 +383,12 @@ const glasurBild = async (src: string) =>
     >
       Nennen Sie uns gern das Geschirr oder die Edition, die Sie interessiert. Für eine Bestellung gibt es
       Anfrageformulare:{' '}
-      <a
-        class="link-arrow"
-        href="https://kwm-1924.de/wp-content/uploads/2026/07/2026_04_Anfrage_inquiry_Geschirr_tableware.pdf"
-      >
+      <LinkArrow href="https://kwm-1924.de/wp-content/uploads/2026/07/2026_04_Anfrage_inquiry_Geschirr_tableware.pdf">
         Geschirr (PDF)
-      </a>{' '}
-      <a
-        class="link-arrow"
-        href="https://kwm-1924.de/wp-content/uploads/2023/09/anfrage_inquiry_editionen_editions.pdf"
-      >
+      </LinkArrow>{' '}
+      <LinkArrow href="https://kwm-1924.de/wp-content/uploads/2023/09/anfrage_inquiry_editionen_editions.pdf">
         Edition (PDF)
-      </a>
+      </LinkArrow>
     </InquiryBand>
 
     <script>

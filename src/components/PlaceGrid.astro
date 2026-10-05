@@ -1,5 +1,6 @@
 ---
 import Bild from './Bild.astro';
+import LinkArrow from './LinkArrow.astro';
 import { hausName, ortZahlen, type Ort } from '../data/orte';
 import type { BildAngabe } from '../data/typen';
 
@@ -24,9 +25,7 @@ const kachelKlasse = { gross: 'xl', mittel: 'm', klein: 's' } as const;
     </h2>
     <div class="orte__aside">
       <p data-reveal="fade">{einleitung}</p>
-      <a class="link-arrow" href={link.href}>
-        {link.text}
-      </a>
+      <LinkArrow href={link.href}>{link.text}</LinkArrow>
     </div>
   </div>
   <p class="orte__tip" data-orte-tip>

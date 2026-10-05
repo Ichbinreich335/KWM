@@ -1,5 +1,6 @@
 ---
 import '../styles/basis.css';
+import LinkArrow from '../components/LinkArrow.astro';
 import { BRENNTEMPERATUR, grad } from '../data/brenntemperatur';
 import Statement from '../components/Statement.astro';
 import SectionHead from '../components/SectionHead.astro';
@@ -55,12 +56,8 @@ import '../styles/signaturen/signaturen.css';
           dem Gelände der Zeche Zollverein.
         </p>
         <p class="hero__actions" data-reveal="fade">
-          <a class="link-arrow" href="/meisterstuecke">
-            Meisterstücke ansehen
-          </a>
-          <a class="link-arrow" href="/manufaktur">
-            Manufakturprogramm
-          </a>
+          <LinkArrow href="/meisterstuecke">Meisterstücke ansehen</LinkArrow>
+          <LinkArrow href="/manufaktur">Manufakturprogramm</LinkArrow>
         </p>
       </div>
     </section>
@@ -71,9 +68,9 @@ import '../styles/signaturen/signaturen.css';
         <h2 class="h2" id="aktuell-title" data-reveal="words">
           Aktuell
         </h2>
-        <a class="link-arrow aktuell__all" href="/aktuelles">
+        <LinkArrow class="aktuell__all" href="/aktuelles">
           Alle Ausstellungen und Termine
-        </a>
+        </LinkArrow>
       </div>
 
       {hinweise.map((hinweis) => (
@@ -171,9 +168,7 @@ import '../styles/signaturen/signaturen.css';
     <section class="works" id="meisterstuecke" aria-labelledby="works-title">
       <SectionHead typ="start" titelId="works-title">
         <Fragment slot="titel">Meisterstücke</Fragment>
-        <a class="link-arrow" href="/meisterstuecke">
-          Alle Meisterstücke
-        </a>
+        <LinkArrow href="/meisterstuecke">Alle Meisterstücke</LinkArrow>
       </SectionHead>
       <div class="works__feature grid">
         <figure class="works__single" data-reveal="img">
@@ -194,9 +189,9 @@ import '../styles/signaturen/signaturen.css';
             <p class="works__single-name" data-reveal="fade">
               Spindelvase <span>2006/07</span>
             </p>
-            <a class="link-arrow" href={anfrageLink(stueckBezeichnung(werk('spindelvase-1')))} data-reveal="fade">
+            <LinkArrow href={anfrageLink(stueckBezeichnung(werk('spindelvase-1')))} data-reveal="fade">
               Zu diesem Stück anfragen
-            </a>
+            </LinkArrow>
           </div>
         </div>
       </div>
@@ -267,16 +262,12 @@ import '../styles/signaturen/signaturen.css';
               99 Schalen
             </p>
             <p class="cosmos__show">Zu sehen im Museum für Ostasiatische Kunst, Köln, bis 25. Oktober 2026</p>
-            <a class="link-arrow" href="/aktuelles#kosmos">
-              Zur Ausstellung
-            </a>
+            <LinkArrow href="/aktuelles#kosmos">Zur Ausstellung</LinkArrow>
           </div>
         </div>
         <div class="cosmos__caption">
           <p class="cosmos__show">Zu sehen im Museum für Ostasiatische Kunst, Köln, bis 25. Oktober 2026</p>
-          <a class="link-arrow" href="/aktuelles#kosmos">
-            Zur Ausstellung
-          </a>
+          <LinkArrow href="/aktuelles#kosmos">Zur Ausstellung</LinkArrow>
         </div>
       </div>
     </section>
@@ -496,9 +487,7 @@ import '../styles/signaturen/signaturen.css';
             gefeuert – für einen Brand braucht es etwa 1,5 Festmeter Holz. Die Tönung wird reicher, manche Verfärbung
             lässt sich nicht steuern.
           </p>
-          <a class="link-arrow" href="/werkstatt#feuer">
-            Wie die Glasur ihre Farbe bekommt
-          </a>
+          <LinkArrow href="/werkstatt#feuer">Wie die Glasur ihre Farbe bekommt</LinkArrow>
         </div>
       </div>
     </section>
@@ -543,12 +532,8 @@ import '../styles/signaturen/signaturen.css';
             </tbody>
           </table>
           <p class="visit__actions">
-            <a class="link-arrow" href={kontakt.telefonHref}>
-              Lieber anrufen: {kontakt.telefon}
-            </a>
-            <a class="link-arrow" href="/besuch">
-              Anfahrt und Besuch
-            </a>
+            <LinkArrow href={kontakt.telefonHref}>Lieber anrufen: {kontakt.telefon}</LinkArrow>
+            <LinkArrow href="/besuch">Anfahrt und Besuch</LinkArrow>
           </p>
         </div>
         <div class="visit__form" id="anfrage">

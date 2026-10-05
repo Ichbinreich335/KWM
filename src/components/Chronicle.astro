@@ -1,5 +1,6 @@
 ---
 import type { ChronikEintrag } from '../data/chronik';
+import LinkArrow from './LinkArrow.astro';
 
 interface Props {
   eintraege: readonly ChronikEintrag[];
@@ -31,11 +32,7 @@ const zeitraum = `${gezeigt[0]?.jahr} bis ${gezeigt.at(-1)?.jahr}`;
       <p class="chronicle__span" data-reveal="fade">
         {zeitraum}
       </p>
-      {link && (
-        <a class="link-arrow" href={link.href}>
-          {link.text}
-        </a>
-      )}
+      {link && <LinkArrow href={link.href}>{link.text}</LinkArrow>}
       <p class="chronicle__hint" aria-hidden="true">
         Wischen
       </p>
@@ -73,7 +70,7 @@ const zeitraum = `${gezeigt[0]?.jahr} bis ${gezeigt.at(-1)?.jahr}`;
   .chronicle__intro .h2 {
     margin-bottom: 28px;
   }
-  .chronicle__intro .link-arrow {
+  .chronicle__intro :global(.link-arrow) {
     margin: 20px 0 0;
   }
   .chronicle__lede {

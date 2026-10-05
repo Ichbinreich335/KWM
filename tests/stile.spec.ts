@@ -7,7 +7,16 @@ test.skip(ziel !== 'astro', 'prüft den Astro-Build unter wrangler dev');
 // am html-Element wirkungslos sind. Diese Tests laufen mit voller Bewegung und mit Skript.
 test.use({ reducedMotion: 'no-preference' });
 
-const seitenMitKomponenten = ['/', '/young-jae-lee', '/aktuelles', '/meisterstuecke'];
+const seitenMitKomponenten = [
+  '/',
+  '/young-jae-lee',
+  '/aktuelles',
+  '/meisterstuecke',
+  '/besuch',
+  '/werkstatt',
+  '/manufaktur',
+  '/404-x',
+];
 
 /** Zeigt einen Stil eines Elements (oder Pseudo-Elements) im Zustand, den die Seite gerade hat. */
 async function stil(page: import('@playwright/test').Page, selektor: string, eigenschaft: string, pseudo?: string) {

@@ -1,5 +1,6 @@
 ---
 import type { Ausstellung } from '../data/ausstellungen';
+import LinkArrow from './LinkArrow.astro';
 import type { Fakt } from '../data/typen';
 import { statusText, tagAusIso } from '../scripts/status';
 import { zeitraumKurz, zeitraumMitBis } from '../scripts/zeitraum';
@@ -78,9 +79,9 @@ const datum = zeitraumKurz(ausstellung.start, ausstellung.ende);
           </p>
           <FactsList typ="zeile-hell" fakten={aktuellesFakten} einblenden />
           {ausstellung.link && (
-            <a class="link-arrow" href={ausstellung.link.href} data-reveal="fade">
+            <LinkArrow href={ausstellung.link.href} data-reveal="fade">
               {ausstellung.link.text}
-            </a>
+            </LinkArrow>
           )}
         </Fragment>
       ) : (
@@ -94,11 +95,7 @@ const datum = zeitraumKurz(ausstellung.start, ausstellung.ende);
               </Fragment>
             ))}
           </p>
-          {ausstellung.link && (
-            <a class="link-arrow" href={ausstellung.link.href}>
-              {ausstellung.link.text}
-            </a>
-          )}
+          {ausstellung.link && <LinkArrow href={ausstellung.link.href}>{ausstellung.link.text}</LinkArrow>}
         </div>
       )}
     </div>
@@ -148,11 +145,7 @@ const datum = zeitraumKurz(ausstellung.start, ausstellung.ende);
         <div class="aktuell__details">
           <p class="aktuell__text">{ausstellung.beschreibung}</p>
           <FactsList typ="zeile-anker" fakten={fakten} />
-          {ausstellung.link && (
-            <a class="link-arrow" href={ausstellung.link.href}>
-              {ausstellung.link.text}
-            </a>
-          )}
+          {ausstellung.link && <LinkArrow href={ausstellung.link.href}>{ausstellung.link.text}</LinkArrow>}
         </div>
       ) : (
         <Fragment>
@@ -165,11 +158,7 @@ const datum = zeitraumKurz(ausstellung.start, ausstellung.ende);
             <div class="aktuell__panel-in">
               <p class="aktuell__text">{ausstellung.beschreibung}</p>
               <FactsList typ="zeile-anker" fakten={fakten} />
-              {ausstellung.link && (
-                <a class="link-arrow" href={ausstellung.link.href}>
-                  {ausstellung.link.text}
-                </a>
-              )}
+              {ausstellung.link && <LinkArrow href={ausstellung.link.href}>{ausstellung.link.text}</LinkArrow>}
             </div>
           </div>
         </Fragment>
@@ -364,7 +353,7 @@ const datum = zeitraumKurz(ausstellung.start, ausstellung.ende);
   .aktuell__panel-in > :global(:last-child) {
     margin-bottom: 4px;
   }
-  .aktuell__panel-in .link-arrow {
+  .aktuell__panel-in :global(.link-arrow) {
     margin-top: 4px;
   }
 

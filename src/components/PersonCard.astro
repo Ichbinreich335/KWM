@@ -1,5 +1,6 @@
 ---
 import type { Person } from '../data/team';
+import LinkArrow from './LinkArrow.astro';
 
 interface Props {
   person: Person;
@@ -22,11 +23,7 @@ const { person } = Astro.props;
       ))}
     </dl>
   )}
-  {person.link && (
-    <a class="link-arrow" href={person.link.href}>
-      {person.link.text}
-    </a>
-  )}
+  {person.link && <LinkArrow href={person.link.href}>{person.link.text}</LinkArrow>}
 </article>
 
 <style>
@@ -68,7 +65,7 @@ const { person } = Astro.props;
     color: var(--ink-2);
     font-variant-numeric: tabular-nums;
   }
-  .person .link-arrow {
+  .person :global(.link-arrow) {
     margin-top: 8px;
   }
 </style>

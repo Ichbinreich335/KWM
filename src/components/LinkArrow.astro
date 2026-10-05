@@ -1,0 +1,49 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+
+type Props = HTMLAttributes<'a'> & {
+  /** `span`, wenn der Pfeil innerhalb eines schon verlinkten Blocks steht (kein verschachtelter Link) */
+  als?: 'a' | 'span';
+};
+
+const { als = 'a', class: klasse, ...attribute } = Astro.props;
+const Tag = als;
+---
+
+<Tag class:list={['link-arrow', klasse]} {...attribute}>
+  <slot />
+</Tag>
+
+<style>
+  .link-arrow {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.5em;
+    font-size: var(--t-small);
+    line-height: var(--t-small-lh);
+    text-decoration: none;
+    background: linear-gradient(currentColor, currentColor) 0 calc(100% - 8px) / 100% 1px no-repeat;
+    padding-block: 10px 11px;
+    margin-block: -10px -8px;
+    transition: background-size 0.5s var(--ease);
+  }
+  .link-arrow::after {
+    content: '';
+    display: inline-block;
+    width: 0.85em;
+    height: 0.85em;
+    flex: none;
+    background: currentColor;
+    -webkit-mask: var(--arrow) center / contain no-repeat;
+    mask: var(--arrow) center / contain no-repeat;
+    transition: transform 0.5s var(--ease);
+    align-self: center;
+  }
+  .link-arrow:hover {
+    background-size: 0% 1px;
+    background-position: 100% calc(100% - 8px);
+  }
+  .link-arrow:hover::after {
+    transform: translateX(4px);
+  }
+</style>

@@ -1,5 +1,6 @@
 ---
 import type { LebenswegStation } from '../data/lebensweg';
+import LinkArrow from './LinkArrow.astro';
 
 interface Props {
   stationen: readonly LebenswegStation[];
@@ -22,9 +23,7 @@ const { stationen, weiter } = Astro.props;
       ))}
     </ol>
     <p class="journey__all grid">
-      <a class="link-arrow" href={weiter.href}>
-        {weiter.text}
-      </a>
+      <LinkArrow href={weiter.href}>{weiter.text}</LinkArrow>
     </p>
   </div>
 </div>
@@ -114,7 +113,7 @@ const { stationen, weiter } = Astro.props;
   .journey__all {
     margin-top: var(--head-gap);
   }
-  .journey__all .link-arrow {
+  .journey__all :global(.link-arrow) {
     grid-column: 1 / -1;
     margin: 0;
     justify-self: start;

@@ -1,5 +1,6 @@
 ---
 import Expander from './Expander.astro';
+import LinkArrow from './LinkArrow.astro';
 import type { ArchivJahr, AusstellungsJahr } from '../data/archiv';
 
 type Props =
@@ -45,9 +46,7 @@ const props = Astro.props;
               </li>
             ))}
           </ul>
-          <a class="link-arrow" href={jahr.alle.href}>
-            {jahr.alle.text}
-          </a>
+          <LinkArrow href={jahr.alle.href}>{jahr.alle.text}</LinkArrow>
         </div>
       </Expander>
     ))}
@@ -116,7 +115,7 @@ const props = Astro.props;
     font-variant-numeric: tabular-nums;
     white-space: nowrap;
   }
-  .year__list .link-arrow {
+  .year__list :global(.link-arrow) {
     grid-column: 4 / 11;
     margin-top: 18px;
     justify-self: start;
@@ -124,7 +123,7 @@ const props = Astro.props;
 
   @media (max-width: 900px) {
     .year__list ul,
-    .year__list .link-arrow {
+    .year__list :global(.link-arrow) {
       grid-column: 1 / -1;
     }
     .year__list li {
