@@ -1,0 +1,174 @@
+---
+import type { LebenswegStation } from '../data/lebensweg';
+
+interface Props {
+  stationen: readonly LebenswegStation[];
+  /** Link unter dem Zeitstrahl, z. B. zum ganzen Werdegang */
+  weiter: { href: string; text: string };
+}
+
+const { stationen, weiter } = Astro.props;
+---
+
+<div class="journey-track" data-journey-track>
+  <div class="journey-stage">
+    <ol class="journey grid" aria-label="Lebensweg">
+      {stationen.map((s) => (
+        <li>
+          <span class="journey__year">{s.jahr}</span>
+          <span class="journey__place">{s.ort}</span>
+          <span class="journey__what">{s.station}</span>
+        </li>
+      ))}
+    </ol>
+    <p class="journey__all grid">
+      <a class="link-arrow" href={weiter.href}>
+        {weiter.text}
+      </a>
+    </p>
+  </div>
+</div>
+
+<style>
+  /* Lebensweg: Zeitstrahl über die volle Breite, fünf gleich breite Stationen */
+  .journey {
+    --dot: 11px;
+    --p: 1;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    position: relative;
+    margin-top: 0;
+    row-gap: 0;
+  }
+  .journey::before,
+  .journey::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: var(--m);
+    right: var(--m);
+    height: 1px;
+  }
+  .journey::before {
+    z-index: 1;
+    background: var(--ink);
+    transform: scaleX(var(--p));
+    transform-origin: left;
+  }
+  .journey::after {
+    background: var(--hair);
+  }
+  .journey li {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 36px var(--g) 0 0;
+  }
+  /* Punkt: Ring (::before) und Füllung (::after). Die Füllung wächst mit leichtem Überziehen, wenn die Linie den Punkt erreicht (.is-on), und leert sich wieder, wenn sie zurückgeht */
+  .journey li::before,
+  .journey li::after {
+    content: '';
+    position: absolute;
+    z-index: 2;
+    top: 0;
+    left: 0;
+    width: var(--dot);
+    height: var(--dot);
+    box-sizing: border-box;
+    border-radius: 50%;
+  }
+  .journey li::before {
+    border: 1px solid var(--ink);
+    background: var(--ground);
+    transform: translateY(-50%);
+  }
+  .journey li::after {
+    background: var(--ink);
+    translate: 0 -50%;
+  }
+  .js .journey li::after {
+    scale: 0;
+    transition: scale 0.45s var(--ease-pop);
+  }
+  .js .journey li.is-on::after {
+    scale: 1;
+  }
+  .journey__year {
+    font-size: var(--t-meta);
+    line-height: var(--t-meta-lh);
+    font-variant-numeric: tabular-nums;
+    color: var(--ink-2);
+  }
+  .journey__place {
+    font-family: var(--f-display);
+    font-size: var(--t-h3);
+    line-height: var(--t-h3-lh);
+    letter-spacing: -0.01em;
+  }
+  .journey__what {
+    font-size: var(--t-small);
+    line-height: var(--t-small-lh);
+    color: var(--ink-2);
+    text-wrap: pretty;
+  }
+  .journey__all {
+    margin-top: var(--head-gap);
+  }
+  .journey__all .link-arrow {
+    grid-column: 1 / -1;
+    margin: 0;
+    justify-self: start;
+  }
+  .js .journey {
+    --p: 0;
+  }
+  .journey-track {
+    margin-top: var(--section);
+  }
+
+  @media (max-width: 900px) {
+    .journey::before,
+    .journey::after {
+      top: 0;
+      bottom: 0;
+      left: calc(var(--m) + var(--dot) / 2);
+      right: auto;
+      width: 1px;
+      height: auto;
+    }
+    .journey::before {
+      transform: scaleY(var(--p));
+      transform-origin: top;
+    }
+    .journey li {
+      grid-column: 1 / -1;
+      padding: 0 0 32px 36px;
+      gap: 4px;
+    }
+    .journey li::before,
+    .journey li::after {
+      top: 4px;
+    }
+    .journey li::before {
+      transform: none;
+    }
+    .journey li::after {
+      translate: none;
+    }
+    .journey li:last-child {
+      padding-bottom: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .js .journey li::after {
+      transition: none;
+    }
+    .js .journey {
+      --p: 1;
+    }
+    .js .journey li::after {
+      scale: 1;
+    }
+  }
+</style>
