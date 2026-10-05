@@ -146,10 +146,17 @@ const props = Astro.props;
   .catalog__item--wide .catalog__name {
     margin-top: 0;
   }
+  /* Werkbild höchstens zwei Drittel der Bildschirmhöhe (--werk-max, Format 3:2); Stimmungsbilder bleiben breit */
+  .catalog__item--wide:not(.catalog__item--mood) .catalog__frame {
+    width: min(100%, calc(var(--werk-max) * 3 / 2));
+  }
 
   @media (max-width: 900px) {
     .catalog__item--wide {
       display: block;
+    }
+    .catalog__item--wide:not(.catalog__item--mood) .catalog__frame {
+      width: auto;
     }
     .catalog__item--wide figcaption {
       padding: 0;

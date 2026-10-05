@@ -29,9 +29,9 @@ const kachelKlasse = { gross: 'xl', mittel: 'm', klein: 's' } as const;
     </div>
   </div>
   <p class="orte__tip" data-orte-tip>
-    Auf eine Stadt <span class="orte__tip-fine">klicken</span>
-    <span class="orte__tip-coarse">tippen</span>
-    {', um die Ausstellungen dort zu sehen.'}
+    {/* Komma in den Wörtern: so bleibt kein Leerzeichen vor dem Komma, wenn eines der beiden ausgeblendet ist */}
+    Auf eine Stadt <span class="orte__tip-fine">klicken,</span>
+    <span class="orte__tip-coarse">tippen,</span> um die Ausstellungen dort zu sehen.
   </p>
   <ul class="orte__grid">
     {orte.map((ort) => {

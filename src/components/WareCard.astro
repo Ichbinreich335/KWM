@@ -113,6 +113,11 @@ const { satz } = Astro.props;
     border-bottom: 1px solid var(--hair);
     align-items: baseline;
   }
+  /* Lange Namen (Pflanzenübertopf) in schmalen Spalten trennen statt in die Maße zu laufen */
+  .set__list li > span:first-child {
+    hyphens: auto;
+    overflow-wrap: break-word;
+  }
   .set__list li > span:nth-child(2) {
     color: var(--ink-2);
     white-space: nowrap;
