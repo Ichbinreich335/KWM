@@ -30,7 +30,7 @@ const { glasuren } = Astro.props;
       data-schichten={glasur.schichten ? '' : undefined}
       data-seed={glasur.seed}
     >
-      <Bild class="scale__sample" src={glasur.probenbild} alt="" width="100" height="100" loading="lazy" />
+      <Bild class="scale__sample" src={glasur.probenbild} alt="" loading="lazy" />
       <span class="scale__label">
         <span class="scale__title">{glasur.name}</span>
         {glasur.zusatz && <span class="scale__meta">{glasur.zusatz}</span>}

@@ -8,6 +8,9 @@ import PageHero from '../components/PageHero.astro';
 import Prose from '../components/Prose.astro';
 import Figure from '../components/Figure.astro';
 import { kontakt } from '../data/kontakt';
+
+/** Anzeigegröße des QR-Codes in Pixeln (Quelle ist größer, siehe page-text.css) */
+const QR_GROESSE = 177;
 ---
 
 <BaseLayout
@@ -62,10 +65,10 @@ import { kontakt } from '../data/kontakt';
             <Figure class="pay-text__qr" einblendung={false}>
               <Bild
                 src="/img/kwm/paypal-qr.webp"
-                widths={[177, 354, 423]}
-                sizes="177px"
-                width="177"
-                height="177"
+                widths={[QR_GROESSE, QR_GROESSE * 2, 423]}
+                sizes={`${QR_GROESSE}px`}
+                width={QR_GROESSE}
+                height={QR_GROESSE}
                 alt={`QR-Code für die Zahlung per PayPal an ${kontakt.mail}`}
                 loading="lazy"
               />
