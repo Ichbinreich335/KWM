@@ -169,6 +169,10 @@
     align-content: end;
     padding-bottom: clamp(48px, 12svh, 96px);
   }
+  .sticky-bild--portrait .sticky-bild__quote p {
+    font-size: var(--t-quote);
+    line-height: var(--t-quote-lh);
+  }
 }
 
 @media (max-width: 900px), (orientation: portrait) {

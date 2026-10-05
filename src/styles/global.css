@@ -1544,7 +1544,8 @@ body::after {
 .js .chronicle__list li::after {
   transform: scaleY(var(--seg, 0));
 }
-.chronicle__hint {
+.chronicle__hint,
+.journey-hint {
   display: none;
 }
 
@@ -2033,36 +2034,44 @@ body::after {
   .artist__heritage {
     grid-column: 1 / -1;
   }
+  /* Lebensweg: Stationen als Wischreihe (Muster der Chronik); die Linie liegt je Station oben, alle Punkte stehen gefüllt */
+  .journey-hint {
+    display: block;
+    margin: 0 var(--m) 20px;
+    font-size: var(--t-meta);
+    line-height: var(--t-meta-lh);
+    letter-spacing: 0.04em;
+    color: var(--ink-2);
+  }
+  .journey-hint::after {
+    content: ' \2192';
+    font-family: system-ui, sans-serif;
+  }
+  .journey {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--m);
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+  }
+  .journey::-webkit-scrollbar {
+    display: none;
+  }
   .journey::before,
   .journey::after {
-    top: 0;
-    bottom: 0;
-    left: calc(var(--m) + var(--dot) / 2);
-    right: auto;
-    width: 1px;
-    height: auto;
-  }
-  .journey::before {
-    transform: scaleY(var(--p));
-    transform-origin: top;
+    display: none;
   }
   .journey li {
-    grid-column: 1 / -1;
-    padding: 0 0 32px 36px;
-    gap: 4px;
+    flex: 0 0 min(64vw, 280px);
+    margin-top: var(--dot);
+    padding: 36px var(--g) 0 0;
+    scroll-snap-align: start;
+    background: linear-gradient(var(--ink), var(--ink)) 0 0 / 100% 1px no-repeat;
   }
-  .journey li::before,
-  .journey li::after {
-    top: 4px;
-  }
-  .journey li::before {
-    transform: none;
-  }
-  .journey li::after {
-    translate: none;
-  }
-  .journey li:last-child {
-    padding-bottom: 0;
+  .js .journey li::after {
+    scale: 1;
+    transition: none;
   }
 
   .piece {
