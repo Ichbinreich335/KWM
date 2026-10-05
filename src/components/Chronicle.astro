@@ -136,7 +136,7 @@ const zeitraum = `${gezeigt[0]?.jahr} bis ${gezeigt[gezeigt.length - 1]?.jahr}`;
   }
   :global(.js) .chronicle__year {
     color: var(--ink-2);
-    transition: color 0.6s var(--ease);
+    transition: color var(--dur-move) var(--ease);
   }
   :global(.js) .chronicle__list li.is-on .chronicle__year {
     color: var(--ink);
@@ -155,7 +155,7 @@ const zeitraum = `${gezeigt[0]?.jahr} bis ${gezeigt[gezeigt.length - 1]?.jahr}`;
     grid-column: 1 / 4;
     font-family: var(--f-display);
     font-size: var(--yr);
-    line-height: 1;
+    line-height: var(--t-numeral-lh);
     letter-spacing: -0.02em;
     font-variant-numeric: lining-nums;
   }

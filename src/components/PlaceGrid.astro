@@ -386,7 +386,7 @@ const kachelKlasse = { gross: 'xl', mittel: 'm', klein: 's' } as const;
     inset: 0;
     z-index: -1;
     pointer-events: none;
-    background: linear-gradient(to top, rgba(18, 18, 18, 0.7), rgba(18, 18, 18, 0) 60%), rgba(18, 18, 18, 0.12);
+    background: linear-gradient(to top, rgb(var(--shade) / 0.7), rgb(var(--shade) / 0) 60%), rgb(var(--shade) / 0.12);
   }
   .orte.is-ready .orte__tile:hover .orte__img {
     filter: grayscale(0.7) brightness(0.5) contrast(1.05);

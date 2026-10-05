@@ -73,7 +73,7 @@
   margin: 24px 0 0;
   --qr-groesse: 177px; /* wie QR_GROESSE in zahlung.astro */
   width: var(--qr-groesse);
-  background: #fff;
+  background: var(--paper);
   padding: 8px;
   box-sizing: content-box;
 }

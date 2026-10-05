@@ -25,8 +25,11 @@ Stand: 03.10.2026. Verbindlich für alle Seiten und Elemente in `src/v2/` und `s
 | `--on-coal-2` | `#A3A29D` | Nebentext auf Anker (6,4:1) |
 | `--hair-on-coal`, `--line-on-coal`, `--veil-on-coal` | `rgba(242,241,238, .22 / .35 / .1)` | Haarlinie, kräftigere Linie und Schleier auf Anker; `.on-anker` setzt die Haarlinie |
 | `--shade` | `18 18 18` (Kanäle) | Abdunklung über Bildern: `rgb(var(--shade) / 0.6)` |
+| `--paper` | `#FFFFFF` | nur die QR-Ruhezone (Zahlung), muss reinweiß sein |
 | `--accent` | `#4E7D6A` | Seladon, einziger Akzent: aktive Navigation, Auswahl, Markierung |
 | `--accent-on-coal` | `#8DB5A3` | Akzent auf Anker |
+
+Ausnahmen beim Rohwert: Schlagschatten (`rgba(0,0,0,.18)` am Farbskala-Mini-Gefäß, warmer Schatten der Kachel) und die weißen Lichter der Glasur-Bühne sind Teil der gerenderten Glasur, keine UI-Farbe.
 
 **Glasurfarben** (`--glaze-*`, `GLAZES` in `js/keramik.js`) sind Inhalt und werden nie als Farbe der Oberfläche verwendet.
 
@@ -36,7 +39,7 @@ Stand: 03.10.2026. Verbindlich für alle Seiten und Elemente in `src/v2/` und `s
 
 **Schriften:** Libre Caslon Display (Überschriften, Namen, Zahlen), Libre Caslon Text (Zitate, Lede, Einleitungen), Jost 300–500 (Text, Navigation, Daten). Alle selbst gehostet in `src/assets/fonts/`, registriert in `astro.config.mjs` (`fonts`).
 
-**Regel: Es gibt nur Textstile.** Jede Schriftgröße im CSS kommt aus einem Token der Rollenskala in `site/v3/styles.css` (`:root`, Block „Textstile“). Ein Textstil besteht aus `--t-<name>` (Größe) und `--t-<name>-lh` (Zeilenhöhe) und wird immer als Paar gesetzt: `font-size: var(--t-small); line-height: var(--t-small-lh);`. Nackte `px`-, `rem`- oder `clamp()`-Werte außerhalb von `:root` sind nicht erlaubt. Wer eine Größe braucht, die es nicht gibt, ordnet das Element einer vorhandenen Rolle zu. Eine neue Rolle braucht einen Eintrag in der Tabelle und einen eigenen Zweck. Die kleinen Rollen (`small`, `meta`) wachsen auf großen Bildschirmen fließend, mobil sind es 16 px und 13,5 px.
+**Regel: Es gibt nur Textstile.** Jede Schriftgröße im CSS kommt aus einem Token der Rollenskala in `site/v3/styles.css` (`:root`, Block „Textstile“). Ein Textstil besteht aus `--t-<name>` (Größe) und `--t-<name>-lh` (Zeilenhöhe) und wird immer als Paar gesetzt: `font-size: var(--t-small); line-height: var(--t-small-lh);`. Nackte `px`-, `rem`- oder `clamp()`-Werte außerhalb von `:root` sind nicht erlaubt. Begründete Ausnahmen (Zeilenhöhe ohne Paar, jeweils eigener Wert): Farbskala-Beschriftung 1,2 (zweizeiliges Raster mit `1.2em`-Zeile), Anfrage-Textfeld 1,5 mit Fließtext-Größe, Seitenleiste der Rechtstexte 1,3 (kompakte Sprungliste). Wer eine Größe braucht, die es nicht gibt, ordnet das Element einer vorhandenen Rolle zu. Eine neue Rolle braucht einen Eintrag in der Tabelle und einen eigenen Zweck. Die kleinen Rollen (`small`, `meta`) wachsen auf großen Bildschirmen fließend, mobil sind es 16 px und 13,5 px.
 
 ### Textstile
 
@@ -215,9 +218,9 @@ Sticky unter dem Header, mobil seitlich scrollbar mit Randausblendung. Der aktiv
 
 ## 8. Bewegung
 - **Einblenden:** Text `fade` (18 px, 1,2 s). Überschriften `words` (Maske, 1,3 s, gestaffelt um 45 ms). Bilder `img` (Abdeckung fährt nach oben, Bild von 1,12 auf 1 skaliert). Kurve `--ease`.
-- **Dauer-Tokens** (`global.css`, `:root`): `--dur-hover` 0,5 s (Hover, Farben, Pfeile), `--dur-zoom` 1,2 s (Bild-Zoom und Farbskala bei Hover), `--dur-reveal` 1,2 s (Einblenden von Text), `--dur-open` 0,5 s (Aufklappen; bei reduzierter Bewegung 0). Ausnahmen mit Absicht: Punkte füllen 0,45 s (`--ease-pop`), Einblenden von Wörtern 1,3 s und Bildern 1,6/2,4 s (siehe oben).
+- **Dauer-Tokens** (`global.css`, `:root`): `--dur-hover` 0,5 s (Hover, Farben, Pfeile), `--dur-zoom` 1,2 s (Bild-Zoom und Farbskala bei Hover), `--dur-reveal` 1,2 s (Einblenden von Text), `--dur-open` 0,5 s (Aufklappen; bei reduzierter Bewegung 0). `--dur-move` 0,6 s (Kopfzeile und Leisten gleiten, Jahreszahl, Farbwechsel, Skalenbeschriftung). Ausnahmen mit Absicht, jeweils eigener Wert: Punkte füllen 0,45 s (`--ease-pop`), Einblenden von Wörtern 1,3 s und Bildern 1,6/1,9/2,4 s (siehe oben), Strichzeichnung der Wortmarke und des Hero-Rahmens 1,5 s bis 1,9 s mit Versatz (`draw`), Hero-Bild 0,5 s, Zähler der Ausstellung 0,3 s, Sicherung ohne Skript 0,6 s nach 3 s, Farbskala-Kachel 1,1 s, Glasur-Bühne 0,8 s (Farbe), 1,1 s (Deckkraft) und 6 s (langsamer Zoom). Gleiche Werte bekommen ein Token, sobald sie ein zweites Mal vorkommen.
 - **Sicherung ohne Skript:** `main.ts` setzt `js-ready`, sobald die Einblendung scharf ist. Bis dahin macht eine CSS-Animation alle `[data-reveal]`-Elemente nach 3 s sichtbar (Skriptfehler, Blocker, sehr langsames Netz). Das Startbild im Hero hat keine Abdeckung, nur eine kurze Opazitäts-Einblendung; die Hero-Überschrift wird beim Bauen in Wort-Spans zerlegt (`Woerter.astro`).
-- **Hover:** 0,5 s (`--dur-hover`). Es werden nur `transform`, `opacity`, Farben und `flex-grow` animiert, nie `width` oder `height`.
+- **Hover:** 0,5 s (`--dur-hover`). Es werden nur `transform`, `opacity`, Farben und `flex-grow` animiert, nie `width` oder `height`. Einzige Ausnahme: das sticky-`top` der Sprungleiste (`SubNav`) und der offenen Expander-Leiste gleitet mit `--dur-move`, im Gleichlauf mit der Kopfzeile (`transform`); das Haftmaß einer sticky-Leiste lässt sich nicht über `transform` verschieben, ohne die Leiste im Fluss mitzuziehen.
 - **Kein Scroll-Hijacking.** Sticky mit Scroll-Steuerung ist erlaubt, wenn die Scrollgeschwindigkeit unverändert bleibt.
 - **Punkte füllen sich, wenn die Linie sie erreicht.** Gemeinsame Animation für Lebensweg und Chronik: Ring hohl, Füllung (`scale` 0 auf 1, 0,45 s, `--ease-pop` mit leichtem Überziehen) über die Klasse `.is-on`. Rückwärts leert sich der Punkt wieder. Reduzierte Bewegung: sofort gefüllt.
 - **Lebensweg** (`.journey`, Startseite): Ohne Sticky. Linie und Punkte füllen sich mit dem Scrollfortschritt von links nach rechts (voll, wenn der Strahl ~35 % von oben erreicht), reversibel. Darunter der Link „Zum ganzen Werdegang“.

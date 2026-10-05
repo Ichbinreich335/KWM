@@ -31,7 +31,7 @@ const { class: klasse } = Astro.props;
 <style is:global>
   /* Signatur: logo. Das Logo zeichnet sich im Footer beim Scrollen selbst */
   .footer__grid {
-    row-gap: clamp(32px, 4vw, 56px);
+    row-gap: var(--head-gap);
   }
 
   .footer__logo {
