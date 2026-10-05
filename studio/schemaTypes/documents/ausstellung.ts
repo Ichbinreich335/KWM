@@ -180,12 +180,32 @@ export const ausstellung = defineType({
     defineField({
       name: 'flyer',
       title: 'Flyer',
-      description: 'Der Flyer oder die Einladungskarte als Bild. Die Besucher sehen eine Vorschau und können sie vergrößern.',
-      type: 'image',
+      description: 'Der Flyer oder die Einladungskarte. Die Besucher sehen eine Vorschau und können sie vergrößern. Leer lassen, wenn es keinen Flyer gibt.',
+      type: 'object',
       fields: [
         defineField({
-          ...altFeld,
-          description: 'Titel, Datum und Ort, wie sie auf dem Flyer stehen. Zum Beispiel: „Flyer: 99 Schalen, 10. Oktober bis 3. Januar, Köln“.',
+          name: 'vorne',
+          title: 'Vorderseite',
+          type: 'image',
+          validation: (rule) => rule.required().error('Bitte laden Sie die Vorderseite des Flyers hoch.'),
+          fields: [
+            defineField({
+              ...altFeld,
+              description: 'Was auf dem Flyer steht: Titel, Datum, Ort.',
+            }),
+          ],
+        }),
+        defineField({
+          name: 'hinten',
+          title: 'Rückseite',
+          description: 'Nur ausfüllen, wenn der Flyer eine bedruckte Rückseite hat.',
+          type: 'image',
+          fields: [
+            defineField({
+              ...altFeld,
+              description: 'Was auf der Rückseite des Flyers steht.',
+            }),
+          ],
         }),
       ],
     }),
