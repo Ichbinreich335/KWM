@@ -168,3 +168,27 @@ test('Flyer auf der Startseite: Textlink in der aufgeklappten Karte öffnet dens
   await expect(dialog).toBeHidden();
   await expect(karte.getByRole('button', { name: 'Flyer ansehen' })).toBeFocused();
 });
+
+test('Mobilmenü: Seite dahinter ist inert, Tab bleibt im Menü, Escape schließt und gibt den Fokus zurück', async ({
+  page,
+}) => {
+  test.skip((page.viewportSize()?.width ?? 1440) > 900, 'Mobilmenü gibt es nur bis 900 px');
+  await page.goto('/');
+  const knopf = page.locator('[data-menu-toggle]');
+  await knopf.click();
+  await expect(knopf).toHaveAttribute('aria-expanded', 'true');
+  for (const sel of ['main', 'footer', '.skip']) {
+    await expect(page.locator(sel).first()).toHaveJSProperty('inert', true);
+  }
+  for (let i = 0; i < 20; i++) {
+    await page.keyboard.press('Tab');
+    const imInhalt = await page.evaluate(() => !!document.activeElement?.closest('main, footer, .skip'));
+    expect(imInhalt, `Fokus nach ${i + 1}. Tab im Seiteninhalt`).toBe(false);
+  }
+  await page.keyboard.press('Escape');
+  await expect(knopf).toHaveAttribute('aria-expanded', 'false');
+  await expect(knopf).toBeFocused();
+  for (const sel of ['main', 'footer', '.skip']) {
+    await expect(page.locator(sel).first()).toHaveJSProperty('inert', false);
+  }
+});

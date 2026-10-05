@@ -36,6 +36,10 @@ interface Bowl extends Schale {
     if (label) label.textContent = open ? 'Schließen' : 'Menü';
     nav?.classList.toggle('is-open', open);
     document.body.style.overflow = open ? 'hidden' : '';
+    // Offenes Menü deckt die Seite: Fokus und Screenreader bleiben im Menü
+    $$('main, footer, .skip').forEach((el) => {
+      el.inert = open;
+    });
   };
   toggle?.addEventListener('click', () => setMenu(toggle.getAttribute('aria-expanded') !== 'true'));
   $$('.nav a').forEach((a) => a.addEventListener('click', () => setMenu(false)));
