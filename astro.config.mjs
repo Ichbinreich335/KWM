@@ -88,7 +88,7 @@ export default defineConfig({
         "connect-src 'self'",
         "base-uri 'self'",
         "form-action 'self'",
-        // Turnstile-Widget (Phase 3): lädt es erst beim Antippen eines Formularfeldes
+        // Turnstile-Widget: lädt erst beim Antippen eines Formularfeldes
         'frame-src https://challenges.cloudflare.com',
         "object-src 'none'",
       ],

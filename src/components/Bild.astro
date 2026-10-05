@@ -27,7 +27,7 @@ const { src, layout = 'constrained', width, height, ...rest } = Astro.props;
 // Maße nur weitergeben, wenn sie angegeben sind; sonst nimmt Astro sie aus den ImageMetadata
 const masse = { ...(width !== undefined && { width }), ...(height !== undefined && { height }) };
 
-// fit="fill": wie das frühere <img> ohne object-fit; das Seitenverhältnis kommt aus den Maßen (angegeben oder aus dem Bild) und CSS.
+// fit="fill": kein Zuschnitt durch Astro; das Seitenverhältnis kommt aus den Maßen (angegeben oder aus dem Bild) und CSS.
 ---
 
 <Image src={bildMetadaten(src)} layout={layout} fit="fill" {...masse} {...rest} />

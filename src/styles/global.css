@@ -45,7 +45,7 @@
   --t-mega-lh: 0.9;
   --t-wordmark: 17.6vw;
   --t-wordmark-lh: 0.74;
-  /* Jahreszahl als Bildelement (Bauhaus-Station, Entwurf 2), keine Leseschrift */
+  /* Jahreszahl als Bildelement, keine Leseschrift */
   --t-marke: clamp(6rem, 24vw, 22rem);
   --t-marke-lh: 0.8;
   --t-display: clamp(3rem, 7vw, 7rem);

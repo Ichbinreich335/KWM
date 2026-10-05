@@ -69,7 +69,7 @@ src/styles/           basis.css (bindet global.css und pages.css ein), seiten/ (
 src/scripts/          Browser-Skripte (TypeScript, Unit-Tests `*.test.ts` mit Vitest: `npm run test:unit`): status (Ausstellungsstatus aus dem Datum, `heuteTag`), lesetitel, zeitraum, anfrage-link, main, signaturen (lädt die sig-* als eigene Chunks), keramik (gemeinsame Typen und Daten); das Layout bindet sie als ein verarbeitetes Skript ein
 src/assets/fonts/     Selbst gehostete Schriften (woff2, je Teilmenge latin und latin-ext); registriert in `astro.config.mjs` (`fonts`), eingebunden über `<Font>` im Layout
 src/assets/img/       Bilder, nur über `<Bild src="/img/…">` einbinden (Pfad ohne `src/assets`)
-public/               Favicon (`img/kwm/logo.svg`), _headers, _redirects, robots.txt (kein CSS mehr; Rest wird in Phase C gebündelt)
+public/               Favicon (`img/kwm/logo.svg`), _headers, _redirects, robots.txt
 tests/                Playwright-Tests (siehe oben)
 konzept/              Konzepte, Pläne, Berichte; figures.json = Bilderliste der alten WordPress-Seite
 .shots/               Skripte für Screenshots zur Sichtprüfung (Bilder werden nicht eingecheckt)

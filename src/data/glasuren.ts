@@ -126,7 +126,7 @@ export type Probengruppe = 'Geschirr' | 'Edition';
 /**
  * Glasurprobe der Glasurbühne (Seite Manufaktur): Knopf mit Probenfoto, daneben die Bühne in Farbe und Foto.
  * Sanity-Typ `glasur`, dort mit Gruppe als Zuordnung zum Programm; die Farben der Bühne weichen leicht
- * von den Farbwerten der Farbskala ab (Befund im Bericht Phase D).
+ * von den Farbwerten der Farbskala ab, das ist bewusst so.
  */
 export interface Glasurprobe {
   name: string;

@@ -12,7 +12,7 @@ export default defineConfig({
   },
   expect: {
     // Ganzseitige Screens der Startseite (über 18.000 px hoch) brauchen unter Parallel-Last länger als 5 s,
-    // vereinzelt auch knapp 15 s (Phase C2); 30 s geben Luft, ohne die Prüfung zu lockern.
+    // vereinzelt auch knapp 15 s; 30 s geben Luft, ohne die Prüfung zu lockern.
     timeout: 30_000,
     toHaveScreenshot: {
       maxDiffPixelRatio: Number(process.env.OPTIK_TOLERANZ ?? 0.002),
