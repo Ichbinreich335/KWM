@@ -25,6 +25,7 @@ import Bild from '../components/Bild.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import InquiryForm from '../components/InquiryForm.astro';
 import Figure from '../components/Figure.astro';
+import Woerter from '../components/Woerter.astro';
 import SigSticky from '../components/SigSticky.astro';
 import SigFarbskala from '../components/SigFarbskala.astro';
 import { glasuren } from '../data/glasuren';
@@ -41,6 +42,7 @@ import { glasuren } from '../data/glasuren';
     <section class="hero grid" id="top" aria-labelledby="hero-title">
       <Figure
         class="hero__media"
+        einblendung={false}
         unterschrift="Kummerschalen · Foto: Christopher Clem Franken"
         unterschriftKlasse="hero__credit"
       >
@@ -54,7 +56,7 @@ import { glasuren } from '../data/glasuren';
       </Figure>
       <div class="hero__text">
         <h1 class="hero__title" id="hero-title" data-reveal="words">
-          Immer sind es Schalen, und doch ist keine wie die andere.
+          <Woerter text="Immer sind es Schalen, und doch ist keine wie die andere." />
         </h1>
         <p class="hero__source" data-reveal="fade">
           Thomas Wagner über die Schalen von Young-Jae Lee

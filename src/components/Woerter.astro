@@ -1,0 +1,19 @@
+---
+interface Props {
+  /** Text der Überschrift; wird beim Bauen in Wort-Spans zerlegt, damit beim Skriptstart nichts umspringt */
+  text: string;
+}
+
+const { text } = Astro.props;
+const woerter = text.trim().split(/\s+/);
+---
+
+<span class="visually-hidden">{text}</span>
+{woerter.map((wort, i) => (
+  <>
+    <span class="w" aria-hidden="true">
+      <span>{wort}</span>
+    </span>
+    {i < woerter.length - 1 && ' '}
+  </>
+))}

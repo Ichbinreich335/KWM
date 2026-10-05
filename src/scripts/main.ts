@@ -47,6 +47,12 @@ interface Bowl extends Schale {
 
   /* ---------- Wörter für die Zeilen-Einblendung aufteilen ---------- */
   $$('[data-reveal="words"]').forEach((el) => {
+    const gebaut = $$('.w > span', el);
+    if (gebaut.length) {
+      // Wort-Spans stehen schon im HTML (Woerter.astro): nur die Staffelung setzen
+      gebaut.forEach((inner, i) => inner.style.setProperty('--i', String(i)));
+      return;
+    }
     const text = (el.textContent ?? '').trim();
     const words = text.split(/\s+/);
     const readable = document.createElement('span');
@@ -90,6 +96,8 @@ interface Bowl extends Schale {
         setTimeout(() => el.classList.add('is-in'), 450 + i * 160);
       });
   });
+  // Erst jetzt ist die Einblendung scharf: bricht das Skript vorher ab, greift die CSS-Sicherung (global.css)
+  document.documentElement.classList.add('js-ready');
 
   /* ---------- Chronik: Linie zeichnet sich strikt nacheinander an die Lesehöhe gebunden, jeder Punkt füllt sich, wenn sie ihn erreicht ---------- */
   const chronicle = $('.chronicle__list');

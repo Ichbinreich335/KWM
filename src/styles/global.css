@@ -341,13 +341,19 @@ body::after {
   display: none;
 }
 
-/* Hero */
+/* Hero: das Startbild wird nicht abgedeckt, es blendet nur kurz ein (LCP) */
+@keyframes hero-ein {
+  from {
+    opacity: 0;
+  }
+}
 .hero {
   min-height: 100svh;
   padding-top: var(--head);
   grid-template-rows: 1fr;
 }
 .hero__media {
+  animation: hero-ein 0.5s var(--ease) both;
   grid-column: 6 / -1;
   grid-row: 1;
   margin-right: calc(var(--m) * -1);
@@ -1271,6 +1277,44 @@ body::after {
   transform: translateX(100%);
 }
 
+/* Sicherung: Kommt das Hauptskript nicht (Fehler, Blocker, sehr langsames Netz), werden alle Inhalte nach 3 s sichtbar.
+   main.ts setzt .js-ready, sobald es läuft; dann greift diese Regel nie und es gibt kein Aufblitzen. */
+.js:not(.js-ready) [data-reveal='fade'] {
+  animation: reveal-fade 0.6s var(--ease) 3s forwards;
+}
+.js:not(.js-ready) [data-reveal='words'] .w > span {
+  animation: reveal-words 0.6s var(--ease) 3s forwards;
+}
+.js:not(.js-ready) [data-reveal='img']::after,
+.js:not(.js-ready) [data-reveal='kiln']::before,
+.js:not(.js-ready) [data-reveal='kiln']::after {
+  animation: reveal-cover 0.01s linear 3s forwards;
+}
+.js:not(.js-ready) [data-reveal='img'] img {
+  animation: reveal-img 0.01s linear 3s forwards;
+}
+@keyframes reveal-fade {
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes reveal-words {
+  to {
+    transform: none;
+  }
+}
+@keyframes reveal-cover {
+  to {
+    opacity: 0;
+  }
+}
+@keyframes reveal-img {
+  to {
+    transform: none;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -1286,6 +1330,9 @@ body::after {
   .js [data-reveal]::before,
   .js [data-reveal]::after {
     display: none !important;
+  }
+  .hero__media {
+    animation: none;
   }
   .logo-draw .logo > * {
     animation: none;
