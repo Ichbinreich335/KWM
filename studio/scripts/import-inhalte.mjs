@@ -1,5 +1,5 @@
 // Einmaliger Import der heutigen Website-Inhalte als ENTWÜRFE (drafts.*) in das Dataset.
-// Aufruf: node scripts/import-inhalte.mjs <Ordner mit den Bildern> [--replace]
+// Aufruf: node scripts/import-inhalte.mjs <Ordner mit den Bildern> [--flyer=<Ordner mit flyer.json und den Flyer-Bildern>] [--replace]
 // Der Ordner enthält die Bilder aus src/assets/img/kwm/ des Branches phase-d3-aufklappen (siehe README).
 // Token: Umgebungsvariable SANITY_AUTH_TOKEN, sonst die Anmeldung der Sanity-CLI. Es wird nichts veröffentlicht.
 // Ohne --replace bleiben vorhandene Entwürfe unangetastet, damit Änderungen im Studio nicht überschrieben werden.
@@ -10,6 +10,7 @@ import { basename, join } from 'node:path';
 
 const bilderOrdner = process.argv[2];
 const ersetzen = process.argv.includes('--replace');
+const flyerOrdner = process.argv.find((a) => a.startsWith('--flyer='))?.slice('--flyer='.length);
 if (!bilderOrdner) throw new Error('Bitte den Ordner mit den Bildern angeben.');
 
 const token =
@@ -26,6 +27,13 @@ const bild = async (datei, felder = {}) => {
   }
   return { _type: 'image', asset: { _type: 'reference', _ref: hochgeladen.get(datei) }, ...felder };
 };
+// Flyer (Vorder- und Rückseite) aus dem Flyer-Ordner; die Alt-Texte stehen in flyer.json. Ohne --flyer entfällt das Feld.
+const flyerAlt = flyerOrdner ? new Map(JSON.parse(readFileSync(join(flyerOrdner, 'flyer.json'), 'utf8')).flyer.map((f) => [f.datei, f.alt])) : new Map();
+const flyerBild = async (datei) => {
+  const asset = await client.assets.upload('image', createReadStream(join(flyerOrdner, datei)), { filename: datei });
+  return { _type: 'image', asset: { _type: 'reference', _ref: asset._id }, alt: flyerAlt.get(datei) };
+};
+const flyer = async (vorne, hinten) => (flyerOrdner ? { flyer: { vorne: await flyerBild(vorne), hinten: await flyerBild(hinten) } } : {});
 // Wie im Studio: schwache Referenz auf die veröffentlichte ID, wird beim Veröffentlichen des Ziels fest.
 const ref = (id, typ) => ({ _type: 'reference', _ref: id, _weak: true, _strengthenOnPublish: { type: typ } });
 const absatz = (text) => [{ _type: 'block', _key: 'a1', style: 'normal', markDefs: [], children: [{ _type: 'span', _key: 's1', text, marks: [] }] }];
@@ -83,6 +91,7 @@ const ausstellungen = async () => [
     beschreibung: absatz('Der Niederrheinische Kunstverein zeigt in Kooperation mit der Evangelischen Kirchengemeinde Wesel handgefertigte Schalen der international renommierten Keramikerin Young-Jae Lee.'),
     eroeffnung: ['Sonntag, 16. August 2026, 11 Uhr', 'Gottesdienst zur Ausstellung, 12.15 Uhr Eröffnung der Ausstellung. Die Künstlerin wird anwesend sein.'],
     oeffnungszeiten: ['Di–So 14.30–17.00 Uhr', 'Mi und Sa 10–12 Uhr'], oeffnungszeitenBezeichnung: 'Öffnungszeiten Dom',
+    ...(await flyer('Willibrordi-Dom_Einladung.jpg', 'Willibrordi-Dom_Einladung1.jpg')),
     hauptbild: await bild('aktuell/wesel-seladon-800.webp', { alt: 'Flache Schalen von Young-Jae Lee mit seladonfarbener Glasur, die sich in der Mitte sammelt', nachweis: 'Foto: Christopher Clem Franken' }),
     bilder: [{ _key: 'b1', ...(await bild('kummerschalen.webp', { alt: 'Viele flache Schalen in Seladon, Schwarz und Rotbraun, auf dem Boden ausgelegt', bildunterschrift: 'Schalen von Young-Jae Lee', nachweis: 'Fotografie: Christopher Clem Franken, © Kunst-Station Sankt Peter, Köln' })) }],
   },
@@ -93,6 +102,7 @@ const ausstellungen = async () => [
     ort: ref('ort-st-moritz', 'ort'), galerie: ref('galerie-karsten-greve', 'galerie'),
     beschreibung: absatz('Malerei von Kathleen Jacobs (Öl auf Leinen) und Keramik von Young‑Jae Lee.'),
     link: { text: 'Galerie Karsten Greve', url: 'https://galerie-karsten-greve.com/' },
+    ...(await flyer('2026_Einladung.jpg', '2026_Einladung_Seite-4.jpg')),
     hauptbild: await bild('aktuell/greve-533.webp', { alt: 'Türkisfarbene Kumme von Young-Jae Lee mit feinem Craquelé', bildunterschrift: 'Kumme von Young-Jae Lee', nachweis: FEHLT }),
   },
   {
@@ -104,6 +114,7 @@ const ausstellungen = async () => [
     oeffnungszeiten: popupZeiten, oeffnungszeitenBezeichnung: 'Geöffnet',
     kooperation: ['Burggraf Burggraf (Taschen)', 'Joachim Kern (Mode)', 'Christiane Kuntz (Mode)', 'Dietrich Pampus (Vintage Leuchten)'],
     link: { text: 'Anfahrt zur Werkstatt', url: '/besuch' },
+    ...(await flyer('Newsletter_Einladung_Seite-1-2.jpg', 'Newsletter_Einladung_Seite-2-1.jpg')),
     hauptbild: await bild('aktuell/popup-954.webp', { alt: regalAlt, bildunterschrift: 'In der Werkstatt', nachweis: 'Foto: Haydar Koyupinar' }),
     bilder: [{ _key: 'b1', ...(await bild('regal.webp', { alt: regalAlt, bildunterschrift: 'In der Werkstatt', nachweis: 'Foto: Haydar Koyupinar' })) }],
   },
