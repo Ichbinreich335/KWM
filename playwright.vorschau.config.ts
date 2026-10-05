@@ -6,7 +6,7 @@ const PORT = 8788;
 const BASIS = `http://localhost:${PORT}`;
 
 export default defineConfig({
-  testDir: 'tests/vorschau',
+  testDir: 'tests-vorschau',
   use: { baseURL: BASIS, reducedMotion: 'reduce' },
   expect: { timeout: 30_000 },
   projects: [
