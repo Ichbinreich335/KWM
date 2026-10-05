@@ -31,7 +31,8 @@ export type Werkstatt = {
   englischeSeite?: string;
   nahverkehr?: string;
   oeffnungszeiten?: Array<{
-    wochentage: string;
+    tagVon: 'Montag' | 'Dienstag' | 'Mittwoch' | 'Donnerstag' | 'Freitag' | 'Samstag' | 'Sonntag';
+    tagBis?: 'Montag' | 'Dienstag' | 'Mittwoch' | 'Donnerstag' | 'Freitag' | 'Samstag' | 'Sonntag';
     von: string;
     bis: string;
     _type: 'zeitraum';

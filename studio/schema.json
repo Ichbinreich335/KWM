@@ -104,12 +104,79 @@
           "of": {
             "type": "object",
             "attributes": {
-              "wochentage": {
+              "tagVon": {
                 "type": "objectAttribute",
                 "value": {
-                  "type": "string"
+                  "type": "union",
+                  "of": [
+                    {
+                      "type": "string",
+                      "value": "Montag"
+                    },
+                    {
+                      "type": "string",
+                      "value": "Dienstag"
+                    },
+                    {
+                      "type": "string",
+                      "value": "Mittwoch"
+                    },
+                    {
+                      "type": "string",
+                      "value": "Donnerstag"
+                    },
+                    {
+                      "type": "string",
+                      "value": "Freitag"
+                    },
+                    {
+                      "type": "string",
+                      "value": "Samstag"
+                    },
+                    {
+                      "type": "string",
+                      "value": "Sonntag"
+                    }
+                  ]
                 },
                 "optional": false
+              },
+              "tagBis": {
+                "type": "objectAttribute",
+                "value": {
+                  "type": "union",
+                  "of": [
+                    {
+                      "type": "string",
+                      "value": "Montag"
+                    },
+                    {
+                      "type": "string",
+                      "value": "Dienstag"
+                    },
+                    {
+                      "type": "string",
+                      "value": "Mittwoch"
+                    },
+                    {
+                      "type": "string",
+                      "value": "Donnerstag"
+                    },
+                    {
+                      "type": "string",
+                      "value": "Freitag"
+                    },
+                    {
+                      "type": "string",
+                      "value": "Samstag"
+                    },
+                    {
+                      "type": "string",
+                      "value": "Sonntag"
+                    }
+                  ]
+                },
+                "optional": true
               },
               "von": {
                 "type": "objectAttribute",
