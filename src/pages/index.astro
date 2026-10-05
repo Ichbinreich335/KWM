@@ -73,9 +73,9 @@ import { glasuren } from '../data/glasuren';
     <section class="principle" id="bauhaus" aria-labelledby="principle-title">
       <SectionHead typ="start" titelId="principle-title">
         <Fragment slot="titel">Seit 1927 in der Tradition des Bauhauses.</Fragment>
-        <Statement typ="zitat-klein" einblendung="fade" quelle="Young-Jae Lee">
-          „Wir gehen immer von geometrischen Grundformen aus.“
-        </Statement>
+        <p class="principle__voice" data-reveal="fade">
+          Wir gehen immer von geometrischen Grundformen aus.
+        </p>
       </SectionHead>
       <ul class="principle__forms grid" aria-label="Grundformen des Manufakturprogramms">
         {grundformen.map((form) => (
@@ -96,7 +96,7 @@ import { glasuren } from '../data/glasuren';
       <SigFarbskala glasuren={glasuren} />
       <div class="principle__foot grid">
         <p class="principle__rule" data-reveal="fade">
-          „Alle Teile eines Geschirrs, gleich welcher Farbe, sollten miteinander kombinierbar sein.“
+          Alle Teile eines Geschirrs, gleich welcher Farbe, sind miteinander kombinierbar.
         </p>
         <LinkArrow href="/manufaktur" data-reveal="fade">
           Zum Manufakturprogramm
@@ -109,31 +109,27 @@ import { glasuren } from '../data/glasuren';
       <h2 class="artist__name grid" id="artist-title">
         <span data-reveal="words">Young-Jae Lee</span>
       </h2>
-      <figure class="sticky-bild-wrap">
-        <SigSticky variante="portrait">
-          {/* sizes: Bildbreite folgt aus der Kastenhöhe (cover), Höhe x 1,12 (Überstand) x 2000/1313; mobil und hochkant 4:5 = 125vw, Desktop 140vh */}
+      <div class="artist__spread grid">
+        <Figure class="artist__portrait" unterschrift="Young-Jae Lee in der Keramischen Werkstatt Margaretenhöhe">
           <Bild
-            slot="bild"
-            class="sticky-bild__img"
             src="/img/kwm/portrait-yjl.webp"
-            sizes="(max-width: 900px) 213vw, (orientation: portrait) 213vw, max(100vw, 239vh)"
             width="2000"
             height="1313"
             loading="lazy"
-            decoding="async"
+            sizes="(min-width: 900px) 58vw, 100vw"
             alt="Young-Jae Lee in der Werkstatt, vor ihr ungebrannte Schalen und Vasen, hinter ihr Regale voller Gefäße"
           />
-          <Statement
-            typ="zitat-bild"
-            einblendung="keine"
-            class="sticky-bild__text sticky-bild__quote"
-            quelle="Barbara Catoir, »Gespannte Lebendigkeit«"
-          >
-            „… eine nach der anderen, ohne je darüber müde zu werden.“
-          </Statement>
-        </SigSticky>
-        <figcaption class="sticky-bild__caption">Young-Jae Lee in der Keramischen Werkstatt Margaretenhöhe</figcaption>
-      </figure>
+        </Figure>
+        <Statement
+          typ="zitat"
+          einblendung="fade"
+          class="artist__story"
+          quelle="Barbara Catoir, »Gespannte Lebendigkeit«"
+        >
+          „Vielleicht muss man aus Ostasien kommen, um die Variationsfülle erkennen zu können, die aus der Begrenzung
+          und der Wiederholung erwächst.“
+        </Statement>
+      </div>
 
       <Timeline stationen={lebensweg} weiter={{ href: '/young-jae-lee#biografie', text: 'Zum ganzen Werdegang' }} />
     </section>
@@ -145,26 +141,24 @@ import { glasuren } from '../data/glasuren';
         <LinkArrow href="/meisterstuecke">Alle Meisterstücke</LinkArrow>
       </SectionHead>
       <div class="works__feature grid">
+        <div class="works__single-meta">
+          <p class="works__single-name" data-reveal="fade">
+            Spindelvase <span>2006/07</span>
+          </p>
+          <LinkArrow href={anfrageLink(stueckBezeichnung(werk('spindelvase-1')))} data-reveal="fade">
+            Zu diesem Stück anfragen
+          </LinkArrow>
+        </div>
         <Figure class="works__single">
           <Bild
             src="/img/kwm/werke/spindelvase-einzeln-1200.webp"
             width="1200"
             height="1200"
             loading="lazy"
-            sizes="(min-width: 900px) 55vw, 100vw"
+            sizes="(min-width: 900px) 50vw, 100vw"
             alt="Weiße Spindelvase mit weiter Schulter und schmalem Fuß auf hellem Grund"
           />
         </Figure>
-        <div class="works__single-text">
-          <div class="works__single-meta">
-            <p class="works__single-name" data-reveal="fade">
-              Spindelvase <span>2006/07</span>
-            </p>
-            <LinkArrow href={anfrageLink(stueckBezeichnung(werk('spindelvase-1')))} data-reveal="fade">
-              Zu diesem Stück anfragen
-            </LinkArrow>
-          </div>
-        </div>
       </div>
       <ol class="works__grid grid">
         {werkschau.map((werk) => (
@@ -182,12 +176,14 @@ import { glasuren } from '../data/glasuren';
       fussnote="Städte und Zahlen nach der Ausstellungsliste 2016 bis 2026."
     />
 
-    {/* 99 Schalen: keine wie die andere, jede mit eigener Glasur */}
+    {/* 99 Schalen: Wagners Satz und der Ring, keine Schale wie die andere */}
     <section class="rep" id="kosmos" aria-labelledby="kosmos-title">
-      <SectionHead typ="start" titelId="kosmos-title">
-        <Fragment slot="titel">Ein Ring aus Teilchen um eine leere Mitte.</Fragment>
-        <p data-reveal="fade">Thomas Wagner, »Die aufgehobene Zeit?«</p>
-      </SectionHead>
+      <div class="rep__head grid">
+        <Statement typ="zitat" class="rep__quote" textId="kosmos-title" quelle="Thomas Wagner, »Die aufgehobene Zeit?«">
+          „Schalen über Schalen, einfach auf den Boden gestellt. Ein Meer aus Schalen, ein Feld aus Kelchen, ein Ring
+          aus Teilchen um eine leere Mitte, eine kleine Milchstraße voll schimmernder Gefäße.“
+        </Statement>
+      </div>
       <div class="cosmos__floor">
         <div class="cosmos__stage" data-cosmos>
           <canvas
