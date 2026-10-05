@@ -47,6 +47,7 @@ Stand: 05.10.2026 (mittags)
 
 ## Aufgefallen (zur Kenntnis)
 
+- Sanity-Modell, von mir entschieden (umkehrbar, sag Bescheid, wenn du es anders willst): Startseite und Aktuelles zeigen dieselben Angaben aus denselben Feldern (kleine Formulierungsunterschiede entfallen; „Die Künstlerin wird anwesend sein.“ steht dann auf beiden Seiten bei der Eröffnung). Öffnungstage werden als Auswahl gespeichert, die Website schreibt sie je nach Platz aus („Montag bis Freitag“) oder kurz („Mo–Fr“). Hauptbild = Kachel, weitere Bilder = Seite Aktuelles.
 - Externe Kritik geprüft (Opus, eigene Playwright-Messungen): 14 von 20 Punkten stimmen ganz, 5 teilweise. Größter sichtbarer Befund, den die Kritik übersah: Porträt und Feuerbild werden stark hochskaliert und wirken weich (Handy ~20 % der nötigen Pixel). Die 10 Punkte ohne Entscheidungsbedarf setze ich als Phase B-3(a) um (nach D1, eigener PR). Bericht: `konzept/VISUELLES-REVIEW.md`.
 - Sichtbare Kleinigkeiten aus dem Fehler-Audit (Tippflächen „Zu diesem Stück anfragen“ 43 px statt 44 px u. a.) stehen in `konzept/ASTRO-BERICHT.md` Abschnitt 5 und werden in Phase B behoben.
 - GitHub meldete Sicherheitshinweise zu `undici` (steckt im Werkzeug Wrangler, nicht in der Website). Behoben durch Wrangler 4.147 im Branch `astro-umbau`; wirkt auf `main` mit dem Merge.
