@@ -5,6 +5,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import InquiryBand from '../components/InquiryBand.astro';
 import PageHero from '../components/PageHero.astro';
 import Prose from '../components/Prose.astro';
+import Figure from '../components/Figure.astro';
 import '../styles/seiten/page-text.css';
 import '../styles/signaturen/signaturen.css';
 import { kontakt } from '../data/kontakt';
@@ -59,7 +60,7 @@ import { kontakt } from '../data/kontakt';
           <section class="pay-text__item" aria-labelledby="zahl-paypal">
             <h2 id="zahl-paypal">PayPal</h2>
             <p>{kontakt.mail}</p>
-            <figure class="pay-text__qr">
+            <Figure class="pay-text__qr" einblendung={false}>
               <Bild
                 src="/img/kwm/paypal-qr.webp"
                 widths={[177, 354, 423]}
@@ -69,7 +70,7 @@ import { kontakt } from '../data/kontakt';
                 alt={`QR-Code für die Zahlung per PayPal an ${kontakt.mail}`}
                 loading="lazy"
               />
-            </figure>
+            </Figure>
           </section>
         </div>
       </Prose>

@@ -11,6 +11,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import InquiryForm from '../components/InquiryForm.astro';
 import Hours from '../components/Hours.astro';
 import PageHero from '../components/PageHero.astro';
+import Figure from '../components/Figure.astro';
 import '../styles/seiten/page-besuch.css';
 import '../styles/signaturen/signaturen.css';
 import { kontakt, oeffnungszeitKurz } from '../data/kontakt';
@@ -42,7 +43,7 @@ const zeitenKurzWort = oeffnungszeitKurz(kontakt.oeffnungszeiten, 'kurzWort').jo
       <h2 class="visually-hidden" id="hours-title">
         Adresse
       </h2>
-      <figure class="visit-hours__media" data-reveal="img">
+      <Figure class="visit-hours__media" unterschrift="In der Werkstatt">
         <Bild
           src="/img/kwm/werkstatt-panorama.webp"
           width="2560"
@@ -50,8 +51,7 @@ const zeitenKurzWort = oeffnungszeitKurz(kontakt.oeffnungszeiten, 'kurzWort').jo
           alt="Young-Jae Lee am Arbeitstisch vor langen Regalen mit ungebrannten Gefäßen"
           loading="eager"
         />
-        <figcaption>In der Werkstatt</figcaption>
-      </figure>
+      </Figure>
       <div class="visit-hours__body grid">
         <div class="visit-hours__place" data-reveal="fade">
           <p class="visit-hours__address">

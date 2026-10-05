@@ -12,6 +12,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import InquiryBand from '../components/InquiryBand.astro';
 import SubNav from '../components/SubNav.astro';
 import PageHero from '../components/PageHero.astro';
+import Figure from '../components/Figure.astro';
 import '../styles/seiten/page-manufaktur.css';
 import '../styles/signaturen/signaturen.css';
 import { bildMetadaten } from '../data/bilder';
@@ -95,7 +96,7 @@ const glasurBild = async (src: string) =>
         Jedes Stück muss gut zu drehen sein und auch zu benutzen. Alle Teile eines Geschirrs, gleich welcher Farbe,
         sollten miteinander kombinierbar sein.
       </Statement>
-      <figure class="mf-intro__aside" data-reveal="img">
+      <Figure class="mf-intro__aside" unterschrift="Teekanne, Teeschale und Plattenteller">
         <Bild
           src="/img/kwm/teekanne.webp"
           width="1030"
@@ -103,8 +104,7 @@ const glasurBild = async (src: string) =>
           alt="Weiße Teekanne und dunkle Teeschale auf einem hellen, rechteckigen Plattenteller"
           loading="eager"
         />
-        <figcaption>Teekanne, Teeschale und Plattenteller</figcaption>
-      </figure>
+      </Figure>
       <div class="mf-intro__text">
         <p data-reveal="fade">
           Unter Rückbesinnung auf die formalen Grundprinzipien des Bauhauses hat Young-Jae Lee mit Hildegard Eggemann,
@@ -144,7 +144,7 @@ const glasurBild = async (src: string) =>
 
     {/* Zäsur: Regal der Werkstatt */}
     <section class="zaesur on-flaeche grid" aria-label="Handarbeit in der Werkstatt">
-      <figure class="zaesur__media" data-reveal="img">
+      <Figure class="zaesur__media" unterschrift="Im Regal der Werkstatt · Foto: Haydar Koyupinar">
         <Bild
           src="/img/kwm/regal.webp"
           width="954"
@@ -152,8 +152,7 @@ const glasurBild = async (src: string) =>
           loading="lazy"
           alt="Regal voller ungebrannter Becher, Schalen, Teller und Krüge in hellem Tonbeige"
         />
-        <figcaption>Im Regal der Werkstatt · Foto: Haydar Koyupinar</figcaption>
-      </figure>
+      </Figure>
       <Statement typ="regel" als="p" class="zaesur__text">
         Alle Stücke werden in unserer Werkstatt in Handarbeit gefertigt. Sie sind einzeln oder im Set zu erwerben.
       </Statement>

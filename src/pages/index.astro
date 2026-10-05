@@ -24,6 +24,7 @@ import { lebensweg } from '../data/lebensweg';
 import Bild from '../components/Bild.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import InquiryForm from '../components/InquiryForm.astro';
+import Figure from '../components/Figure.astro';
 import '../styles/signaturen/signaturen.css';
 ---
 
@@ -35,7 +36,11 @@ import '../styles/signaturen/signaturen.css';
   <main id="inhalt">
     {/* Einstieg: Zitat links, Kummerschalen rechts (hell) */}
     <section class="hero grid" id="top" aria-labelledby="hero-title">
-      <figure class="hero__media" data-reveal="img">
+      <Figure
+        class="hero__media"
+        unterschrift="Kummerschalen · Foto: Christopher Clem Franken"
+        unterschriftKlasse="hero__credit"
+      >
         <Bild
           priority
           src="/img/kwm/kummerschalen.webp"
@@ -44,8 +49,7 @@ import '../styles/signaturen/signaturen.css';
           alt="Viele flache Schalen von Young-Jae Lee auf einem Steinboden, seladonblau, schwarz gesprenkelt und rotbraun glasiert"
           data-parallax
         />
-        <figcaption class="hero__credit">Kummerschalen · Foto: Christopher Clem Franken</figcaption>
-      </figure>
+      </Figure>
       <div class="hero__text">
         <h1 class="hero__title" id="hero-title" data-reveal="words">
           Immer sind es Schalen, und doch ist keine wie die andere.
@@ -173,7 +177,7 @@ import '../styles/signaturen/signaturen.css';
         <LinkArrow href="/meisterstuecke">Alle Meisterstücke</LinkArrow>
       </SectionHead>
       <div class="works__feature grid">
-        <figure class="works__single" data-reveal="img">
+        <Figure class="works__single">
           <Bild
             src="/img/kwm/werke/spindelvase-einzeln-1200.webp"
             width="1200"
@@ -182,7 +186,7 @@ import '../styles/signaturen/signaturen.css';
             sizes="(min-width: 900px) 55vw, 100vw"
             alt="Weiße Spindelvase mit weiter Schulter und schmalem Fuß auf hellem Grund"
           />
-        </figure>
+        </Figure>
         <div class="works__single-text">
           <Statement typ="aussage" als="p" class="works__statement">
             Alle Meisterstücke stammen aus der Hand Young-Jae Lees – von ihr selbst gedreht, bemalt und glasiert.
@@ -227,7 +231,7 @@ import '../styles/signaturen/signaturen.css';
             Exerzitium. Die Persönlichkeit beginnt einzufließen, das Individuelle drückt sich im Handwerklichen aus.
           </p>
         </div>
-        <figure class="med__media" data-reveal="img">
+        <Figure class="med__media">
           <Bild
             src="/img/01-seladon-gefaess.webp"
             sizes="(min-width: 900px) 40vw, 100vw"
@@ -236,7 +240,7 @@ import '../styles/signaturen/signaturen.css';
             loading="lazy"
             alt="Bauchiges Gefäß mit seladongrüner bis taubenblauer Glasur"
           />
-        </figure>
+        </Figure>
       </div>
     </section>
 
@@ -436,7 +440,7 @@ import '../styles/signaturen/signaturen.css';
       </p>
 
       <div class="craft__detail craft__detail--wide grid">
-        <figure class="craft__media" data-reveal="img">
+        <Figure class="craft__media" unterschrift="Vor dem ersten Brand · Foto: Haydar Koyupinar">
           <Bild
             src="/img/kwm/regal.webp"
             width="954"
@@ -444,12 +448,11 @@ import '../styles/signaturen/signaturen.css';
             loading="lazy"
             alt="Regal voller ungebrannter Tassen, Schalen, Teller und Krüge aus dem Manufakturprogramm"
           />
-          <figcaption>Vor dem ersten Brand · Foto: Haydar Koyupinar</figcaption>
-        </figure>
+        </Figure>
         <FactsTable fakten={kurzfakten}>
           <Button href="/manufaktur">Zum Programm</Button>
         </FactsTable>
-        <figure class="craft__media3" data-reveal="img">
+        <Figure class="craft__media3">
           <Bild
             src="/img/kwm/kannen.webp"
             width="600"
@@ -458,7 +461,7 @@ import '../styles/signaturen/signaturen.css';
             sizes="(min-width: 900px) 33vw, 100vw"
             alt="Zwei Krüge und eine Tasse aus dem Manufakturprogramm in Hellgrün, Weiß und Dunkelgrün"
           />
-        </figure>
+        </Figure>
       </div>
     </section>
 

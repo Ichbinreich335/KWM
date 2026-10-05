@@ -14,6 +14,7 @@ import InquiryBand from '../components/InquiryBand.astro';
 import SubNav from '../components/SubNav.astro';
 import PageHero from '../components/PageHero.astro';
 import Chronicle from '../components/Chronicle.astro';
+import Figure from '../components/Figure.astro';
 import { chronik } from '../data/chronik';
 import '../styles/seiten/page-werkstatt.css';
 import '../styles/signaturen/signaturen.css';
@@ -62,7 +63,7 @@ import '../styles/signaturen/signaturen.css';
         Das Manufakturprogramm der Werkstatt – vor über zwanzig Jahren entwickelt, bis heute unverändert.
       </Fragment>
       <div class="method grid">
-        <figure class="method__media" data-reveal="img">
+        <Figure class="method__media" unterschrift="Geschirr vor dem Brand · Foto: Haydar Koyupinar">
           <Bild
             src="/img/kwm/regal.webp"
             width="954"
@@ -70,8 +71,7 @@ import '../styles/signaturen/signaturen.css';
             loading="lazy"
             alt="Ein Regal voller ungebrannter Tassen, Schalen, Teller und Krüge aus hellem Steinzeug"
           />
-          <figcaption>Geschirr vor dem Brand · Foto: Haydar Koyupinar</figcaption>
-        </figure>
+        </Figure>
         <div class="method__text">
           <p class="method__rule" data-reveal="fade">
             „Jedes Stück muss gut zu drehen sein und auch zu benutzen.“
@@ -109,7 +109,7 @@ import '../styles/signaturen/signaturen.css';
         Ob ein Metalloxid gelb, grün oder rot färbt, entscheidet die Atmosphäre im Ofen.
       </Fragment>
       <div class="fire-colors grid">
-        <figure class="fire-colors__media" data-reveal="img">
+        <Figure class="fire-colors__media" unterschrift="Schalen von Young-Jae Lee · Foto: Christopher Clem Franken">
           <Bild
             src="/img/kwm/seladon-schalen.webp"
             width="900"
@@ -117,8 +117,7 @@ import '../styles/signaturen/signaturen.css';
             loading="lazy"
             alt="Flache Schalen mit blaugrüner Glasur, die sich in der Mitte sammelt"
           />
-          <figcaption>Schalen von Young-Jae Lee · Foto: Christopher Clem Franken</figcaption>
-        </figure>
+        </Figure>
         <div class="feuer-farben" data-sig="feuer">
           <h3 class="feuer-farben__title">Dieselbe Glasur, andere Farbe</h3>
           <p class="feuer-farben__intro">
@@ -160,7 +159,7 @@ import '../styles/signaturen/signaturen.css';
       <Fragment slot="einleitung">
         Die Menschen hinter dem Manufakturprogramm – manche seit Jahrzehnten in der Werkstatt.
       </Fragment>
-      <figure class="team-strip" data-reveal="img">
+      <Figure class="team-strip">
         <Bild
           src="/img/kwm/leiste-team.webp"
           width="900"
@@ -168,7 +167,7 @@ import '../styles/signaturen/signaturen.css';
           loading="lazy"
           alt="Das Team der Werkstatt vor Regalen mit Keramik"
         />
-      </figure>
+      </Figure>
       <div class="people">
         {team.map((person) => (
           <PersonCard person={person} />

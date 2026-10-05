@@ -1,0 +1,19 @@
+---
+interface Props {
+  /** Klasse der Bildfläche; sie legt Format (4:3, 3:2, 4:5, Panorama) und Platz im Raster fest */
+  class?: string;
+  /** Bild blendet beim Scrollen ein (`data-reveal="img"`); Vorgabe ja */
+  einblendung?: boolean;
+  /** Bildunterschrift mit Nachweis; ohne Angabe entfällt die `figcaption` */
+  unterschrift?: string;
+  /** Klasse der Bildunterschrift, wenn sie von der Vorgabe abweicht */
+  unterschriftKlasse?: string;
+}
+
+const { class: klasse, einblendung = true, unterschrift, unterschriftKlasse } = Astro.props;
+---
+
+<figure class={klasse} data-reveal={einblendung ? 'img' : undefined}>
+  <slot />
+  {unterschrift && <figcaption class={unterschriftKlasse}>{unterschrift}</figcaption>}
+</figure>
