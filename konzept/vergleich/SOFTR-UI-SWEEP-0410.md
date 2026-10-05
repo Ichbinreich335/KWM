@@ -185,3 +185,13 @@ Grundlage: Feedback des Admins zu den Screens vom 04.10. und der Skill `impeccab
 - **Tabelle:** Reiter Alle | Geschirr & Edition | Unikate. Spalten „Brand vom“, „Reserviert für“, „Verkauft an“ (zuschaltbar), „Serie“ statt „Programm“.
 - **Neue Bausteine:** `Stueckzahl`, `TextMitVorschlag`, `AktionKnopf` (ui.tsx), Mengenlogik in `src/shared/mengen.ts`.
 - **Prüfung:** Typprüfung und Einheitlichkeit grün. Messung 390/1440 px ohne echten Befund (das lange Glasier-Fenster scrollt senkrecht, so gewollt). Neuer Funktionstest Mengenlager (Glasieren mit Ausschuss, Reservieren teilt, Ausbuchen löscht, zu viel wird abgelehnt) sowie Erfassen, Bestand, Tabelle, Übersicht, Stammdaten grün. Screens unter `konzept/vergleich/runde13/`.
+
+## Runde 14: Serie zuerst, Brand sichtbar, Übersicht einfacher (05.10.)
+
+- **Anlass:** Feedback des Admins nach dem Gespräch mit der Buchhaltung: lange Modellliste, zu wenige Angaben bei Geschirr und Edition, kein Status „ausgestellt“, Glasuren der Edition fehlen im Katalog, Künstler:in bei Unikaten sinnlos, „Manufakturprogramm“ nie anzeigen, Maße messen, Brände sichtbar machen.
+- **Erfassen:** Reiter Geschirr | Edition | Unikat, die Modellliste zeigt nur die gewählte Serie. Maße kommen aus dem Modell und sind änderbar. Glasur über `GlasurWahl` (Modell-Glasuren als Knöpfe, „Andere oder neue Glasur“). „Weitere Angaben“ (gedreht von, glasiert von, Status mit Partner, Lagerort, Foto, Notiz) bei Edition offen, bei Geschirr auf Knopfdruck. Unikat ohne Künstler:in.
+- **Bestand:** Im Modellfenster oben „Zusammen verkaufbar“ je Glasur (z. B. Rostbraun 16 frei aus 3 Bränden: 9 + 4 + 3 → 9 zusammen). Neue Aktionen Ausstellen und Zurückholen, beim Glasieren neue Glasur und „glasiert von“, Korrigieren mit Maße. Filter „Außer Haus“, wenn es solche Ware gibt.
+- **Übersicht:** Drei Kennzahlen (Geschirr, Edition, Unikate). Zu erledigen und Reservierungen. Eine Lagerliste mit Reitern Geschirr | Edition: Stück je Zustand, darunter je Glasur frei und „aus einem Brand“. „Zuletzt erfasst“ und „Unikate nach Typ“ entfallen.
+- **Stammdaten, Tabelle:** „Personen“ statt „Künstler:innen“, Serie „Geschirr“ statt „Manufakturprogramm“. Tabelle ohne Künstler-Spalte, für Geschirr und Edition Gedreht/Glasiert von, Maße, Partner, Außer Haus.
+- **Build:** `build.mjs` erkennt Namen nach dem Spread-Operator (`...name`).
+- **Prüfung:** Typprüfung und Einheitlichkeit grün. Funktionstests Mengenlager, Runde 14 (neue Glasur, Ausstellen) und Erfassen Runde 14 grün. Screens 390/1440 px unter `konzept/vergleich/runde14/`, gefunden und behoben: zu langer Knopftext „Weitere Angaben …“ am Handy, fehlendes „neu anlegen“ bei wenigen Glasuren.

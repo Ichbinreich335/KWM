@@ -17,7 +17,6 @@ const unikatSelect = q.select({
   name: "7IBVW",
   typ: "7g9jI",
   status: "SEUyZ",
-  kuenstler: "oDNBh",
   gedreht: "90TmC",
   glasiert: "2PXtk",
   datum: "UfM5S",
@@ -56,6 +55,11 @@ const editionSelect = q.select({
   programm: "IIAdh",
   brand: "jqmqn",
   reserviert: "L1bO5",
+  ausser: "v9V6W",
+  partner: "hs3iV",
+  gedreht: "7FQQm",
+  glasiert: "dkREk",
+  masse: "eVHco",
 });
 const ansichtSelect = q.select({ name: "8s5KL", definition: "rWGS9", von: "uPraE" });
 
@@ -79,7 +83,7 @@ type Row = {
   typ: string;
   status: string;
   anzahl: number;
-  kuenstler: string;
+  ausser: string;
   gedreht: string;
   glasiert: string;
   glasur: string[];
@@ -115,7 +119,7 @@ type ColKey =
   | "typ"
   | "status"
   | "anzahl"
-  | "kuenstler"
+  | "ausser"
   | "gedreht"
   | "glasiert"
   | "glasur"
@@ -153,15 +157,15 @@ const COLUMNS: Col[] = [
   { key: "vk", label: "VK-Preis", type: "number", get: (r) => r.vk, visible: false, align: "right", only: "edition" },
   { key: "glasur", label: "Glasur", type: "multi", get: (r) => r.glasur, visible: false },
   { key: "lagerort", label: "Lagerort", type: "select", get: (r) => r.lagerort || null, visible: true },
-  { key: "kuenstler", label: "Künstler:in", type: "select", get: (r) => r.kuenstler || null, visible: false, only: "unikat" },
-  { key: "gedreht", label: "Gedreht von", type: "select", get: (r) => r.gedreht || null, visible: false, only: "unikat" },
-  { key: "glasiert", label: "Glasiert von", type: "select", get: (r) => r.glasiert || null, visible: false, only: "unikat" },
+  { key: "ausser", label: "Außer Haus", type: "select", get: (r) => r.ausser || null, visible: false, only: "edition" },
+  { key: "gedreht", label: "Gedreht von", type: "select", get: (r) => r.gedreht || null, visible: false },
+  { key: "glasiert", label: "Glasiert von", type: "select", get: (r) => r.glasiert || null, visible: false },
   { key: "datum", label: "Datum", type: "date", get: (r) => r.datum.slice(0, 10) || null, visible: false, only: "unikat" },
   { key: "gedrehtAm", label: "Gedreht am", type: "date", get: (r) => r.gedrehtAm.slice(0, 10) || null, visible: false, only: "unikat" },
   { key: "glasiertAm", label: "Glasiert am", type: "date", get: (r) => r.glasiertAm.slice(0, 10) || null, visible: false, only: "unikat" },
   { key: "jahr", label: "Jahr", type: "number", get: (r) => r.jahr, visible: false, align: "right", only: "unikat" },
-  { key: "masse", label: "Maße", type: "text", get: (r) => r.masse || null, visible: false, only: "unikat" },
-  { key: "galerie", label: "Partner", type: "select", get: (r) => r.galerie || null, visible: false, only: "unikat" },
+  { key: "masse", label: "Maße", type: "text", get: (r) => r.masse || null, visible: false },
+  { key: "galerie", label: "Partner", type: "select", get: (r) => r.galerie || null, visible: false },
   { key: "website", label: "Auf Website", type: "bool", get: (r) => r.website, visible: false, only: "unikat" },
   { key: "notiz", label: "Notiz", type: "text", get: (r) => r.notiz || null, visible: false },
   { key: "erfasstAm", label: "Erfasst am", type: "date", get: (r) => r.erfasstAm.slice(0, 10) || null, visible: false },
@@ -179,7 +183,7 @@ function relevant(c: Col, tab: ArtTab): boolean {
   return !c.only || tab === "alle" || c.only === tab;
 }
 
-const QUICK_KEYS: ColKey[] = ["programm", "typ", "status", "kuenstler", "glasur", "lagerort", "galerie"];
+const QUICK_KEYS: ColKey[] = ["programm", "typ", "status", "glasur", "lagerort", "galerie"];
 type Quick = Partial<Record<ColKey, string[]>>;
 
 function quickLabel(key: ColKey, tab: ArtTab): string {
@@ -281,7 +285,7 @@ function toUnikatRow(i: RawItem): Row {
     typ: labels(f.typ)[0] ?? "",
     status: labels(f.status)[0] ?? "",
     anzahl: 1,
-    kuenstler: labels(f.kuenstler)[0] ?? "",
+    ausser: "",
     gedreht: labels(f.gedreht)[0] ?? "",
     glasiert: labels(f.glasiert)[0] ?? "",
     glasur: labels(f.glasur),
@@ -321,17 +325,17 @@ function toEditionRow(i: RawItem): Row {
     typ: labels(f.typ)[0] ?? "",
     status: labels(f.zustand)[0] ?? "",
     anzahl: num(f.anzahl) ?? 0,
-    kuenstler: "",
-    gedreht: "",
-    glasiert: "",
+    ausser: labels(f.ausser)[0] ?? "",
+    gedreht: labels(f.gedreht)[0] ?? "",
+    glasiert: labels(f.glasiert)[0] ?? "",
     glasur: labels(f.glasur),
     datum: "",
     gedrehtAm: "",
     glasiertAm: "",
     jahr: null,
-    masse: "",
+    masse: str(f.masse),
     lagerort: labels(f.lagerort)[0] ?? "",
-    galerie: "",
+    galerie: labels(f.partner)[0] ?? "",
     preis: null,
     vk: num(lookupValue(f.vk)),
     website: null,
@@ -391,7 +395,7 @@ function matches(r: Row, c: Condition): boolean {
 
 function matchesSearch(r: Row, term: string): boolean {
   if (!term) return true;
-  const hay = [r.art, r.inv, r.artikelnr, r.programm, r.name, r.typ, r.status, r.kuenstler, r.gedreht, r.glasiert, r.lagerort, r.galerie, r.masse, r.notiz, r.verkauftAn, r.reserviert, ...r.glasur].join(" ").toLowerCase();
+  const hay = [r.art, r.inv, r.artikelnr, r.programm, r.name, r.typ, r.status, r.ausser, r.gedreht, r.glasiert, r.lagerort, r.galerie, r.masse, r.notiz, r.verkauftAn, r.reserviert, ...r.glasur].join(" ").toLowerCase();
   return term
     .toLowerCase()
     .split(/\s+/)
@@ -427,7 +431,7 @@ function formatCell(col: Col, r: Row): string {
 function legacyToConditions(def: Record<string, unknown>): Condition[] {
   const f = (def.filters ?? {}) as Record<string, unknown>;
   const out: Condition[] = [];
-  for (const key of ["typ", "status", "kuenstler", "glasur", "lagerort", "galerie"] as ColKey[]) {
+  for (const key of ["typ", "status", "glasur", "lagerort", "galerie"] as ColKey[]) {
     const list = f[key];
     if (Array.isArray(list) && list.length) out.push({ id: newId(), field: key, op: "anyOf", value: list.map(String) });
   }
@@ -445,7 +449,7 @@ function legacyToConditions(def: Record<string, unknown>): Condition[] {
 function exportRows(rows: Row[]) {
   downloadCsv(
     `kwm-tabelle-${today()}.csv`,
-    ["Art", "Serie", "Inventarnummer", "Artikelnr.", "Name / Modell", "Typ", "Status / Zustand", "Anzahl", "Künstler:in", "Gedreht von", "Glasiert von", "Glasur", "Datum", "Jahr", "Maße", "Lagerort", "Partner", "Preis intern (€)", "VK-Preis (€)", "Auf Website", "Notiz", "Erfasst am", "Verkauft am", "Verkauft an", "Brand vom", "Reserviert für"],
+    ["Art", "Serie", "Inventarnummer", "Artikelnr.", "Name / Modell", "Typ", "Status / Zustand", "Anzahl", "Außer Haus", "Gedreht von", "Glasiert von", "Glasur", "Datum", "Jahr", "Maße", "Lagerort", "Partner", "Preis intern (€)", "VK-Preis (€)", "Auf Website", "Notiz", "Erfasst am", "Verkauft am", "Verkauft an", "Brand vom", "Reserviert für"],
     rows.map((r) => [
       r.art,
       r.programm,
@@ -455,7 +459,7 @@ function exportRows(rows: Row[]) {
       r.typ,
       r.status,
       String(r.anzahl),
-      r.kuenstler,
+      r.ausser,
       r.gedreht,
       r.glasiert,
       r.glasur.join(", "),

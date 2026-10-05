@@ -3,7 +3,7 @@ import { datasource, q, useFieldOptions, useRecordCreate, useRecordDelete, useRe
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Archive, ArchiveRestore, Check, ChevronDown, Loader2, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
-import { AUSSER_HAUS_ORT, PAGE_SIZE, serieVon } from "../shared/konstanten";
+import { AUSSER_HAUS_ORT, GESCHIRR, MANUFAKTUR_PROGRAMM, PAGE_SIZE, serieVon } from "../shared/konstanten";
 import { type Attachment, type Opt, type RawItem, asAttachments, asOpts, compareNr, firstLabel, freshItems, modellLabel, parseNumber, str, useAllPages, zahl } from "../shared/daten";
 import {
   ChoiceChips,
@@ -49,9 +49,11 @@ const modellSelect = q.select({ name: "eXo5w", artikelnr: "BNpSN", programm: "Mr
 const partnerSelect = q.select({ name: "a4yfc", art: "ZS9HU", ort: "RQRec", kontakt: "lnhez", zusammenarbeit: "uEfkz", notiz: "8pLh8", archiviert: "24Tn9" });
 const lagerortSelect = q.select({ name: "AoOjs", bereich: "5h1mS", archiviert: "kMBsy" });
 const unikatLinks = q.select({ kuenstler: "oDNBh", gedreht: "90TmC", glasiert: "2PXtk", glasur: "ByeH3", lagerort: "EkVC3", galerie: "NfsXv" });
-// Felder, in denen ein Unikat auf eine Person (Tabelle Künstler:innen) verweist.
+// Felder, in denen ein Unikat bzw. ein Editionsposten auf eine Person (Tabelle Künstler:innen) verweist.
+// „kuenstler“ wird nicht mehr erfasst, alte Einträge zählen aber noch als Verwendung.
 const PERSONEN_FELDER = ["kuenstler", "gedreht", "glasiert"];
-const editionLinks = q.select({ modell: "jxN6x", glasur: "pbGEk", lagerort: "T5iQe" });
+const PERSONEN_FELDER_EDITION = ["gedreht", "glasiert"];
+const editionLinks = q.select({ modell: "jxN6x", glasur: "pbGEk", lagerort: "T5iQe", partner: "hs3iV", gedreht: "7FQQm", glasiert: "dkREk" });
 
 const SEARCH_FROM = 10;
 
@@ -329,7 +331,9 @@ export default function Block() {
     const u = countLinks(unikate, ["glasur", "lagerort", "galerie"]);
     // Eine Person zählt je Unikat einmal, auch wenn sie es gefertigt, gedreht und glasiert hat.
     unikate.forEach((i) => new Set(PERSONEN_FELDER.flatMap((k) => asOpts(i.fields[k]).map((o) => o.id))).forEach((id) => u.set(`person:${id}`, (u.get(`person:${id}`) ?? 0) + 1)));
-    const e = countLinks((editionQuery.data?.pages.flatMap((p) => p.items) ?? []) as RawItem[], ["modell", "glasur", "lagerort"]);
+    const posten = (editionQuery.data?.pages.flatMap((p) => p.items) ?? []) as RawItem[];
+    const e = countLinks(posten, ["modell", "glasur", "lagerort", "partner"]);
+    posten.forEach((i) => new Set(PERSONEN_FELDER_EDITION.flatMap((k) => asOpts(i.fields[k]).map((o) => o.id))).forEach((id) => e.set(`person:${id}`, (e.get(`person:${id}`) ?? 0) + 1)));
     const m = countLinks((modellQuery.data?.pages.flatMap((p) => p.items) ?? []) as RawItem[], ["glasuren"]);
     return (key: string, id: string, source: "u" | "e" | "m") => (source === "u" ? u : source === "e" ? e : m).get(`${key}:${id}`) ?? 0;
   }, [unikatQuery.data, editionQuery.data, modellQuery.data]);
@@ -362,15 +366,15 @@ export default function Block() {
   const kategorien: Kategorie[] = [
     {
       key: "kuenstler",
-      label: "Künstler:innen",
-      singular: "Künstler:in",
-      hint: "Wer Unikate fertigt, dreht oder glasiert. Erscheint als Auswahl beim Erfassen.",
+      label: "Personen",
+      singular: "Person",
+      hint: "Wer dreht und glasiert. Erscheint als Auswahl beim Erfassen und Glasieren.",
       fields: [{ key: "name", label: "Name", kind: "text", required: true, placeholder: "Vor- und Nachname" }],
       entries: items(kuenstlerQuery).map((i) => toEntry(i, ["name"], () => "")),
-      usage: (id) => `${stueck(usage("person", id, "u"), "Unikat", "Unikaten")}`,
-      usageCount: (id) => usage("person", id, "u"),
+      usage: (id) => [stueck(usage("person", id, "u"), "Unikat", "Unikaten"), usage("person", id, "e") ? stueck(usage("person", id, "e"), "Editionsposten", "Editionsposten") : ""].filter(Boolean).join(" · "),
+      usageCount: (id) => usage("person", id, "u") + usage("person", id, "e"),
       archive: archiveVia(kuenstlerUpdate, kuenstlerQuery.refetch),
-      remove: removeVia(kuenstlerDelete, kuenstlerQuery.refetch, PERSONEN_FELDER.map((key) => ({ source: "u" as const, key }))),
+      remove: removeVia(kuenstlerDelete, kuenstlerQuery.refetch, [...PERSONEN_FELDER.map((key) => ({ source: "u" as const, key })), ...PERSONEN_FELDER_EDITION.map((key) => ({ source: "e" as const, key }))]),
       save: (id, v) => run(id ? kuenstlerUpdate : kuenstlerCreate, id ? { recordId: id, fields: { name: v.name } } : { name: v.name }, kuenstlerQuery.refetch),
     },
     {
@@ -397,12 +401,12 @@ export default function Block() {
       key: "modelle",
       label: "Modelle",
       singular: "Modell",
-      hint: "Artikel aus Edition und Geschirr (in der Datenbank „Manufakturprogramm“). Erscheinen beim Erfassen von Geschirr und Edition.",
+      hint: "Artikel aus Geschirr und Edition. Erscheinen beim Erfassen in der gewählten Serie.",
       fields: [
         { key: "artikelnr", label: "Artikelnr.", kind: "text", placeholder: "z. B. 2001 oder 6a" },
         { key: "name", label: "Name", kind: "text", required: true, placeholder: "z. B. Kugelvase Craquelée" },
         { key: "nameEn", label: "Name englisch", kind: "text", placeholder: "z. B. spherical vase" },
-        { key: "programm", label: "Programm", kind: "chips", options: programme },
+        { key: "programm", label: "Serie", kind: "chips", options: programme.map((o) => ({ ...o, label: serieVon(o.label) })) },
         { key: "typ", label: "Typ", kind: "chips", options: modellTypen },
         { key: "glasuren", label: "Glasuren", kind: "multi", options: glasurAuswahl },
         { key: "masse", label: "Maße", kind: "text", placeholder: "z. B. Ø 8 × H 10 cm" },
@@ -414,6 +418,7 @@ export default function Block() {
         e.values.glasuren = asOpts(i.fields.glasuren)
           .map((g) => g.id)
           .join(",");
+        e.values.programm = serieVon(e.values.programm);
         return { ...e, name: modellLabel(e.values.artikelnr, e.values.name) };
       }),
       sortKey: (e) => e.values.artikelnr,
@@ -434,7 +439,8 @@ export default function Block() {
           name: v.name,
           artikelnr: v.artikelnr.trim(),
           nameEn: v.nameEn.trim(),
-          programm: v.programm || null,
+          // In der Datenbank heißt das Geschirr „Manufakturprogramm“.
+          programm: (v.programm === GESCHIRR ? MANUFAKTUR_PROGRAMM : v.programm) || null,
           typ: v.typ || null,
           masse: v.masse.trim(),
           vk: parseNumber(v.vk),
@@ -458,10 +464,13 @@ export default function Block() {
         { key: "notiz", label: "Notiz", kind: "textarea" },
       ],
       entries: items(partnerQuery).map((i) => toEntry(i, ["name", "art", "ort", "kontakt", "zusammenarbeit", "notiz"], (v) => [v.art, v.ort, v.zusammenarbeit === "beendet" ? "beendet" : ""].filter(Boolean).join(" · "))),
-      usage: (id) => `zurzeit ${stueck(usage("galerie", id, "u"), "Unikat", "Unikaten")}`,
-      usageCount: (id) => usage("galerie", id, "u"),
+      usage: (id) => [`zurzeit ${stueck(usage("galerie", id, "u"), "Unikat", "Unikaten")}`, usage("partner", id, "e") ? stueck(usage("partner", id, "e"), "Editionsposten", "Editionsposten") : ""].filter(Boolean).join(" · "),
+      usageCount: (id) => usage("galerie", id, "u") + usage("partner", id, "e"),
       archive: archiveVia(partnerUpdate, partnerQuery.refetch),
-      remove: removeVia(partnerDelete, partnerQuery.refetch, [{ source: "u", key: "galerie" }]),
+      remove: removeVia(partnerDelete, partnerQuery.refetch, [
+        { source: "u", key: "galerie" },
+        { source: "e", key: "partner" },
+      ]),
       save: (id, v) => {
         const fields = { name: v.name, art: v.art || null, ort: v.ort.trim(), zusammenarbeit: v.zusammenarbeit || null, kontakt: v.kontakt.trim(), notiz: v.notiz.trim() };
         return run(id ? partnerUpdate : partnerCreate, id ? { recordId: id, fields } : fields, partnerQuery.refetch);

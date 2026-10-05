@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import {
   datasource,
   q,
@@ -14,25 +14,47 @@ import { NavigationAction } from "@/components/navigation-action";
 import { useCurrentUser } from "@/lib/user";
 import { Check, Loader2 } from "lucide-react";
 import { toast } from "sonner";
-import { AUSSER_HAUS_ORT, EDITION_PROGRAMM, GESCHRUEHT, GLASIERT, MANUFAKTUR_PROGRAMM, PAGE_SIZE, isAusserHaus } from "../shared/konstanten";
+import { AUSGESTELLT, AUSSER_HAUS_ORT, GESCHRUEHT, GLASIERT, KOMMISSION, MANUFAKTUR_PROGRAMM, PAGE_SIZE, isAusserHaus } from "../shared/konstanten";
 import { type Opt, type RawItem, activeOptions, asOpts, compareNr, freshItems, link, modellLabel, parseNumber, str, today, useAllPages } from "../shared/daten";
-import { bezeichnung, gleicherPosten, toPosten } from "../shared/mengen";
-import { AddNew, ChoiceChips, ErrorText, Feld, FieldLabel, GroupedSelect, Hint, Knopf, OptionSelect, PageHeader, PANEL_CLASS, PhotoPicker, Rueckfrage, SchalterFeld, SearchPick, SEITE_CLASS, STICKY_BOTTOM, Stueckzahl, Tabs, Textfeld, TextMitVorschlag, ZusatzKnopf } from "../shared/ui";
+import { type PostenKey, bezeichnung, gleicherPosten, toPosten } from "../shared/mengen";
+import {
+  AddNew,
+  ChoiceChips,
+  ErrorText,
+  Feld,
+  FieldLabel,
+  GlasurWahl,
+  Hint,
+  Knopf,
+  OptionSelect,
+  PageHeader,
+  PANEL_CLASS,
+  PhotoPicker,
+  Rueckfrage,
+  SchalterFeld,
+  SearchPick,
+  SEITE_CLASS,
+  STICKY_BOTTOM,
+  Stueckzahl,
+  Tabs,
+  Textfeld,
+  TextMitVorschlag,
+  ZusatzKnopf,
+} from "../shared/ui";
 
 const ds = datasource.define({ unikate: "unikate", edition: "edition", glasuren: "glasuren", kuenstler: "kuenstler", lagerorte: "lagerorte", partner: "partner", modelle: "modelle" });
 const glasurNeu = q.select({ name: "OuhBi" });
-const kuenstlerNeu = q.select({ name: "vqD0c" });
+const personNeu = q.select({ name: "vqD0c" });
 const glasurListe = q.select({ name: "OuhBi", archiviert: "jxxXN" });
 const kuenstlerListe = q.select({ name: "vqD0c", archiviert: "TOhYe" });
 const lagerortListe = q.select({ name: "AoOjs", archiviert: "kMBsy" });
 const partnerListe = q.select({ name: "a4yfc", archiviert: "24Tn9" });
-const modellListe = q.select({ name: "eXo5w", artikelnr: "BNpSN", programm: "Mrgtb", glasuren: "EazCZ", archiviert: "3tlrw" });
+const modellListe = q.select({ name: "eXo5w", artikelnr: "BNpSN", programm: "Mrgtb", glasuren: "EazCZ", masse: "h65qx", archiviert: "3tlrw" });
 
 const unikatFields = q.select({
   name: "7IBVW",
   typ: "7g9jI",
   status: "SEUyZ",
-  kuenstler: "oDNBh",
   gedreht: "90TmC",
   glasiert: "2PXtk",
   datum: "UfM5S",
@@ -63,6 +85,11 @@ const editionFields = q.select({
   notiz: "lyJky",
   brand: "jqmqn",
   reserviert: "L1bO5",
+  status: "v9V6W",
+  partner: "hs3iV",
+  gedreht: "7FQQm",
+  glasiert: "dkREk",
+  masse: "eVHco",
 });
 
 const FIELD_NAMES: Record<string, string> = {
@@ -75,19 +102,21 @@ const FIELD_NAMES: Record<string, string> = {
   anzahl: "Anzahl",
 };
 
-type Art = "unikat" | "edition";
-// Geschirr und Edition sind der Hauptfluss der Werkstatt, darum zuerst. Unikate kommen seltener vor.
+// Zuerst die Serie wählen, dann nur deren Modelle. Geschirr und Edition sind der Hauptfluss, Unikate kommen seltener vor.
+type Art = "geschirr" | "edition" | "unikat";
 const ART_TABS: { key: Art; label: string }[] = [
-  { key: "edition", label: "Geschirr & Edition" },
+  { key: "geschirr", label: "Geschirr" },
+  { key: "edition", label: "Edition" },
   { key: "unikat", label: "Unikat" },
 ];
+const IM_HAUS = "im Haus";
+const EDITION_STATUS: Opt[] = [IM_HAUS, AUSGESTELLT, KOMMISSION].map((s) => ({ id: s, label: s }));
 type Saved = { art: Art; recordId: string; text: string };
 
 type UnikatForm = {
   name: string;
   typ: string;
   status: string;
-  kuenstler: string;
   gedreht: string;
   glasiert: string;
   datum: string;
@@ -109,6 +138,11 @@ type EditionForm = {
   glasur: string;
   brand: string;
   reserviert: string;
+  status: string;
+  partner: string;
+  gedreht: string;
+  glasiert: string;
+  masse: string;
   anzahl: number;
   lagerort: string;
   notiz: string;
@@ -118,7 +152,6 @@ const emptyUnikat = (): UnikatForm => ({
   name: "",
   typ: "",
   status: "verfügbar",
-  kuenstler: "",
   gedreht: "",
   glasiert: "",
   datum: today(),
@@ -140,6 +173,11 @@ const emptyEdition = (): EditionForm => ({
   glasur: "",
   brand: today(),
   reserviert: "",
+  status: IM_HAUS,
+  partner: "",
+  gedreht: "",
+  glasiert: "",
+  masse: "",
   anzahl: 1,
   lagerort: "",
   notiz: "",
@@ -206,7 +244,8 @@ function SuccessCard({ saved, onNext }: { saved: Saved; onNext: () => void }) {
 export default function Block() {
   const user = useCurrentUser();
   const formRef = useRef<HTMLFormElement>(null);
-  const [art, setArt] = useState<Art>("edition");
+  const [art, setArt] = useState<Art>("geschirr");
+  const isMenge = art !== "unikat";
   const [unikat, setUnikat] = useState<UnikatForm>(emptyUnikat);
   const [edition, setEdition] = useState<EditionForm>(emptyEdition);
   const [files, setFiles] = useState<File[]>([]);
@@ -215,6 +254,7 @@ export default function Block() {
   const [busy, setBusy] = useState(false);
   const [rueckfrage, setRueckfrage] = useState(false);
   const [einzelDaten, setEinzelDaten] = useState(false);
+  const [mehrOffen, setMehrOffen] = useState(false);
 
   const { uploadAsync } = useUpload();
   const createUnikat = useRecordCreate({ from: ds.unikate, fields: unikatFields });
@@ -242,7 +282,7 @@ export default function Block() {
   const glasurOptions = activeOptions(glasurQuery.data);
   const lagerortOptions = activeOptions(lagerortQuery.data);
   const galerieOptions = activeOptions(galerieQuery.data);
-  // Modelle aus dem Katalog: Nummer vor dem Namen, sortiert nach Artikelnummer, gruppiert nach Programm.
+  // Modelle aus dem Katalog: Nummer vor dem Namen, sortiert nach Artikelnummer.
   const modelle = useMemo(
     () =>
       ((modellQuery.data?.pages.flatMap((p) => p.items) ?? []) as RawItem[])
@@ -254,22 +294,21 @@ export default function Block() {
           label: modellLabel(str(i.fields.artikelnr), str(i.fields.name)),
           programm: asOpts(i.fields.programm)[0]?.label ?? "",
           glasuren: asOpts(i.fields.glasuren).map((g) => g.id),
+          masse: str(i.fields.masse),
         }))
         .sort((a, b) => compareNr(a.nr, b.nr) || a.name.localeCompare(b.name, "de")),
     [modellQuery.data, edition.modell],
   );
-  const modellGroups = [
-    { label: "Editionen", options: modelle.filter((m) => m.programm === EDITION_PROGRAMM) },
-    { label: "Manufakturprogramm (Geschirr)", options: modelle.filter((m) => m.programm === MANUFAKTUR_PROGRAMM) },
-    { label: "Weitere Modelle", options: modelle.filter((m) => m.programm !== EDITION_PROGRAMM && m.programm !== MANUFAKTUR_PROGRAMM) },
-  ];
-  const gewaehltesModell = modelle.find((m) => m.id === edition.modell);
-  // Glasuren des Modells. Leer: Glasur frei wählbar und freiwillig. Eine: fest. Mehrere: eine davon wählen.
+  // Nur die Modelle der gewählten Serie. Modelle ohne Programm zählen zur Edition.
+  const istGeschirr = (m: { programm: string }) => m.programm === MANUFAKTUR_PROGRAMM;
+  const serienModelle = modelle.filter((m) => (art === "geschirr" ? istGeschirr(m) : !istGeschirr(m)));
+  const gewaehltesModell = serienModelle.find((m) => m.id === edition.modell);
+  // Glasuren des Modells als Knöpfe. Jede andere Glasur lässt sich wählen oder neu anlegen.
   const modellGlasuren = gewaehltesModell?.glasuren.length ? glasurOptions.filter((g) => gewaehltesModell.glasuren.includes(g.id)) : [];
   const [extraTypen, setExtraTypen] = useState<Opt[]>([]);
   const typChoices = [...typOptions, ...extraTypen.filter((t) => !typOptions.some((o) => o.label === t.label))];
   const createGlasur = useRecordCreate({ from: ds.glasuren, fields: glasurNeu });
-  const createKuenstler = useRecordCreate({ from: ds.kuenstler, fields: kuenstlerNeu });
+  const createPerson = useRecordCreate({ from: ds.kuenstler, fields: personNeu });
 
   function addTyp(name: string): boolean {
     setExtraTypen((t) => [...t, { id: `neu-${name}`, label: name }]);
@@ -278,6 +317,8 @@ export default function Block() {
   }
 
   async function addGlasur(name: string): Promise<string | null> {
+    const vorhanden = glasurOptions.find((g) => g.label.toLowerCase() === name.toLowerCase());
+    if (vorhanden) return vorhanden.id;
     try {
       const created = await createGlasur.mutateAsync({ name } as never);
       await glasurQuery.refetch();
@@ -289,12 +330,12 @@ export default function Block() {
     }
   }
 
-  // Neue Person (Künstler:in, gedreht oder glasiert von) anlegen und direkt im jeweiligen Feld auswählen.
-  const addPerson = (feld: "kuenstler" | "gedreht" | "glasiert") => async (name: string): Promise<boolean> => {
+  // Neue Person (gedreht oder glasiert von) anlegen und direkt im jeweiligen Feld auswählen.
+  const addPerson = (waehlen: (id: string) => void) => async (name: string): Promise<boolean> => {
     try {
-      const created = await createKuenstler.mutateAsync({ name } as never);
+      const created = await createPerson.mutateAsync({ name } as never);
       await kuenstlerQuery.refetch();
-      setUnikat((s) => ({ ...s, [feld]: (created as { id: string }).id }));
+      waehlen((created as { id: string }).id);
       toast.success(`„${name}“ angelegt.`);
       return true;
     } catch {
@@ -311,8 +352,20 @@ export default function Block() {
   const editionRows = editionQuery.data?.pages.flatMap((p) => p.items) ?? [];
   const isGlasiert = edition.zustand === GLASIERT;
   const wantGlasur = isGlasiert ? edition.glasur : "";
-  const postenKey = { modellId: edition.modell, zustand: edition.zustand, glasurId: wantGlasur, brand: isGlasiert ? edition.brand : "", reserviert: isGlasiert ? edition.reserviert.trim() : "" };
-  // Gleicher Posten (Modell, Zustand, Glasur, Brand, Reservierung) wird weitergezählt statt doppelt angelegt.
+  // Brand, Reservierung, Status und „glasiert von“ gibt es erst bei glasierter Ware.
+  const status = isGlasiert && edition.status !== IM_HAUS ? edition.status : "";
+  const postenKey: PostenKey = {
+    modellId: edition.modell,
+    zustand: edition.zustand,
+    glasurId: wantGlasur,
+    brand: isGlasiert ? edition.brand : "",
+    reserviert: isGlasiert ? edition.reserviert.trim() : "",
+    status,
+    partnerId: status ? edition.partner : "",
+    gedrehtId: edition.gedreht,
+    glasiertId: isGlasiert ? edition.glasiert : "",
+  };
+  // Gleicher Posten wird weitergezählt statt doppelt angelegt.
   const findRow = (rows: { id: string; fields: unknown }[]) => (edition.modell ? rows.find((r) => gleicherPosten(toPosten(r as RawItem), postenKey)) : undefined);
   const kunden = [...new Set<string>(editionRows.map((r) => toPosten(r as RawItem).reserviert).filter(Boolean))].sort((a, b) => a.localeCompare(b, "de"));
   const existingRow = findRow(editionRows);
@@ -333,11 +386,11 @@ export default function Block() {
     setEdition((s) => ({ ...s, [key]: value }));
     clearError(key);
   };
-  // Beim Modellwechsel die Glasur neu setzen: feste Glasur übernehmen, sonst leeren.
+  // Beim Modellwechsel Glasur und Maße aus dem Modell übernehmen: eine Glasur ist vorgewählt, sonst leer.
   function chooseModell(id: string) {
     const m = modelle.find((x) => x.id === id);
     const fest = m && m.glasuren.length === 1 ? m.glasuren[0] : "";
-    setEdition((s) => ({ ...s, modell: id, glasur: fest }));
+    setEdition((s) => ({ ...s, modell: id, glasur: fest, masse: m?.masse ?? "" }));
     clearError("modell");
     clearError("glasur");
   }
@@ -346,7 +399,7 @@ export default function Block() {
     clearError("fotos");
   };
 
-  const canCreate = art === "unikat" ? createUnikat.enabled : createEdition.enabled;
+  const canCreate = isMenge ? createEdition.enabled : createUnikat.enabled;
 
   function validate(): Record<string, string> {
     const e: Record<string, string> = {};
@@ -358,7 +411,7 @@ export default function Block() {
     } else {
       if (!edition.modell) e.modell = "Bitte ein Modell wählen.";
       if (!edition.zustand) e.zustand = "Bitte den Zustand wählen.";
-      if (isGlasiert && modellGlasuren.length > 1 && !edition.glasur) e.glasur = "Bitte die Glasur wählen.";
+      if (isGlasiert && !edition.glasur) e.glasur = "Bitte die Glasur wählen.";
       if (!(edition.anzahl > 0)) e.anzahl = "Die Anzahl muss mindestens 1 sein.";
     }
     return e;
@@ -373,7 +426,7 @@ export default function Block() {
   }
 
   // Empfohlene Angaben, die beim Unikat noch fehlen. Speichern geht trotzdem, nach einer Rückfrage.
-  const fehlendEmpfohlen = art === "unikat" ? [files.length === 0 ? "Foto" : "", unikat.typ ? "" : "Typ"].filter(Boolean) : [];
+  const fehlendEmpfohlen = !isMenge ? [files.length === 0 ? "Foto" : "", unikat.typ ? "" : "Typ"].filter(Boolean) : [];
 
   async function submit(ev: React.FormEvent) {
     ev.preventDefault();
@@ -386,7 +439,7 @@ export default function Block() {
       });
       return;
     }
-    if (art === "edition" && !editionReady) {
+    if (isMenge && !editionReady) {
       toast.error("Der Editionsbestand lädt noch. Bitte gleich noch einmal speichern.");
       return;
     }
@@ -410,7 +463,6 @@ export default function Block() {
           name: unikat.name.trim(),
           typ: unikat.typ,
           status: unikat.status,
-          kuenstler: link(unikat.kuenstler),
           gedreht: link(unikat.gedreht),
           glasiert: link(unikat.glasiert),
           datum,
@@ -432,7 +484,8 @@ export default function Block() {
       } else {
         const modell = gewaehltesModell?.label ?? "";
         const glasur = glasurOptions.find((g) => g.id === wantGlasur)?.label;
-        const variante = bezeichnung(modell, { zustand: edition.zustand, glasur: glasur ?? "", brand: postenKey.brand, reserviert: postenKey.reserviert });
+        const partner = galerieOptions.find((g) => g.id === postenKey.partnerId)?.label ?? "";
+        const variante = bezeichnung(modell, { zustand: edition.zustand, glasur: glasur ?? "", brand: postenKey.brand, reserviert: postenKey.reserviert, status, partner });
         // Direkt vor dem Speichern frisch laden: Hat jemand anderes die Zeile gerade angelegt oder geändert,
         // wird dort weitergezählt statt eine doppelte Zeile anzulegen oder Stück zu verlieren.
         const fresh = await freshItems(editionQuery);
@@ -451,6 +504,11 @@ export default function Block() {
             anzahl: edition.anzahl,
             brand: postenKey.brand || null,
             reserviert: postenKey.reserviert,
+            status: status || null,
+            partner: link(postenKey.partnerId || undefined),
+            gedreht: link(postenKey.gedrehtId || undefined),
+            glasiert: link(postenKey.glasiertId || undefined),
+            masse: edition.masse.trim(),
             lagerort: link(edition.lagerort),
             foto: fotos,
             notiz: edition.notiz.trim(),
@@ -469,6 +527,7 @@ export default function Block() {
   function reset() {
     setSaved(null);
     setEinzelDaten(false);
+    setMehrOffen(false);
     setErrors({});
     setFiles([]);
     setUnikat(emptyUnikat());
@@ -492,9 +551,10 @@ export default function Block() {
               tabs={ART_TABS}
               value={art}
               onChange={(key) => {
+                if (key !== art) setEdition((s) => ({ ...s, modell: "", glasur: "", masse: "" }));
                 setArt(key);
                 setErrors({});
-                setFiles((f) => (key === "edition" ? f.slice(0, 1) : f));
+                setFiles((f) => (key === "unikat" ? f : f.slice(0, 1)));
               }}
             />
 
@@ -567,14 +627,14 @@ export default function Block() {
                       <FieldLabel htmlFor="u-gedreht">Gedreht von</FieldLabel>
                       <OptionSelect id="u-gedreht" value={unikat.gedreht} onChange={(v) => setU("gedreht", v)} options={kuenstlerOptions} placeholder="Bitte wählen" />
                       <div className="mt-2">
-                        <AddNew label="Neue Person" placeholder="Vor- und Nachname" existing={kuenstlerOptions} onAdd={addPerson("gedreht")} />
+                        <AddNew label="Neue Person" placeholder="Vor- und Nachname" existing={kuenstlerOptions} onAdd={addPerson((id) => setU("gedreht", id))} />
                       </div>
                     </div>
                     <div>
                       <FieldLabel htmlFor="u-glasiert">Glasiert von</FieldLabel>
                       <OptionSelect id="u-glasiert" value={unikat.glasiert} onChange={(v) => setU("glasiert", v)} options={kuenstlerOptions} placeholder="Bitte wählen" />
                       <div className="mt-2">
-                        <AddNew label="Neue Person" placeholder="Vor- und Nachname" existing={kuenstlerOptions} onAdd={addPerson("glasiert")} />
+                        <AddNew label="Neue Person" placeholder="Vor- und Nachname" existing={kuenstlerOptions} onAdd={addPerson((id) => setU("glasiert", id))} />
                       </div>
                     </div>
                   </div>
@@ -599,14 +659,6 @@ export default function Block() {
                         <ZusatzKnopf label="Gedreht am und glasiert am einzeln angeben" onClick={() => setEinzelDaten(true)} />
                       </div>
                     )}
-                  </div>
-
-                  <div>
-                    <FieldLabel htmlFor="u-kuenstler">Künstler:in</FieldLabel>
-                    <OptionSelect id="u-kuenstler" value={unikat.kuenstler} onChange={(v) => setU("kuenstler", v)} options={kuenstlerOptions} placeholder="Bitte wählen" />
-                    <div className="mt-2">
-                      <AddNew label="Neue:r Künstler:in" placeholder="Vor- und Nachname" existing={kuenstlerOptions} onAdd={addPerson("kuenstler")} />
-                    </div>
                   </div>
 
                   <div>
@@ -656,15 +708,23 @@ export default function Block() {
             ) : (
               <div className={COLUMNS}>
                 <div className="space-y-6">
-                  <SectionTitle title="Pflichtangaben" hint="Geschirr und Edition: Modell, Zustand, Anzahl." />
+                  <SectionTitle title="Pflichtangaben" hint="Modell, Zustand und Anzahl. Glasierte Ware zusätzlich mit Glasur." />
                   <div>
                     <FieldLabel htmlFor="e-modell" required>
                       Modell
                     </FieldLabel>
-                    <GroupedSelect id="e-modell" value={edition.modell} onChange={chooseModell} groups={modellGroups} placeholder="Modell wählen (Nummer oder Name)" />
+                    <OptionSelect id="e-modell" value={edition.modell} onChange={chooseModell} options={serienModelle} placeholder={art === "geschirr" ? "Geschirr wählen (Nummer oder Name)" : "Edition wählen (Nummer oder Name)"} />
                     <Hint>Neue Modelle unter „Stammdaten“ anlegen.</Hint>
                     <ErrorText>{errors.modell}</ErrorText>
                   </div>
+
+                  {edition.modell && (
+                    <div>
+                      <FieldLabel htmlFor="e-masse">Maße</FieldLabel>
+                      <Feld id="e-masse" value={edition.masse} onChange={(e) => setE("masse", e.target.value)} placeholder="z. B. Ø 24 × H 3 cm" />
+                      <Hint>Aus dem Modell übernommen. Bitte nachmessen und bei Bedarf ändern.</Hint>
+                    </div>
+                  )}
 
                   <div>
                     <FieldLabel required>Zustand</FieldLabel>
@@ -679,19 +739,8 @@ export default function Block() {
 
                   {isGlasiert && edition.modell && (
                     <div>
-                      <FieldLabel required={modellGlasuren.length > 1}>Glasur</FieldLabel>
-                      {modellGlasuren.length === 1 ? (
-                        <p className="text-base">
-                          {modellGlasuren[0].label} <span className="text-muted-foreground">(fest bei diesem Modell)</span>
-                        </p>
-                      ) : modellGlasuren.length > 1 ? (
-                        <ChoiceChips label="Glasur" options={modellGlasuren} value={modellGlasuren.find((g) => g.id === edition.glasur)?.label ?? ""} onChange={(label) => setE("glasur", modellGlasuren.find((g) => g.label === label)?.id ?? "")} />
-                      ) : (
-                        <>
-                          <SearchPick label="Glasuren" createNoun="neue Glasur" options={glasurOptions} value={link(edition.glasur || undefined)} onChange={(ids) => setE("glasur", ids.at(-1) ?? "")} multiple={false} onCreate={addGlasur} />
-                          <Hint>Freiwillig. Feste Glasuren eines Modells unter „Stammdaten“ eintragen.</Hint>
-                        </>
-                      )}
+                      <FieldLabel required>Glasur</FieldLabel>
+                      <GlasurWahl modell={modellGlasuren} alle={glasurOptions} value={edition.glasur} onChange={(id) => setE("glasur", id)} onCreate={addGlasur} />
                       <ErrorText>{errors.glasur}</ErrorText>
                     </div>
                   )}
@@ -701,7 +750,7 @@ export default function Block() {
                       <div>
                         <FieldLabel htmlFor="e-brand">Brand vom</FieldLabel>
                         <Feld id="e-brand" type="date" value={edition.brand} onChange={(e) => setE("brand", e.target.value)} />
-                        <Hint>Stücke aus einem Brand stehen zusammen.</Hint>
+                        <Hint>Stücke aus einem Brand haben denselben Farbton.</Hint>
                       </div>
                       <div>
                         <FieldLabel htmlFor="e-reserviert">Reserviert für</FieldLabel>
@@ -719,38 +768,77 @@ export default function Block() {
                     {existingRow && (
                       <p className="mt-3 rounded-md bg-muted p-3 text-base">
                         Diese Kombination gibt es schon mit <strong>{existingCount} Stück</strong>. Beim Speichern wird
-                        die Anzahl dort auf <strong>{existingCount + edition.anzahl}</strong> erhöht.
+                        die Anzahl dort auf <strong>{existingCount + edition.anzahl}</strong> erhöht. Maße, Lagerort, Foto und Notiz bleiben wie dort.
                       </p>
                     )}
                   </div>
                 </div>
 
-                {!existingRow && (
-                  <ZweiteSpalte title="Weitere Angaben" hint="Kann auch später im Bestand ergänzt werden.">
-                    <div>
-                      <FieldLabel htmlFor="e-lagerort">Lagerort</FieldLabel>
-                      <OptionSelect
-                        id="e-lagerort"
-                        value={edition.lagerort}
-                        onChange={(v) => setE("lagerort", v)}
-                        options={lagerortOptions}
-                        placeholder="Bitte wählen"
-                      />
+                {/* Edition: weitere Angaben offen, weil jedes Stück anders ist. Geschirr: auf Wunsch aufklappen. */}
+                {art === "edition" || mehrOffen ? (
+                  <ZweiteSpalte title="Weitere Angaben" hint="Freiwillig. Kann auch später im Bestand ergänzt werden.">
+                    <div className="grid sm:grid-cols-2 gap-6">
+                      <div>
+                        <FieldLabel htmlFor="e-gedreht">Gedreht von</FieldLabel>
+                        <OptionSelect id="e-gedreht" value={edition.gedreht} onChange={(v) => setE("gedreht", v)} options={kuenstlerOptions} placeholder="Bitte wählen" />
+                        <div className="mt-2">
+                          <AddNew label="Neue Person" placeholder="Vor- und Nachname" existing={kuenstlerOptions} onAdd={addPerson((id) => setE("gedreht", id))} />
+                        </div>
+                      </div>
+                      {isGlasiert && (
+                        <div>
+                          <FieldLabel htmlFor="e-glasiert">Glasiert von</FieldLabel>
+                          <OptionSelect id="e-glasiert" value={edition.glasiert} onChange={(v) => setE("glasiert", v)} options={kuenstlerOptions} placeholder="Bitte wählen" />
+                          <div className="mt-2">
+                            <AddNew label="Neue Person" placeholder="Vor- und Nachname" existing={kuenstlerOptions} onAdd={addPerson((id) => setE("glasiert", id))} />
+                          </div>
+                        </div>
+                      )}
                     </div>
-                    <div>
-                      <FieldLabel htmlFor="foto-input">Foto</FieldLabel>
-                      <PhotoPicker files={files} onChange={changeFiles} multiple={false} />
-                    </div>
-                    <div>
-                      <FieldLabel htmlFor="e-notiz">Notiz</FieldLabel>
-                      <Textfeld
-                        id="e-notiz"
-                        value={edition.notiz}
-                        onChange={(e) => setE("notiz", e.target.value)}
-                        rows={3}
-                      />
-                    </div>
+                    {isGlasiert && (
+                      <div>
+                        <FieldLabel>Status</FieldLabel>
+                        <ChoiceChips
+                          label="Status"
+                          options={EDITION_STATUS}
+                          value={edition.status}
+                          onChange={(v) => {
+                            setE("status", v);
+                            const ort = lagerortOptions.find((l) => l.label === AUSSER_HAUS_ORT)?.id;
+                            if (v !== IM_HAUS && ort) setE("lagerort", ort);
+                            else if (edition.lagerort === ort) setE("lagerort", "");
+                          }}
+                          statusColors
+                        />
+                        {status && (
+                          <div className="mt-4">
+                            <FieldLabel htmlFor="e-partner">Partner (Galerie, Museum …)</FieldLabel>
+                            <OptionSelect id="e-partner" value={edition.partner} onChange={(v) => setE("partner", v)} options={galerieOptions} placeholder="Partner wählen" />
+                          </div>
+                        )}
+                      </div>
+                    )}
+                    {!existingRow && (
+                      <>
+                        <div>
+                          <FieldLabel htmlFor="e-lagerort">Lagerort</FieldLabel>
+                          <OptionSelect id="e-lagerort" value={edition.lagerort} onChange={(v) => setE("lagerort", v)} options={lagerortOptions} placeholder="Bitte wählen" />
+                        </div>
+                        <div>
+                          <FieldLabel htmlFor="foto-input">Foto</FieldLabel>
+                          <PhotoPicker files={files} onChange={changeFiles} multiple={false} />
+                        </div>
+                        <div>
+                          <FieldLabel htmlFor="e-notiz">Notiz</FieldLabel>
+                          <Textfeld id="e-notiz" value={edition.notiz} onChange={(e) => setE("notiz", e.target.value)} rows={3} />
+                        </div>
+                      </>
+                    )}
                   </ZweiteSpalte>
+                ) : (
+                  <div className={SECOND_COLUMN}>
+                    <ZusatzKnopf label="Weitere Angaben zeigen" onClick={() => setMehrOffen(true)} />
+                  </div>
                 )}
               </div>
             )}
@@ -768,7 +856,7 @@ export default function Block() {
                     <>
                       <Loader2 className="w-5 h-5 mr-2 animate-spin" aria-hidden /> Wird gespeichert …
                     </>
-                  ) : existingRow && art === "edition" ? (
+                  ) : existingRow && isMenge ? (
                     "Anzahl erhöhen"
                   ) : (
                     "Speichern"

@@ -68,7 +68,8 @@ const codeOnly = (code) =>
     .replace(/"(?:[^"\\\n]|\\.)*"/g, '""')
     .replace(/\/\*[\s\S]*?\*\//g, "")
     .replace(/\/\/.*$/gm, "");
-const uses = (code, name) => new RegExp(`(?<![A-Za-z0-9_.])${name}(?![A-Za-z0-9_])`).test(codeOnly(code));
+// Ein Punkt davor heißt Eigenschaft (a.name), außer beim Spread (...name).
+const uses = (code, name) => new RegExp(`(?<![A-Za-z0-9_])(?<!(?<!\\.)\\.)${name}(?![A-Za-z0-9_])`).test(codeOnly(code));
 
 function build(file) {
   const src = readFileSync(join(SRC, file), "utf8");

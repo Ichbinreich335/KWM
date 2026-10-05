@@ -17,13 +17,22 @@ Für die nächste Session. Zuerst `CLAUDE.md`, `konzept/SOFTR-AUFTRAG.md` und `k
 | Seite | Page-ID | Block (Datei) | Block-ID | Datenquellen | Aktionsrechte |
 |---|---|---|---|---|---|
 | `/erfassen` | `8cba05b9-7689-4bdf-a275-d6988ecdb8eb` | `erfassen.tsx` | `c2222c6c-2726-4590-9804-eef9c6d44ddb` | unikate, edition, glasuren, kuenstler | alle ADD → LOGGED_IN_USERS |
-| `/bestand` | `131c6c30-67d8-4939-87b8-b79f9bbe9bf6` | `bestand.tsx` | `cab355a2-0a7f-47a2-863a-41d2bbf7cae5` | unikate, edition, kuenstler, glasuren, lagerorte, partner, modelle | ADD edition → LOGGED_IN_USERS; UPDATE/DELETE Standard |
+| `/bestand` | `131c6c30-67d8-4939-87b8-b79f9bbe9bf6` | `bestand.tsx` | `cab355a2-0a7f-47a2-863a-41d2bbf7cae5` | unikate, edition, kuenstler, glasuren, lagerorte, partner, modelle | ADD edition und glasuren → LOGGED_IN_USERS; UPDATE/DELETE Standard |
 | `/tabelle` | `1c5c5fed-5ec8-40df-8b13-4ae96ced2fdd` | `tabelle.tsx` | `ad8e12f4-0372-492b-a713-87334990aa90` | unikate, edition, ansichten | ADD ansichten → LOGGED_IN_USERS |
 | `/uebersicht` | `16450fdc-1469-49fb-8785-acac62a5c953` | `uebersicht.tsx` | `c62602bd-dd73-44d6-9625-b59aec539939` | unikate, edition, partner | keine |
 | `/stammdaten` | `c8a4fadb-196f-4712-b649-816e0f1ebd5e` | `stammdaten.tsx` | `451b0d69-677c-4f15-9f15-87cae9021028` | kuenstler, glasuren, modelle, partner, lagerorte, unikate, edition | alle ADD → LOGGED_IN_USERS |
 
 ## Stand 05.10.2026 (Runde 14, Feedback Admin, gilt vor allem darunter)
-Runde 13 ist hochgeladen, aber **nicht veröffentlicht** (Freigabe Admin offen). Entscheidungen aus dem Feedback:
+Runde 13 und 14 sind hochgeladen, aber **nicht veröffentlicht** (Freigabe Admin offen).
+
+**Umgesetzt (Runde 14):**
+- Neue Felder Editionsbestand (nur ergänzt): Maße `eVHco`, Gedreht von `7FQQm`, Glasiert von `dkREk` (beide → Künstler:innen), Status `v9V6W` (ausgestellt, in Kommission; leer = im Haus), Partner `hs3iV` (→ Galerien). Gegenfelder legte Softr selbst an (Künstler:innen `X2GBc`, `TyjT9`; Galerien `Y7hi5`).
+- Posten-Schlüssel jetzt Modell + Zustand + Glasur + Brand + Reservierung + Status + Partner + gedreht + glasiert. Maße gehören nicht zum Schlüssel.
+- Bestand hat zusätzlich die Aktion ADD auf `glasuren` (neue Glasur beim Glasieren). Nach jedem Hochladen ADD `edition` und ADD `glasuren` auf LOGGED_IN_USERS setzen.
+- Unikat-Feld „Künstler:in“ `oDNBh` bleibt in der Datenbank, wird aber nirgends mehr angezeigt oder geschrieben. Löschen nur mit OK.
+- Stammdaten-Reiter heißt „Personen“. Programm „Manufakturprogramm“ wird als „Geschirr“ angezeigt und beim Speichern zurückübersetzt.
+
+**Entscheidungen aus dem Feedback:**
 - **Wort „Manufakturprogramm“ nie anzeigen**, überall „Geschirr“ (Erfassen, Stammdaten, Tabelle). Der DB-Wert darf vorerst bleiben, die Anzeige läuft über `serieVon`.
 - **Erfassen, erster Schritt:** drei große Knöpfe Geschirr | Edition | Unikat. Danach nur die Modelle dieser Serie (keine lange gruppierte Liste mehr).
 - **Geschirr und Edition bekommen mehr Felder**, aufklappbar („Weitere Angaben“): gedreht von, glasiert von (Freitext mit Vorschlägen), Maße, Notiz. Für Edition wichtig, für Geschirr optional.

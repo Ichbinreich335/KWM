@@ -391,6 +391,45 @@ export function SearchPick({
   );
 }
 
+// Glasur für Geschirr und Edition: die Glasuren des Modells als Knöpfe, darunter „Andere oder neue Glasur“.
+// Editionen bekommen oft Glasuren, die nicht im Katalog stehen (z. B. „Grün dunkel“). Die lassen sich hier direkt anlegen.
+export function GlasurWahl({ modell, alle, value, onChange, onCreate }: { modell: Opt[]; alle: Opt[]; value: string; onChange: (id: string) => void; onCreate: (name: string) => Promise<string | null> }) {
+  const fremd = !!value && !modell.some((g) => g.id === value);
+  const [offen, setOffen] = useState(false);
+  const weitere = alle.filter((g) => !modell.some((m) => m.id === g.id));
+  return (
+    <div className="space-y-3">
+      {modell.length > 0 && (
+        <div role="radiogroup" aria-label="Glasur des Modells" className="flex flex-wrap gap-2">
+          {modell.map((g) => (
+            <Chip key={g.id} role="radio" active={value === g.id} onClick={() => onChange(g.id)}>
+              {g.label}
+            </Chip>
+          ))}
+        </div>
+      )}
+      {offen || fremd || modell.length === 0 ? (
+        <>
+          {modell.length > 0 && <p className="text-sm text-muted-foreground">Weitere Glasuren</p>}
+          <SearchPick label="Glasuren" createNoun="neue Glasur" options={weitere} value={value ? [value] : []} onChange={(ids) => onChange(ids.at(-1) ?? "")} multiple={false} />
+          <AddNew
+            label="Neue Glasur anlegen"
+            placeholder="z. B. Grün dunkel"
+            existing={alle}
+            onAdd={async (name) => {
+              const id = await onCreate(name);
+              if (id) onChange(id);
+              return !!id;
+            }}
+          />
+        </>
+      ) : (
+        <ZusatzKnopf label="Andere oder neue Glasur" onClick={() => setOffen(true)} />
+      )}
+    </div>
+  );
+}
+
 export function Thumb({ fotos, size = "small", className = "w-12 h-12 rounded-md" }: { fotos: Attachment[]; size?: ThumbSize; className?: string }) {
   const first = fotos[0];
   if (!first) {

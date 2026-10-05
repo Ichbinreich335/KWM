@@ -107,6 +107,14 @@ type Posten = {
   glasur: string;
   brand: string;
   reserviert: string;
+  status: string;
+  partnerId: string;
+  partner: string;
+  gedrehtId: string;
+  gedreht: string;
+  glasiertId: string;
+  glasiert: string;
+  masse: string;
   anzahl: number;
   vk: number | null;
   lagerort: Opt | undefined;
@@ -120,6 +128,9 @@ function toPosten(item: RawItem): Posten {
   const modell = asOpts(f.modell)[0];
   const nr = str(lookupValue(f.artikelnr));
   const glasur = asOpts(f.glasur)[0];
+  const partner = asOpts(f.partner)[0];
+  const gedreht = asOpts(f.gedreht)[0];
+  const glasiert = asOpts(f.glasiert)[0];
   return {
     id: item.id,
     modellId: modell?.id ?? "",
@@ -132,6 +143,14 @@ function toPosten(item: RawItem): Posten {
     glasur: glasur?.label ?? "",
     brand: str(f.brand).slice(0, 10),
     reserviert: str(f.reserviert).trim(),
+    status: asOpts(f.status)[0]?.label ?? "",
+    partnerId: partner?.id ?? "",
+    partner: partner?.label ?? "",
+    gedrehtId: gedreht?.id ?? "",
+    gedreht: gedreht?.label ?? "",
+    glasiertId: glasiert?.id ?? "",
+    glasiert: glasiert?.label ?? "",
+    masse: str(f.masse).trim(),
     anzahl: num(f.anzahl) ?? 0,
     vk: num(lookupValue(f.vk)),
     lagerort: asOpts(f.lagerort)[0],
@@ -139,6 +158,12 @@ function toPosten(item: RawItem): Posten {
     notiz: str(f.notiz),
   };
 }
+
+// Ausgestellt oder in Kommission: Die Stücke sind nicht in der Werkstatt.
+const ausserHaus = (p: Pick<Posten, "status">) => p.status !== "";
+
+// Frei verkaufbar: glasiert, nicht reserviert und in der Werkstatt.
+const verkaufbar = (p: Posten) => p.zustand === GLASIERT && !p.reserviert && !ausserHaus(p);
 
 // Kurzbeschreibung eines Postens ohne Modell, z. B. „Rostbraun · Brand 24.09.2026“.
 function postenText(p: Pick<Posten, "zustand" | "glasur" | "brand">): string {
@@ -154,6 +179,9 @@ type ModellStand = {
   fotos: Attachment[];
   je: Record<string, number>;
   reserviert: number;
+  ausserHaus: number;
+  // Größte Menge einer Glasur aus einem Brand, frei und in der Werkstatt: so viele passen zusammen.
+  zusammen: number;
   posten: Posten[];
 };
 
@@ -166,18 +194,43 @@ function nachModell(posten: Posten[]): ModellStand[] {
   for (const p of posten) {
     if (p.anzahl <= 0) continue;
     const key = p.modellId || p.modell;
-    const s = map.get(key) ?? { modellId: p.modellId, nr: p.nr, modell: p.modell, serie: p.serie, typ: p.typ, fotos: [], je: {}, reserviert: 0, posten: [] };
+    const s = map.get(key) ?? { modellId: p.modellId, nr: p.nr, modell: p.modell, serie: p.serie, typ: p.typ, fotos: [], je: {}, reserviert: 0, ausserHaus: 0, zusammen: 0, posten: [] };
     s.je[p.zustand] = (s.je[p.zustand] ?? 0) + p.anzahl;
     if (p.reserviert) s.reserviert += p.anzahl;
+    if (ausserHaus(p)) s.ausserHaus += p.anzahl;
     if (!s.fotos.length && p.fotos.length) s.fotos = p.fotos;
     s.posten.push(p);
     map.set(key, s);
   }
   const stande = [...map.values()];
   for (const s of stande) {
+    s.zusammen = Math.max(0, ...brandGruppen(s.posten).map((g) => g.zusammen));
     s.posten.sort((a, b) => ZUSTAND_RANG(a.zustand) - ZUSTAND_RANG(b.zustand) || a.glasur.localeCompare(b.glasur, "de") || b.brand.localeCompare(a.brand) || a.reserviert.localeCompare(b.reserviert, "de"));
   }
   return stande.sort((a, b) => compareNr(a.nr, b.nr) || a.modell.localeCompare(b.modell, "de"));
+}
+
+type BrandGruppe = { glasurId: string; glasur: string; gesamt: number; zusammen: number; braende: { brand: string; anzahl: number }[] };
+
+// Glasierte Ware je Glasur, aufgeteilt nach Brand. Stücke aus verschiedenen Bränden sehen verschieden aus
+// und werden nicht zusammen verkauft. Gezählt wird nur, was frei und in der Werkstatt ist. Ohne Datum gilt „Brand unbekannt“.
+function brandGruppen(posten: Posten[]): BrandGruppe[] {
+  const map = new Map<string, BrandGruppe>();
+  for (const p of posten) {
+    if (!verkaufbar(p) || p.anzahl <= 0) continue;
+    const g = map.get(p.glasurId) ?? { glasurId: p.glasurId, glasur: p.glasur, gesamt: 0, zusammen: 0, braende: [] };
+    g.gesamt += p.anzahl;
+    const b = g.braende.find((x) => x.brand === p.brand);
+    if (b) b.anzahl += p.anzahl;
+    else g.braende.push({ brand: p.brand, anzahl: p.anzahl });
+    map.set(p.glasurId, g);
+  }
+  const gruppen = [...map.values()];
+  for (const g of gruppen) {
+    g.braende.sort((a, b) => b.anzahl - a.anzahl || b.brand.localeCompare(a.brand));
+    g.zusammen = g.braende[0]?.anzahl ?? 0;
+  }
+  return gruppen.sort((a, b) => b.gesamt - a.gesamt || a.glasur.localeCompare(b.glasur, "de"));
 }
 
 // Die eine Rahmenfarbe der App: Flächen, Kacheln, Felder, Auswahlen, Knöpfe. Nur Trennlinien innerhalb einer Fläche bleiben heller.
@@ -195,6 +248,36 @@ const WISCHEN = "overflow-x-auto overflow-y-hidden overscroll-x-contain [scrollb
 
 // Wurzel jeder Seite. overflow-x-clip: Nichts kann die Seite verbreitern, am Handy lässt sie sich nie seitlich verschieben.
 const SEITE_CLASS = "container pt-6 pb-28 sm:pb-8 overflow-x-clip";
+
+// Reiter: der einzige Umschalter der App (Erfassen, Bestand, Stammdaten). Unterstrichen, am Handy seitlich wischbar.
+function Tabs<K extends string>({ label, tabs, value, onChange }: { label: string; tabs: { key: K; label: string; count?: number }[]; value: K; onChange: (key: K) => void }) {
+  return (
+    // Die Grundlinie liegt hinter der Reiterzeile, damit der Unterstrich des aktiven Reiters sie überdeckt, ohne über den Wischbereich hinauszuragen.
+    <div className="relative">
+      <div className="absolute inset-x-0 bottom-0 border-b" aria-hidden />
+      <div role="tablist" aria-label={label} className={`relative flex gap-1 ${WISCHEN}`}>
+        {tabs.map((t) => {
+          const active = value === t.key;
+          return (
+            <button
+              key={t.key}
+              type="button"
+              role="tab"
+              aria-selected={active}
+              onClick={() => onChange(t.key)}
+              className={`inline-flex shrink-0 items-center gap-1.5 min-h-11 px-3 border-b-2 text-base whitespace-nowrap transition-colors ${
+                active ? "border-primary text-foreground font-medium" : "border-transparent text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              {t.label}
+              {t.count !== undefined && <span className="tabular-nums text-muted-foreground">{t.count}</span>}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
 
 function Thumb({ fotos, size = "small", className = "w-12 h-12 rounded-md" }: { fotos: Attachment[]; size?: ThumbSize; className?: string }) {
   const first = fotos[0];
@@ -314,10 +397,10 @@ const editionSelect = q.select({
   programm: "IIAdh",
   brand: "jqmqn",
   reserviert: "L1bO5",
+  status: "v9V6W",
 });
 
-const RECENT_COUNT = 6;
-const MODELLE_SICHTBAR = 8;
+const MODELLE_SICHTBAR = 10;
 const LOW_STOCK = 5;
 const SOON_DAYS = 14;
 const AUSSER_HAUS_MAX = 8;
@@ -339,7 +422,7 @@ type Unikat = {
   verkauftAm: string;
 };
 type Edition = Posten & { erfasstAm: string; geaendertAm: string };
-type CountRow = { label: string; href: string; values: number[] };
+type Serie = "geschirr" | "edition";
 type Pruefpunkt = { label: string; items: { id: string; label: string; href: string }[] };
 type Ton = "rot" | "gelb";
 type Aufgabe = { key: string; ton: Ton; icon: React.ReactNode; text: string; detail?: string; href: string };
@@ -350,10 +433,10 @@ const TON_CLASS: Record<Ton | "neutral", string> = { rot: "bg-red-50 text-red-70
 const ICON = "w-5 h-5";
 const ROW = "flex items-center gap-3 min-h-14 py-2 px-1 rounded-md hover:bg-muted/40";
 
-// Vier Kennzahlen in einem Band statt einzelner Kästen. Jede führt in den passenden Bestand.
+// Drei Kennzahlen in einem Band statt einzelner Kästen. Jede führt in den passenden Bestand.
 function Kennzahlen({ items }: { items: Kennzahl[] }) {
   return (
-    <div className={`grid grid-cols-2 lg:grid-cols-4 ${PANEL_GRID_CLASS}`}>
+    <div className={`grid grid-cols-1 sm:grid-cols-3 ${PANEL_GRID_CLASS}`}>
       {items.map((k) => (
         <a key={k.label} href={k.href} className="group bg-card p-4 hover:bg-muted/40 transition-colors">
           <span className="flex items-center justify-between gap-2 text-sm text-muted-foreground">
@@ -445,23 +528,6 @@ function ZuErledigen({ aufgaben, pflege }: { aufgaben: Aufgabe[]; pflege: Pruefp
   );
 }
 
-// Zuletzt Bearbeitetes als Bildleiste: am Handy zum Wischen, am Rechner in einer Reihe.
-function Bildleiste({ items }: { items: { key: string; href: string; titel: string; zeile: string; fotos: Attachment[] }[] }) {
-  return (
-    <ul className={`grid grid-flow-col auto-cols-[8.5rem] gap-3 pb-1 ${WISCHEN} sm:grid-flow-row sm:auto-cols-auto sm:grid-cols-3 lg:grid-cols-6 sm:overflow-visible`}>
-      {items.map((z) => (
-        <li key={z.key}>
-          <a href={z.href} className="group block">
-            <Thumb fotos={z.fotos} size="medium" className="w-full aspect-square rounded-md" />
-            <span className="block mt-2 text-sm font-medium leading-snug line-clamp-2 group-hover:underline underline-offset-4">{z.titel}</span>
-            <span className="block text-sm text-muted-foreground truncate">{z.zeile}</span>
-          </a>
-        </li>
-      ))}
-    </ul>
-  );
-}
-
 function fristStatus(iso: string): "ueberfaellig" | "bald" | "ok" | "" {
   if (!iso) return "";
   const heute = new Date();
@@ -476,45 +542,50 @@ function kurzDatum(iso: string): string {
   return Number.isNaN(d.getTime()) ? "" : d.toLocaleDateString("de-DE", { day: "numeric", month: "numeric" });
 }
 
-function latest(...dates: string[]): string {
-  return dates.filter(Boolean).sort().at(-1) ?? "";
-}
-
 const AUSSER_HAUS_LINK = "/bestand?tab=kommission";
 
 function plural(n: number, eins: string, mehrere: string): string {
   return `${zahl.format(n)} ${n === 1 ? eins : mehrere}`;
 }
 
-// Kleine Zähltabelle: erste Spalte Text, danach Zahlen. Nullen als Strich, damit Werte auffallen.
-function CountTable({ head, rows, empty }: { head: string[]; rows: CountRow[]; empty: string }) {
-  if (rows.length === 0) return <EmptyState text={empty} />;
+// Die Lagerliste der Werkstatt: eine Zeile je Modell, Stück je Zustand. Darunter je Glasur, was frei ist
+// und wie viele davon aus einem Brand stammen, also zusammen verkauft werden können. Kein Nachzählen nötig.
+function Lagerliste({ staende, zustaende, tab, leer }: { staende: ModellStand[]; zustaende: string[]; tab: Serie; leer: string }) {
+  if (staende.length === 0) return <EmptyState text={leer} />;
   return (
     <table className="w-full text-base">
       <thead>
         <tr className="border-b text-sm text-muted-foreground">
-          {head.map((h, i) => (
-            <th key={h} scope="col" className={`py-2 font-normal ${i === 0 ? "text-left" : "text-right pl-3"}`}>
-              {h}
+          <th scope="col" className="py-2 font-normal text-left">
+            Modell
+          </th>
+          {zustaende.map((z) => (
+            <th key={z} scope="col" className="py-2 pl-3 font-normal text-right">
+              {z}
             </th>
           ))}
         </tr>
       </thead>
       <tbody className="divide-y">
-        {rows.map((r) => (
-          <tr key={r.label} className="hover:bg-muted/40">
-            <th scope="row" className="py-0 text-left font-medium">
-              <a href={r.href} className="flex items-center min-h-11 hover:underline underline-offset-4">
-                {r.label}
-              </a>
-            </th>
-            {r.values.map((v, i) => (
-              <td key={i} className={`py-2 pl-3 text-right tabular-nums ${i === r.values.length - 1 ? "font-semibold" : ""} ${v === 0 ? "text-muted-foreground" : ""}`}>
-                {v === 0 ? "–" : zahl.format(v)}
-              </td>
-            ))}
-          </tr>
-        ))}
+        {staende.map((s) => {
+          const frei = brandGruppen(s.posten).map((g) => `${g.glasur || "ohne Glasur"} ${zahl.format(g.gesamt)}${g.braende.length > 1 ? ` (${zahl.format(g.zusammen)} aus einem Brand)` : ""}`);
+          const zusatz = [s.reserviert > 0 && `${zahl.format(s.reserviert)} reserviert`, s.ausserHaus > 0 && `${zahl.format(s.ausserHaus)} außer Haus`].filter(Boolean);
+          return (
+            <tr key={s.modellId || s.modell} className="hover:bg-muted/40 align-top">
+              <th scope="row" className="py-2 text-left font-normal">
+                <a href={`/bestand?tab=${tab}&q=${encodeURIComponent(s.modell)}`} className="block min-h-11 hover:underline underline-offset-4">
+                  <span className="block font-medium">{s.modell}</span>
+                  {[...frei, ...zusatz].length > 0 && <span className="block text-sm text-muted-foreground">{[...frei, ...zusatz].join(" · ")}</span>}
+                </a>
+              </th>
+              {zustaende.map((z) => (
+                <td key={z} className={`py-2 pl-3 text-right tabular-nums ${(s.je[z] ?? 0) === 0 ? "text-muted-foreground" : "font-semibold"}`}>
+                  {(s.je[z] ?? 0) === 0 ? "–" : zahl.format(s.je[z])}
+                </td>
+              ))}
+            </tr>
+          );
+        })}
       </tbody>
     </table>
   );
@@ -533,6 +604,7 @@ function FristBadge({ iso }: { iso: string }) {
 
 export default function Block() {
   const [alleModelle, setAlleModelle] = useState(false);
+  const [serie, setSerie] = useState<Serie>("geschirr");
   const unikateQuery = useRecords({ from: ds.unikate, select: unikatSelect, count: PAGE_SIZE });
   const editionQuery = useRecords({ from: ds.edition, select: editionSelect, count: PAGE_SIZE });
   const partnerQuery = useRecords({ from: ds.partner, select: partnerSelect, count: PAGE_SIZE });
@@ -603,17 +675,6 @@ export default function Block() {
     };
   }, [unikate, editionen, jahr]);
 
-  const typRows = useMemo<CountRow[]>(() => {
-    const imBestand = unikate.filter((u) => u.status !== VERKAUFT && u.typ);
-    const typen = [...new Set(imBestand.map((u) => u.typ))].sort((a, b) => a.localeCompare(b, "de"));
-    return typen.map((typ) => {
-      const list = imBestand.filter((u) => u.typ === typ);
-      const imHaus = list.filter((u) => !isAusserHaus(u.status)).length;
-      const ausser = list.length - imHaus;
-      return { label: typ, href: `/bestand?typ=${encodeURIComponent(typ)}&tab=alle`, values: [imHaus, ausser, list.length] };
-    });
-  }, [unikate]);
-
   // Mengenlager je Serie wie auf der Lagerliste: eine Zeile je Modell, Stück je Zustand. „roh“ nur, wenn es Rohware gibt.
   const mengen = useMemo(
     () =>
@@ -621,7 +682,7 @@ export default function Block() {
         const staende = nachModell(editionen.filter((e) => e.serie === serie));
         const zustaende = ZUSTAENDE.filter((z) => z !== ROH || staende.some((s) => (s.je[ROH] ?? 0) > 0));
         const summe = (z: string) => staende.reduce((n, s) => n + (s.je[z] ?? 0), 0);
-        const tab = serie === GESCHIRR ? "geschirr" : "edition";
+        const tab: Serie = serie === GESCHIRR ? "geschirr" : "edition";
         return {
           serie,
           tab,
@@ -630,10 +691,7 @@ export default function Block() {
           je: Object.fromEntries(zustaende.map((z) => [z, summe(z)])) as Record<string, number>,
           gesamt: zustaende.reduce((n, z) => n + summe(z), 0),
           wertGlasiert: editionen.filter((e) => e.serie === serie && e.zustand === GLASIERT).reduce((n, e) => n + e.anzahl * (e.vk ?? 0), 0),
-          rows: staende.map((s) => {
-            const values = zustaende.map((z) => s.je[z] ?? 0);
-            return { label: s.modell, href: `/bestand?tab=${tab}&q=${encodeURIComponent(s.modell)}`, values: [...values, values.reduce((a, b) => a + b, 0)] };
-          }),
+          ausserHaus: staende.reduce((n, s) => n + s.ausserHaus, 0),
         };
       }),
     [editionen],
@@ -670,43 +728,15 @@ export default function Block() {
     return [...groups.values()].sort((a, b) => (a.naechste || "9").localeCompare(b.naechste || "9"));
   }, [unikate, partnerInfo]);
 
-  const zuletzt = useMemo(() => {
-    const items = [
-      ...unikate.map((u) => ({
-        key: `u-${u.id}`,
-        href: `/bestand?id=${u.id}`,
-        titel: u.name || "Ohne Namen",
-        zeile: [u.status, kurzDatum(latest(u.erfasstAm, u.geaendertAm))].filter(Boolean).join(" · "),
-        fotos: u.fotos,
-        zeit: latest(u.erfasstAm, u.geaendertAm),
-      })),
-      ...editionen.map((e) => ({
-        key: `e-${e.id}`,
-        href: `/bestand?tab=${e.serie === GESCHIRR ? "geschirr" : "edition"}&q=${encodeURIComponent(e.modell)}`,
-        titel: e.modell,
-        zeile: [postenText(e), plural(e.anzahl, "Stück", "Stück")].join(" · "),
-        fotos: e.fotos,
-        zeit: latest(e.erfasstAm, e.geaendertAm),
-      })),
-    ];
-    return items.sort((a, b) => b.zeit.localeCompare(a.zeit)).slice(0, RECENT_COUNT);
-  }, [unikate, editionen]);
-
   // Geschirr wird aus geschrühter Ware glasiert. Wird sie knapp, muss nachgedreht werden.
   const knapp = geschirr.staende.filter((s) => (s.je[GESCHRUEHT] ?? 0) < LOW_STOCK).sort((a, b) => (a.je[GESCHRUEHT] ?? 0) - (b.je[GESCHRUEHT] ?? 0));
   const loading = unikateQuery.status === "pending" || editionQuery.status === "pending";
   const failed = unikateQuery.status === "error" || editionQuery.status === "error";
 
-  const mengeSub = (m: (typeof mengen)[number]) => m.zustaende.filter((z) => m.je[z] > 0).map((z) => `${z} ${zahl.format(m.je[z])}`);
+  const mengeSub = (m: (typeof mengen)[number]) => [m.zustaende.filter((z) => m.je[z] > 0).map((z) => `${z} ${zahl.format(m.je[z])}`).join(" · "), ...(m.ausserHaus > 0 ? [`${zahl.format(m.ausserHaus)} außer Haus`] : [])];
   const kennzahlen: Kennzahl[] = [
     { label: GESCHIRR, value: zahl.format(geschirr.gesamt), sub: mengeSub(geschirr), href: "/bestand?tab=geschirr" },
     { label: EDITION_PROGRAMM, value: zahl.format(edition.gesamt), sub: [...mengeSub(edition), ...(edition.wertGlasiert > 0 ? [`Wert glasiert ${euro.format(edition.wertGlasiert)}`] : [])], href: "/bestand?tab=edition" },
-    {
-      label: "Reserviert",
-      value: zahl.format(reservierungen.reduce((n, r) => n + r.anzahl, 0)),
-      sub: [reservierungen.length === 1 ? "für 1 Kunden oder Auftrag" : `für ${zahl.format(reservierungen.length)} Kunden oder Aufträge`],
-      href: "/bestand?tab=geschirr",
-    },
     {
       label: "Unikate im Haus",
       value: zahl.format(stats.verfuegbar + stats.reserviert),
@@ -807,54 +837,47 @@ export default function Block() {
               </Section>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
-              {mengen.map((m) => (
-                <Section key={m.serie} title={`${m.serie} je Modell`} description="Stück nach Zustand">
-                  <CountTable
-                    head={["Modell", ...m.zustaende, "gesamt"]}
-                    rows={alleModelle ? m.rows : m.rows.slice(0, MODELLE_SICHTBAR)}
-                    empty={`Noch kein ${m.serie} im Lager.`}
-                  />
-                  {m.rows.length > MODELLE_SICHTBAR && (
-                    <button type="button" onClick={() => setAlleModelle((x) => !x)} className="inline-flex items-center gap-1 min-h-11 text-base font-medium text-primary hover:underline underline-offset-4">
-                      {alleModelle ? "Weniger zeigen" : `Alle ${zahl.format(m.rows.length)} Modelle zeigen`}
-                      <ChevronDown className={`w-4 h-4 transition-transform ${alleModelle ? "rotate-180" : ""}`} aria-hidden />
-                    </button>
-                  )}
-                </Section>
-              ))}
-            </div>
+            <Section title="Lagerliste" description="Was ist da, in welchem Zustand, und wie viel davon passt zusammen">
+              <Tabs
+                label="Serie"
+                tabs={mengen.map((m) => ({ key: m.tab, label: m.serie, count: m.gesamt }))}
+                value={serie}
+                onChange={setSerie}
+              />
+              {mengen
+                .filter((m) => m.tab === serie)
+                .map((m) => (
+                  <div key={m.tab}>
+                    <Lagerliste staende={alleModelle ? m.staende : m.staende.slice(0, MODELLE_SICHTBAR)} zustaende={m.zustaende} tab={m.tab} leer={`Noch kein ${m.serie} im Lager.`} />
+                    {m.staende.length > MODELLE_SICHTBAR && (
+                      <button type="button" onClick={() => setAlleModelle((x) => !x)} className="inline-flex items-center gap-1 min-h-11 text-base font-medium text-primary hover:underline underline-offset-4">
+                        {alleModelle ? "Weniger zeigen" : `Alle ${zahl.format(m.staende.length)} Modelle zeigen`}
+                        <ChevronDown className={`w-4 h-4 transition-transform ${alleModelle ? "rotate-180" : ""}`} aria-hidden />
+                      </button>
+                    )}
+                  </div>
+                ))}
+            </Section>
 
-            <Section title="Zuletzt erfasst oder geändert">{zuletzt.length === 0 ? <EmptyState text="Noch nichts erfasst." /> : <Bildleiste items={zuletzt} />}</Section>
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
-              <Section
-                title="Unikate außer Haus"
-                description="Nach Partner, früheste Rückgabe zuerst"
-              >
-                {ausserHausGruppen.length === 0 ? (
-                  <EmptyState text="Zurzeit ist nichts außer Haus." />
-                ) : (
-                  <ul className="divide-y">
-                    {ausserHausGruppen.slice(0, AUSSER_HAUS_MAX).map((g) => (
-                      <li key={g.key}>
-                        <ListRow
-                          title={g.name}
-                          sub={[plural(g.anzahl, "Stück", "Stück"), g.art, g.ort].filter(Boolean).join(" · ")}
-                          meta={<FristBadge iso={g.naechste} />}
-                          href={g.key === "ohne" ? AUSSER_HAUS_LINK : `${AUSSER_HAUS_LINK}&q=${encodeURIComponent(g.name)}`}
-                        />
-                      </li>
-                    ))}
-                  </ul>
-                )}
-                {ausserHausGruppen.length > AUSSER_HAUS_MAX && <p className="text-sm text-muted-foreground">und {ausserHausGruppen.length - AUSSER_HAUS_MAX} weitere Partner im Bestand</p>}
-              </Section>
-
-              <Section title="Unikate nach Typ" description="Ohne verkaufte Stücke">
-                <CountTable head={["Typ", "im Haus", "außer Haus", "gesamt"]} rows={typRows} empty="Noch keine Unikate im Bestand." />
-              </Section>
-            </div>
+            <Section title="Unikate außer Haus" description="Nach Partner, früheste Rückgabe zuerst">
+              {ausserHausGruppen.length === 0 ? (
+                <EmptyState text="Zurzeit ist nichts außer Haus." />
+              ) : (
+                <ul className="divide-y">
+                  {ausserHausGruppen.slice(0, AUSSER_HAUS_MAX).map((g) => (
+                    <li key={g.key}>
+                      <ListRow
+                        title={g.name}
+                        sub={[plural(g.anzahl, "Stück", "Stück"), g.art, g.ort].filter(Boolean).join(" · ")}
+                        meta={<FristBadge iso={g.naechste} />}
+                        href={g.key === "ohne" ? AUSSER_HAUS_LINK : `${AUSSER_HAUS_LINK}&q=${encodeURIComponent(g.name)}`}
+                      />
+                    </li>
+                  ))}
+                </ul>
+              )}
+              {ausserHausGruppen.length > AUSSER_HAUS_MAX && <p className="text-sm text-muted-foreground">und {ausserHausGruppen.length - AUSSER_HAUS_MAX} weitere Partner im Bestand</p>}
+            </Section>
           </>
         )}
       </div>

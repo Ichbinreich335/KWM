@@ -7,8 +7,8 @@ Die App läuft in Softr (`kwm-lager.softr.app`, später `lager.<KWM-Domain>.de`,
 - `src/shared/`: **gemeinsame Bauteile, nur hier ändern.**
   - `konstanten.ts`: Status-Werte
   - `daten.ts`: Feldwerte umwandeln, Datum, Zahlen, CSV
-  - `mengen.ts`: **Mengenlager** für Geschirr und Edition. Ein Posten ist eindeutig durch Modell, Zustand (roh, geschrüht, glasiert), Glasur, Brand und Reservierung. `nachModell` fasst je Modell zusammen (wie die Lagerliste der Werkstatt), `planeUmbuchung` plant Glasieren, Reservieren und Ausbuchen auf dem frisch geladenen Stand
-  - `ui.tsx`: **Grundbausteine** `Knopf`, `Feld`, `Textfeld`, `Stueckzahl`, `TextMitVorschlag`, `AktionKnopf`, `Auswahl`, `SchalterFeld`, `Ankreuzfeld`, `Etikett` sowie `PANEL_CLASS` (Box), `DIALOG_CLASS` (Fenster), `POPOVER_CLASS` (Menü), Status-Farben. Außerdem Auswahl-Knopf, Knopfreihe, Reiter, Status-Badge, Felder, Auswahlliste, Foto-Vorschau und Foto-Auswahl, „+ Neu“, Kachel, Bereich, Listenzeile, Seitenkopf, Fenster-Kopf, Zustände für Laden, Fehler und „leer“
+  - `mengen.ts`: **Mengenlager** für Geschirr und Edition. Ein Posten ist eindeutig durch Modell, Zustand (roh, geschrüht, glasiert), Glasur, Brand, Reservierung, Status mit Partner (ausgestellt, in Kommission) sowie gedreht und glasiert von. `nachModell` fasst je Modell zusammen (wie die Lagerliste der Werkstatt), `brandGruppen` zählt je Glasur die freie Ware nach Brand („zusammen verkaufbar“), `planeUmbuchung` plant Glasieren, Reservieren, Ausstellen und Ausbuchen auf dem frisch geladenen Stand
+  - `ui.tsx`: **Grundbausteine** `Knopf`, `Feld`, `Textfeld`, `Stueckzahl`, `TextMitVorschlag`, `AktionKnopf`, `GlasurWahl` (Glasuren des Modells, andere wählen oder neu anlegen), `Auswahl`, `SchalterFeld`, `Ankreuzfeld`, `Etikett` sowie `PANEL_CLASS` (Box), `DIALOG_CLASS` (Fenster), `POPOVER_CLASS` (Menü), Status-Farben. Außerdem Auswahl-Knopf, Knopfreihe, Reiter, Status-Badge, Felder, Auswahlliste, Foto-Vorschau und Foto-Auswahl, „+ Neu“, Kachel, Bereich, Listenzeile, Seitenkopf, Fenster-Kopf, Zustände für Laden, Fehler und „leer“
 - `src/blocks/`: Quelltext je Block. Bauteile werden mit `import { … } from "../shared/…"` eingebunden.
 - `blocks/`: **erzeugt, nicht von Hand ändern.** Softr kompiliert jeden Block als einzelne Datei und kann keinen Code zwischen Blöcken teilen. `build.mjs` setzt deshalb die benutzten Bauteile in jeden Block ein und lässt ungenutzte weg.
 
@@ -18,7 +18,7 @@ Die App läuft in Softr (`kwm-lager.softr.app`, später `lager.<KWM-Domain>.de`,
 | `src/blocks/bestand.tsx` | `/bestand` | Bestand – Reiter, Tabelle, Detail |
 | `src/blocks/tabelle.tsx` | `/tabelle` | Tabelle – alle Objekte frei filterbar |
 | `src/blocks/uebersicht.tsx` | `/` | Übersicht – Dashboard |
-| `src/blocks/stammdaten.tsx` | `/stammdaten` | Stammdaten – Künstler, Glasuren, Modelle, Partner, Lagerorte |
+| `src/blocks/stammdaten.tsx` | `/stammdaten` | Stammdaten – Personen, Glasuren, Modelle, Partner, Lagerorte |
 
 ## Ablauf bei einer Änderung
 

@@ -1,5 +1,6 @@
 // Mengenlager für Geschirr und Edition: Der Bestand ist eine Zahl je Posten.
-// Ein Posten ist eindeutig durch Modell, Zustand, Glasur, Brand und Reservierung. Gleiche Posten werden zusammengezählt.
+// Ein Posten ist eindeutig durch Modell, Zustand, Glasur, Brand, Reservierung, Status mit Partner und wer gedreht und glasiert hat.
+// Gleiche Posten werden zusammengezählt.
 import { GLASIERT, GESCHRUEHT, ROH, ZUSTAENDE, serieVon } from "../shared/konstanten";
 import { type Attachment, type Opt, type RawItem, asAttachments, asOpts, compareNr, formatDate, lookupValue, modellLabel, num, str } from "../shared/daten";
 
@@ -15,6 +16,14 @@ export type Posten = {
   glasur: string;
   brand: string;
   reserviert: string;
+  status: string;
+  partnerId: string;
+  partner: string;
+  gedrehtId: string;
+  gedreht: string;
+  glasiertId: string;
+  glasiert: string;
+  masse: string;
   anzahl: number;
   vk: number | null;
   lagerort: Opt | undefined;
@@ -22,7 +31,7 @@ export type Posten = {
   notiz: string;
 };
 
-export type PostenKey = Pick<Posten, "modellId" | "zustand" | "glasurId" | "brand" | "reserviert">;
+export type PostenKey = Pick<Posten, "modellId" | "zustand" | "glasurId" | "brand" | "reserviert" | "status" | "partnerId" | "gedrehtId" | "glasiertId">;
 
 // Liest einen Datensatz des Editionsbestands. Jeder Block wählt seine Felder selbst aus, fehlende bleiben leer.
 export function toPosten(item: RawItem): Posten {
@@ -30,6 +39,9 @@ export function toPosten(item: RawItem): Posten {
   const modell = asOpts(f.modell)[0];
   const nr = str(lookupValue(f.artikelnr));
   const glasur = asOpts(f.glasur)[0];
+  const partner = asOpts(f.partner)[0];
+  const gedreht = asOpts(f.gedreht)[0];
+  const glasiert = asOpts(f.glasiert)[0];
   return {
     id: item.id,
     modellId: modell?.id ?? "",
@@ -42,6 +54,14 @@ export function toPosten(item: RawItem): Posten {
     glasur: glasur?.label ?? "",
     brand: str(f.brand).slice(0, 10),
     reserviert: str(f.reserviert).trim(),
+    status: asOpts(f.status)[0]?.label ?? "",
+    partnerId: partner?.id ?? "",
+    partner: partner?.label ?? "",
+    gedrehtId: gedreht?.id ?? "",
+    gedreht: gedreht?.label ?? "",
+    glasiertId: glasiert?.id ?? "",
+    glasiert: glasiert?.label ?? "",
+    masse: str(f.masse).trim(),
     anzahl: num(f.anzahl) ?? 0,
     vk: num(lookupValue(f.vk)),
     lagerort: asOpts(f.lagerort)[0],
@@ -51,7 +71,40 @@ export function toPosten(item: RawItem): Posten {
 }
 
 export function gleicherPosten(a: PostenKey, b: PostenKey): boolean {
-  return a.modellId === b.modellId && a.zustand === b.zustand && a.glasurId === b.glasurId && a.brand === b.brand && a.reserviert.toLowerCase() === b.reserviert.toLowerCase();
+  return (
+    a.modellId === b.modellId &&
+    a.zustand === b.zustand &&
+    a.glasurId === b.glasurId &&
+    a.brand === b.brand &&
+    a.reserviert.toLowerCase() === b.reserviert.toLowerCase() &&
+    a.status === b.status &&
+    a.partnerId === b.partnerId &&
+    a.gedrehtId === b.gedrehtId &&
+    a.glasiertId === b.glasiertId
+  );
+}
+
+export const keyVon = (p: Posten): PostenKey => ({
+  modellId: p.modellId,
+  zustand: p.zustand,
+  glasurId: p.glasurId,
+  brand: p.brand,
+  reserviert: p.reserviert,
+  status: p.status,
+  partnerId: p.partnerId,
+  gedrehtId: p.gedrehtId,
+  glasiertId: p.glasiertId,
+});
+
+// Ausgestellt oder in Kommission: Die Stücke sind nicht in der Werkstatt.
+export const ausserHaus = (p: Pick<Posten, "status">) => p.status !== "";
+
+// Frei verkaufbar: glasiert, nicht reserviert und in der Werkstatt.
+export const verkaufbar = (p: Posten) => p.zustand === GLASIERT && !p.reserviert && !ausserHaus(p);
+
+// Status für die Anzeige, z. B. „ausgestellt bei Galerie Mitte“.
+export function statusText(p: Pick<Posten, "status" | "partner">): string {
+  return p.status ? [p.status, p.partner && `bei ${p.partner}`].filter(Boolean).join(" ") : "";
 }
 
 // Nächster Arbeitsschritt: roh → Schrühbrand → geschrüht → Glasurbrand → glasiert. Glasiert ist fertig.
@@ -69,8 +122,8 @@ export function postenText(p: Pick<Posten, "zustand" | "glasur" | "brand">): str
 }
 
 // Bezeichnung des Datensatzes (Hauptfeld in der Datenbank), damit die Tabelle in Softr lesbar bleibt.
-export function bezeichnung(modell: string, p: Pick<Posten, "zustand" | "glasur" | "brand" | "reserviert">): string {
-  return [modell, postenText(p), p.reserviert && `für ${p.reserviert}`].filter(Boolean).join(" · ");
+export function bezeichnung(modell: string, p: Pick<Posten, "zustand" | "glasur" | "brand" | "reserviert" | "status" | "partner">): string {
+  return [modell, postenText(p), p.reserviert && `für ${p.reserviert}`, statusText(p)].filter(Boolean).join(" · ");
 }
 
 export type ModellStand = {
@@ -82,6 +135,9 @@ export type ModellStand = {
   fotos: Attachment[];
   je: Record<string, number>;
   reserviert: number;
+  ausserHaus: number;
+  // Größte Menge einer Glasur aus einem Brand, frei und in der Werkstatt: so viele passen zusammen.
+  zusammen: number;
   posten: Posten[];
 };
 
@@ -94,19 +150,46 @@ export function nachModell(posten: Posten[]): ModellStand[] {
   for (const p of posten) {
     if (p.anzahl <= 0) continue;
     const key = p.modellId || p.modell;
-    const s = map.get(key) ?? { modellId: p.modellId, nr: p.nr, modell: p.modell, serie: p.serie, typ: p.typ, fotos: [], je: {}, reserviert: 0, posten: [] };
+    const s = map.get(key) ?? { modellId: p.modellId, nr: p.nr, modell: p.modell, serie: p.serie, typ: p.typ, fotos: [], je: {}, reserviert: 0, ausserHaus: 0, zusammen: 0, posten: [] };
     s.je[p.zustand] = (s.je[p.zustand] ?? 0) + p.anzahl;
     if (p.reserviert) s.reserviert += p.anzahl;
+    if (ausserHaus(p)) s.ausserHaus += p.anzahl;
     if (!s.fotos.length && p.fotos.length) s.fotos = p.fotos;
     s.posten.push(p);
     map.set(key, s);
   }
   const stande = [...map.values()];
   for (const s of stande) {
+    s.zusammen = Math.max(0, ...brandGruppen(s.posten).map((g) => g.zusammen));
     s.posten.sort((a, b) => ZUSTAND_RANG(a.zustand) - ZUSTAND_RANG(b.zustand) || a.glasur.localeCompare(b.glasur, "de") || b.brand.localeCompare(a.brand) || a.reserviert.localeCompare(b.reserviert, "de"));
   }
   return stande.sort((a, b) => compareNr(a.nr, b.nr) || a.modell.localeCompare(b.modell, "de"));
 }
+
+export type BrandGruppe = { glasurId: string; glasur: string; gesamt: number; zusammen: number; braende: { brand: string; anzahl: number }[] };
+
+// Glasierte Ware je Glasur, aufgeteilt nach Brand. Stücke aus verschiedenen Bränden sehen verschieden aus
+// und werden nicht zusammen verkauft. Gezählt wird nur, was frei und in der Werkstatt ist. Ohne Datum gilt „Brand unbekannt“.
+export function brandGruppen(posten: Posten[]): BrandGruppe[] {
+  const map = new Map<string, BrandGruppe>();
+  for (const p of posten) {
+    if (!verkaufbar(p) || p.anzahl <= 0) continue;
+    const g = map.get(p.glasurId) ?? { glasurId: p.glasurId, glasur: p.glasur, gesamt: 0, zusammen: 0, braende: [] };
+    g.gesamt += p.anzahl;
+    const b = g.braende.find((x) => x.brand === p.brand);
+    if (b) b.anzahl += p.anzahl;
+    else g.braende.push({ brand: p.brand, anzahl: p.anzahl });
+    map.set(p.glasurId, g);
+  }
+  const gruppen = [...map.values()];
+  for (const g of gruppen) {
+    g.braende.sort((a, b) => b.anzahl - a.anzahl || b.brand.localeCompare(a.brand));
+    g.zusammen = g.braende[0]?.anzahl ?? 0;
+  }
+  return gruppen.sort((a, b) => b.gesamt - a.gesamt || a.glasur.localeCompare(b.glasur, "de"));
+}
+
+export const brandName = (brand: string) => (brand ? `Brand ${formatDate(brand)}` : "Brand unbekannt");
 
 // „geschrüht 25 · glasiert 12“: nur Zustände mit Bestand, in der Reihenfolge des Ablaufs.
 export function standText(je: Record<string, number>): string {
@@ -117,7 +200,7 @@ export function standText(je: Record<string, number>): string {
 
 export type Umbuchung = {
   quelle: { id: string; anzahl: number } | { id: string; loeschen: true };
-  ziel?: { id: string; anzahl: number } | { neu: PostenKey & { anzahl: number; lagerortId: string } };
+  ziel?: { id: string; anzahl: number } | { neu: PostenKey & { anzahl: number; lagerortId: string; masse: string } };
 };
 
 // Plant das Umbuchen eines Teils eines Postens auf einen anderen, auf dem frisch geladenen Stand.
@@ -135,7 +218,7 @@ export function planeUmbuchung(fresh: Posten[], quelleId: string, entnommen: num
   const gut = entnommen - ausschuss;
   if (ziel && gut > 0) {
     const vorhanden = fresh.find((p) => p.id !== quelle.id && gleicherPosten(p, ziel));
-    plan.ziel = vorhanden ? { id: vorhanden.id, anzahl: vorhanden.anzahl + gut } : { neu: { ...ziel, anzahl: gut, lagerortId } };
+    plan.ziel = vorhanden ? { id: vorhanden.id, anzahl: vorhanden.anzahl + gut } : { neu: { ...ziel, anzahl: gut, lagerortId, masse: quelle.masse } };
   }
   return plan;
 }
