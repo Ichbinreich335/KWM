@@ -1,7 +1,7 @@
 // Manufakturprogramm: Geschirr und Edition in Warengruppen, jede mit Sätzen aus Foto und Teileliste
 // (Sanity-Typ `manufakturteil`; Vorschlag: Foto je Satz, Teile als Liste). Keine Preise, kein Bestand.
 import { BRENNTEMPERATUR, grad } from './brenntemperatur';
-import type { BildAngabe, DatumEintrag, Fakt, Regalfach } from './typen';
+import type { BildAngabe, DatumEintrag, Regalfach } from './typen';
 
 export interface Teil {
   name: string;
@@ -470,19 +470,6 @@ export const arbeitsweise: readonly DatumEintrag[] = [
   },
   { jahr: 'Umwelt', text: 'Es werden ausschließlich umweltschonende Materialien und Fertigungsverfahren angewendet.' },
   { jahr: 'Gebrauch', text: 'Alle Stücke sind spülmaschinenfest.' },
-];
-
-/** Kurzfakten zum Manufakturprogramm auf der Startseite */
-export const kurzfakten: readonly Fakt[] = [
-  { label: 'Masse', wert: 'Westerwälder Steinzeug, auf der Töpferscheibe gedreht' },
-  { label: 'Schrühbrand', wert: `Elektroofen, etwa ${grad(BRENNTEMPERATUR.schruehbrand)}`, ergaenzend: true },
-  { label: 'Glasurbrand', wert: `Gasofen, ca. ${grad(BRENNTEMPERATUR.glasurbrandGas)}, reduzierende Atmosphäre` },
-  {
-    label: 'Programm',
-    wert: 'Vom Teller bis zum Krug, dazu die Edition mit Vasen, Pflanzgefäßen und Dosen',
-    ergaenzend: true,
-  },
-  { label: 'Gebrauch', wert: 'Alle Stücke sind spülmaschinenfest' },
 ];
 
 /** Regal im Kopf der Seite: je Warengruppe ein Foto mit Beschriftung (Vorschlag Sanity: Feld `kopfbild` je Gruppe) */

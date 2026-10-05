@@ -393,6 +393,21 @@ export const stimmungen: readonly Stimmung[] = [
   },
 ];
 
+/**
+ * Einzelwerk der Startseite (Meisterstücke): Titel und Jahr wie auf den Seiten Meisterstücke und Young-Jae Lee
+ * („Teeschale, ohne Titel, 2023“), Maße und Fotonachweis sind nicht belegt.
+ */
+export const einzelwerk: Werk = {
+  schluessel: 'teeschale-2023',
+  titel: 'Teeschale, ohne Titel',
+  jahr: '2023',
+  angaben: [{ jahr: '2023' }],
+  bild: {
+    src: '/img/kwm/teeschale.webp',
+    alt: 'Teeschale von Young-Jae Lee mit rotbraun geflammter Glasur, hellen Pinselzügen und dunklen Eisensprenkeln',
+  },
+};
+
 /** Auswahl der Startseite: Kacheln mit Jahr, Maßen und Ausführung, verlinkt auf den Katalog */
 export const werkschau: readonly Werk[] = [
   {

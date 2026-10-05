@@ -186,7 +186,7 @@ export const orte: readonly Ort[] = [
     schluessel: 'korea',
     stadt: 'Korea',
     land: 'Südkorea',
-    bild: { src: '/img/kwm/teeschale.webp', alt: '' },
+    bild: { src: '/img/kwm/kumme_3.webp', alt: '' },
     gewicht: 'mittel',
     reihenfolge: 5,
     haeuser: [

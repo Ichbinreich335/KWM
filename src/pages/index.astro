@@ -1,14 +1,11 @@
 ---
 import '../styles/basis.css';
-import Button from '../components/Button.astro';
 import LinkArrow from '../components/LinkArrow.astro';
 import { BRENNTEMPERATUR, grad } from '../data/brenntemperatur';
 import Statement from '../components/Statement.astro';
 import SectionHead from '../components/SectionHead.astro';
-import FactsTable from '../components/FactsTable.astro';
-import { kurzfakten } from '../data/manufaktur';
 import WorkTile from '../components/WorkTile.astro';
-import { stueckBezeichnung, werk, werkschau } from '../data/werke';
+import { einzelwerk, stueckBezeichnung, werkschau } from '../data/werke';
 import { anfrageLink } from '../scripts/anfrage-link';
 import SigAktuell from '../components/SigAktuell.astro';
 import { ausstellungen } from '../data/ausstellungen';
@@ -29,8 +26,7 @@ import InquiryForm from '../components/InquiryForm.astro';
 import Figure from '../components/Figure.astro';
 import Woerter from '../components/Woerter.astro';
 import SigSticky from '../components/SigSticky.astro';
-import SigFarbskala from '../components/SigFarbskala.astro';
-import { glasuren } from '../data/glasuren';
+import BauhausStation from '../components/BauhausStation.astro';
 
 // 99 Schalen: Satz und Link kommen aus der Ausstellung im MOK; vorbei ist sie im Browser ausgeblendet (main.ts)
 const mok = ausstellungen.find((eintrag) => eintrag.schluessel === 'mok');
@@ -82,31 +78,8 @@ const mokLink = `/aktuelles#f-${mok.schluessel}`;
     {/* Aktuell: laufende und kommende Ausstellungen mit Flyer und Angaben, aufklappbar ohne Unterseite */}
     <SigAktuell {ausstellungen} {hinweise} />
 
-    {/* Lede */}
-    <section class="lede grid" aria-label="Über die Werkstatt">
-      <Statement typ="lede" als="p" class="lede__text">
-        Aus der ständigen Wiederholung einer handwerklichen Technik, dem Drehen auf der Töpferscheibe, erwächst die
-        vollkommene Schönheit einer Form.
-      </Statement>
-      <p class="lede__col lede__col--a" data-reveal="fade">
-        1924 auf Initiative von Margarete Krupp für die Siedlung Margaretenhöhe gegründet. Seit 1927 den Formprinzipien
-        des Bauhauses verpflichtet – über Otto Lindigs Schüler Johannes Leßmann.
-      </p>
-      <p class="lede__col lede__col--b" data-reveal="fade">
-        Seit 1986 geprägt von Young-Jae Lee: Meisterstücke aus ihrer eigenen Hand und ein Geschirr, das seitdem nahezu
-        unverändert in der Werkstatt gedreht wird.
-      </p>
-      <nav class="lines" aria-label="Zwei Linien der Werkstatt">
-        <a class="lines__item" href="/meisterstuecke" data-reveal="fade">
-          <span class="lines__name">Meisterstücke</span>
-          <span class="lines__what">Unikate aus der Hand von Young-Jae Lee: Schalen, Kummen, Vasen</span>
-        </a>
-        <a class="lines__item" href="/manufaktur" data-reveal="fade">
-          <span class="lines__name">Manufaktur</span>
-          <span class="lines__what">Geschirr nach Bauhaus-Formprinzipien, in der Werkstatt gedreht und glasiert</span>
-        </a>
-      </nav>
-    </section>
+    {/* Bauhaus: drei Entwürfe zur Wahl (?bauhaus=1|2|3) */}
+    <BauhausStation />
 
     {/* Young-Jae Lee */}
     <section class="artist" id="young-jae-lee" aria-labelledby="artist-title">
@@ -145,50 +118,9 @@ const mokLink = `/aktuelles#f-${mok.schluessel}`;
           „Die minimale Veränderung ist Young-Jae Lees unbegrenzter Freiraum – in der Form wie in der Farbigkeit der
           Glasur und der Bemalung. Ihr geht es nicht um Formerfindung, sondern um die Individualität des Gefäßes.“
         </Statement>
-        <p class="artist__heritage" data-reveal="fade">
-          Zwei Traditionen treffen sich in ihren Gefäßen: die Ideen des Bauhauses, denen sie sich verpflichtet fühlt –
-          und ihr koreanisches Erbe, „das heitere, schwerelose Empfinden für die Form und die subtilen Farben“.
-          <span class="artist__cite">Gisela Jahn, »Gefäße drehen, Gefäße betrachten, Gefäße benutzen«</span>
-        </p>
       </div>
 
       <Timeline stationen={lebensweg} weiter={{ href: '/young-jae-lee#biografie', text: 'Zum ganzen Werdegang' }} />
-    </section>
-
-    {/* Meisterstücke */}
-    <section class="works" id="meisterstuecke" aria-labelledby="works-title">
-      <SectionHead typ="start" titelId="works-title">
-        <Fragment slot="titel">Meisterstücke</Fragment>
-        <LinkArrow href="/meisterstuecke">Alle Meisterstücke</LinkArrow>
-      </SectionHead>
-      <div class="works__feature grid">
-        <Figure class="works__single">
-          <Bild
-            src="/img/kwm/werke/spindelvase-einzeln-1200.webp"
-            loading="lazy"
-            sizes="(min-width: 900px) 55vw, 100vw"
-            alt="Weiße Spindelvase mit weiter Schulter und schmalem Fuß auf hellem Grund"
-          />
-        </Figure>
-        <div class="works__single-text">
-          <Statement typ="aussage" als="p" class="works__statement">
-            Alle Meisterstücke stammen aus der Hand Young-Jae Lees – von ihr selbst gedreht, bemalt und glasiert.
-          </Statement>
-          <div class="works__single-meta">
-            <p class="works__single-name" data-reveal="fade">
-              Spindelvase <span>2006/07</span>
-            </p>
-            <LinkArrow href={anfrageLink(stueckBezeichnung(werk('spindelvase-1')))} data-reveal="fade">
-              Zu diesem Stück anfragen
-            </LinkArrow>
-          </div>
-        </div>
-      </div>
-      <ol class="works__grid grid">
-        {werkschau.map((werk) => (
-          <WorkTile werk={werk} />
-        ))}
-      </ol>
     </section>
 
     {/* Orte: Ausstellungsorte im Bildraster */}
@@ -200,29 +132,40 @@ const mokLink = `/aktuelles#f-${mok.schluessel}`;
       fussnote="Städte und Zahlen nach der Ausstellungsliste 2016 bis 2026."
     />
 
-    {/* Meditation: Haltung und Arbeitsweise */}
-    <section class="med" id="haltung-meditation" aria-labelledby="med-title">
-      <div class="med__grid grid">
-        <Statement typ="aussage" class="med__quote" textId="med-title">
-          Die Herstellung jedes neuen Gefäßes gleicht einer Meditation.
-        </Statement>
-        <div class="med__body">
-          <p data-reveal="fade">
-            Für Young-Jae Lee ist – in Anlehnung an die koreanische Tradition – nicht die ständige Neuerfindung von
-            Formen entscheidend, sondern die vollkommene Beherrschung des vorhandenen Repertoires. Erst mit der
-            Verinnerlichung der Formen wird die tägliche Arbeit an der Drehscheibe jenseits aller Routine zu einer Art
-            Exerzitium. Die Persönlichkeit beginnt einzufließen, das Individuelle drückt sich im Handwerklichen aus.
-          </p>
-        </div>
-        <Figure class="med__media">
+    {/* Meisterstücke */}
+    <section class="works" id="meisterstuecke" aria-labelledby="works-title">
+      <SectionHead typ="start" titelId="works-title">
+        <Fragment slot="titel">Meisterstücke</Fragment>
+        <LinkArrow href="/meisterstuecke">Alle Meisterstücke</LinkArrow>
+      </SectionHead>
+      <div class="works__feature grid">
+        <Figure class="works__single">
           <Bild
-            src="/img/01-seladon-gefaess.webp"
-            sizes="(min-width: 900px) 40vw, 100vw"
+            src={einzelwerk.bild.src}
             loading="lazy"
-            alt="Bauchiges Gefäß mit seladongrüner bis taubenblauer Glasur"
+            sizes="(min-width: 900px) 50vw, 100vw"
+            alt={einzelwerk.bild.alt}
           />
         </Figure>
+        <div class="works__single-text">
+          <Statement typ="aussage" als="p" class="works__statement">
+            Alle Meisterstücke stammen aus der Hand Young-Jae Lees – von ihr selbst gedreht, bemalt und glasiert.
+          </Statement>
+          <div class="works__single-meta">
+            <p class="works__single-name" data-reveal="fade">
+              {einzelwerk.titel} <span>{einzelwerk.jahr}</span>
+            </p>
+            <LinkArrow href={anfrageLink(stueckBezeichnung(einzelwerk))} data-reveal="fade">
+              Zu diesem Stück anfragen
+            </LinkArrow>
+          </div>
+        </div>
       </div>
+      <ol class="works__grid grid">
+        {werkschau.map((werk) => (
+          <WorkTile werk={werk} />
+        ))}
+      </ol>
     </section>
 
     {/* 99 Schalen: keine wie die andere, jede mit eigener Glasur */}
@@ -261,51 +204,6 @@ const mokLink = `/aktuelles#f-${mok.schluessel}`;
             Zur Ausstellung
           </LinkArrow>
         </div>
-      </div>
-    </section>
-
-    {/* Manufaktur */}
-    <section class="craft" id="manufaktur" aria-labelledby="craft-title">
-      <SectionHead typ="start" titelId="craft-title">
-        <Fragment slot="titel">Keiner Mode, keinem Zeitgeist unterworfen.</Fragment>
-        <p data-reveal="fade">
-          Unter Rückbesinnung auf die Grundprinzipien des Bauhauses entwickelte Young-Jae Lee mit Hildegard Eggemann,
-          Michael Schmandt und Claudia Neumann die Formensprache des Manufakturprogramms: zuerst 25 Grundelemente eines
-          Geschirrs – Teller, Schalen, Krüge.
-        </p>
-        <p class="craft__rule" data-reveal="fade">
-          „Jedes Stück muss gut zu drehen sein und auch zu benutzen. Alle Teile eines Geschirrs, gleich welcher Farbe,
-          sollten miteinander kombinierbar sein.“
-        </p>
-      </SectionHead>
-
-      <SigFarbskala glasuren={glasuren} />
-      <p class="scale__note grid">
-        <span>
-          In monatelangen Experimenten entstand die sechstonige Farbskala – von Schattierungen des Jadegrün über ein
-          gebrochenes Weiß bis zu Rostbraun.
-        </span>
-      </p>
-
-      <div class="craft__detail craft__detail--wide grid">
-        <Figure class="craft__media" unterschrift="Vor dem ersten Brand · Foto: Haydar Koyupinar">
-          <Bild
-            src="/img/kwm/regal.webp"
-            loading="lazy"
-            alt="Regal voller ungebrannter Tassen, Schalen, Teller und Krüge aus dem Manufakturprogramm"
-          />
-        </Figure>
-        <FactsTable fakten={kurzfakten}>
-          <Button href="/manufaktur">Zum Programm</Button>
-        </FactsTable>
-        <Figure class="craft__media3">
-          <Bild
-            src="/img/kwm/kannen.webp"
-            loading="lazy"
-            sizes="(min-width: 900px) 33vw, 100vw"
-            alt="Zwei Krüge und eine Tasse aus dem Manufakturprogramm in Hellgrün, Weiß und Dunkelgrün"
-          />
-        </Figure>
       </div>
     </section>
 
