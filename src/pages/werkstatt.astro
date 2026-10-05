@@ -1,5 +1,7 @@
 ---
 import '../styles/basis.css';
+import PersonCard from '../components/PersonCard.astro';
+import { team } from '../data/team';
 import DateList from '../components/DateList.astro';
 import { werkstattAuszeichnungen } from '../data/vita';
 import ChapterHead from '../components/ChapterHead.astro';
@@ -315,62 +317,9 @@ import '../styles/signaturen/signaturen.css';
         />
       </figure>
       <div class="people">
-        <article class="person" data-reveal="fade">
-          <h3 class="person__name">Young-Jae Lee</h3>
-          <p class="person__role">Werkstatt-Leitung</p>
-          <p>Geboren 1951 in Seoul. Seit 1987 Leitung der Keramischen Werkstatt Margaretenhöhe.</p>
-          <a class="link-arrow" href="/young-jae-lee">
-            Biografie
-          </a>
-        </article>
-        <article class="person" data-reveal="fade">
-          <h3 class="person__name">Daniela Glattki</h3>
-          <p class="person__role">Mitarbeiterin seit 2003</p>
-          <dl class="person__bio">
-            <dt>1975</dt>
-            <dd>geboren in Malapane, Polen</dd>
-            <dt>1996–1999</dt>
-            <dd>Töpferlehre bei Annette Dannhus in Celle</dd>
-            <dt>2000–2003</dt>
-            <dd>Fachschule für Keramikgestaltung in Höhr-Grenzhausen</dd>
-            <dt>2005</dt>
-            <dd>Meisterprüfung</dd>
-          </dl>
-        </article>
-        <article class="person" data-reveal="fade">
-          <h3 class="person__name">Shoko Ishioka</h3>
-          <p class="person__role">Mitarbeiterin seit 2004</p>
-          <dl class="person__bio">
-            <dt>1973</dt>
-            <dd>geboren in Tokyo, Japan</dd>
-            <dt>1992–1997</dt>
-            <dd>Studium der Kunstgeschichte bei Takahiko Okada in Tokyo</dd>
-            <dt>1997–2003</dt>
-            <dd>Studium der Kunst an der Burg Giebichenstein, Kunsthochschule bei Azade Köker</dd>
-          </dl>
-        </article>
-        <article class="person" data-reveal="fade">
-          <h3 class="person__name">Michael Schmandt</h3>
-          <p class="person__role">Geselle seit 1979</p>
-          <dl class="person__bio">
-            <dt>1957</dt>
-            <dd>geboren in Essen</dd>
-            <dt>1976</dt>
-            <dd>Ausbildung zum Scheibentöpfer in der Keramischen Werkstatt bei Helmut Gniesmer</dd>
-          </dl>
-        </article>
-        <article class="person" data-reveal="fade">
-          <h3 class="person__name">Claudia Prien</h3>
-          <p class="person__role">Bilanzbuchhalterin seit 2006</p>
-          <dl class="person__bio">
-            <dt>1969</dt>
-            <dd>geboren in Moers</dd>
-            <dt>1988–1991</dt>
-            <dd>Ausbildung zur Industriekauffrau und Betriebswirtin (VWA) bei der RAG Aktiengesellschaft in Essen</dd>
-            <dt>1995</dt>
-            <dd>Abschluss zur staatlich geprüften Bilanzbuchhalterin</dd>
-          </dl>
-        </article>
+        {team.map((person) => (
+          <PersonCard person={person} />
+        ))}
       </div>
     </ChapterHead>
 

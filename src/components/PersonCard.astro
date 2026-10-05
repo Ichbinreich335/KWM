@@ -1,0 +1,86 @@
+---
+import type { Person } from '../data/team';
+
+interface Props {
+  person: Person;
+}
+
+const { person } = Astro.props;
+---
+
+<article class="person" data-reveal="fade">
+  <h3 class="person__name">{person.name}</h3>
+  <p class="person__role">{person.rolle}</p>
+  {person.text && <p>{person.text}</p>}
+  {person.lebenslauf && (
+    <dl class="person__bio">
+      {person.lebenslauf.map((station) => (
+        <Fragment>
+          <dt>{station.jahr}</dt>
+          <dd>{station.text}</dd>
+        </Fragment>
+      ))}
+    </dl>
+  )}
+  {person.link && (
+    <a class="link-arrow" href={person.link.href}>
+      {person.link.text}
+    </a>
+  )}
+</article>
+
+<style>
+  .person {
+    grid-column: span 4;
+    border-top: 1px solid var(--ink);
+    padding-top: 18px;
+  }
+  .person__name {
+    font-family: var(--f-display);
+    font-size: var(--t-h3);
+    line-height: var(--t-h3-lh);
+    margin-bottom: 6px;
+  }
+  .person__role {
+    font-size: var(--t-meta);
+    line-height: var(--t-meta-lh);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+    margin-bottom: 16px;
+  }
+  .person p {
+    font-size: var(--t-small);
+    line-height: var(--t-small-lh);
+    margin-bottom: 6px;
+  }
+  .person dl {
+    margin: 0;
+  }
+  .person__bio {
+    display: grid;
+    grid-template-columns: 5.5em 1fr;
+    column-gap: 12px;
+    row-gap: 4px;
+    font-size: var(--t-small);
+    line-height: var(--t-small-lh);
+  }
+  .person__bio dt {
+    color: var(--ink-2);
+    font-variant-numeric: tabular-nums;
+  }
+  .person .link-arrow {
+    margin-top: 8px;
+  }
+
+  @media (max-width: 900px) {
+    .person {
+      grid-column: 1 / -1;
+    }
+  }
+  @media (min-width: 901px) and (max-width: 1200px) {
+    .person {
+      grid-column: span 6;
+    }
+  }
+</style>

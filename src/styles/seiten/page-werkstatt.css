@@ -81,24 +81,6 @@
   aspect-ratio: 900 / 140;
   object-fit: cover;
 }
-.person dl {
-  margin: 0;
-}
-.person__bio {
-  display: grid;
-  grid-template-columns: 5.5em 1fr;
-  column-gap: 12px;
-  row-gap: 4px;
-  font-size: var(--t-small);
-  line-height: var(--t-small-lh);
-}
-.person__bio dt {
-  color: var(--ink-2);
-  font-variant-numeric: tabular-nums;
-}
-.person .link-arrow {
-  margin-top: 8px;
-}
 
 /* Zollverein */
 .page-werkstatt #zollverein {

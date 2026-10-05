@@ -124,30 +124,6 @@
   gap: 56px var(--g);
   padding-inline: var(--m);
 }
-.person {
-  grid-column: span 4;
-  border-top: 1px solid var(--ink);
-  padding-top: 18px;
-}
-.person__name {
-  font-family: var(--f-display);
-  font-size: var(--t-h3);
-  line-height: var(--t-h3-lh);
-  margin-bottom: 6px;
-}
-.person__role {
-  font-size: var(--t-meta);
-  line-height: var(--t-meta-lh);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--ink-2);
-  margin-bottom: 16px;
-}
-.person p {
-  font-size: var(--t-small);
-  line-height: var(--t-small-lh);
-  margin-bottom: 6px;
-}
 
 /* Glasurproben */
 .swatches {
@@ -264,9 +240,6 @@
   .catalog__quote {
     grid-column: 1 / -1;
   }
-  .person {
-    grid-column: 1 / -1;
-  }
   .anfrage-band__text,
   .anfrage-band__actions,
   .anfrage-band__hint {
@@ -280,8 +253,5 @@
   .catalog__item--wide,
   .catalog__item--band {
     grid-column: 1 / -1;
-  }
-  .person {
-    grid-column: span 6;
   }
 }
