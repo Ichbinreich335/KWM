@@ -1,18 +1,18 @@
 ---
 interface Props {
   /** Bild mit Text darauf: `portrait` (Zitat auf dem Porträt) oder `feuer` (Abschnitt zum Brand) */
-  variante: 'portrait' | 'feuer';
+  variant: 'portrait' | 'feuer';
   /** Element der Hülle: `section` für einen eigenen Abschnitt, `div` innerhalb einer `figure` */
   als?: 'div' | 'section';
   id?: string;
   'aria-labelledby'?: string;
 }
 
-const { variante, als: Tag = 'div', ...rest } = Astro.props;
+const { variant, als: Tag = 'div', ...rest } = Astro.props;
 ---
 
 {/* Der Text haftet oben im Bild (reines CSS), das Bild selbst bewegt sich nicht gegenläufig */}
-<Tag class={`sticky-bild sticky-bild--${variante}`} {...rest}>
+<Tag class={`sticky-bild sticky-bild--${variant}`} {...rest}>
   <div class="sticky-bild__media">
     <slot name="bild" />
   </div>

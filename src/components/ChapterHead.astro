@@ -7,19 +7,19 @@ interface Props {
   titelId?: string;
   /** Zugänglicher Name für Kapitel ohne eigene Überschrift */
   beschriftung?: string;
-  ton?: 'hell' | 'flaeche' | 'anker';
+  variant?: 'hell' | 'flaeche' | 'anker';
   /** Zusätzliche Klassen für die Platzierung durch die Seite */
   class?: string | undefined;
 }
 
-const { id, titelId, beschriftung, ton = 'hell', class: klasse } = Astro.props;
+const { id, titelId, beschriftung, variant = 'hell', class: klasse } = Astro.props;
 const hatKopf = titelId !== undefined && Astro.slots.has('titel');
 ---
 
 <section
   class:list={[
     'chapter',
-    { 'chapter--flaeche on-flaeche': ton === 'flaeche', 'chapter--anker on-anker': ton === 'anker' },
+    { 'chapter--flaeche on-flaeche': variant === 'flaeche', 'chapter--anker on-anker': variant === 'anker' },
     klasse,
   ]}
   id={id}

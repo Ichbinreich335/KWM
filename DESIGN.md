@@ -277,7 +277,7 @@ Statement kennt fünf Typen nach Rolle, nicht nach Fundstelle: `lede` (Einleitun
 | `WorkCard` | Einzelwerk mit Bild, Name, Maßen, Anfrage-Link | Titel oder Zitat klein (Name), Meta (Jahr, Maße, Anfrage) | `katalog` (`breite`: standard, halb, breit mit Meta-Spalte links), `stimmung` (Bild ohne Werk); Daten aus `src/data/werke.ts`, Anfrage-Link über `anfrage-link.ts` | `.catalog__item` (Platzierung im Seitenraster: `page-meisterstuecke.css`) |
 | `WorkTile` | Kachel der Werkschau auf der Startseite: Bild, Name, Jahr, Maße, ganz ein Link zum Katalog | Zitat (Name), Meta (Jahr, Maße) | ein Look; eigenes Markup (`li`), daher getrennt von `WorkCard`; Daten aus `src/data/werke.ts` | `.piece` (Platzierung: `global.css`, `.works__grid`) |
 | `WareCard` | Geschirrserie mit Bild, Titel, Größenliste | Titel, Begleittext (Liste), Meta (Nummern) | Satz (`.set`, auch `breit`, `kontur`, nur Text); `WareGroup` bündelt die Sätze einer Warengruppe (Geschirr, Edition) | `.ware`, `.set` (`css/page-manufaktur.css`) |
-| `FactsList` | Werkangaben und Fakten: Label links, Wert rechts, Haarlinien | Meta (Label, Versalien), Fließtext oder Begleittext (Wert) | `ort`, `raster`, `zeile-hell`, `zeile-anker` (je ein bestehender Look, siehe Komponente) | `.method__facts`, `.place__info`, `.aktuell__facts`, `.feature__facts` |
+| `FactsList` | Werkangaben und Fakten: Label links, Wert rechts, Haarlinien | Meta (Label, Versalien), Fließtext oder Begleittext (Wert) | `typ`: `ort`, `raster`, `zeile`; `variant` der `zeile`: `hell`, `anker` | `.method__facts`, `.place__info`, `.aktuell__facts`, `.feature__facts` |
 | `FactsTable` | Fakten neben dem Bild: Bezeichnung über dem Wert, optional Schaltfläche im Slot | Meta (Label, Versalien), Fließtext (Wert) | ein Look; getrennt von `FactsList`, weil Markup und Zeilenbau abweichen | `.facts` |
 | `DateList` | Liste mit Jahr links, Text rechts | Jahreszahl, Begleittext, Meta | `liste` (nummeriert), `definition` (Stichwort links); hell, Fläche | `.datelist` (`css/pages.css`), Young-Jae Lee, Manufaktur, Werkstatt |
 | `PubList` | Veröffentlichungen und Texte mit Autor, Titel, Auszug | Titel, Meta, Begleittext | `artikel` (Aktuelles), `literatur`, `essays` (Young-Jae Lee) | `.pubs`, `.pub`, `.texts` (`css/page-aktuelles.css`, `css/page-young-jae-lee.css`) |
@@ -316,6 +316,7 @@ Statement kennt fünf Typen nach Rolle, nicht nach Fundstelle: `lede` (Einleitun
 
 ### Regeln für den Umbau
 - Eine Komponente trägt ihre Textstile selbst. Seiten setzen keine Schriftgrößen, Schriften oder Zeilenhöhen.
-- Varianten laufen über Props (`variant="hell | flaeche | anker"`), nicht über Seiten-CSS. Anker setzen ihre lokalen Tokens (Abschnitt 5).
+- Varianten laufen über Props (`variant="hell | flaeche | anker"`), nicht über Seiten-CSS. Der Prop `typ` bleibt der Rolle vorbehalten (Statement, PageHero, Steps usw., siehe Inventar), `variant` ist Grund und Ton.
+- Textstile für Seiten stehen als Klassen `.ts-statement`, `.ts-h3`, `.ts-quote`, `.ts-body`, `.ts-small`, `.ts-meta` in `pages.css`. Anker setzen ihre lokalen Tokens (Abschnitt 5).
 - Seitenspezifisches CSS (`css/page-*.css`) entfällt, sobald die Komponenten dieselbe Optik tragen. Was bleibt, ist nur Anordnung im 12-Spalten-Raster.
 - Inhalte kommen aus Sanity (nur freigegebene Felder), die Komponente kennt keine Preise und keine Lagerorte.

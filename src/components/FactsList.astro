@@ -3,18 +3,19 @@ import type { Fakt } from '../data/typen';
 
 interface Props {
   fakten: readonly Fakt[];
-  /** `ort`: Bezeichnung über dem Wert, Werte mit Links; `raster`: vier Spalten; `zeile-hell` und `zeile-anker`: Bezeichnung links, Wert rechts, auf hellem Grund bzw. auf dem dunklen Anker */
-  typ: 'ort' | 'raster' | 'zeile-hell' | 'zeile-anker';
-  /** Liste (`ort`, `zeile-hell`) oder ihre Zeilen (`raster`) blenden beim Scrollen ein */
+  /** `ort`: Bezeichnung über dem Wert, Werte mit Links; `raster`: vier Spalten; `zeile`: Bezeichnung links, Wert rechts */
+  typ: 'ort' | 'raster' | 'zeile';
+  /** Grund der `zeile`: hell oder dunkler Anker */
+  variant?: 'hell' | 'anker';
+  /** Liste (`ort`, `zeile`) oder ihre Zeilen (`raster`) blenden beim Scrollen ein */
   einblenden?: boolean;
 }
 
-const { fakten, typ, einblenden = false } = Astro.props;
+const { fakten, typ, variant = 'hell', einblenden = false } = Astro.props;
 const wurzel = {
   ort: 'place__info',
   raster: 'method__facts',
-  'zeile-hell': 'feature__facts',
-  'zeile-anker': 'aktuell__facts',
+  zeile: variant === 'anker' ? 'aktuell__facts' : 'feature__facts',
 } as const;
 const reveal = einblenden ? 'fade' : undefined;
 const zeilen = (wert: Fakt['wert']) => (typeof wert === 'string' ? [wert] : (wert ?? []));
@@ -95,7 +96,7 @@ const zeilen = (wert: Fakt['wert']) => (typeof wert === 'string' ? [wert] : (wer
     line-height: var(--t-body-lh);
   }
 
-  /* zeile-hell: Angaben einer Ausstellung auf hellem Grund */
+  /* zeile, hell: Angaben einer Ausstellung auf hellem Grund */
   .feature__facts {
     border-top: 1px solid var(--ink);
     margin: 28px 0;
@@ -116,7 +117,7 @@ const zeilen = (wert: Fakt['wert']) => (typeof wert === 'string' ? [wert] : (wer
     padding-top: 2px;
   }
 
-  /* zeile-anker: Angaben einer Ausstellung auf dem dunklen Anker */
+  /* zeile, anker: Angaben einer Ausstellung auf dem dunklen Anker */
   .aktuell__facts {
     margin: 0 0 16px;
     border-top: 1px solid var(--hair);
