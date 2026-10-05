@@ -32,8 +32,8 @@ export const team: readonly Person[] = [
     name: 'Shoko Ishioka',
     rolle: 'Mitarbeiterin seit 2004',
     lebenslauf: [
-      { jahr: '1973', text: 'geboren in Tokyo, Japan' },
-      { jahr: '1992–1997', text: 'Studium der Kunstgeschichte bei Takahiko Okada in Tokyo' },
+      { jahr: '1973', text: 'geboren in Tokio, Japan' },
+      { jahr: '1992–1997', text: 'Studium der Kunstgeschichte bei Takahiko Okada in Tokio' },
       { jahr: '1997–2003', text: 'Studium der Kunst an der Burg Giebichenstein, Kunsthochschule bei Azade Köker' },
     ],
   },

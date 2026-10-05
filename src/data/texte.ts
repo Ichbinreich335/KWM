@@ -125,7 +125,7 @@ export const publikationen: readonly Publikation[] = [
   },
   {
     titel: 'Young-Jae Lee',
-    angabe: 'hrsg. von Victoria Scheinler und Kurt Danch, Ausst.-Kat. Kunststation St. Peter Köln, Köln 2002',
+    angabe: 'hrsg. von Victoria Scheinler und Kurt Danch, Ausst.-Kat. Kunst-Station Sankt Peter Köln, Köln 2002',
   },
   { titel: 'Keramische Werkstatt Margaretenhöhe 1924–1999', angabe: 'München 1999' },
   {

@@ -197,7 +197,7 @@ export const ausstellungen: readonly Ausstellung[] = [
       'Burggraf Burggraf (Taschen)',
       'Joachim Kern (Mode)',
       'Christiane Kuntz (Mode)',
-      'Dietrich Pampus (Vintage Leuchten)',
+      'Dietrich Pampus (Vintage-Leuchten)',
     ],
     link: { href: '/besuch', text: 'Anfahrt zur Werkstatt' },
     flyer: {
@@ -239,7 +239,7 @@ export const ausstellungen: readonly Ausstellung[] = [
             'Burggraf Burggraf (Taschen)',
             'Joachim Kern (Mode)',
             'Christiane Kuntz (Mode)',
-            'Dietrich Pampus (Vintage Leuchten)',
+            'Dietrich Pampus (Vintage-Leuchten)',
           ],
         },
         { label: 'Ort', wert: [`${werkstatt.strasse}, ${werkstatt.plz} ${werkstatt.ort}`, werkstatt.adresszusatz] },
