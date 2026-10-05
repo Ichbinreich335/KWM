@@ -98,7 +98,6 @@ const panelId = `${id}-liste`;
 <style>
   .expander {
     display: block;
-    --expander-time: 0.5s;
   }
   .expander__bar {
     margin: 0;
@@ -116,7 +115,7 @@ const panelId = `${id}-liste`;
     font: inherit;
     text-align: left;
     cursor: pointer;
-    transition: background-color var(--expander-time) var(--ease);
+    transition: background-color var(--dur-open) var(--ease);
   }
   .expander__btn:hover {
     background: var(--ground-2);
@@ -145,7 +144,7 @@ const panelId = `${id}-liste`;
     top: 50%;
     height: 1px;
     background: currentColor;
-    transition: transform var(--expander-time) var(--ease);
+    transition: transform var(--dur-open) var(--ease);
   }
   .expander__icon::after {
     transform: rotate(90deg);
@@ -167,8 +166,8 @@ const panelId = `${id}-liste`;
     grid-template-rows: 0fr;
     visibility: hidden;
     transition:
-      grid-template-rows var(--expander-time) var(--ease),
-      visibility 0s linear var(--expander-time);
+      grid-template-rows var(--dur-open) var(--ease),
+      visibility 0s linear var(--dur-open);
   }
   :global(.js) .expander.is-open > .expander__panel {
     grid-template-rows: 1fr;
@@ -234,7 +233,7 @@ const panelId = `${id}-liste`;
     line-height: var(--t-small-lh);
     color: var(--ink-2);
     opacity: 0;
-    transition: opacity var(--expander-time) var(--ease);
+    transition: opacity var(--dur-open) var(--ease);
   }
   .expander.is-open > .expander__bar .expander__state {
     opacity: 1;
@@ -278,7 +277,7 @@ const panelId = `${id}-liste`;
   }
   @media (prefers-reduced-motion: reduce) {
     .expander {
-      --expander-time: 0s;
+      --dur-open: 0s;
     }
     :global(.js) .expander__panel,
     .expander__icon::before,

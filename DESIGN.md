@@ -23,6 +23,8 @@ Stand: 03.10.2026. Verbindlich für alle Seiten und Elemente in `src/v2/` und `s
 | `--coal-2` | `#1D1D1C` | Flächen innerhalb eines Ankers (Kacheln) |
 | `--on-coal` | `#F2F1EE` | Schrift auf Anker |
 | `--on-coal-2` | `#A3A29D` | Nebentext auf Anker (6,4:1) |
+| `--hair-on-coal`, `--line-on-coal`, `--veil-on-coal` | `rgba(242,241,238, .22 / .35 / .1)` | Haarlinie, kräftigere Linie und Schleier auf Anker; `.on-anker` setzt die Haarlinie |
+| `--shade` | `18 18 18` (Kanäle) | Abdunklung über Bildern: `rgb(var(--shade) / 0.6)` |
 | `--accent` | `#4E7D6A` | Seladon, einziger Akzent: aktive Navigation, Auswahl, Markierung |
 | `--accent-on-coal` | `#8DB5A3` | Akzent auf Anker |
 
@@ -42,7 +44,8 @@ Stand: 03.10.2026. Verbindlich für alle Seiten und Elemente in `src/v2/` und `s
 |---|---|---|---|---|---|---|
 | Mega | `--t-mega` | Display | 3 rem bis 6 rem (15,5 vw) bis 900 px, danach 12,4 vw bis 13 rem | 0,9 | `--ink` / `--on-coal` | Name „Young-Jae Lee“, Titel der Name-Köpfe (Aktuelles, 404) |
 | Wortmarke | `--t-wordmark` | Display | 17,6 vw | 0,74 | `--on-coal` | „Margaretenhöhe“ im Footer, unten beschnitten |
-| Seitentitel | `--t-display` | Display | 3 rem bis 7 rem (7 vw) | 0,95 | `--ink` / `--on-coal` | `.page-hero__title`, Zitat-Zäsur Young-Jae Lee, Glasurname |
+| Seitentitel | `--t-title` | Display | 2,5 rem bis 7 rem (7 vw) | 0,95 | `--ink` / `--on-coal` | `.page-hero__title` (Minimum kleiner als `--t-display`, damit „Zahlungsmöglichkeiten“ bei 360 px passt) |
+| Zäsur | `--t-display` | Display | 3 rem bis 7 rem (7 vw) | 0,95 | `--ink` / `--on-coal` | Zitat-Zäsur Young-Jae Lee, Glasurname |
 | Abschnitt | `--t-h2` | Display | 2,3 rem bis 4,6 rem (4,6 vw) | 1,02 | `--ink` / `--on-coal` | `.h2`, Einstiegstitel, `.lines__name`, Jahreszahl im Archiv, Öffnungszeiten groß, Orts-Kachel XL |
 | Aussage | `--t-statement` | Display | 2 rem bis 3,6 rem (3,6 vw) | 1,06 | `--ink` / `--on-coal` | Eigene Aussage der Werkstatt (`.med__quote`, `.works__statement`, `.ms-intro__statement`, `.mf-intro__rule`, `.zaesur__text`), Spotlight-Titel, Mobilmenü-Namen, Jahr im Ausstellungsarchiv, Chronik-Jahr |
 | Lede | `--t-lede` | Text | 1,65 rem bis 2,75 rem (2,9 vw) | 1,22 | `--ink` / `--on-coal` | `.lede__text` |
@@ -212,7 +215,9 @@ Sticky unter dem Header, mobil seitlich scrollbar mit Randausblendung. Der aktiv
 
 ## 8. Bewegung
 - **Einblenden:** Text `fade` (18 px, 1,2 s). Überschriften `words` (Maske, 1,3 s, gestaffelt um 45 ms). Bilder `img` (Abdeckung fährt nach oben, Bild von 1,12 auf 1 skaliert). Kurve `--ease`.
-- **Hover:** 0,45–0,6 s. Es werden nur `transform`, `opacity`, Farben und `flex-grow` animiert, nie `width` oder `height`.
+- **Dauer-Tokens** (`global.css`, `:root`): `--dur-hover` 0,5 s (Hover, Farben, Pfeile), `--dur-zoom` 1,2 s (Bild-Zoom und Farbskala bei Hover), `--dur-reveal` 1,2 s (Einblenden von Text), `--dur-open` 0,5 s (Aufklappen; bei reduzierter Bewegung 0). Ausnahmen mit Absicht: Punkte füllen 0,45 s (`--ease-pop`), Einblenden von Wörtern 1,3 s und Bildern 1,6/2,4 s (siehe oben).
+- **Sicherung ohne Skript:** `main.ts` setzt `js-ready`, sobald die Einblendung scharf ist. Bis dahin macht eine CSS-Animation alle `[data-reveal]`-Elemente nach 3 s sichtbar (Skriptfehler, Blocker, sehr langsames Netz). Das Startbild im Hero hat keine Abdeckung, nur eine kurze Opazitäts-Einblendung; die Hero-Überschrift wird beim Bauen in Wort-Spans zerlegt (`Woerter.astro`).
+- **Hover:** 0,5 s (`--dur-hover`). Es werden nur `transform`, `opacity`, Farben und `flex-grow` animiert, nie `width` oder `height`.
 - **Kein Scroll-Hijacking.** Sticky mit Scroll-Steuerung ist erlaubt, wenn die Scrollgeschwindigkeit unverändert bleibt.
 - **Punkte füllen sich, wenn die Linie sie erreicht.** Gemeinsame Animation für Lebensweg und Chronik: Ring hohl, Füllung (`scale` 0 auf 1, 0,45 s, `--ease-pop` mit leichtem Überziehen) über die Klasse `.is-on`. Rückwärts leert sich der Punkt wieder. Reduzierte Bewegung: sofort gefüllt.
 - **Lebensweg** (`.journey`, Startseite): Ohne Sticky. Linie und Punkte füllen sich mit dem Scrollfortschritt von links nach rechts (voll, wenn der Strahl ~35 % von oben erreicht), reversibel. Darunter der Link „Zum ganzen Werdegang“.
@@ -223,7 +228,9 @@ Sticky unter dem Header, mobil seitlich scrollbar mit Randausblendung. Der aktiv
 ## 9. Barrierefreiheit (Mindeststandard)
 - Kontrast ≥ 4,5:1 für Text, ≥ 3:1 für Bedienelemente.
 - Tippflächen ≥ 44 px.
-- Sichtbarer Fokus mit 2 px Outline.
+- Sichtbarer Fokus mit 2 px Outline: Tokens `--focus-ring` (2 px) und `--focus-offset` (4 px außen). Innen liegende Rahmen in Wischreihen und Kacheln (`-2px`, `-4px`) und der Feldfokus im Formular (Offset 2 px, Akzent) sind begründete Ausnahmen.
+- Offenes Mobilmenü: Seiteninhalt, Fußzeile und Sprunglink sind `inert`, der Fokus bleibt im Menü; Escape schließt und gibt den Fokus zurück.
+- Keine waagrechte Scrollleiste ab 360 px. Seitentitel nutzen `--t-title` (Minimum 2,5 rem), damit lange Komposita passen.
 - Skip-Link, `aria-current` in der Navigation.
 - Canvas mit `role="img"` und Beschreibung.
 - Dekorative Grafik mit `aria-hidden`.

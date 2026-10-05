@@ -28,8 +28,8 @@ const { class: klasse, href, ...attribute } = Astro.props;
     border: 1px solid var(--ink);
     padding: 12px 26px 11px;
     transition:
-      background-color 0.3s var(--ease),
-      color 0.3s var(--ease);
+      background-color var(--dur-hover) var(--ease),
+      color var(--dur-hover) var(--ease);
   }
   .button:hover {
     background: transparent;

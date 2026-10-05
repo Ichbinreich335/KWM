@@ -8,7 +8,7 @@ Node 24 (siehe `.nvmrc`).
 
 ```bash
 npm install
-npx playwright install chromium   # einmalig, für die Tests
+npx playwright install chromium webkit   # einmalig, für die Tests (WebKit = Safari)
 npm run dev                       # Entwicklungsserver http://localhost:4321
 npm run preview                   # baut dist/ und startet wrangler dev (wie in Produktion: Weiterleitungen, Header, 404)
 ```
@@ -26,15 +26,16 @@ BASIS_URL=https://… npm test      # dieselben Tests gegen eine Vorschau- oder 
 OPTIK_TOLERANZ=0.02 npm run test:optik   # höhere Toleranz (Standard 0.002), z. B. wenn Bilder neu berechnet wurden
 ```
 
-| Test                             | Prüft                                                                                                                      |
-| -------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| `tests/optik.spec.ts`            | Ganzseitige Screens aller 13 Seiten, Desktop 1440 px und Mobil 390 px, gegen den Ausgangsstand; keine Konsolenfehler       |
-| `tests/routen.spec.ts`           | 404-Seite, saubere URLs ohne `.html`, `noindex`, Linkprüfung aller Seiten, Weiterleitung alter `/v3/`-Links                |
-| `tests/verhalten.spec.ts`        | Anfrage-Leiste und -Formular, Sonderzeichen, Leerzeichen, datumsabhängige Hinweise                                         |
-| `tests/barrierefreiheit.spec.ts` | axe-core, WCAG 2.2 AA, alle Seiten                                                                                         |
-| `tests/formular.spec.ts`         | Anfrageformular gegen `wrangler dev` mit Turnstile-Testschlüsseln: Danke-Zustand, Versandfehler, Feldfehler (braucht Netz) |
-| `tests/verhalten.spec.ts`        | u. a. Flyer-Dialog (Aktuelles und Startseite): Öffnen, Esc, Fokus, keine Vergrößerung über die Originalgröße               |
-| `worker/*.test.ts`               | Vitest in der Workers-Laufzeit: gemeinsame Regeln, Endpunkt `/api/anfrage` (Versand und Turnstile gemockt)                 |
+| Test                             | Prüft                                                                                                                                             |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `tests/optik.spec.ts`            | Ganzseitige Screens aller 13 Seiten, Desktop 1440 px und Mobil 390 px in Chromium und WebKit (eigene Referenzen je Projekt); keine Konsolenfehler |
+| `tests/bewegung.spec.ts`         | Mit voller Bewegung (Chromium, WebKit, iPhone): kein Bild hängt am Scrollen, keine Sprünge, Inhalte sichtbar ohne Hauptskript                     |
+| `tests/routen.spec.ts`           | 404-Seite, saubere URLs ohne `.html`, `noindex`, Linkprüfung aller Seiten, Weiterleitung alter `/v3/`-Links                                       |
+| `tests/verhalten.spec.ts`        | Anfrage-Leiste und -Formular, Sonderzeichen, Leerzeichen, datumsabhängige Hinweise                                                                |
+| `tests/barrierefreiheit.spec.ts` | axe-core, WCAG 2.2 AA, alle Seiten                                                                                                                |
+| `tests/formular.spec.ts`         | Anfrageformular gegen `wrangler dev` mit Turnstile-Testschlüsseln: Danke-Zustand, Versandfehler, Feldfehler (braucht Netz)                        |
+| `tests/verhalten.spec.ts`        | u. a. Flyer-Dialog (Aktuelles und Startseite): Öffnen, Esc, Fokus, keine Vergrößerung über die Originalgröße                                      |
+| `worker/*.test.ts`               | Vitest in der Workers-Laufzeit: gemeinsame Regeln, Endpunkt `/api/anfrage` (Versand und Turnstile gemockt)                                        |
 
 Die Optik-Tests laufen nur lokal (die Schriftdarstellung unter Linux weicht ab), nicht in CI. Läuft schon ein `wrangler dev` auf Port 8787, verwenden die Tests ihn weiter und bauen nicht neu; dann vorher `npm run build`.
 

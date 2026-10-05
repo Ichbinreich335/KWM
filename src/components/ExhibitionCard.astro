@@ -245,7 +245,7 @@ const datum = zeitraumKurz(ausstellung.start, ausstellung.ende);
     height: auto;
     aspect-ratio: 4 / 3;
     object-fit: cover;
-    transition: transform 1.4s var(--ease);
+    transition: transform var(--dur-zoom) var(--ease);
   }
   .aktuell__media:hover :global(img),
   .aktuell__item:has(:focus-visible) .aktuell__media :global(img) {
@@ -321,7 +321,7 @@ const datum = zeitraumKurz(ausstellung.start, ausstellung.ende);
     background:
       linear-gradient(currentColor, currentColor) center / 100% 1px no-repeat,
       linear-gradient(currentColor, currentColor) center / 1px 100% no-repeat;
-    transition: transform var(--aktuell-ease-time) var(--ease);
+    transition: transform var(--dur-open) var(--ease);
   }
   .aktuell__more[aria-expanded='true']::before {
     transform: rotate(135deg);
@@ -329,7 +329,7 @@ const datum = zeitraumKurz(ausstellung.start, ausstellung.ende);
   .aktuell__more-label {
     background: linear-gradient(currentColor, currentColor) 0 100% / 100% 1px no-repeat;
     padding-bottom: 2px;
-    transition: background-size 0.5s var(--ease);
+    transition: background-size var(--dur-hover) var(--ease);
   }
   .aktuell__more:hover .aktuell__more-label {
     background-size: 0% 1px;
@@ -347,14 +347,14 @@ const datum = zeitraumKurz(ausstellung.start, ausstellung.ende);
     visibility: hidden;
     width: 100%;
     transition:
-      grid-template-rows var(--aktuell-ease-time) var(--ease),
-      visibility 0s linear var(--aktuell-ease-time);
+      grid-template-rows var(--dur-open) var(--ease),
+      visibility 0s linear var(--dur-open);
   }
   .aktuell__panel-in {
     min-height: 0;
     overflow: hidden;
     opacity: 0;
-    transition: opacity var(--aktuell-ease-time) var(--ease);
+    transition: opacity var(--dur-open) var(--ease);
   }
   .aktuell__item.is-open .aktuell__panel {
     grid-template-rows: 1fr;

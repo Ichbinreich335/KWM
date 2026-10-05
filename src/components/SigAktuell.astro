@@ -17,7 +17,7 @@ const weitere = ausstellungen.filter((eintrag) => !eintrag.spotlight);
 ---
 
 {/* Dunkler Abschnitt der Startseite; das Skript setzt Status und Hinweise nach dem Datum und lässt immer nur ein Detail offen (sig-aktuell.ts) */}
-<section class="aktuell" id="aktuelles" data-sig="aktuell" aria-labelledby="aktuell-title">
+<section class="aktuell on-anker" id="aktuelles" data-sig="aktuell" aria-labelledby="aktuell-title">
   <div class="aktuell__head grid">
     <h2 class="h2" id="aktuell-title" data-reveal="words">
       Aktuell
@@ -53,13 +53,7 @@ const weitere = ausstellungen.filter((eintrag) => !eintrag.spotlight);
 <style is:global>
   /* Signatur: aktuell. Anker (dunkel): laufende und kommende Ausstellungen mit Foto, Details klappen darunter auf. */
   .aktuell {
-    background: var(--coal);
-    color: var(--on-coal);
     padding-block: var(--section);
-    --ink-2: var(--on-coal-2);
-    --hair: rgba(236, 234, 227, 0.22);
-    --cover: var(--coal);
-    --aktuell-ease-time: 0.5s;
     --aktuell-reihe: clamp(48px, 6vw, 88px); /* Abstand zwischen den Reihen der Liste */
     --aktuell-karte: min(80vw, 420px); /* Breite einer Karte in der Wischreihe (Handy) */
   }
@@ -191,7 +185,7 @@ const weitere = ausstellungen.filter((eintrag) => !eintrag.spotlight);
   }
   @media (prefers-reduced-motion: reduce) {
     .aktuell {
-      --aktuell-ease-time: 0s;
+      --dur-open: 0s;
     }
   }
 </style>

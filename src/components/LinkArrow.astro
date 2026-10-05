@@ -25,7 +25,7 @@ const Tag = als;
     background: linear-gradient(currentColor, currentColor) 0 calc(100% - 8px) / 100% 1px no-repeat;
     padding-block: 10px 11px;
     margin-block: -10px -8px;
-    transition: background-size 0.5s var(--ease);
+    transition: background-size var(--dur-hover) var(--ease);
   }
   button.link-arrow {
     border: 0;
@@ -45,7 +45,7 @@ const Tag = als;
     background: currentColor;
     -webkit-mask: var(--arrow) center / contain no-repeat;
     mask: var(--arrow) center / contain no-repeat;
-    transition: transform 0.5s var(--ease);
+    transition: transform var(--dur-hover) var(--ease);
     align-self: center;
   }
   .link-arrow:hover {

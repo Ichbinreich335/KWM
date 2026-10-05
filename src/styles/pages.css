@@ -43,7 +43,7 @@
 .on-anker {
   --ink: var(--on-coal);
   --ink-2: var(--on-coal-2);
-  --hair: rgba(236, 234, 227, 0.22);
+  --hair: var(--hair-on-coal);
   --cover: var(--coal);
   background: var(--coal);
   color: var(--on-coal);

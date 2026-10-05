@@ -39,7 +39,13 @@ const einblendung = (art: 'words' | 'fade' | 'img') => (einblenden ? art : undef
 ---
 
 <section
-  class:list={['page-hero', `page-hero--${typ}`, { 'page-hero--text': textseite }, klasse, 'grid']}
+  class:list={[
+    'page-hero',
+    `page-hero--${typ}`,
+    { 'page-hero--text': textseite, 'on-anker': typ === 'anker' },
+    klasse,
+    'grid',
+  ]}
   aria-labelledby={titelId}
 >
   <h1 class="page-hero__title" id={titelId} data-reveal={einblendung('words')}>
@@ -78,8 +84,8 @@ const einblendung = (art: 'words' | 'fade' | 'img') => (einblenden ? art : undef
   .page-hero__title {
     grid-column: 1 / 9;
     font-family: var(--f-display);
-    font-size: var(--t-display);
-    line-height: var(--t-display-lh);
+    font-size: var(--t-title);
+    line-height: var(--t-title-lh);
     letter-spacing: -0.03em;
     text-wrap: balance;
   }
@@ -110,17 +116,6 @@ const einblendung = (art: 'words' | 'fade' | 'img') => (einblenden ? art : undef
   }
 
   /* Typ Anker: dunkel, Titel links, Lede rechts, Panorama randlos am Fuß (Werkstatt) */
-  .page-hero--anker {
-    --ink-2: var(--on-coal-2);
-    --hair: rgba(236, 234, 227, 0.22);
-    --cover: var(--coal);
-    background: var(--coal);
-    color: var(--on-coal);
-  }
-  .page-hero--anker :global(::selection) {
-    background: var(--on-coal);
-    color: var(--coal);
-  }
 
   /* Typ Name: hell, riesiger Name über die ganze Breite, Lede rechts, Bild randlos darunter (Young-Jae Lee, Aktuelles, Fehlerseite) */
   .page-hero--name .page-hero__title {
@@ -186,8 +181,8 @@ const einblendung = (art: 'words' | 'fade' | 'img') => (einblenden ? art : undef
   }
   .page-hero--text .page-hero__title {
     grid-column: 1 / -1;
-    font-size: var(--t-display);
-    line-height: var(--t-display-lh);
+    font-size: var(--t-title);
+    line-height: var(--t-title-lh);
   }
   .page-hero--text .page-hero__lede {
     grid-column: 4 / 11;

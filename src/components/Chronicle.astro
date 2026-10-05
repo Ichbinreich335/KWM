@@ -182,8 +182,8 @@ const zeitraum = `${gezeigt[0]?.jahr} bis ${gezeigt.at(-1)?.jahr}`;
     opacity: 0;
     transform: translateY(18px);
     transition:
-      opacity 1.2s var(--ease),
-      transform 1.4s var(--ease);
+      opacity var(--dur-reveal) var(--ease),
+      transform var(--dur-reveal) var(--ease);
   }
   :global(.js) .chronicle__list li.is-in {
     opacity: 1;

@@ -71,7 +71,7 @@ const { satz } = Astro.props;
     width: 100%;
     aspect-ratio: 3 / 2;
     object-fit: cover;
-    transition: transform 1.2s var(--ease);
+    transition: transform var(--dur-zoom) var(--ease);
   }
   .set:hover .set__frame :global(img) {
     transform: scale(1.035);

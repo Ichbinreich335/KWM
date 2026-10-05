@@ -15,10 +15,13 @@ interface Optionen {
  */
 export async function seiteVorbereiten(page: Page, pfad: string, optionen: Optionen = {}): Promise<string[]> {
   const fehler: string[] = [];
+  const webkit = page.context().browser()?.browserType().name() === 'webkit';
   page.on('pageerror', (e) => fehler.push(e.message));
   page.on('console', (m) => {
     if (m.type() !== 'error') return;
     if (optionen.erwarte404 && m.text().includes('404')) return;
+    // Playwrights Ganzseiten-Screenshot setzt in WebKit selbst ein Stylesheet ein, das unsere CSP blockiert (Werkzeug, kein Seitenfehler)
+    if (webkit && m.text().startsWith('Refused to apply a stylesheet')) return;
     fehler.push(m.text());
   });
   await page.clock.setFixedTime(optionen.tag ?? FESTER_TAG);

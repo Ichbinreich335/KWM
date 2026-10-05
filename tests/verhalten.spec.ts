@@ -64,7 +64,11 @@ test('Kein Entwurf-Panel, feste Fassung der Startseite', async ({ page }) => {
   await expect(page.getByRole('button', { name: /Entwurf/ })).toHaveCount(0);
 });
 
-test('Expander (Zeile): Enter öffnet und schließt, Tab überspringt den geschlossenen Inhalt', async ({ page }) => {
+test('Expander (Zeile): Enter öffnet und schließt, Tab überspringt den geschlossenen Inhalt', async ({
+  page,
+  browserName,
+}) => {
+  test.skip(browserName === 'webkit', 'Safari springt mit Tab standardmäßig nicht zu Links (nur Option+Tab)');
   await page.goto('/aktuelles');
   const erster = page.locator('#jahr-2026 .expander__btn');
   const zweiter = page.locator('#jahr-2025 .expander__btn');
@@ -216,7 +220,10 @@ for (const breite of [360, 375]) {
       await page.goto(seite.astro);
       const ueberlauf = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
       expect(ueberlauf, `${seite.astro} bei ${breite} px`).toBeLessThanOrEqual(0);
-      const titel = await page.locator('h1').first().evaluate((h) => h.getBoundingClientRect().right);
+      const titel = await page
+        .locator('h1')
+        .first()
+        .evaluate((h) => h.getBoundingClientRect().right);
       expect(titel, `${seite.astro}: Titel ragt über den Rand`).toBeLessThanOrEqual(breite);
     }
   });

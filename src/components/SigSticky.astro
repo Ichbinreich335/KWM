@@ -60,7 +60,12 @@ const { variante, als: Tag = 'div', ...rest } = Astro.props;
     content: '';
     position: absolute;
     inset: 0;
-    background: linear-gradient(90deg, rgb(10 10 10 / 0.78) 0%, rgb(10 10 10 / 0.6) 55%, rgb(10 10 10 / 0.2) 100%);
+    background: linear-gradient(
+      90deg,
+      rgb(var(--shade) / 0.78) 0%,
+      rgb(var(--shade) / 0.6) 55%,
+      rgb(var(--shade) / 0.2) 100%
+    );
   }
 
   .sticky-bild__pane {
@@ -119,7 +124,12 @@ const { variante, als: Tag = 'div', ...rest } = Astro.props;
     box-sizing: border-box;
   }
   .sticky-bild--portrait .sticky-bild__media::after {
-    background: linear-gradient(270deg, rgb(10 10 10 / 0.78) 0%, rgb(10 10 10 / 0.6) 45%, rgb(10 10 10 / 0.12) 100%);
+    background: linear-gradient(
+      270deg,
+      rgb(var(--shade) / 0.78) 0%,
+      rgb(var(--shade) / 0.6) 45%,
+      rgb(var(--shade) / 0.12) 100%
+    );
   }
   .sticky-bild__caption {
     margin: 0;
@@ -148,8 +158,8 @@ const { variante, als: Tag = 'div', ...rest } = Astro.props;
   }
   .sticky-bild--feuer .sticky-bild__media::after {
     background:
-      radial-gradient(ellipse 80% 70% at 0% 0%, rgb(10 10 10 / 0.78) 0%, rgb(10 10 10 / 0) 100%),
-      linear-gradient(90deg, rgb(10 10 10 / 0.66) 0%, rgb(10 10 10 / 0.56) 58%, rgb(10 10 10 / 0.2) 100%);
+      radial-gradient(ellipse 80% 70% at 0% 0%, rgb(var(--shade) / 0.78) 0%, rgb(var(--shade) / 0) 100%),
+      linear-gradient(90deg, rgb(var(--shade) / 0.66) 0%, rgb(var(--shade) / 0.56) 58%, rgb(var(--shade) / 0.2) 100%);
   }
 
   @media (max-width: 900px) {
@@ -163,10 +173,10 @@ const { variante, als: Tag = 'div', ...rest } = Astro.props;
       --sticky-text-to: -1;
     }
     .sticky-bild--feuer .sticky-bild__media::after {
-      background: rgb(10 10 10 / 0.66);
+      background: rgb(var(--shade) / 0.66);
     }
     .sticky-bild__media::after {
-      background: rgb(10 10 10 / 0.66);
+      background: rgb(var(--shade) / 0.66);
     }
     .sticky-bild__pane {
       align-content: end;

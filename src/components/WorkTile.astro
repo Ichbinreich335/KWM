@@ -42,7 +42,7 @@ const { werk } = Astro.props;
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 1s var(--ease);
+    transition: transform var(--dur-zoom) var(--ease);
   }
   .piece a:hover .piece__media :global(img) {
     transform: scale(1.04);

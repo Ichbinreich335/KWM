@@ -102,13 +102,13 @@
   padding: 16px 0 15px;
   border-bottom: 1px solid var(--hair);
   text-decoration: none;
-  transition: background-color 0.5s var(--ease);
+  transition: background-color var(--dur-hover) var(--ease);
 }
 .inquiry__forms a:hover {
   background: var(--ground-2);
 }
 .inquiry__forms a > span {
-  transition: transform 0.5s var(--ease);
+  transition: transform var(--dur-hover) var(--ease);
 }
 .inquiry__forms a:hover > span:first-child {
   transform: translateX(10px);

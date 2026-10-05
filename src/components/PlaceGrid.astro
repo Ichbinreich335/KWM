@@ -18,7 +18,7 @@ const kachelKlasse = { gross: 'xl', mittel: 'm', klein: 's' } as const;
 ---
 
 {/* Host ist ein Custom Element mit Rolle region statt section, damit Klassen und Rolle des Abschnitts bleiben */}
-<kwm-places class="orte" id="orte" role="region" aria-labelledby="orte-title">
+<kwm-places class="orte on-anker" id="orte" role="region" aria-labelledby="orte-title">
   <div class="orte__head grid">
     <h2 class="h2" id="orte-title" data-reveal="words">
       {titel}
@@ -302,12 +302,7 @@ const kachelKlasse = { gross: 'xl', mittel: 'm', klein: 's' } as const;
 <style is:global>
   .orte {
     display: block;
-    background: var(--coal);
-    color: var(--on-coal);
     padding-block: var(--section);
-    --ink-2: var(--on-coal-2);
-    --hair: rgba(236, 234, 227, 0.22);
-    --cover: var(--coal);
     --orte-pad: clamp(14px, 1.6vw, 24px);
   }
   .orte ::selection {
@@ -382,8 +377,8 @@ const kachelKlasse = { gross: 'xl', mittel: 'm', klein: 's' } as const;
     object-fit: cover;
     filter: grayscale(1) brightness(0.42) contrast(1.05);
     transition:
-      transform 1.4s var(--ease),
-      filter 1s var(--ease);
+      transform var(--dur-zoom) var(--ease),
+      filter var(--dur-zoom) var(--ease);
   }
   .orte__tile::after {
     content: '';
@@ -498,8 +493,8 @@ const kachelKlasse = { gross: 'xl', mittel: 'm', klein: 's' } as const;
     container-type: inline-size;
     min-width: 0;
     transition:
-      grid-template-rows 0.5s var(--ease),
-      margin-top 0.5s var(--ease);
+      grid-template-rows var(--dur-open) var(--ease),
+      margin-top var(--dur-open) var(--ease);
   }
   .orte__detail.is-open {
     grid-template-rows: 1fr;
@@ -566,7 +561,7 @@ const kachelKlasse = { gross: 'xl', mittel: 'm', klein: 's' } as const;
     background: linear-gradient(currentColor, currentColor) 10px calc(100% - 10px) / calc(100% - 20px) 1px no-repeat;
     border: 0;
     cursor: pointer;
-    transition: background-size 0.5s var(--ease);
+    transition: background-size var(--dur-hover) var(--ease);
   }
   .orte__close:hover {
     background-size: 0% 1px;
