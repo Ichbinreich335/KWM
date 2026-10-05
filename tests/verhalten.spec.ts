@@ -66,15 +66,16 @@ test('Kein Entwurf-Panel, feste Fassung der Startseite', async ({ page }) => {
 
 // Vorschau der Bauhaus-Station: entfällt mit dem Umschalter, sobald ein Entwurf gewählt ist
 for (const [abfrage, sichtbar] of [
-  ['', 1],
-  ['?bauhaus=1', 1],
+  ['', 4],
+  ['?bauhaus=1', 4],
   ['?bauhaus=2', 2],
   ['?bauhaus=3', 3],
-  ['?bauhaus=9', 1],
+  ['?bauhaus=4', 4],
+  ['?bauhaus=9', 4],
 ] as const) {
   test(`Bauhaus-Station zeigt genau Entwurf ${sichtbar} bei „${abfrage || 'ohne Angabe'}“`, async ({ page }) => {
     await page.goto(`/${abfrage}`);
-    for (const entwurf of [1, 2, 3]) {
+    for (const entwurf of [2, 3, 4]) {
       await expect(page.locator(`.entwurf--${entwurf}`)).toBeVisible({ visible: entwurf === sichtbar });
     }
     await expect(page.locator('#bauhaus h2:visible')).toHaveCount(1);

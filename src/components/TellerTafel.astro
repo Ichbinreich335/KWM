@@ -1,0 +1,100 @@
+---
+// Tafel wie im Musterkatalog (Bauhaus-Station): vier Teller von oben, darunter je Stück Programmnummer, Name und Maß.
+// Reihenfolge der Nummern = Teller im Foto von links nach rechts; Namen und Maße aus manufaktur.ts.
+import Bild from './Bild.astro';
+import { geschirr } from '../data/manufaktur';
+
+const tellerTeile =
+  geschirr.find((gruppe) => gruppe.schluessel === 'teller')?.saetze.flatMap((satz) => satz.teile) ?? [];
+const tellerReihe = ['15', '16', '14', '13'].map((nummer) => {
+  const teil = tellerTeile.find((eintrag) => eintrag.programmnr === nummer);
+  if (!teil) throw new Error(`Teller Nr. ${nummer} fehlt in manufaktur.ts`);
+  return teil;
+});
+---
+
+<figure class="tafel">
+  <div data-reveal="img">
+    <Bild
+      src="/img/kwm/teller-reihe.webp"
+      loading="lazy"
+      sizes="100vw"
+      alt="Vier Stücke aus dem Manufakturprogramm von oben: zwei Teller und ein kleiner Teller in gesprenkeltem Weiß, ein Unterteller in Seladon"
+    />
+  </div>
+  <figcaption class="tafel__legende">
+    <ol aria-label="Die Stücke im Bild von links nach rechts">
+      {tellerReihe.map((teil) => (
+        <li>
+          <span class="tafel__nr">Nr. {teil.programmnr}</span>
+          <span class="tafel__name">{teil.name}</span>
+          <span class="tafel__mass">{teil.masse}</span>
+        </li>
+      ))}
+    </ol>
+  </figcaption>
+</figure>
+
+<style>
+  /* Tafel über die ganze Rasterbreite; am Rechner steht die Legende genau unter den Tellern
+     (Spaltenkanten = Tellerkanten im Foto, von links: Rand 6,4 %, Teller 23,6 %, 2,3 %, 28,9 %, 2 %, 14,4 %, 2 %, 13,2 %) */
+  .tafel {
+    margin-inline: var(--m);
+  }
+  .tafel :global(img) {
+    width: 100%;
+    aspect-ratio: 2560 / 1060;
+    max-height: var(--werk-max);
+    object-fit: cover;
+  }
+  .tafel__legende {
+    margin: 0;
+  }
+  .tafel__legende ol {
+    display: grid;
+    grid-template-columns: 6.4fr 23.6fr 2.3fr 28.9fr 2fr 14.4fr 2fr 13.2fr 7.2fr;
+    padding-block: 16px 20px;
+    border-bottom: 1px solid var(--ink);
+  }
+  .tafel__legende li {
+    display: grid;
+    align-content: start;
+    gap: 2px;
+    font-size: var(--t-meta);
+    line-height: var(--t-meta-lh);
+    color: var(--ink-2);
+  }
+  .tafel__legende li:nth-child(1) {
+    grid-column: 2;
+  }
+  .tafel__legende li:nth-child(2) {
+    grid-column: 4;
+  }
+  .tafel__legende li:nth-child(3) {
+    grid-column: 6;
+  }
+  .tafel__legende li:nth-child(4) {
+    grid-column: 8 / 10;
+  }
+  .tafel__nr {
+    font-family: var(--f-display);
+    font-size: var(--t-h3);
+    line-height: var(--t-h3-lh);
+    color: var(--ink);
+    font-variant-numeric: lining-nums tabular-nums;
+  }
+  .tafel__name {
+    color: var(--ink);
+  }
+
+  /* Handy: Teller zu klein für Spalten darunter; Legende 2 × 2 in der Lesefolge des Fotos */
+  @media (max-width: 900px) {
+    .tafel__legende ol {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px var(--g);
+    }
+    .tafel__legende li:nth-child(n) {
+      grid-column: auto;
+    }
+  }
+</style>
