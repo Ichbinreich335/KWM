@@ -57,6 +57,7 @@ export const structure: StructureResolver = (S) =>
               S.documentTypeListItem('galerie').title('Galerien').icon(HomeIcon),
             ]),
         ),
+      S.documentTypeListItem('archivEintrag').title('Vergangene Ausstellungen (Liste)').icon(ArchiveIcon),
       S.documentTypeListItem('hinweis').title('Hinweise').icon(BellIcon),
       S.divider(),
       S.listItem()

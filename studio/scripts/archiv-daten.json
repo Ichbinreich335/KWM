@@ -1,0 +1,760 @@
+{
+  "eintraege": [
+    {
+      "id": "archiv-2026-01",
+      "jahr": 2026,
+      "reihenfolge": 10,
+      "inListe": true,
+      "titel": "„Young-Jae Lee – Schalen“",
+      "ortszeile": "Umbrella, west coast exhibitions, Nørre Nebel, Dänemark",
+      "datum": "7. März – 24. Mai"
+    },
+    {
+      "id": "archiv-2026-02",
+      "jahr": 2026,
+      "reihenfolge": 20,
+      "inListe": true,
+      "titel": "Mode, Taschen, Keramik und Licht im Dialog",
+      "ortszeile": "No Nonsense – Pop Up Store, Köln",
+      "datum": "28.–30. Mai"
+    },
+    {
+      "id": "archiv-2026-03",
+      "jahr": 2026,
+      "reihenfolge": 30,
+      "inListe": true,
+      "titel": "„Stille Gäste“",
+      "ortszeile": "Künstlerzeche Unser Fritz, Herne",
+      "datum": "13. Juni – 5. Juli"
+    },
+    {
+      "id": "archiv-2026-04",
+      "jahr": 2026,
+      "reihenfolge": 40,
+      "inListe": true,
+      "titel": "„Young-Jae Lee“",
+      "ortszeile": "Galerie Jahn und Jahn GmbH, Baaderstraße 56C, 80469 München",
+      "datum": "14. Juli – 12. September",
+      "link": {
+        "text": "jahnundjahn.com",
+        "url": "https://www.jahnundjahn.com/"
+      },
+      "ort": "muenchen",
+      "haus": "Galerie Jahn und Jahn",
+      "galerie": "jahn-und-jahn"
+    },
+    {
+      "id": "archiv-2025-01",
+      "jahr": 2025,
+      "reihenfolge": 10,
+      "inListe": true,
+      "titel": "Weihnachtsausstellung 2025",
+      "ortszeile": "in der Werkstatt, mit Christine Atmer de Reig (Keramik), Vivien Reig Atmer (Schmuck) und Masami Takeuchi (Kintsugi)",
+      "datum": "22. November – 23. Dezember"
+    },
+    {
+      "id": "archiv-2025-02",
+      "jahr": 2025,
+      "reihenfolge": 20,
+      "inListe": true,
+      "titel": "„OPEN House“ – Future Heritage. Das Erbe von Morgen",
+      "ortszeile": "Festival in Essen",
+      "datum": "6.–7. September",
+      "ort": "essen",
+      "haus": "Festival in Essen"
+    },
+    {
+      "id": "archiv-2025-03",
+      "jahr": 2025,
+      "reihenfolge": 30,
+      "inListe": true,
+      "titel": "„Lee Young-Jae“",
+      "ortszeile": "Gallery Tokyo, Japan",
+      "datum": "21.–26. Juni",
+      "ort": "tokio",
+      "haus": "Gallery Tokyo",
+      "galerie": "gallery-tokyo"
+    },
+    {
+      "id": "archiv-2025-04",
+      "jahr": 2025,
+      "reihenfolge": 40,
+      "inListe": true,
+      "titel": "„100 + 1 Übungsstücke“",
+      "ortszeile": "Ausstellung",
+      "datum": "2.–30. Juni"
+    },
+    {
+      "id": "archiv-2025-05",
+      "jahr": 2025,
+      "reihenfolge": 50,
+      "inListe": true,
+      "titel": "„Young-Jae Lee: Keramik“",
+      "ortszeile": "Galerie Jahn und Jahn, München",
+      "datum": "14. März – 26. April",
+      "ort": "muenchen",
+      "haus": "Galerie Jahn und Jahn",
+      "galerie": "jahn-und-jahn"
+    },
+    {
+      "id": "archiv-2025-06",
+      "jahr": 2025,
+      "reihenfolge": 60,
+      "inListe": true,
+      "titel": "„Young-Jae Lee: Vasen“",
+      "ortszeile": "St. Jakobi, Chemnitz – verlängert bis Ende 2025",
+      "datum": "ab 9. März",
+      "ort": "chemnitz",
+      "haus": "Stadtkirche St. Jakobi"
+    },
+    {
+      "id": "archiv-2025-07",
+      "jahr": 2025,
+      "reihenfolge": 70,
+      "inListe": true,
+      "titel": "„Young-Jae Lee: SCHALEN“",
+      "ortszeile": "Stadtkirche St. Jakobi, Chemnitz",
+      "datum": "29. August 2024 – 2. März 2025",
+      "ort": "chemnitz",
+      "haus": "Stadtkirche St. Jakobi",
+      "beginnJahr": 2024
+    },
+    {
+      "id": "archiv-2025-08",
+      "jahr": 2025,
+      "reihenfolge": 80,
+      "inListe": true,
+      "titel": "Messe „Ambiente“",
+      "ortszeile": "Messe Frankfurt, Halle 3.1, Stand A60",
+      "datum": "7.–11. Februar"
+    },
+    {
+      "id": "archiv-2024-01",
+      "jahr": 2024,
+      "reihenfolge": 10,
+      "inListe": true,
+      "titel": "„Weihnachtsausstellung – Editionen“",
+      "ortszeile": "in der Werkstatt",
+      "datum": "30. November – 23. Dezember"
+    },
+    {
+      "id": "archiv-2024-02",
+      "jahr": 2024,
+      "reihenfolge": 20,
+      "inListe": true,
+      "titel": "„Young-Jae Lee – Forms from the Earth“",
+      "ortszeile": "David Nolan Gallery, New York, USA",
+      "datum": "1. November – 21. Dezember",
+      "ort": "new-york",
+      "haus": "David Nolan Gallery",
+      "galerie": "david-nolan"
+    },
+    {
+      "id": "archiv-2024-03",
+      "jahr": 2024,
+      "reihenfolge": 30,
+      "inListe": true,
+      "titel": "„TEE“",
+      "ortszeile": "Galerie Metzger, Johannesberg",
+      "datum": "27. Oktober – 17. November"
+    },
+    {
+      "id": "archiv-2024-04",
+      "jahr": 2024,
+      "reihenfolge": 40,
+      "inListe": true,
+      "titel": "„100 Jahre Keramische Werkstatt Margaretenhöhe – Young-Jae Lee im Hetjens“",
+      "ortszeile": "Hetjens Museum, Düsseldorf",
+      "datum": "16. Mai – 1. September",
+      "ort": "duesseldorf",
+      "haus": "Hetjens-Museum"
+    },
+    {
+      "id": "archiv-2024-05",
+      "jahr": 2024,
+      "reihenfolge": 50,
+      "inListe": true,
+      "titel": "Bayerischer Kunstgewerbeverein",
+      "ortszeile": "München",
+      "datum": "17. Mai – 29. Juni",
+      "ort": "muenchen",
+      "haus": "Bayerischer Kunstgewerbeverein"
+    },
+    {
+      "id": "archiv-2024-06",
+      "jahr": 2024,
+      "reihenfolge": 60,
+      "inListe": true,
+      "titel": "Diessener Töpfermarkt",
+      "ortszeile": "Diessen",
+      "datum": "9.–12. Mai"
+    },
+    {
+      "id": "archiv-2024-07",
+      "jahr": 2024,
+      "reihenfolge": 70,
+      "inListe": true,
+      "titel": "„50 Jahre – 50 Schätze“",
+      "ortszeile": "Museum für Ostasiatische Kunst, Köln",
+      "datum": "19. Januar – 29. September",
+      "ort": "koeln",
+      "haus": "Museum für Ostasiatische Kunst"
+    },
+    {
+      "id": "archiv-2023-01",
+      "jahr": 2023,
+      "reihenfolge": 10,
+      "inListe": true,
+      "titel": "„CONTEMPORARY CRAFT – Young-Jae Lee“",
+      "ortszeile": "Museum für Kunst und Gewerbe Hamburg (MKG)",
+      "datum": "23. November 2022 – 23. April 2023"
+    },
+    {
+      "id": "archiv-2023-02",
+      "jahr": 2023,
+      "reihenfolge": 20,
+      "inListe": true,
+      "titel": "„Gefäße – retrospektiv“ – Young-Jae Lee",
+      "ortszeile": "„Blaues Haus“, Dießen am Ammersee"
+    },
+    {
+      "id": "archiv-2023-03",
+      "jahr": 2023,
+      "reihenfolge": 30,
+      "inListe": true,
+      "titel": "Raum 49",
+      "ortszeile": "Zürich, Vernissage am 30. März 2023",
+      "ort": "zuerich",
+      "haus": "Raum 49"
+    },
+    {
+      "id": "archiv-2023-04",
+      "jahr": 2023,
+      "reihenfolge": 40,
+      "inListe": true,
+      "titel": "Goldschmiede & Galerie Udo Adam-Pasquale",
+      "ortszeile": "Köln-Sülz",
+      "datum": "25. März – 13. Mai",
+      "ort": "koeln",
+      "haus": "Galerie Udo Adam-Pasquale, Köln-Sülz",
+      "galerie": "udo-adam-pasquale"
+    },
+    {
+      "id": "archiv-2023-05",
+      "jahr": 2023,
+      "reihenfolge": 50,
+      "inListe": true,
+      "titel": "Gallery Tokyo",
+      "ortszeile": "Tokyo",
+      "datum": "1.–5. Mai",
+      "ort": "tokio",
+      "haus": "Gallery Tokyo",
+      "galerie": "gallery-tokyo"
+    },
+    {
+      "id": "archiv-2022-01",
+      "jahr": 2022,
+      "reihenfolge": 10,
+      "inListe": true,
+      "titel": "Yui Tombana – Zeichnungen",
+      "ortszeile": "eine Ausstellung in unserer Werkstatt",
+      "datum": "2.–29. Juli"
+    },
+    {
+      "id": "archiv-2022-02",
+      "jahr": 2022,
+      "reihenfolge": 20,
+      "inListe": true,
+      "titel": "„HOME! 3/5 Identitäten“",
+      "ortszeile": "Kunsthaus Essen",
+      "datum": "4. März – 3. April",
+      "ort": "essen",
+      "haus": "Kunsthaus Essen"
+    },
+    {
+      "id": "archiv-2022-03",
+      "jahr": 2022,
+      "reihenfolge": 30,
+      "inListe": true,
+      "titel": "„Young-Jae LEE – Spindelvasen und Spinatschalen“",
+      "ortszeile": "Galerie Jahn und Jahn, München",
+      "datum": "28. Januar – 12. März",
+      "ort": "muenchen",
+      "haus": "Galerie Jahn und Jahn",
+      "galerie": "jahn-und-jahn"
+    },
+    {
+      "id": "archiv-2022-04",
+      "jahr": 2022,
+      "reihenfolge": 40,
+      "inListe": true,
+      "titel": "„Hope / Hoffnung – Works by Young-Jae Lee“",
+      "ortszeile": "Pucker Gallery, Boston",
+      "datum": "15. Januar – 27. Februar",
+      "ort": "boston",
+      "haus": "Pucker Gallery",
+      "galerie": "pucker-gallery"
+    },
+    {
+      "id": "archiv-2022-05",
+      "jahr": 2022,
+      "reihenfolge": 50,
+      "inListe": true,
+      "titel": "„Young-Jae LEE – Vessels are Sculpture“",
+      "ortszeile": "Gallery Nichinichi, Kyoto, Japan",
+      "datum": "3.–24. Januar"
+    },
+    {
+      "id": "archiv-2022-06",
+      "jahr": 2022,
+      "reihenfolge": 60,
+      "inListe": true,
+      "titel": "„WIR. Bilder für eine neue Kunst des Zusammenlebens“",
+      "ortszeile": "Große Kunstschau Worpswede",
+      "datum": "20. Juni 2021 – 6. März 2022"
+    },
+    {
+      "id": "archiv-2021-01",
+      "jahr": 2021,
+      "reihenfolge": 10,
+      "inListe": true,
+      "titel": "Weihnachtsausstellung in der Keramischen Werkstatt",
+      "ortszeile": "mit Schmuck von Karin Kolster-Kelly und Ulrika Mertens",
+      "datum": "6. November – 23. Dezember"
+    },
+    {
+      "id": "archiv-2021-02",
+      "jahr": 2021,
+      "reihenfolge": 20,
+      "inListe": true,
+      "titel": "„Young-Jae Lee – In collaboration with KDK“",
+      "ortszeile": "Gallery Damdam, Berlin",
+      "datum": "17. September – 13. November"
+    },
+    {
+      "id": "archiv-2021-03",
+      "jahr": 2021,
+      "reihenfolge": 30,
+      "inListe": true,
+      "titel": "„Young-Jae Lee – Gefässe“",
+      "ortszeile": "Galerie Karsten Greve, St. Moritz",
+      "datum": "10. September – 30. Oktober"
+    },
+    {
+      "id": "archiv-2021-04",
+      "jahr": 2021,
+      "reihenfolge": 40,
+      "inListe": true,
+      "titel": "„Viereckig“",
+      "ortszeile": "Galerie Banki, Kashiwa, Japan",
+      "datum": "11.–25. September"
+    },
+    {
+      "id": "archiv-2021-05",
+      "jahr": 2021,
+      "reihenfolge": 50,
+      "inListe": true,
+      "titel": "Gallery Tokyo",
+      "ortszeile": "Tokyo",
+      "datum": "2.–6. April",
+      "ort": "tokio",
+      "haus": "Gallery Tokyo",
+      "galerie": "gallery-tokyo"
+    },
+    {
+      "id": "archiv-2021-06",
+      "jahr": 2021,
+      "reihenfolge": 60,
+      "inListe": true,
+      "titel": "„1000°“",
+      "ortszeile": "Kunsthaus Dresden, Städtische Galerie für Gegenwartskunst"
+    },
+    {
+      "id": "archiv-2020-01",
+      "jahr": 2020,
+      "reihenfolge": 10,
+      "inListe": true,
+      "titel": "„Spinatschalen“",
+      "ortszeile": "Galerie Karsten Greve, Köln",
+      "datum": "19. Juni – 29. August",
+      "ort": "koeln",
+      "haus": "Galerie Karsten Greve",
+      "galerie": "karsten-greve"
+    },
+    {
+      "id": "archiv-2020-02",
+      "jahr": 2020,
+      "reihenfolge": 20,
+      "inListe": true,
+      "titel": "Buchpräsentation „Das Grün in den Schalen“",
+      "ortszeile": "in Anwesenheit der Künstlerin, Galerie Karsten Greve, Köln",
+      "datum": "21. August",
+      "ort": "koeln",
+      "haus": "Galerie Karsten Greve",
+      "galerie": "karsten-greve"
+    },
+    {
+      "id": "archiv-2020-03",
+      "jahr": 2020,
+      "reihenfolge": 30,
+      "inListe": true,
+      "titel": "„es grünt“",
+      "ortszeile": "Galerie Handwerk, München",
+      "datum": "18. Juni – 1. August",
+      "ort": "muenchen",
+      "haus": "Galerie Handwerk",
+      "galerie": "galerie-handwerk"
+    },
+    {
+      "id": "archiv-2020-04",
+      "jahr": 2020,
+      "reihenfolge": 40,
+      "inListe": true,
+      "titel": "„ENTERVENTIONALE #2020“",
+      "ortszeile": "Ausstellungsparcours in Bonn",
+      "datum": "14. Januar – 1. März",
+      "ort": "bonn",
+      "haus": "ENTERVENTIONALE, Ausstellungsparcours"
+    },
+    {
+      "id": "archiv-2020-05",
+      "jahr": 2020,
+      "reihenfolge": 50,
+      "inListe": true,
+      "titel": "„Schönheit !?“",
+      "ortszeile": "Galerie Gisela Clement, Bonn",
+      "datum": "13. November 2019 – 23. Januar 2020",
+      "ort": "bonn",
+      "haus": "Galerie Gisela Clement",
+      "galerie": "gisela-clement",
+      "beginnJahr": 2019
+    },
+    {
+      "id": "archiv-2019-01",
+      "jahr": 2019,
+      "reihenfolge": 10,
+      "inListe": true,
+      "titel": "„Young-Jae Lee: Emptying, Filling and Emptying“",
+      "ortszeile": "Ha Jung-woong Museum of Art – An Encounter between the Spirit of Bauhaus and Korean Ceramic Art",
+      "datum": "16. Oktober – 8. Dezember",
+      "ort": "korea",
+      "haus": "Gwangju Museum of Art und Ha Jung-woong Museum of Art"
+    },
+    {
+      "id": "archiv-2019-02",
+      "jahr": 2019,
+      "reihenfolge": 20,
+      "inListe": true,
+      "titel": "Buchvorstellung und Installation",
+      "ortszeile": "Kunstraum Alexander Bürkle, Freiburg",
+      "datum": "30. September"
+    },
+    {
+      "id": "archiv-2019-03",
+      "jahr": 2019,
+      "reihenfolge": 30,
+      "inListe": true,
+      "titel": "„Fine Choices 2019 Featuring Young-Jae Lee“",
+      "ortszeile": "Pucker Gallery, Boston",
+      "datum": "27. Juli – 1. September",
+      "ort": "boston",
+      "haus": "Pucker Gallery",
+      "galerie": "pucker-gallery"
+    },
+    {
+      "id": "archiv-2019-04",
+      "jahr": 2019,
+      "reihenfolge": 40,
+      "inListe": true,
+      "titel": "„Young-Jae Lee: MATERIAL ZU FORM – Körper zu Körper“",
+      "ortszeile": "Mischanlage Kokerei Zollverein, UNESCO-Welterbe Zollverein",
+      "datum": "24. Mai – 14. Juli",
+      "ort": "essen",
+      "haus": "Mischanlage Kokerei Zollverein"
+    },
+    {
+      "id": "archiv-2019-05",
+      "jahr": 2019,
+      "reihenfolge": 50,
+      "inListe": true,
+      "titel": "Young-Jae Lee",
+      "ortszeile": "Museum Folkwang, Essen",
+      "datum": "23. Mai – 4. August",
+      "ort": "essen",
+      "haus": "Museum Folkwang"
+    },
+    {
+      "id": "archiv-2019-06",
+      "jahr": 2019,
+      "reihenfolge": 60,
+      "inListe": true,
+      "titel": "„WerkKunst – Gefäße von Young-Jae Lee“",
+      "ortszeile": "Dommuseum Hildesheim",
+      "datum": "9. März – 24. April"
+    },
+    {
+      "id": "archiv-2019-07",
+      "jahr": 2019,
+      "reihenfolge": 70,
+      "inListe": true,
+      "titel": "„Who´s afraid of Bauhaus?“",
+      "ortszeile": "Museum Ratingen",
+      "datum": "15. Februar – 12. Mai"
+    },
+    {
+      "id": "archiv-2018-01",
+      "jahr": 2018,
+      "reihenfolge": 10,
+      "inListe": true,
+      "titel": "Weihnachten",
+      "ortszeile": "in der Keramischen Werkstatt",
+      "datum": "3. November – 23. Dezember"
+    },
+    {
+      "id": "archiv-2018-02",
+      "jahr": 2018,
+      "reihenfolge": 20,
+      "inListe": true,
+      "titel": "„Young-Jae Lee – Ceramics“",
+      "ortszeile": "Korean Cultural Center Brussels",
+      "datum": "8. März – 28. April"
+    },
+    {
+      "id": "archiv-2018-03",
+      "jahr": 2018,
+      "reihenfolge": 30,
+      "inListe": true,
+      "titel": "„Young-Jae Lee – Céramique“",
+      "ortszeile": "Galerie Karsten Greve, Paris",
+      "datum": "1. März – 14. April"
+    },
+    {
+      "id": "archiv-2018-04",
+      "jahr": 2018,
+      "reihenfolge": 40,
+      "inListe": true,
+      "titel": "Arbeiten in Keramik",
+      "ortszeile": "Galerie Karsten Greve, Köln",
+      "datum": "13. Januar – 24. Februar",
+      "ort": "koeln",
+      "haus": "Galerie Karsten Greve",
+      "galerie": "karsten-greve"
+    },
+    {
+      "id": "archiv-2017-01",
+      "jahr": 2017,
+      "reihenfolge": 10,
+      "inListe": true,
+      "titel": "Shinsegae Gallery",
+      "ortszeile": "Dai-gu, Incheon, Busan, Korea",
+      "datum": "Herbst 2017",
+      "ort": "korea",
+      "haus": "Shinsegae Gallery in Daegu, Gwangju, Incheon und Busan"
+    },
+    {
+      "id": "archiv-2017-02",
+      "jahr": 2017,
+      "reihenfolge": 20,
+      "inListe": true,
+      "titel": "Gallery Kan",
+      "ortszeile": "Fukushima, Japan",
+      "datum": "1.–11. September"
+    },
+    {
+      "id": "archiv-2017-03",
+      "jahr": 2017,
+      "reihenfolge": 30,
+      "inListe": true,
+      "titel": "„HINGABE“ – Gefäße von Young-Jae Lee",
+      "ortszeile": "Gartenpavillon des Kloster Beuerberg, Diözesanmuseum Freising",
+      "datum": "27. Mai – 3. Oktober"
+    },
+    {
+      "id": "archiv-2017-04",
+      "jahr": 2017,
+      "reihenfolge": 40,
+      "inListe": true,
+      "titel": "Gallery Tokyo",
+      "ortszeile": "Tokyo, Japan",
+      "datum": "21.–25. Juli",
+      "ort": "tokio",
+      "haus": "Gallery Tokyo",
+      "galerie": "gallery-tokyo"
+    },
+    {
+      "id": "archiv-2017-05",
+      "jahr": 2017,
+      "reihenfolge": 50,
+      "inListe": true,
+      "titel": "Young-Jae Lee „Gefäße“",
+      "ortszeile": "Oktogon der Hochschule für Bildende Künste Dresden",
+      "datum": "3. Mai – 25. Juni"
+    },
+    {
+      "id": "archiv-2016-01",
+      "jahr": 2016,
+      "reihenfolge": 10,
+      "inListe": true,
+      "titel": "„Gefäße der Keramischen Werkstatt“",
+      "ortszeile": "LIVING MOTIF, Tokyo",
+      "datum": "16. September – 16. Oktober",
+      "ort": "tokio",
+      "haus": "LIVING MOTIF"
+    },
+    {
+      "id": "archiv-2016-02",
+      "jahr": 2016,
+      "reihenfolge": 20,
+      "inListe": true,
+      "titel": "„WITNESS TO AN ANCIENT TRUTH“",
+      "ortszeile": "Pucker Gallery, Boston",
+      "datum": "23. Juli – 4. September",
+      "ort": "boston",
+      "haus": "Pucker Gallery",
+      "galerie": "pucker-gallery"
+    },
+    {
+      "id": "archiv-2016-03",
+      "jahr": 2016,
+      "reihenfolge": 30,
+      "inListe": true,
+      "titel": "„NICHT SCHÖN“",
+      "ortszeile": "Vasen von und mit Young-Jae Lee, MAK – Österreichisches Museum für angewandte Kunst, Wien",
+      "datum": "13. April – 26. Juni",
+      "ort": "wien",
+      "haus": "MAK – Österreichisches Museum für angewandte Kunst"
+    },
+    {
+      "id": "archiv-2016-04",
+      "jahr": 2016,
+      "reihenfolge": 40,
+      "inListe": true,
+      "titel": "„Young-Jae Lee Schalen“",
+      "ortszeile": "Manggha – Museum der Japanischen Kunst & Technik, Krakau",
+      "datum": "9. April – 14. August",
+      "ort": "krakau-breslau",
+      "haus": "Manggha Museum, Krakau"
+    },
+    {
+      "id": "archiv-2016-05",
+      "jahr": 2016,
+      "reihenfolge": 50,
+      "inListe": true,
+      "titel": "„Young-Jae Lee – Gefäße“",
+      "ortszeile": "Architekturmuseum Breslau",
+      "datum": "5. April – 9. Mai",
+      "ort": "krakau-breslau",
+      "haus": "Architekturmuseum Breslau"
+    },
+    {
+      "id": "archiv-2016-06",
+      "jahr": 2016,
+      "reihenfolge": 60,
+      "inListe": true,
+      "titel": "Verleihung der Ehrendoktorwürde an Young-Jae Lee",
+      "ortszeile": "Eugeniusz Geppert Academy of Art and Design, Wrocław",
+      "datum": "4. April"
+    },
+    {
+      "id": "archiv-2016-07",
+      "jahr": 2016,
+      "reihenfolge": 70,
+      "inListe": true,
+      "titel": "„Das Geschirr der KWM“",
+      "ortszeile": "Gallery Nichinichi, Kyoto",
+      "datum": "26. Februar – 6. März"
+    },
+    {
+      "id": "archiv-2022-koeln-kunst-station",
+      "jahr": 2022,
+      "reihenfolge": 900,
+      "titel": "„SIEBEN MAL SIEBEN“",
+      "ort": "koeln",
+      "haus": "Kunst-Station Sankt Peter",
+      "inListe": false
+    },
+    {
+      "id": "archiv-2016-muenchen-augenblicke",
+      "jahr": 2016,
+      "reihenfolge": 900,
+      "titel": "„Augenblicke“",
+      "ort": "muenchen",
+      "haus": "Galerie Jahn",
+      "galerie": "jahn-und-jahn",
+      "inListe": false
+    },
+    {
+      "id": "archiv-2019-tokio-gallery-tokyo",
+      "jahr": 2019,
+      "reihenfolge": 900,
+      "ort": "tokio",
+      "haus": "Gallery Tokyo",
+      "galerie": "gallery-tokyo",
+      "inListe": false
+    },
+    {
+      "id": "archiv-2016-krakau-breslau-neon",
+      "jahr": 2016,
+      "reihenfolge": 900,
+      "titel": "„Keramische Werkstatt Margaretenhöhe – Young-Jae Lee“",
+      "ort": "krakau-breslau",
+      "haus": "Galeria NEON, Breslau",
+      "galerie": "galeria-neon",
+      "inListe": false
+    }
+  ],
+  "haeuser": {
+    "koeln": [
+      "Museum für Ostasiatische Kunst",
+      "Galerie Karsten Greve",
+      "Kunst-Station Sankt Peter",
+      "Galerie Udo Adam-Pasquale"
+    ],
+    "muenchen": [
+      "Galerie Jahn und Jahn",
+      "Galerie Handwerk",
+      "Bayerischer Kunstgewerbeverein"
+    ],
+    "tokio": [
+      "Gallery Tokyo",
+      "LIVING MOTIF"
+    ],
+    "essen": [
+      "Museum Folkwang",
+      "Kokerei Zollverein",
+      "Kunsthaus Essen"
+    ],
+    "korea": [
+      "Gwangju Museum of Art",
+      "Ha Jung-woong Museum of Art",
+      "Shinsegae Gallery"
+    ],
+    "boston": [
+      "Pucker Gallery"
+    ],
+    "krakau-breslau": [
+      "Manggha Museum",
+      "Architekturmuseum Breslau",
+      "Galeria NEON"
+    ],
+    "chemnitz": [
+      "Stadtkirche St. Jakobi"
+    ],
+    "bonn": [
+      "Galerie Gisela Clement",
+      "ENTERVENTIONALE"
+    ],
+    "new-york": [
+      "David Nolan Gallery"
+    ],
+    "duesseldorf": [
+      "Hetjens-Museum"
+    ],
+    "wien": [
+      "MAK – Museum für angewandte Kunst"
+    ],
+    "zuerich": [
+      "Raum 49"
+    ]
+  }
+}

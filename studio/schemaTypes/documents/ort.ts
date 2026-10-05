@@ -1,5 +1,5 @@
 import { PinIcon } from '@sanity/icons/Pin';
-import { defineField, defineType } from 'sanity';
+import { defineArrayMember, defineField, defineType } from 'sanity';
 import { altFeld, bildOptionen } from '../objects/bild';
 
 export const ort = defineType({
@@ -36,6 +36,14 @@ export const ort = defineType({
       type: 'image',
       options: bildOptionen,
       fields: [altFeld],
+    }),
+    defineField({
+      name: 'haeuser',
+      title: 'Häuser',
+      description:
+        'Die Museen, Galerien und Räume, in denen Young-Jae Lee hier gezeigt wurde, eine Zeile pro Haus. Sie stehen so in der Kachel.',
+      type: 'array',
+      of: [defineArrayMember({ type: 'string' })],
     }),
     defineField({
       name: 'reihenfolge',

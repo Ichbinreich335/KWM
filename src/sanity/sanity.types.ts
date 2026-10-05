@@ -78,6 +78,28 @@ export type GalerieReference = {
   [internalGroqTypeReferenceTo]?: 'galerie';
 };
 
+export type ArchivEintrag = {
+  _id: string;
+  _type: 'archivEintrag';
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  jahr: number;
+  beginnJahr?: number;
+  reihenfolge: number;
+  inListe?: boolean;
+  titel?: string;
+  ortszeile?: string;
+  datum?: string;
+  link?: {
+    text: string;
+    url: string;
+  };
+  ort?: OrtReference;
+  haus?: string;
+  galerie?: GalerieReference;
+};
+
 export type SanityImageAssetReference = {
   _ref: string;
   _type: 'reference';
@@ -204,6 +226,7 @@ export type Ort = {
     alt: string;
     _type: 'image';
   };
+  haeuser?: Array<string>;
   reihenfolge?: number;
 };
 
@@ -316,6 +339,7 @@ export type AllSanitySchemaTypes =
   | Hinweis
   | OrtReference
   | GalerieReference
+  | ArchivEintrag
   | SanityImageAssetReference
   | Ausstellung
   | SanityImageCrop
