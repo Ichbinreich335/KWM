@@ -126,8 +126,8 @@ const { titel, einleitung, farben } = Astro.props;
     color: var(--coal);
   }
   .feuer-farben__btn:focus-visible {
-    outline: 2px solid var(--accent-on-coal);
-    outline-offset: 3px;
+    outline: var(--focus-ring) solid var(--accent-on-coal);
+    outline-offset: var(--focus-offset);
     position: relative;
     z-index: 1;
   }

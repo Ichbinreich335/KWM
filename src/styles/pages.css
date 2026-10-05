@@ -39,31 +39,6 @@
   grid-column: span 4;
 }
 
-/* Glasurproben */
-.swatches {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  gap: 32px var(--g);
-  padding-inline: var(--m);
-}
-.swatch-card img {
-  width: 100%;
-  aspect-ratio: 1;
-  object-fit: cover;
-  border-radius: 50%;
-  transition: transform 0.9s var(--ease);
-}
-.swatch-card:hover img {
-  transform: scale(1.06) rotate(-8deg);
-}
-.swatch-card figcaption {
-  font-size: var(--t-small);
-  line-height: var(--t-small-lh);
-  color: var(--ink);
-  text-align: center;
-  margin-top: 12px;
-}
-
 /* Anker: dunkler Abschnitt im Rhythmus der Seite, genau einer pro Unterseite (DESIGN.md, Abschnittstypen) */
 .on-anker {
   --ink: var(--on-coal);

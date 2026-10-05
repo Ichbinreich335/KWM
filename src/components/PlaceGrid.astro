@@ -451,7 +451,7 @@ const kachelKlasse = { gross: 'xl', mittel: 'm', klein: 's' } as const;
     outline: none;
   }
   .orte__tile:has(.orte__toggle:focus-visible) {
-    outline: 2px solid var(--on-coal);
+    outline: var(--focus-ring) solid var(--on-coal);
     outline-offset: -4px;
   }
 
@@ -529,7 +529,7 @@ const kachelKlasse = { gross: 'xl', mittel: 'm', klein: 's' } as const;
     outline: none;
   }
   .orte.is-keys .orte__detail-in:focus-visible {
-    outline: 2px solid var(--on-coal);
+    outline: var(--focus-ring) solid var(--on-coal);
     outline-offset: -4px;
   }
   .orte__detail-head {
@@ -572,7 +572,7 @@ const kachelKlasse = { gross: 'xl', mittel: 'm', klein: 's' } as const;
     background-size: 0% 1px;
   }
   .orte__close:focus-visible {
-    outline: 2px solid var(--on-coal);
+    outline: var(--focus-ring) solid var(--on-coal);
     outline-offset: 0;
   }
 

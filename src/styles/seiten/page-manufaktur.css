@@ -78,10 +78,6 @@
   font-size: var(--t-numeral);
   line-height: var(--t-numeral-lh);
 }
-.mf-cta {
-  flex-direction: column;
-  align-items: flex-start;
-}
 
 @media (max-width: 900px) {
   .mf-intro__aside,

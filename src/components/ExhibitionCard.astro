@@ -336,8 +336,8 @@ const datum = zeitraumKurz(ausstellung.start, ausstellung.ende);
     background-position: 100% 100%;
   }
   .aktuell__more:focus-visible {
-    outline: 2px solid var(--on-coal);
-    outline-offset: 4px;
+    outline: var(--focus-ring) solid var(--on-coal);
+    outline-offset: var(--focus-offset);
   }
 
   /* Aufklappen: Höhe über grid-template-rows, nur beim Schließen verzögert unsichtbar */

@@ -194,7 +194,8 @@ import { HONIGTOPF_FELD, MAX_ZEICHEN } from '../lib/anfrage';
   }
   .anfrage input:focus-visible,
   .anfrage textarea:focus-visible {
-    outline: 0;
+    outline: var(--focus-ring) solid var(--accent);
+    outline-offset: 2px;
     border-bottom-color: var(--accent);
     box-shadow: 0 1px 0 var(--accent);
   }
