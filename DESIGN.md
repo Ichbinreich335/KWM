@@ -29,7 +29,7 @@ Stand: 03.10.2026. Verbindlich für alle Seiten und Elemente in `src/v2/` und `s
 | `--accent` | `#4E7D6A` | Seladon, einziger Akzent: aktive Navigation, Auswahl, Markierung |
 | `--accent-on-coal` | `#8DB5A3` | Akzent auf Anker |
 
-Ausnahmen beim Rohwert: Schlagschatten (`rgba(0,0,0,.18)` am Farbskala-Mini-Gefäß, warmer Schatten der Kachel) und die weißen Lichter der Glasur-Bühne sind Teil der gerenderten Glasur, keine UI-Farbe.
+Ausnahmen beim Rohwert: Schlagschatten (warmer Schatten der Kachel) und die weißen Lichter der Glasur-Bühne sind Teil der gerenderten Glasur, keine UI-Farbe.
 
 **Glasurfarben** (`--glaze-*`, `GLAZES` in `js/keramik.js`) sind Inhalt und werden nie als Farbe der Oberfläche verwendet.
 
@@ -39,7 +39,7 @@ Ausnahmen beim Rohwert: Schlagschatten (`rgba(0,0,0,.18)` am Farbskala-Mini-Gef�
 
 **Schriften:** Libre Caslon Display (Überschriften, Namen, Zahlen), Libre Caslon Text (Zitate, Lede, Einleitungen), Jost 300–500 (Text, Navigation, Daten). Alle selbst gehostet in `src/assets/fonts/`, registriert in `astro.config.mjs` (`fonts`).
 
-**Regel: Es gibt nur Textstile.** Jede Schriftgröße im CSS kommt aus einem Token der Rollenskala in `site/v3/styles.css` (`:root`, Block „Textstile“). Ein Textstil besteht aus `--t-<name>` (Größe) und `--t-<name>-lh` (Zeilenhöhe) und wird immer als Paar gesetzt: `font-size: var(--t-small); line-height: var(--t-small-lh);`. Nackte `px`-, `rem`- oder `clamp()`-Werte außerhalb von `:root` sind nicht erlaubt. Begründete Ausnahmen (Zeilenhöhe ohne Paar, jeweils eigener Wert): Farbskala-Beschriftung 1,2 (zweizeiliges Raster mit `1.2em`-Zeile), Anfrage-Textfeld 1,5 mit Fließtext-Größe, Seitenleiste der Rechtstexte 1,3 (kompakte Sprungliste). Wer eine Größe braucht, die es nicht gibt, ordnet das Element einer vorhandenen Rolle zu. Eine neue Rolle braucht einen Eintrag in der Tabelle und einen eigenen Zweck. Die kleinen Rollen (`small`, `meta`) wachsen auf großen Bildschirmen fließend, mobil sind es 16 px und 13,5 px.
+**Regel: Es gibt nur Textstile.** Jede Schriftgröße im CSS kommt aus einem Token der Rollenskala in `site/v3/styles.css` (`:root`, Block „Textstile“). Ein Textstil besteht aus `--t-<name>` (Größe) und `--t-<name>-lh` (Zeilenhöhe) und wird immer als Paar gesetzt: `font-size: var(--t-small); line-height: var(--t-small-lh);`. Nackte `px`-, `rem`- oder `clamp()`-Werte außerhalb von `:root` sind nicht erlaubt. Begründete Ausnahmen (Zeilenhöhe ohne Paar, jeweils eigener Wert): Anfrage-Textfeld 1,5 mit Fließtext-Größe, Seitenleiste der Rechtstexte 1,3 (kompakte Sprungliste). Wer eine Größe braucht, die es nicht gibt, ordnet das Element einer vorhandenen Rolle zu. Eine neue Rolle braucht einen Eintrag in der Tabelle und einen eigenen Zweck. Die kleinen Rollen (`small`, `meta`) wachsen auf großen Bildschirmen fließend, mobil sind es 16 px und 13,5 px.
 
 ### Textstile
 
