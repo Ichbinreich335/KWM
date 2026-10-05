@@ -29,7 +29,7 @@ Stand: 03.10.2026. Verbindlich für alle Seiten und Elemente in `src/v2/` und `s
 | `--accent` | `#4E7D6A` | Seladon, einziger Akzent: aktive Navigation, Auswahl, Markierung |
 | `--accent-on-coal` | `#8DB5A3` | Akzent auf Anker |
 
-Ausnahmen beim Rohwert: Schlagschatten (warmer Schatten der Kachel) und die weißen Lichter der Glasur-Bühne sind Teil der gerenderten Glasur, keine UI-Farbe.
+Ausnahmen beim Rohwert: Schlagschatten (`rgba(0,0,0,.18)` am Farbskala-Mini-Gefäß, warmer Schatten der Kachel) und die weißen Lichter der Glasur-Bühne sind Teil der gerenderten Glasur, keine UI-Farbe.
 
 **Glasurfarben** (`--glaze-*`, `GLAZES` in `js/keramik.js`) sind Inhalt und werden nie als Farbe der Oberfläche verwendet.
 
@@ -39,7 +39,7 @@ Ausnahmen beim Rohwert: Schlagschatten (warmer Schatten der Kachel) und die wei�
 
 **Schriften:** Libre Caslon Display (Überschriften, Namen, Zahlen), Libre Caslon Text (Zitate, Lede, Einleitungen), Jost 300–500 (Text, Navigation, Daten). Alle selbst gehostet in `src/assets/fonts/`, registriert in `astro.config.mjs` (`fonts`).
 
-**Regel: Es gibt nur Textstile.** Jede Schriftgröße im CSS kommt aus einem Token der Rollenskala in `site/v3/styles.css` (`:root`, Block „Textstile“). Ein Textstil besteht aus `--t-<name>` (Größe) und `--t-<name>-lh` (Zeilenhöhe) und wird immer als Paar gesetzt: `font-size: var(--t-small); line-height: var(--t-small-lh);`. Nackte `px`-, `rem`- oder `clamp()`-Werte außerhalb von `:root` sind nicht erlaubt. Begründete Ausnahmen (Zeilenhöhe ohne Paar, jeweils eigener Wert): Anfrage-Textfeld 1,5 mit Fließtext-Größe, Seitenleiste der Rechtstexte 1,3 (kompakte Sprungliste). Wer eine Größe braucht, die es nicht gibt, ordnet das Element einer vorhandenen Rolle zu. Eine neue Rolle braucht einen Eintrag in der Tabelle und einen eigenen Zweck. Die kleinen Rollen (`small`, `meta`) wachsen auf großen Bildschirmen fließend, mobil sind es 16 px und 13,5 px.
+**Regel: Es gibt nur Textstile.** Jede Schriftgröße im CSS kommt aus einem Token der Rollenskala in `site/v3/styles.css` (`:root`, Block „Textstile“). Ein Textstil besteht aus `--t-<name>` (Größe) und `--t-<name>-lh` (Zeilenhöhe) und wird immer als Paar gesetzt: `font-size: var(--t-small); line-height: var(--t-small-lh);`. Nackte `px`-, `rem`- oder `clamp()`-Werte außerhalb von `:root` sind nicht erlaubt. Begründete Ausnahmen (Zeilenhöhe ohne Paar, jeweils eigener Wert): Farbskala-Beschriftung 1,2 (zweizeiliges Raster mit `1.2em`-Zeile), Anfrage-Textfeld 1,5 mit Fließtext-Größe, Seitenleiste der Rechtstexte 1,3 (kompakte Sprungliste). Wer eine Größe braucht, die es nicht gibt, ordnet das Element einer vorhandenen Rolle zu. Eine neue Rolle braucht einen Eintrag in der Tabelle und einen eigenen Zweck. Die kleinen Rollen (`small`, `meta`) wachsen auf großen Bildschirmen fließend, mobil sind es 16 px und 13,5 px.
 
 ### Textstile
 
@@ -47,13 +47,13 @@ Ausnahmen beim Rohwert: Schlagschatten (warmer Schatten der Kachel) und die wei�
 |---|---|---|---|---|---|---|
 | Mega | `--t-mega` | Display | 3 rem bis 6 rem (15,5 vw) bis 900 px, danach 12,4 vw bis 13 rem | 0,9 | `--ink` / `--on-coal` | Name „Young-Jae Lee“, Titel der Name-Köpfe (Aktuelles, 404) |
 | Wortmarke | `--t-wordmark` | Display | 17,6 vw | 0,74 | `--on-coal` | „Margaretenhöhe“ im Footer, unten beschnitten |
-| Marke | `--t-marke` | Display | 6 rem bis 22 rem (24 vw) | 0,8 | `--ink` | Jahreszahl als Bildelement, nur Bauhaus-Station Entwurf 2 (entfällt, wenn ein anderer Entwurf gewählt wird) |
+| Marke | `--t-marke` | Display | 6 rem bis 22 rem (24 vw) | 0,8 | `--ink` | Jahreszahl als Bildelement, nur Bauhaus-Station (Entwurf 4 und 2) |
 | Seitentitel | `--t-title` | Display | 2,5 rem bis 7 rem (7 vw) | 0,95 | `--ink` / `--on-coal` | `.page-hero__title` (Minimum kleiner als `--t-display`, damit „Zahlungsmöglichkeiten“ bei 360 px passt) |
 | Zäsur | `--t-display` | Display | 3 rem bis 7 rem (7 vw) | 0,95 | `--ink` / `--on-coal` | Zitat-Zäsur Young-Jae Lee, Glasurname |
 | Abschnitt | `--t-h2` | Display | 2,3 rem bis 4,6 rem (4,6 vw) | 1,02 | `--ink` / `--on-coal` | `.h2`, Einstiegstitel, Jahreszahl im Archiv, Öffnungszeiten groß, Orts-Kachel XL |
 | Aussage | `--t-statement` | Display | 2 rem bis 3,6 rem (3,6 vw) | 1,06 | `--ink` / `--on-coal` | Eigene Aussage der Werkstatt (`.works__statement`, `.ms-intro__statement`, `.mf-intro__rule`, `.zaesur__text`), Spotlight-Titel, Mobilmenü-Namen, Jahr im Ausstellungsarchiv, Chronik-Jahr |
 | Lede | `--t-lede` | Text | 1,65 rem bis 2,75 rem (2,9 vw) | 1,22 | `--ink` / `--on-coal` | derzeit nicht verwendet (frei für einen Einleitungssatz) |
-| Titel | `--t-h3` | Display (auch Text) | 1,5 rem bis 2,2 rem (2,2 vw) | 1,1 | `--ink` / `--on-coal` | Kachel-, Eintrags- und Kartentitel, `.legal__body h2`, Anfrage-Leiste, Zitat mittel (`.artist__quote`), Grundsätze und Programmnummern der Bauhaus-Station |
+| Titel | `--t-h3` | Display (auch Text) | 1,5 rem bis 2,2 rem (2,2 vw) | 1,1 | `--ink` / `--on-coal` | Kachel-, Eintrags- und Kartentitel, `.legal__body h2`, Anfrage-Leiste, Zitat mittel (`.artist__quote`), Programmnummern und Satz unter der Tafel der Bauhaus-Station |
 | Jahreszahl | `--t-numeral` | Display | 1,3 rem bis 2,4 rem (2,4 vw) | 1 | `--ink` / `--on-coal` | `.datelist__year`, Werkstatt-Daten, Lebensdaten |
 | Zitat klein | `--t-quote` | Text | 1,25 rem bis 1,6 rem (1,7 vw) | 1,35 | `--ink` / `--on-coal` | Längere Fremdzitate (Statement-Typ `zitat-lang`) und Einleitungen (`.page-hero__lede`), Werkname (`.piece__name`), Adresse |
 | Fließtext | `--t-body` | Jost (Text für lange Absätze) | 17 px bis 19 px | 1,55 | `--ink` / `--on-coal` | Absätze, `<body>`, Formularfelder, Listeneinträge mit Titel (`.year__list .t`, `.facts dd` breit), Lead-Absatz |
@@ -65,7 +65,7 @@ Größen bei 1440 px: Mega 179, Seitentitel 101, Abschnitt 66, Aussage 52, Lede 
 **Zuordnung:** Überschrift eines Abschnitts oder einer Seite = Abschnitt oder Seitentitel; Titel eines Eintrags in einer Reihe oder Kachel = Titel; Satz in der Schrift Text, der als Stimme der Werkstatt oder des Künstlers steht = Lede, Zitat klein; alles Lesbare in ganzen Sätzen = Fließtext; alles Erklärende neben oder unter einem Titel = Begleittext; alles, was ein Datum, ein Maß, ein Ort oder eine Beschriftung ist = Meta.
 
 **Ausnahmen (bewusst, nicht aus der Skala):**
-- `--t-wordmark` ist keine Leseschrift, sondern Bildelement mit Breite 17,6 vw. Dasselbe gilt für `--t-marke` (Jahreszahl der Bauhaus-Station, Entwurf 2).
+- `--t-wordmark` ist keine Leseschrift, sondern Bildelement mit Breite 17,6 vw. Dasselbe gilt für `--t-marke` (Jahreszahl der Bauhaus-Station).
 
 **Weitere Regeln:**
 - **Spaltenlabel nur über Info-Spalten** (Footer, Werkangaben). **Nie als Kicker über einer Überschrift.**
@@ -114,15 +114,16 @@ Größen bei 1440 px: Mega 179, Seitentitel 101, Abschnitt 66, Aussage 52, Lede 
 |---|---|---|---|
 | 1 | Einstieg: Zitat und Kummerschalen-Foto | hell | Haltung in einem Satz und einem Bild |
 | 2 | Aktuell: Spotlight mit Details, weitere zum Aufklappen, Hinweiszeile | Anker | Was jetzt zu sehen ist und wo. Häufigster Besuchsgrund |
-| 3 | Bauhaus-Station (`BauhausStation`, drei Entwürfe zur Wahl, `?bauhaus=1|2|3`) | hell | Die Herkunft als Prinzip: Raster, Grundform, Gebrauch |
+| 3 | Bauhaus-Station (`BauhausStation`): 1927 als Marke über der Tafel mit vier Tellern (Entwurf 4; `?bauhaus=2|3` zum Vergleich) | hell | Herkunft und Gebrauch: woher die Formen kommen und wofür sie da sind |
 | 4 | Young-Jae Lee: Name, Porträt mit Catoir-Zitat (haftend), Jahn-Zitat, Lebensweg | hell, Bild | Die Person hinter den Stücken |
 | 5 | Ausstellungsorte | Anker | Reichweite und Anerkennung (Museen, Galerien) |
-| 6 | Meisterstücke: Einzelwerk (Teeschale, ohne Titel, 2023) und Auswahl | hell | Die Unikate selbst. Bilder statt Worte |
+| 6 | Meisterstücke: Einzelwerk (zwei Schalen aus „99 Schalen – ein Kosmos“) und Auswahl | hell | Die Unikate selbst. Bilder statt Worte |
 | 7 | 99 Schalen: Wagner-Zitat und Ring | hell | Wiederholung und Differenz. Warum keine wie die andere ist |
-| 8 | Feuer | Bild | Der Brand als Moment, ein kurzer Bildwechsel |
-| 9 | Chronik, hundert Jahre (Kurztexte) | Fläche | Herkunft des Hauses. Die Überschrift bleibt stehen, die Jahre ziehen vorbei |
-| 10 | Besuch und Anfrage | hell | Kommen oder schreiben: Öffnungszeiten und Formular |
-| 11 | Footer | Anker | Kontakt, Logo, Wortmarke |
+| 8 | Farben: „Sechs Glasuren, ein Geschirr.“ mit Farbskala | hell | Das Geschirr für den Alltag und seine Farben, alle Teile kombinierbar |
+| 9 | Feuer | Bild | Der Brand als Moment, ein kurzer Bildwechsel |
+| 10 | Chronik, hundert Jahre (Kurztexte) | Fläche | Herkunft des Hauses. Die Überschrift bleibt stehen, die Jahre ziehen vorbei |
+| 11 | Besuch und Anfrage | hell | Kommen oder schreiben: Öffnungszeiten und Formular |
+| 12 | Footer | Anker | Kontakt, Logo, Wortmarke |
 
 **Regel für die Startseite:** Jedes Zitat steht nur einmal auf der Startseite, in voller Länge auf der Unterseite. Konzept, Entwürfe und Herleitung: `konzept/STARTSEITE-MITTELWEG.md`.
 
@@ -215,12 +216,13 @@ Sticky unter dem Header, mobil seitlich scrollbar mit Randausblendung. Der aktiv
 |---|---|---|
 | `kosmos` | Ausstellung (`main.js`) | 99 Schalen im Ring um eine leere Mitte, die Schalen weichen dem Zeiger aus |
 | `orte` | nach Meisterstücke | Ausstellungsorte als Bildraster, Orts-Name groß über einem gedämpften Foto |
+| `farbskala` | Farben (Startseite) | Glasur-Testkacheln mit gemessenen Farben |
 | `feuer` | Feuer | Eine Schale, umschaltbar zwischen oxidierendem und reduzierendem Brand |
 | `logo` | Footer | Logo als Konstruktionszeichnung, Hilfslinien verschwinden am Ende |
 
 ## 8. Bewegung
 - **Einblenden:** Text `fade` (18 px, 1,2 s). Überschriften `words` (Maske, 1,3 s, gestaffelt um 45 ms). Bilder `img` (Abdeckung fährt nach oben, Bild von 1,12 auf 1 skaliert). Kurve `--ease`.
-- **Dauer-Tokens** (`global.css`, `:root`): `--dur-hover` 0,5 s (Hover, Farben, Pfeile), `--dur-zoom` 1,2 s (Bild-Zoom bei Hover), `--dur-reveal` 1,2 s (Einblenden von Text), `--dur-open` 0,5 s (Aufklappen; bei reduzierter Bewegung 0). `--dur-move` 0,6 s (Kopfzeile und Leisten gleiten, Jahreszahl, Farbwechsel). Ausnahmen mit Absicht, jeweils eigener Wert: Punkte füllen 0,45 s (`--ease-pop`), Einblenden von Wörtern 1,3 s und Bildern 1,6/1,9/2,4 s (siehe oben), Strichzeichnung der Wortmarke und des Hero-Rahmens 1,5 s bis 1,9 s mit Versatz (`draw`), Hero-Bild 0,5 s, Zähler der Ausstellung 0,3 s, Sicherung ohne Skript 0,6 s nach 3 s, Glasur-Bühne 0,8 s (Farbe), 1,1 s (Deckkraft) und 6 s (langsamer Zoom). Gleiche Werte bekommen ein Token, sobald sie ein zweites Mal vorkommen.
+- **Dauer-Tokens** (`global.css`, `:root`): `--dur-hover` 0,5 s (Hover, Farben, Pfeile), `--dur-zoom` 1,2 s (Bild-Zoom und Farbskala bei Hover), `--dur-reveal` 1,2 s (Einblenden von Text), `--dur-open` 0,5 s (Aufklappen; bei reduzierter Bewegung 0). `--dur-move` 0,6 s (Kopfzeile und Leisten gleiten, Jahreszahl, Farbwechsel). Ausnahmen mit Absicht, jeweils eigener Wert: Punkte füllen 0,45 s (`--ease-pop`), Einblenden von Wörtern 1,3 s und Bildern 1,6/1,9/2,4 s (siehe oben), Strichzeichnung der Wortmarke und des Hero-Rahmens 1,5 s bis 1,9 s mit Versatz (`draw`), Hero-Bild 0,5 s, Zähler der Ausstellung 0,3 s, Sicherung ohne Skript 0,6 s nach 3 s, Glasur-Bühne 0,8 s (Farbe), 1,1 s (Deckkraft) und 6 s (langsamer Zoom). Gleiche Werte bekommen ein Token, sobald sie ein zweites Mal vorkommen.
 - **Sicherung ohne Skript:** `main.ts` setzt `js-ready`, sobald die Einblendung scharf ist. Bis dahin macht eine CSS-Animation alle `[data-reveal]`-Elemente nach 3 s sichtbar (Skriptfehler, Blocker, sehr langsames Netz). Das Startbild im Hero hat keine Abdeckung, nur eine kurze Opazitäts-Einblendung; die Hero-Überschrift wird beim Bauen in Wort-Spans zerlegt (`Woerter.astro`).
 - **Hover:** 0,5 s (`--dur-hover`). Es werden nur `transform`, `opacity`, Farben und `flex-grow` animiert, nie `width` oder `height`. Einzige Ausnahme: das sticky-`top` der Sprungleiste (`SubNav`) und der offenen Expander-Leiste gleitet mit `--dur-move`, im Gleichlauf mit der Kopfzeile (`transform`); das Haftmaß einer sticky-Leiste lässt sich nicht über `transform` verschieben, ohne die Leiste im Fluss mitzuziehen.
 - **Kein Scroll-Hijacking.** Sticky mit Scroll-Steuerung ist erlaubt, wenn die Scrollgeschwindigkeit unverändert bleibt.
@@ -270,7 +272,8 @@ Jede wiederverwendbare Komponente hat einen künftigen Astro-Namen (`src/compone
 | `ChapterHead` | Kapitel einer Unterseite mit Einleitung (`.chapter__intro`) | Abschnitt, Begleittext | hell, Fläche, Anker | `css/pages.css` (`.chapter`), alle Unterseiten |
 | `Statement` | Zitat oder Aussage groß, mit Quelle | Aussage oder Seitentitel (`pullquote`), Meta (Quelle) | hell, Fläche, Anker; `--bild` (`.zaesur`: Bild links, Satz rechts) | `.pullquote`, `.stance__quote`, `.zaesur`, `.catalog__quote`, `.mf-intro__rule`, `.sticky-bild__quote`, `.statement` |
 | `Lede` | Einleitender Absatz einer Seite oder eines Abschnitts | Lede, Begleittext (Spalten) | hell | `.page-hero__lede` (bleibt Teil von `PageHero`); die Startseite kommt ohne Einleitungssatz aus |
-| `BauhausStation` | Bauhaus-Station der Startseite, drei Entwürfe zur Wahl (Grundsätze, Jahreszahl als Marke, Tafel mit Programmnummern) | Abschnitt, Titel (Grundsätze, Nummern), Marke (1927), Aussage, Begleittext, Meta | `?bauhaus=1|2|3`, ohne Angabe 1; nach der Entscheidung bleibt ein Entwurf ohne Umschalter | `src/components/BauhausStation.astro` |
+| `BauhausStation` | Bauhaus-Station der Startseite: Entwurf 4 (1927 über der Tafel), zum Vergleich 2 (1927 mit Regal) und 3 (Tafel) | Marke (1927), Aussage, Begleittext, Titel (Satz) | ohne Angabe 4, `?bauhaus=2|3`; nach der Entscheidung bleibt ein Entwurf ohne Umschalter | `src/components/BauhausStation.astro` |
+| `TellerTafel` | Tafel wie im Musterkatalog: vier Teller von oben, darunter Programmnummer, Name, Maß; am Rechner genau unter den Tellern, am Handy 2 × 2 | Titel (Nummer), Meta | ein Look; Daten aus `manufaktur.ts` | `src/components/TellerTafel.astro` |
 | `Prose` | Fließtext mit Quelle, begrenzte Zeilenlänge | Fließtext, Meta (Quelle) | hell, Anker | `.legal__body` (Rechtsseiten, `src/components/Prose.astro`); `.stance__text` bleibt Seiten-CSS |
 
 Statement kennt vier Typen nach Rolle, nicht nach Fundstelle: `aussage` (eigene Aussage der Werkstatt, Display, Statement-Größe), `zitat` (kurzes Fremdzitat mit Quelle, Text-Schnitt in Titelgröße), `zitat-lang` (langes Fremdzitat mit Quelle, Text-Schnitt in Zitatgröße, auch auf dunklem Grund oder Foto) und `gross` (Zäsur, höchstens eine je Seite). Die Quelle erbt ihre Farbe über `--ink-2` aus dem Umfeld.
@@ -316,7 +319,7 @@ Statement kennt vier Typen nach Rolle, nicht nach Fundstelle: `aussage` (eigene 
 |---|---|---|---|---|
 | `Figure` | Bild mit Bildunterschrift und Nachweis | Meta | 4:3, 3:2, 4:5, Panorama randlos | `figcaption` überall |
 | `Plinth` | Geschirrreihe auf Sockel mit Beschriftung | Meta | Fläche | `.plinth`, `.shelf` (`css/pages.css`, Manufaktur) |
-| `Signature` (je Name) | Generative Grafik (Abschnitt 7): `Orte`, `Feuer`, `Logo`, `StickyBild`, `Aktuell`, `Anfrage` | wie die Komponente, in der sie steht | keine | `css/sig-*.css`, `js/sig-*.js` |
+| `Signature` (je Name) | Generative Grafik (Abschnitt 7): `Orte`, `Feuer`, `Farbskala`, `Logo`, `StickyBild`, `Aktuell`, `Anfrage` | wie die Komponente, in der sie steht | keine | `css/sig-*.css`, `js/sig-*.js` |
 | `Hours` | Öffnungszeiten groß im Kopf | Abschnitt (Zeit), Titel (kleine Zeit), Begleittext (Tag, Hinweis), Zitat klein (Adresse) | hell | `.visit-hours` (`css/page-besuch.css`) |
 
 ### Regeln für den Umbau
