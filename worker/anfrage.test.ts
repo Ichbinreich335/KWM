@@ -17,14 +17,12 @@ const GUELTIGER_BODY = {
 
 const senden = vi.fn();
 const limit = vi.fn();
-const assetsFetch = vi.fn();
 let fehlerLog: MockInstance<typeof console.error>;
 
 const testEnv = (): Env =>
   ({
     ANFRAGE_MAIL: { send: senden },
     ANFRAGE_LIMIT: { limit },
-    ASSETS: { fetch: assetsFetch },
     ANFRAGE_ABSENDER: 'anfrage@kwm-1924.de',
     ANFRAGE_ZIEL: 'ziel@example.invalid',
     ERLAUBTE_ORIGINS: `${URSPRUNG},https://www.kwm-1924.de,https://*.workers.dev`,
@@ -47,7 +45,6 @@ const siteverify = (antwort: object, status = 200) =>
 beforeEach(() => {
   senden.mockReset().mockResolvedValue({ messageId: 'test' });
   limit.mockReset().mockResolvedValue({ success: true });
-  assetsFetch.mockReset().mockResolvedValue(new Response('seite'));
   siteverify({ success: true, hostname: 'kwm-1924.de' });
   fehlerLog = vi.spyOn(console, 'error').mockImplementation(() => undefined);
 });
@@ -89,6 +86,8 @@ describe('POST /api/anfrage', () => {
     expect(await antwort.json()).toEqual({ ok: true });
     expect(antwort.headers.get('Cache-Control')).toBe('no-store');
     expect(antwort.headers.get('X-Content-Type-Options')).toBe('nosniff');
+    expect(antwort.headers.get('X-Frame-Options')).toBe('DENY');
+    expect(antwort.headers.get('Permissions-Policy')).toContain('camera=()');
     const mail = senden.mock.calls[0]?.[0] as EmailMessageBuilder;
     expect(mail.to).toBe('ziel@example.invalid');
     expect(mail.subject).toBe('Anfrage: Teeschale');
@@ -216,12 +215,7 @@ describe('POST /api/anfrage', () => {
 });
 
 describe('Routing des Workers', () => {
-  it('reicht alles außer /api/anfrage an die Assets', async () => {
-    const antwort = await worker.fetch(new Request('https://kwm-1924.de/besuch'), testEnv());
-    expect(await antwort.text()).toBe('seite');
-  });
-
-  it('antwortet unter /api/ mit 404 als JSON', async () => {
+  it('antwortet bei jedem anderen Pfad mit 404 als JSON (Assets liefert Cloudflare direkt)', async () => {
     const antwort = await worker.fetch(new Request('https://kwm-1924.de/api/anderes'), testEnv());
     expect(antwort.status).toBe(404);
     expect(antwort.headers.get('Content-Type')).toContain('application/json');
