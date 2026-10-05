@@ -9,3 +9,10 @@ export interface Schritt {
   titel: string;
   text: string;
 }
+
+/** Angabe der `FactsList`: Bezeichnung mit Wert; der Wert ist eine Zeile oder mehrere Zeilen mit Umbruch, dazu optional Links */
+export interface Fakt {
+  label: string;
+  wert?: string | readonly string[];
+  links?: readonly { href: string; text: string }[];
+}

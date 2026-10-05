@@ -38,25 +38,6 @@
 }
 .method__facts {
   grid-column: 1 / -1;
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: var(--g);
-  border-top: 1px solid var(--ink);
-  padding-top: 22px;
-  margin-top: 24px;
-}
-.method__facts dt {
-  font-size: var(--t-meta);
-  line-height: var(--t-meta-lh);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--ink-2);
-  margin-bottom: 8px;
-}
-.method__facts dd {
-  font-family: var(--f-text);
-  font-size: var(--t-body);
-  line-height: var(--t-body-lh);
 }
 
 /* Chronik: Komponente .chronicle aus global.css, hier nur Abstand zum Kapitel davor und der stille Schlusseintrag */
@@ -104,29 +85,6 @@
 }
 .place__info {
   grid-column: 8 / -1;
-  border-top: 1px solid var(--ink);
-}
-.place__info > div {
-  padding: 16px 0;
-  border-bottom: 1px solid var(--hair);
-}
-.place__info dt {
-  font-size: var(--t-meta);
-  line-height: var(--t-meta-lh);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--ink-2);
-  margin-bottom: 4px;
-}
-.place__info dd {
-  font-size: var(--t-small);
-  line-height: var(--t-small-lh);
-}
-.place__info a {
-  text-decoration: none;
-}
-.place__info a:hover {
-  text-decoration: underline;
 }
 
 @media (max-width: 900px) {
@@ -138,10 +96,6 @@
   }
   .method__media {
     margin-inline: calc(var(--m) * -1);
-  }
-  .method__facts {
-    grid-template-columns: 1fr 1fr;
-    row-gap: 24px;
   }
   .page-hero__media--strip img {
     object-position: 22% 50%;

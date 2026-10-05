@@ -2,6 +2,8 @@
 import '../styles/basis.css';
 import Statement from '../components/Statement.astro';
 import SectionHead from '../components/SectionHead.astro';
+import FactsList from '../components/FactsList.astro';
+import { kurzfakten } from '../data/manufaktur';
 import Bild from '../components/Bild.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import InquiryForm from '../components/InquiryForm.astro';
@@ -1208,35 +1210,11 @@ import '../styles/signaturen/signaturen.css';
           />
           <figcaption>Vor dem ersten Brand · Foto: Haydar Koyupinar</figcaption>
         </figure>
-        <div class="facts">
-          <dl class="facts__list">
-            <div>
-              <dt>Masse</dt>
-              <dd>Westerwälder Steinzeug, auf der Töpferscheibe gedreht</dd>
-            </div>
-            <div>
-              <dt>Schrühbrand</dt>
-              <dd>Elektroofen, etwa 950&#8239;°C</dd>
-            </div>
-            <div>
-              <dt>Glasurbrand</dt>
-              <dd>Gasofen, ca. 1300&#8239;°C, reduzierende Atmosphäre</dd>
-            </div>
-            <div>
-              <dt>Programm</dt>
-              <dd>Vom Teller bis zum Krug, dazu die Edition mit Vasen, Pflanzgefäßen und Dosen</dd>
-            </div>
-            <div>
-              <dt>Gebrauch</dt>
-              <dd>Alle Stücke sind spülmaschinenfest</dd>
-            </div>
-          </dl>
-          <div class="facts__cta">
-            <a class="button" href="/manufaktur">
-              Zum Programm
-            </a>
-          </div>
-        </div>
+        <FactsList typ="tafel" fakten={kurzfakten}>
+          <a class="button" href="/manufaktur">
+            Zum Programm
+          </a>
+        </FactsList>
         <figure class="craft__media3" data-reveal="img">
           <Bild
             src="/img/kwm/kannen.webp"

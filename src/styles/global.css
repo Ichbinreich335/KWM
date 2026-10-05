@@ -1279,18 +1279,6 @@ body::after {
   grid-column: 9 / 13;
   grid-row: 1;
 }
-.craft__detail--wide .facts__list > div,
-.craft__detail--wide .facts .facts__cta {
-  padding-block: 16px;
-}
-.craft__detail--wide .facts dt {
-  font-size: var(--t-meta);
-  line-height: var(--t-meta-lh);
-}
-.craft__detail--wide .facts dd {
-  font-size: var(--t-body);
-  line-height: var(--t-body-lh);
-}
 .craft__detail--wide .craft__media3 {
   grid-column: 9 / 13;
   grid-row: 2;
@@ -1307,26 +1295,6 @@ body::after {
 }
 .facts {
   grid-column: 10 / 13;
-  border-top: 1px solid var(--ink);
-}
-.facts__list > div {
-  padding: 14px 0;
-  border-bottom: 1px solid var(--hair);
-}
-.facts dt {
-  font-size: var(--t-meta);
-  line-height: var(--t-meta-lh);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--ink-2);
-  margin-bottom: 2px;
-}
-.facts dd {
-  font-size: var(--t-small);
-  line-height: var(--t-small-lh);
-}
-.facts .facts__cta {
-  padding-top: 28px;
 }
 
 /* Chronik: Erzählung statt Tabelle, Zeitstrahl in Spalte 6 bis 12, links der Einstieg bleibt stehen */

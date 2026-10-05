@@ -2,6 +2,8 @@
 import '../styles/basis.css';
 import PersonCard from '../components/PersonCard.astro';
 import { team } from '../data/team';
+import FactsList from '../components/FactsList.astro';
+import { methodenfakten, ortsfakten } from '../data/werkstatt';
 import DateList from '../components/DateList.astro';
 import { werkstattAuszeichnungen } from '../data/vita';
 import ChapterHead from '../components/ChapterHead.astro';
@@ -95,24 +97,7 @@ import '../styles/signaturen/signaturen.css';
             Zum Manufakturprogramm
           </a>
         </div>
-        <dl class="method__facts">
-          <div data-reveal="fade">
-            <dt>Masse</dt>
-            <dd>Westerwälder Steinzeug, auf der Töpferscheibe gedreht</dd>
-          </div>
-          <div data-reveal="fade">
-            <dt>Viereckteller</dt>
-            <dd>Aus Platten über Gipsmodellen geformt</dd>
-          </div>
-          <div data-reveal="fade">
-            <dt>Schrühbrand</dt>
-            <dd>Elektroofen, etwa 950&#8239;°C</dd>
-          </div>
-          <div data-reveal="fade">
-            <dt>Glasurbrand</dt>
-            <dd>Gasofen, ca. 1300&#8239;°C, reduzierende Atmosphäre</dd>
-          </div>
-        </dl>
+        <FactsList typ="raster" fakten={methodenfakten} einblenden />
       </div>
     </ChapterHead>
 
@@ -346,42 +331,7 @@ import '../styles/signaturen/signaturen.css';
             Besuch &amp; Anfahrt
           </a>
         </div>
-        <dl class="place__info" data-reveal="fade">
-          <div>
-            <dt>Adresse</dt>
-            <dd>
-              Keramische Werkstatt Margaretenhöhe GmbH
-              <br />
-              Bullmannaue 19, 45327 Essen
-            </dd>
-          </div>
-          <div>
-            <dt>Öffnungszeiten</dt>
-            <dd>
-              Montag bis Freitag 9–17 Uhr
-              <br />
-              Samstag 11–15 Uhr
-              <br />
-              ansonsten nach Vereinbarung
-            </dd>
-          </div>
-          <div>
-            <dt>Nahverkehr</dt>
-            <dd>Haltestelle Katernberg Süd</dd>
-          </div>
-          <div>
-            <dt>Kontakt</dt>
-            <dd>
-              <a class="tap" href="tel:+49201305080">
-                +49 201 30 50 80
-              </a>{' '}
-              ·{' '}
-              <a class="tap" href="mailto:kontakt@kwm1924.de">
-                kontakt@kwm1924.de
-              </a>
-            </dd>
-          </div>
-        </dl>
+        <FactsList typ="ort" fakten={ortsfakten} einblenden />
       </div>
     </ChapterHead>
 

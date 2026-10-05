@@ -1,0 +1,203 @@
+---
+import type { Fakt } from '../data/typen';
+
+interface Props {
+  fakten: readonly Fakt[];
+  /** `tafel`: Bezeichnung über dem Wert, ein Wert pro Zeile, optional mit Button im Slot; `ort`: Bezeichnung über dem Wert, Werte mit Links; `raster`: vier Spalten; `zeile-hell` und `zeile-anker`: Bezeichnung links, Wert rechts, auf hellem Grund bzw. auf dem dunklen Anker */
+  typ: 'tafel' | 'ort' | 'raster' | 'zeile-hell' | 'zeile-anker';
+  /** Liste (`ort`, `zeile-hell`) oder ihre Zeilen (`raster`) blenden beim Scrollen ein */
+  einblenden?: boolean;
+}
+
+const { fakten, typ, einblenden = false } = Astro.props;
+const wurzel = {
+  ort: 'place__info',
+  raster: 'method__facts',
+  'zeile-hell': 'feature__facts',
+  'zeile-anker': 'aktuell__facts',
+} as const;
+const reveal = einblenden ? 'fade' : undefined;
+const zeilen = (wert: Fakt['wert']) => (typeof wert === 'string' ? [wert] : (wert ?? []));
+---
+
+{typ === 'tafel' ? (
+  <div class="facts">
+    <dl class="facts__list">
+      {fakten.map((fakt) => (
+        <div>
+          <dt>{fakt.label}</dt>
+          <dd>{fakt.wert}</dd>
+        </div>
+      ))}
+    </dl>
+    {Astro.slots.has('default') && (
+      <div class="facts__cta">
+        <slot />
+      </div>
+    )}
+  </div>
+) : (
+  <dl class={wurzel[typ]} data-reveal={typ === 'raster' ? undefined : reveal}>
+    {fakten.map((fakt) => (
+      <div data-reveal={typ === 'raster' ? reveal : undefined}>
+        <dt>{fakt.label}</dt>
+        <dd>
+          {zeilen(fakt.wert).map((zeile, i) => (
+            <Fragment>
+              {i > 0 && <br />}
+              {zeile}
+            </Fragment>
+          ))}
+          {fakt.links?.map((link, i) => (
+            <Fragment>
+              {i > 0 && ' · '}
+              <a class="tap" href={link.href}>
+                {link.text}
+              </a>
+            </Fragment>
+          ))}
+        </dd>
+      </div>
+    ))}
+  </dl>
+)}
+
+<style>
+  /* tafel: Fakten neben dem Bild (Startseite, Manufaktur) */
+  .facts {
+    border-top: 1px solid var(--ink);
+  }
+  .facts__list > div {
+    padding: 16px 0;
+    border-bottom: 1px solid var(--hair);
+  }
+  .facts dt {
+    font-size: var(--t-meta);
+    line-height: var(--t-meta-lh);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+    margin-bottom: 2px;
+  }
+  .facts dd {
+    font-size: var(--t-body);
+    line-height: var(--t-body-lh);
+  }
+  .facts__cta {
+    padding-block: 16px;
+  }
+
+  /* ort: Adresse, Zeiten und Kontakt der Werkstatt */
+  .place__info {
+    border-top: 1px solid var(--ink);
+  }
+  .place__info > div {
+    padding: 16px 0;
+    border-bottom: 1px solid var(--hair);
+  }
+  .place__info dt {
+    font-size: var(--t-meta);
+    line-height: var(--t-meta-lh);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+    margin-bottom: 4px;
+  }
+  .place__info dd {
+    font-size: var(--t-small);
+    line-height: var(--t-small-lh);
+  }
+  .place__info a {
+    text-decoration: none;
+  }
+  .place__info a:hover {
+    text-decoration: underline;
+  }
+
+  /* raster: vier Spalten, am Handy zwei */
+  .method__facts {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--g);
+    border-top: 1px solid var(--ink);
+    padding-top: 22px;
+    margin-top: 24px;
+  }
+  .method__facts dt {
+    font-size: var(--t-meta);
+    line-height: var(--t-meta-lh);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+    margin-bottom: 8px;
+  }
+  .method__facts dd {
+    font-family: var(--f-text);
+    font-size: var(--t-body);
+    line-height: var(--t-body-lh);
+  }
+
+  /* zeile-hell: Angaben einer Ausstellung auf hellem Grund */
+  .feature__facts {
+    border-top: 1px solid var(--ink);
+    margin: 28px 0;
+  }
+  .feature__facts > div {
+    display: grid;
+    grid-template-columns: 8.5em 1fr;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--hair);
+    font-size: var(--t-small);
+    line-height: var(--t-small-lh);
+  }
+  .feature__facts dt {
+    color: var(--ink-2);
+    font-size: var(--t-meta);
+    line-height: var(--t-meta-lh);
+    padding-top: 2px;
+  }
+
+  /* zeile-anker: Angaben einer Ausstellung auf dem dunklen Anker */
+  .aktuell__facts {
+    margin: 0 0 16px;
+    border-top: 1px solid var(--hair);
+  }
+  .aktuell__facts > div {
+    display: grid;
+    grid-template-columns: minmax(0, 7.5rem) minmax(0, 1fr);
+    column-gap: 16px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--hair);
+  }
+  .aktuell__facts dt {
+    font-size: var(--t-meta);
+    line-height: var(--t-meta-lh);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--on-coal-2);
+    padding-top: 2px;
+  }
+  .aktuell__facts dd {
+    margin: 0;
+    font-size: var(--t-small);
+    line-height: var(--t-small-lh);
+    font-variant-numeric: tabular-nums;
+  }
+
+  @media (max-width: 900px) {
+    .method__facts {
+      grid-template-columns: 1fr 1fr;
+      row-gap: 24px;
+    }
+    .aktuell__facts > div {
+      grid-template-columns: minmax(0, 6.5rem) minmax(0, 1fr);
+    }
+  }
+  @media (max-width: 520px) {
+    .feature__facts > div {
+      grid-template-columns: 1fr;
+      gap: 2px;
+    }
+  }
+</style>
