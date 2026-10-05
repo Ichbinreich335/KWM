@@ -25,6 +25,7 @@ import Bild from '../components/Bild.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import InquiryForm from '../components/InquiryForm.astro';
 import Figure from '../components/Figure.astro';
+import SigSticky from '../components/SigSticky.astro';
 import SigFarbskala from '../components/SigFarbskala.astro';
 import { glasuren } from '../data/glasuren';
 import '../styles/signaturen/signaturen.css';
@@ -126,34 +127,31 @@ import '../styles/signaturen/signaturen.css';
         <span data-reveal="words">Young-Jae Lee</span>
       </h2>
       <figure class="sticky-bild-wrap">
-        <div class="sticky-bild sticky-bild--portrait" data-sig="sticky">
-          <div class="sticky-bild__media">
-            {/* sizes: Bildbreite folgt aus der Kastenhöhe (cover), Höhe x 1,12 (Überstand) x 2000/1313; mobil und hochkant 4:5 = 125vw, Desktop 140vh */}
-            <Bild
-              class="sticky-bild__img"
-              src="/img/kwm/portrait-yjl.webp"
-              sizes="(max-width: 900px) 213vw, (orientation: portrait) 213vw, max(100vw, 239vh)"
-              width="2000"
-              height="1313"
-              loading="lazy"
-              decoding="async"
-              alt="Young-Jae Lee in der Werkstatt, vor ihr ungebrannte Schalen und Vasen, hinter ihr Regale voller Gefäße"
-            />
-          </div>
-          <div class="sticky-bild__pane grid">
-            <Statement
-              typ="zitat-bild"
-              einblendung="keine"
-              class="sticky-bild__text sticky-bild__quote"
-              quelle="Barbara Catoir, »Gespannte Lebendigkeit«"
-            >
-              „Sie erzählte von den Zeremonien in den Tempeln, dem Ritual eines hundertfachen Niederkniens,
-              Niederfallens vor den Buddha-Statuen. Sie erzählte von ihrer Großmutter, die sich diesen
-              geistig-körperlichen Übungen bis ins hohe Alter unterzog. Daran habe sie sich immer wieder erinnert,
-              während sie ihre Schalen drehte, eine nach der anderen, ohne je darüber müde zu werden.“
-            </Statement>
-          </div>
-        </div>
+        <SigSticky variante="portrait">
+          {/* sizes: Bildbreite folgt aus der Kastenhöhe (cover), Höhe x 1,12 (Überstand) x 2000/1313; mobil und hochkant 4:5 = 125vw, Desktop 140vh */}
+          <Bild
+            slot="bild"
+            class="sticky-bild__img"
+            src="/img/kwm/portrait-yjl.webp"
+            sizes="(max-width: 900px) 213vw, (orientation: portrait) 213vw, max(100vw, 239vh)"
+            width="2000"
+            height="1313"
+            loading="lazy"
+            decoding="async"
+            alt="Young-Jae Lee in der Werkstatt, vor ihr ungebrannte Schalen und Vasen, hinter ihr Regale voller Gefäße"
+          />
+          <Statement
+            typ="zitat-bild"
+            einblendung="keine"
+            class="sticky-bild__text sticky-bild__quote"
+            quelle="Barbara Catoir, »Gespannte Lebendigkeit«"
+          >
+            „Sie erzählte von den Zeremonien in den Tempeln, dem Ritual eines hundertfachen Niederkniens, Niederfallens
+            vor den Buddha-Statuen. Sie erzählte von ihrer Großmutter, die sich diesen geistig-körperlichen Übungen bis
+            ins hohe Alter unterzog. Daran habe sie sich immer wieder erinnert, während sie ihre Schalen drehte, eine
+            nach der anderen, ohne je darüber müde zu werden.“
+          </Statement>
+        </SigSticky>
         <figcaption class="sticky-bild__caption">Young-Jae Lee in der Keramischen Werkstatt Margaretenhöhe</figcaption>
       </figure>
 
@@ -330,34 +328,31 @@ import '../styles/signaturen/signaturen.css';
     </section>
 
     {/* Feuer: Text bleibt beim Scrollen auf dem Glasurfoto stehen */}
-    <section class="sticky-bild sticky-bild--feuer" id="feuer" data-sig="sticky" aria-labelledby="feuer-title">
-      <div class="sticky-bild__media">
-        {/* sizes: Bildbreite folgt aus der Kastenhöhe (cover), Höhe x 1,12 (Überstand) x 1,5; Desktop 160vh, mobil 150vh */}
-        <Bild
-          class="sticky-bild__img"
-          src="/img/03-glasur-detail.webp"
-          sizes="(max-width: 900px) max(100vw, 252vh), max(100vw, 269vh)"
-          width="1600"
-          height="1067"
-          loading="lazy"
-          decoding="async"
-          alt="Nahaufnahme eines Schalenrands mit tintenblauer bis seladonfarbener Glasur, Nadelstichen und Eisensprenkeln"
-        />
+    <SigSticky variante="feuer" als="section" id="feuer" aria-labelledby="feuer-title">
+      {/* sizes: Bildbreite folgt aus der Kastenhöhe (cover), Höhe x 1,12 (Überstand) x 1,5; Desktop 160vh, mobil 150vh */}
+      <Bild
+        slot="bild"
+        class="sticky-bild__img"
+        src="/img/03-glasur-detail.webp"
+        sizes="(max-width: 900px) max(100vw, 252vh), max(100vw, 269vh)"
+        width="1600"
+        height="1067"
+        loading="lazy"
+        decoding="async"
+        alt="Nahaufnahme eines Schalenrands mit tintenblauer bis seladonfarbener Glasur, Nadelstichen und Eisensprenkeln"
+      />
+      <div class="sticky-bild__text">
+        <h2 class="h2" id="feuer-title">
+          Neun bis zehn Stunden Feuer.
+        </h2>
+        <p class="sticky-bild__lede">
+          Im Holzofen wird über neun bis zehn Stunden kontinuierlich bis auf {grad(BRENNTEMPERATUR.holzbrandMax)}{' '}
+          gefeuert – für einen Brand braucht es etwa 1,5 Festmeter Holz. Die Tönung wird reicher, manche Verfärbung
+          lässt sich nicht steuern.
+        </p>
+        <LinkArrow href="/werkstatt#feuer">Wie die Glasur ihre Farbe bekommt</LinkArrow>
       </div>
-      <div class="sticky-bild__pane grid">
-        <div class="sticky-bild__text">
-          <h2 class="h2" id="feuer-title">
-            Neun bis zehn Stunden Feuer.
-          </h2>
-          <p class="sticky-bild__lede">
-            Im Holzofen wird über neun bis zehn Stunden kontinuierlich bis auf {grad(BRENNTEMPERATUR.holzbrandMax)}{' '}
-            gefeuert – für einen Brand braucht es etwa 1,5 Festmeter Holz. Die Tönung wird reicher, manche Verfärbung
-            lässt sich nicht steuern.
-          </p>
-          <LinkArrow href="/werkstatt#feuer">Wie die Glasur ihre Farbe bekommt</LinkArrow>
-        </div>
-      </div>
-    </section>
+    </SigSticky>
 
     {/* Werkstatt / Chronik */}
     <Chronicle
