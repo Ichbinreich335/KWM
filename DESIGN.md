@@ -44,12 +44,13 @@ Stand: 03.10.2026. Verbindlich für alle Seiten und Elemente in `src/v2/` und `s
 |---|---|---|---|---|---|---|
 | Mega | `--t-mega` | Display | 3 rem bis 6 rem (15,5 vw) bis 900 px, danach 12,4 vw bis 13 rem | 0,9 | `--ink` / `--on-coal` | Name „Young-Jae Lee“, Titel der Name-Köpfe (Aktuelles, 404) |
 | Wortmarke | `--t-wordmark` | Display | 17,6 vw | 0,74 | `--on-coal` | „Margaretenhöhe“ im Footer, unten beschnitten |
+| Marke | `--t-marke` | Display | 6 rem bis 22 rem (24 vw) | 0,8 | `--ink` | Jahreszahl als Bildelement, nur Bauhaus-Station Entwurf 2 (entfällt, wenn ein anderer Entwurf gewählt wird) |
 | Seitentitel | `--t-title` | Display | 2,5 rem bis 7 rem (7 vw) | 0,95 | `--ink` / `--on-coal` | `.page-hero__title` (Minimum kleiner als `--t-display`, damit „Zahlungsmöglichkeiten“ bei 360 px passt) |
 | Zäsur | `--t-display` | Display | 3 rem bis 7 rem (7 vw) | 0,95 | `--ink` / `--on-coal` | Zitat-Zäsur Young-Jae Lee, Glasurname |
-| Abschnitt | `--t-h2` | Display | 2,3 rem bis 4,6 rem (4,6 vw) | 1,02 | `--ink` / `--on-coal` | `.h2`, Einstiegstitel, `.lines__name`, Jahreszahl im Archiv, Öffnungszeiten groß, Orts-Kachel XL |
-| Aussage | `--t-statement` | Display | 2 rem bis 3,6 rem (3,6 vw) | 1,06 | `--ink` / `--on-coal` | Eigene Aussage der Werkstatt (`.med__quote`, `.works__statement`, `.ms-intro__statement`, `.mf-intro__rule`, `.zaesur__text`), Spotlight-Titel, Mobilmenü-Namen, Jahr im Ausstellungsarchiv, Chronik-Jahr |
-| Lede | `--t-lede` | Text | 1,65 rem bis 2,75 rem (2,9 vw) | 1,22 | `--ink` / `--on-coal` | `.lede__text` |
-| Titel | `--t-h3` | Display (auch Text) | 1,5 rem bis 2,2 rem (2,2 vw) | 1,1 | `--ink` / `--on-coal` | Kachel-, Eintrags- und Kartentitel, `.legal__body h2`, Anfrage-Leiste, Zitat mittel (`.artist__quote`) |
+| Abschnitt | `--t-h2` | Display | 2,3 rem bis 4,6 rem (4,6 vw) | 1,02 | `--ink` / `--on-coal` | `.h2`, Einstiegstitel, Jahreszahl im Archiv, Öffnungszeiten groß, Orts-Kachel XL |
+| Aussage | `--t-statement` | Display | 2 rem bis 3,6 rem (3,6 vw) | 1,06 | `--ink` / `--on-coal` | Eigene Aussage der Werkstatt (`.works__statement`, `.ms-intro__statement`, `.mf-intro__rule`, `.zaesur__text`), Spotlight-Titel, Mobilmenü-Namen, Jahr im Ausstellungsarchiv, Chronik-Jahr |
+| Lede | `--t-lede` | Text | 1,65 rem bis 2,75 rem (2,9 vw) | 1,22 | `--ink` / `--on-coal` | derzeit nicht verwendet (frei für einen Einleitungssatz) |
+| Titel | `--t-h3` | Display (auch Text) | 1,5 rem bis 2,2 rem (2,2 vw) | 1,1 | `--ink` / `--on-coal` | Kachel-, Eintrags- und Kartentitel, `.legal__body h2`, Anfrage-Leiste, Zitat mittel (`.artist__quote`), Grundsätze und Programmnummern der Bauhaus-Station |
 | Jahreszahl | `--t-numeral` | Display | 1,3 rem bis 2,4 rem (2,4 vw) | 1 | `--ink` / `--on-coal` | `.datelist__year`, Werkstatt-Daten, Lebensdaten |
 | Zitat klein | `--t-quote` | Text | 1,25 rem bis 1,6 rem (1,7 vw) | 1,35 | `--ink` / `--on-coal` | Längere Fremdzitate (Statement-Typ `zitat-lang`) und Einleitungen (`.page-hero__lede`), Werkname (`.piece__name`), Adresse |
 | Fließtext | `--t-body` | Jost (Text für lange Absätze) | 17 px bis 19 px | 1,55 | `--ink` / `--on-coal` | Absätze, `<body>`, Formularfelder, Listeneinträge mit Titel (`.year__list .t`, `.facts dd` breit), Lead-Absatz |
@@ -61,7 +62,7 @@ Größen bei 1440 px: Mega 179, Seitentitel 101, Abschnitt 66, Aussage 52, Lede 
 **Zuordnung:** Überschrift eines Abschnitts oder einer Seite = Abschnitt oder Seitentitel; Titel eines Eintrags in einer Reihe oder Kachel = Titel; Satz in der Schrift Text, der als Stimme der Werkstatt oder des Künstlers steht = Lede, Zitat klein; alles Lesbare in ganzen Sätzen = Fließtext; alles Erklärende neben oder unter einem Titel = Begleittext; alles, was ein Datum, ein Maß, ein Ort oder eine Beschriftung ist = Meta.
 
 **Ausnahmen (bewusst, nicht aus der Skala):**
-- `--t-wordmark` ist keine Leseschrift, sondern Bildelement mit Breite 17,6 vw.
+- `--t-wordmark` ist keine Leseschrift, sondern Bildelement mit Breite 17,6 vw. Dasselbe gilt für `--t-marke` (Jahreszahl der Bauhaus-Station, Entwurf 2).
 
 **Weitere Regeln:**
 - **Spaltenlabel nur über Info-Spalten** (Footer, Werkangaben). **Nie als Kicker über einer Überschrift.**
@@ -74,6 +75,7 @@ Größen bei 1440 px: Mega 179, Seitentitel 101, Abschnitt 66, Aussage 52, Lede 
 - **Abschnittsabstand:** `--section` = `clamp(80px, 10vw, 168px)` oben und unten. Abschnitte wählen keine eigenen Abstände, Ausnahmen gelten nur für Vollbild-Signaturen.
 - **Kopf zu Inhalt:** `--head-gap` = `clamp(32px, 4vw, 56px)`. Gilt für Abschnittsköpfe und für den Seitenkopf zum Bild.
 - **Bildformate:** Kachel 4:3, Werk 3:2, Porträt 4:5, Panorama frei. In einer Reihe immer dasselbe Format.
+- **Bildgröße nach Rolle:** Werkbilder höchstens zwei Drittel der Bildschirmhöhe (`--werk-max` = 66 svh), mit Luft im Raster, nie randlos. Stimmungsbilder (Einstieg, Feuer, Orte, das haftende Porträt der Startseite am Rechner) dürfen randlos und groß sein.
 
 ## 5. Abschnittstypen und Rhythmus
 
@@ -109,16 +111,17 @@ Größen bei 1440 px: Mega 179, Seitentitel 101, Abschnitt 66, Aussage 52, Lede 
 |---|---|---|---|
 | 1 | Einstieg: Zitat und Kummerschalen-Foto | hell | Haltung in einem Satz und einem Bild |
 | 2 | Aktuell: Spotlight mit Details, weitere zum Aufklappen, Hinweiszeile | Anker | Was jetzt zu sehen ist und wo. Häufigster Besuchsgrund |
-| 3 | Lede und „Zwei Linien“ | hell | Wer wir sind, dazu der Abzweig zu Meisterstücke oder Manufaktur |
-| 4 | Young-Jae Lee: Name, Porträt mit Zitat, Lebensweg | hell, Bild | Die Person hinter den Stücken |
-| 5 | Meisterstücke: Einzelwerk und Auswahl | hell | Die Unikate selbst. Bilder statt Worte |
-| 6 | Ausstellungsorte | Anker | Reichweite und Anerkennung (Museen, Galerien) |
-| 7 | Haltung: Meditation und 99 Schalen | hell, dann Fläche | Wiederholung und Differenz. Warum keine wie die andere ist |
-| 8 | Manufaktur mit Farbskala | hell | Das Geschirr für den Alltag und seine Farben |
-| 9 | Feuer | Bild | Der Brand als Moment, ein kurzer Bildwechsel |
-| 10 | Chronik, hundert Jahre | Fläche | Herkunft des Hauses. Die Überschrift bleibt stehen, die Jahre ziehen vorbei |
-| 11 | Besuch und Anfrage | hell | Kommen oder schreiben: Öffnungszeiten und Formular |
-| 12 | Footer | Anker | Kontakt, Logo, Wortmarke |
+| 3 | Bauhaus-Station (`BauhausStation`, drei Entwürfe zur Wahl, `?bauhaus=1|2|3`) | hell | Die Herkunft als Prinzip: Raster, Grundform, Gebrauch |
+| 4 | Young-Jae Lee: Name, Porträt mit Catoir-Zitat (haftend), Jahn-Zitat, Lebensweg | hell, Bild | Die Person hinter den Stücken |
+| 5 | Ausstellungsorte | Anker | Reichweite und Anerkennung (Museen, Galerien) |
+| 6 | Meisterstücke: Einzelwerk (Teeschale, ohne Titel, 2023) und Auswahl | hell | Die Unikate selbst. Bilder statt Worte |
+| 7 | 99 Schalen: Wagner-Zitat und Ring | hell | Wiederholung und Differenz. Warum keine wie die andere ist |
+| 8 | Feuer | Bild | Der Brand als Moment, ein kurzer Bildwechsel |
+| 9 | Chronik, hundert Jahre (Kurztexte) | Fläche | Herkunft des Hauses. Die Überschrift bleibt stehen, die Jahre ziehen vorbei |
+| 10 | Besuch und Anfrage | hell | Kommen oder schreiben: Öffnungszeiten und Formular |
+| 11 | Footer | Anker | Kontakt, Logo, Wortmarke |
+
+**Regel für die Startseite:** Jedes Zitat steht nur einmal auf der Startseite, in voller Länge auf der Unterseite. Konzept, Entwürfe und Herleitung: `konzept/STARTSEITE-MITTELWEG.md`.
 
 ## 6. Komponenten
 
@@ -210,12 +213,11 @@ Sticky unter dem Header, mobil seitlich scrollbar mit Randausblendung. Der aktiv
 | `kosmos` | Ausstellung (`main.js`) | 99 Schalen im Ring um eine leere Mitte, die Schalen weichen dem Zeiger aus |
 | `orte` | nach Meisterstücke | Ausstellungsorte als Bildraster, Orts-Name groß über einem gedämpften Foto |
 | `feuer` | Feuer | Eine Schale, umschaltbar zwischen oxidierendem und reduzierendem Brand |
-| `farbskala` | Manufaktur | Glasur-Testkacheln mit gemessenen Farben |
 | `logo` | Footer | Logo als Konstruktionszeichnung, Hilfslinien verschwinden am Ende |
 
 ## 8. Bewegung
 - **Einblenden:** Text `fade` (18 px, 1,2 s). Überschriften `words` (Maske, 1,3 s, gestaffelt um 45 ms). Bilder `img` (Abdeckung fährt nach oben, Bild von 1,12 auf 1 skaliert). Kurve `--ease`.
-- **Dauer-Tokens** (`global.css`, `:root`): `--dur-hover` 0,5 s (Hover, Farben, Pfeile), `--dur-zoom` 1,2 s (Bild-Zoom und Farbskala bei Hover), `--dur-reveal` 1,2 s (Einblenden von Text), `--dur-open` 0,5 s (Aufklappen; bei reduzierter Bewegung 0). Ausnahmen mit Absicht: Punkte füllen 0,45 s (`--ease-pop`), Einblenden von Wörtern 1,3 s und Bildern 1,6/2,4 s (siehe oben).
+- **Dauer-Tokens** (`global.css`, `:root`): `--dur-hover` 0,5 s (Hover, Farben, Pfeile), `--dur-zoom` 1,2 s (Bild-Zoom bei Hover), `--dur-reveal` 1,2 s (Einblenden von Text), `--dur-open` 0,5 s (Aufklappen; bei reduzierter Bewegung 0). Ausnahmen mit Absicht: Punkte füllen 0,45 s (`--ease-pop`), Einblenden von Wörtern 1,3 s und Bildern 1,6/2,4 s (siehe oben).
 - **Sicherung ohne Skript:** `main.ts` setzt `js-ready`, sobald die Einblendung scharf ist. Bis dahin macht eine CSS-Animation alle `[data-reveal]`-Elemente nach 3 s sichtbar (Skriptfehler, Blocker, sehr langsames Netz). Das Startbild im Hero hat keine Abdeckung, nur eine kurze Opazitäts-Einblendung; die Hero-Überschrift wird beim Bauen in Wort-Spans zerlegt (`Woerter.astro`).
 - **Hover:** 0,5 s (`--dur-hover`). Es werden nur `transform`, `opacity`, Farben und `flex-grow` animiert, nie `width` oder `height`.
 - **Kein Scroll-Hijacking.** Sticky mit Scroll-Steuerung ist erlaubt, wenn die Scrollgeschwindigkeit unverändert bleibt.
@@ -263,11 +265,12 @@ Jede wiederverwendbare Komponente hat einen künftigen Astro-Namen (`src/compone
 |---|---|---|---|---|
 | `SectionHead` | Abschnittskopf: Überschrift links, Begleittext oder Link rechts, Haarlinie darunter | Abschnitt (H2), Begleittext (Aside) | hell, Fläche, Anker | `.sec-head` (`styles.css`, Startseite), `.chapter__head` (`css/pages.css`, Unterseiten): beides wird eine Komponente |
 | `ChapterHead` | Kapitel einer Unterseite mit Einleitung (`.chapter__intro`) | Abschnitt, Begleittext | hell, Fläche, Anker | `css/pages.css` (`.chapter`), alle Unterseiten |
-| `Statement` | Zitat oder Aussage groß, mit Quelle | Aussage oder Seitentitel (`pullquote`), Meta (Quelle) | hell, Fläche, Anker; `--bild` (`.zaesur`: Bild links, Satz rechts) | `.pullquote`, `.stance__quote`, `.zaesur`, `.catalog__quote`, `.mf-intro__rule`, `.med__quote`, `.sticky-bild__quote`, `.statement` |
-| `Lede` | Einleitender Absatz einer Seite oder eines Abschnitts | Lede, Begleittext (Spalten) | hell | `.lede` (nur Startseite, noch keine Komponente: erst bei einer zweiten Verwendung), `.page-hero__lede` (bleibt Teil von `PageHero`) |
+| `Statement` | Zitat oder Aussage groß, mit Quelle | Aussage oder Seitentitel (`pullquote`), Meta (Quelle) | hell, Fläche, Anker; `--bild` (`.zaesur`: Bild links, Satz rechts) | `.pullquote`, `.stance__quote`, `.zaesur`, `.catalog__quote`, `.mf-intro__rule`, `.sticky-bild__quote`, `.statement` |
+| `Lede` | Einleitender Absatz einer Seite oder eines Abschnitts | Lede, Begleittext (Spalten) | hell | `.page-hero__lede` (bleibt Teil von `PageHero`); die Startseite kommt ohne Einleitungssatz aus |
+| `BauhausStation` | Bauhaus-Station der Startseite, drei Entwürfe zur Wahl (Grundsätze, Jahreszahl als Marke, Tafel mit Programmnummern) | Abschnitt, Titel (Grundsätze, Nummern), Marke (1927), Aussage, Begleittext, Meta | `?bauhaus=1|2|3`, ohne Angabe 1; nach der Entscheidung bleibt ein Entwurf ohne Umschalter | `src/components/BauhausStation.astro` |
 | `Prose` | Fließtext mit Quelle, begrenzte Zeilenlänge | Fließtext, Meta (Quelle) | hell, Anker | `.legal__body` (Rechtsseiten, `src/components/Prose.astro`); `.stance__text` bleibt Seiten-CSS |
 
-Statement kennt fünf Typen nach Rolle, nicht nach Fundstelle: `lede` (Einleitungssatz der Startseite), `aussage` (eigene Aussage der Werkstatt, Display, Statement-Größe), `zitat` (kurzes Fremdzitat mit Quelle, Text-Schnitt in Titelgröße), `zitat-lang` (langes Fremdzitat mit Quelle, Text-Schnitt in Zitatgröße, auch auf dunklem Grund oder Foto) und `gross` (Zäsur, höchstens eine je Seite). Die Quelle erbt ihre Farbe über `--ink-2` aus dem Umfeld.
+Statement kennt vier Typen nach Rolle, nicht nach Fundstelle: `aussage` (eigene Aussage der Werkstatt, Display, Statement-Größe), `zitat` (kurzes Fremdzitat mit Quelle, Text-Schnitt in Titelgröße), `zitat-lang` (langes Fremdzitat mit Quelle, Text-Schnitt in Zitatgröße, auch auf dunklem Grund oder Foto) und `gross` (Zäsur, höchstens eine je Seite). Die Quelle erbt ihre Farbe über `--ink-2` aus dem Umfeld.
 
 ### Einträge und Kacheln
 
@@ -278,7 +281,6 @@ Statement kennt fünf Typen nach Rolle, nicht nach Fundstelle: `lede` (Einleitun
 | `WorkTile` | Kachel der Werkschau auf der Startseite: Bild, Name, Jahr, Maße, ganz ein Link zum Katalog | Zitat (Name), Meta (Jahr, Maße) | ein Look; eigenes Markup (`li`), daher getrennt von `WorkCard`; Daten aus `src/data/werke.ts` | `.piece` (Platzierung: `global.css`, `.works__grid`) |
 | `WareCard` | Geschirrserie mit Bild, Titel, Größenliste | Titel, Begleittext (Liste), Meta (Nummern) | Satz (`.set`, auch `breit`, `kontur`, nur Text); `WareGroup` bündelt die Sätze einer Warengruppe (Geschirr, Edition) | `.ware`, `.set` (`css/page-manufaktur.css`) |
 | `FactsList` | Werkangaben und Fakten: Label links, Wert rechts, Haarlinien | Meta (Label, Versalien), Fließtext oder Begleittext (Wert) | `ort`, `raster`, `zeile-hell`, `zeile-anker` (je ein bestehender Look, siehe Komponente) | `.method__facts`, `.place__info`, `.aktuell__facts`, `.feature__facts` |
-| `FactsTable` | Fakten neben dem Bild: Bezeichnung über dem Wert, optional Schaltfläche im Slot | Meta (Label, Versalien), Fließtext (Wert) | ein Look; getrennt von `FactsList`, weil Markup und Zeilenbau abweichen | `.facts` |
 | `DateList` | Liste mit Jahr links, Text rechts | Jahreszahl, Begleittext, Meta | `liste` (nummeriert), `definition` (Stichwort links); hell, Fläche | `.datelist` (`css/pages.css`), Young-Jae Lee, Manufaktur, Werkstatt |
 | `PubList` | Veröffentlichungen und Texte mit Autor, Titel, Auszug | Titel, Meta, Begleittext | `artikel` (Aktuelles), `literatur`, `essays` (Young-Jae Lee) | `.pubs`, `.pub`, `.texts` (`css/page-aktuelles.css`, `css/page-young-jae-lee.css`) |
 | `PersonCard` | Mensch der Werkstatt mit Rolle und Text | Titel (Name), Meta (Rolle), Begleittext | Reihe in `.people` (Seite) | `.person` (`css/pages.css`, `css/page-werkstatt.css`) |
@@ -311,7 +313,7 @@ Statement kennt fünf Typen nach Rolle, nicht nach Fundstelle: `lede` (Einleitun
 |---|---|---|---|---|
 | `Figure` | Bild mit Bildunterschrift und Nachweis | Meta | 4:3, 3:2, 4:5, Panorama randlos | `figcaption` überall |
 | `Plinth` | Geschirrreihe auf Sockel mit Beschriftung | Meta | Fläche | `.plinth`, `.shelf` (`css/pages.css`, Manufaktur) |
-| `Signature` (je Name) | Generative Grafik (Abschnitt 7): `Orte`, `Feuer`, `Farbskala`, `Logo`, `StickyBild`, `Aktuell`, `Anfrage` | wie die Komponente, in der sie steht | keine | `css/sig-*.css`, `js/sig-*.js` |
+| `Signature` (je Name) | Generative Grafik (Abschnitt 7): `Orte`, `Feuer`, `Logo`, `StickyBild`, `Aktuell`, `Anfrage` | wie die Komponente, in der sie steht | keine | `css/sig-*.css`, `js/sig-*.js` |
 | `Hours` | Öffnungszeiten groß im Kopf | Abschnitt (Zeit), Titel (kleine Zeit), Begleittext (Tag, Hinweis), Zitat klein (Adresse) | hell | `.visit-hours` (`css/page-besuch.css`) |
 
 ### Regeln für den Umbau
