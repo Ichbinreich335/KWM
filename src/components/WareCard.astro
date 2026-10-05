@@ -12,7 +12,7 @@ const { satz } = Astro.props;
 {satz.bild ? (
   <figure class:list={['set', satz.breit && 'set--wide']}>
     <div class:list={['set__frame', satz.kontur && 'set__frame--contain']} data-reveal="img">
-      <Bild src={satz.bild.src} width={satz.bild.breite} height={satz.bild.hoehe} loading="lazy" alt={satz.bild.alt} />
+      <Bild bild={satz.bild} />
     </div>
     {satz.untertitel && <p class="set__sub">{satz.untertitel}</p>}
     <ul class="set__list">

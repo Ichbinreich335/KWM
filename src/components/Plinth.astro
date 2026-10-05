@@ -12,13 +12,7 @@ const { faecher } = Astro.props;
 <ul class="shelf" data-reveal="img">
   {faecher.map((fach) => (
     <li class="shelf__item">
-      <Bild
-        src={fach.bild.src}
-        width={fach.bild.breite}
-        height={fach.bild.hoehe}
-        alt={fach.bild.alt}
-        {...(fach.laden === 'prioritaet' ? { priority: true } : { loading: 'eager' })}
-      />
+      <Bild bild={fach.bild} {...(fach.laden === 'prioritaet' ? { priority: true } : { loading: 'eager' })} />
     </li>
   ))}
 </ul>

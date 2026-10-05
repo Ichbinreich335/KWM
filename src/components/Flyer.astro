@@ -36,16 +36,7 @@ const seiten = [
             aria-haspopup="dialog"
             aria-label={`${label} des Flyers vergrößern`}
           >
-            <Bild
-              src={bild.src}
-              width={bild.breite}
-              height={bild.hoehe}
-              alt=""
-              widths={[96, 192]}
-              sizes="96px"
-              loading="lazy"
-              decoding="async"
-            />
+            <Bild bild={bild} alt="" widths={[96, 192]} sizes="96px" />
             <span>{label}</span>
           </button>
         </li>
@@ -68,27 +59,7 @@ const seiten = [
     <div class="flyer-dialog__seiten">
       {seiten.map(({ name, label, bild }) => (
         <figure class="flyer-dialog__seite" data-flyer-seite={name}>
-          {bild.widths && bild.sizes ? (
-            <Bild
-              src={bild.src}
-              width={bild.breite}
-              height={bild.hoehe}
-              alt={bild.alt}
-              loading="lazy"
-              decoding="async"
-              widths={[...bild.widths]}
-              sizes={bild.sizes}
-            />
-          ) : (
-            <Bild
-              src={bild.src}
-              width={bild.breite}
-              height={bild.hoehe}
-              alt={bild.alt}
-              loading="lazy"
-              decoding="async"
-            />
-          )}
+          <Bild bild={bild} />
           <figcaption>{label}</figcaption>
         </figure>
       ))}

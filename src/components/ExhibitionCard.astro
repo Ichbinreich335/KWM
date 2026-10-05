@@ -49,14 +49,7 @@ const datum = zeitraumKurz(ausstellung.start, ausstellung.ende);
   >
     {fotos.haupt && (
       <figure class="feature__media" data-reveal="img">
-        <Bild
-          src={fotos.haupt.src}
-          width={fotos.haupt.breite}
-          height={fotos.haupt.hoehe}
-          alt={fotos.haupt.alt}
-          loading="lazy"
-          {...(fotos.haupt.sizes && { sizes: fotos.haupt.sizes })}
-        />
+        <Bild bild={fotos.haupt} />
         <figcaption>{fotos.haupt.unterschrift}</figcaption>
       </figure>
     )}
@@ -117,27 +110,7 @@ const datum = zeitraumKurz(ausstellung.start, ausstellung.ende);
   >
     <figure class="aktuell__media">
       <span class="aktuell__frame">
-        {fotos.kachel.widths && fotos.kachel.sizes ? (
-          <Bild
-            src={fotos.kachel.src}
-            width={fotos.kachel.breite}
-            height={fotos.kachel.hoehe}
-            alt={fotos.kachel.alt}
-            loading="lazy"
-            decoding="async"
-            widths={[...fotos.kachel.widths]}
-            sizes={fotos.kachel.sizes}
-          />
-        ) : (
-          <Bild
-            src={fotos.kachel.src}
-            width={fotos.kachel.breite}
-            height={fotos.kachel.hoehe}
-            alt={fotos.kachel.alt}
-            loading="lazy"
-            decoding="async"
-          />
-        )}
+        <Bild bild={fotos.kachel} />
       </span>
       <figcaption>{fotos.kachel.unterschrift}</figcaption>
     </figure>

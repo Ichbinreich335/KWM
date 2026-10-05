@@ -14,7 +14,7 @@ const { werk } = Astro.props;
 <li class="piece">
   <a href={werk.verweis}>
     <span class="piece__media">
-      <Bild src={werk.bild.src} width={werk.bild.breite} height={werk.bild.hoehe} loading="lazy" alt={werk.bild.alt} />
+      <Bild bild={werk.bild} />
     </span>
     <span class="piece__head">
       <span class="piece__name">{werk.titel}</span>

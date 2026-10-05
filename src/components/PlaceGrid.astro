@@ -44,14 +44,7 @@ const kachelKlasse = { gross: 'xl', mittel: 'm', klein: 's' } as const;
             { 'orte__tile--full': ort.breitAmHandy },
           ]}
         >
-          <Bild
-            class="orte__img"
-            src={ort.bild.src}
-            width={ort.bild.breite}
-            height={ort.bild.hoehe}
-            loading="lazy"
-            alt={ort.bild.alt}
-          />
+          <Bild class="orte__img" bild={ort.bild} />
           <h3 class="orte__name">{ort.stadt}</h3>
           <p class="orte__meta">
             <span>{zahlen.zeitraum}</span>
