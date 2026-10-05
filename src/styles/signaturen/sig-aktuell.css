@@ -8,6 +8,7 @@
   --cover: var(--coal);
   --aktuell-ease-time: 0.5s;
   --aktuell-reihe: clamp(48px, 6vw, 88px); /* Abstand zwischen den Reihen der Liste */
+  --aktuell-karte: min(80vw, 420px); /* Breite einer Karte in der Wischreihe (Handy) */
 }
 .aktuell ::selection {
   background: var(--on-coal);
@@ -50,6 +51,15 @@
 }
 .aktuell__item:last-child {
   margin-bottom: 0;
+}
+/* Die drei weiteren Karten stehen in einer eigenen Liste; am Desktop löst display: contents sie wieder ins Raster auf */
+.aktuell__rest,
+.aktuell__reihe {
+  display: contents;
+  list-style: none;
+}
+.aktuell__hint {
+  display: none;
 }
 .aktuell__item[data-spotlight] {
   grid-column: 1 / -1;
@@ -317,6 +327,47 @@
   .aktuell__note {
     font-size: var(--t-small);
     line-height: var(--t-small-lh);
+  }
+  /* Weitere Karten als Wischreihe (Muster der Chronik): die Karte ist rund 80 % breit, die nächste schaut heraus */
+  .aktuell__rest {
+    display: block;
+    grid-column: 1 / -1;
+  }
+  .aktuell__hint {
+    display: block;
+    margin: 0 0 16px;
+    font-size: var(--t-meta);
+    line-height: var(--t-meta-lh);
+    letter-spacing: 0.04em;
+    color: var(--on-coal-2);
+  }
+  .aktuell__hint::after {
+    content: ' \2192';
+    font-family: system-ui, sans-serif;
+  }
+  .aktuell__reihe {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--g);
+    margin-inline: calc(var(--m) * -1);
+    padding-inline: var(--m);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--m);
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+  }
+  .aktuell__reihe::-webkit-scrollbar {
+    display: none;
+  }
+  .aktuell__reihe:focus-visible {
+    outline: 2px solid var(--on-coal);
+    outline-offset: -2px;
+  }
+  .aktuell__reihe > .aktuell__item {
+    flex: 0 0 var(--aktuell-karte);
+    margin-bottom: 0;
+    scroll-snap-align: start;
   }
   .aktuell__facts > div {
     grid-template-columns: minmax(0, 6.5rem) minmax(0, 1fr);
