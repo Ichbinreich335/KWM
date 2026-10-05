@@ -3,7 +3,8 @@
    Das Foto läuft normal mit; src/scripts/sig-sticky.ts verschiebt es nur minimal gegenläufig (Parallax, ≤ 5 %). */
 .sticky-bild {
   --sticky-h: 150svh;
-  --sticky-over: 6%; /* Bild ragt oben und unten über, Platz für den Parallax */
+  --sticky-over-anteil: 0.06; /* Bild ragt oben und unten über, Platz für den Parallax */
+  --sticky-over: calc(var(--sticky-over-anteil) * 100%);
   --sticky-shift: 0%; /* setzt sig-sticky.ts, Wertebereich ±5 % der Bildhöhe */
   --sticky-text-from: 1;
   --sticky-text-to: 9;
@@ -90,8 +91,17 @@
   --sticky-text-from: 7;
   --sticky-text-to: 13;
 }
+/* Ausschnitt rückt mit der Fensterform: Im breiten Fenster steht er bei 55 %, im schmalen rückt er nach links,
+   bis der Kopf ganz im Bild ist. Rechnung in Längen, weil object-position in % den Fokuspunkt nicht halten kann. */
+.sticky-bild--portrait .sticky-bild__media {
+  container-type: size;
+}
 .sticky-bild--portrait .sticky-bild__img {
-  object-position: 55% 50%;
+  --bild-format: calc(2000 / 1313); /* Seitenverhältnis von portrait-yjl.webp */
+  --bild-kopf: 0.16; /* Haar beginnt bei 19 % der Bildbreite; höchstens so viel links abschneiden */
+  /* Breite des Fotos bei cover: Kastenhöhe samt Überstand mal Seitenverhältnis, mindestens die Kastenbreite */
+  --bild-b: max(100cqw, 100cqh * (1 + 2 * var(--sticky-over-anteil)) * var(--bild-format));
+  object-position: max((100cqw - var(--bild-b)) * 0.55, var(--bild-b) * var(--bild-kopf) * -1) 50%;
 }
 /* Wie beim Feuer: Der Text steht oben im Bild fest (sticky), das Bild läuft darunter durch, am Ende zieht er mit */
 /* Höhe nur so hoch wie der Text: er haftet, bis er unten am Bild angekommen ist */
@@ -152,7 +162,18 @@
   .sticky-bild--feuer .sticky-bild__media::after {
     background: rgb(10 10 10 / 0.66);
   }
-  /* Porträt mobil: Bild und Zitat untereinander, ohne Sticky, Abdunklung und Parallax; das Zitat setzt das Bild auf Kohle fort */
+  .sticky-bild__media::after {
+    background: rgb(10 10 10 / 0.66);
+  }
+  .sticky-bild__pane {
+    align-content: end;
+    padding-bottom: clamp(48px, 12svh, 96px);
+  }
+}
+
+@media (max-width: 900px), (orientation: portrait) {
+  /* Porträt mobil und im Hochformat: Bild und Zitat untereinander, ohne Sticky, Abdunklung und Parallax; das Zitat setzt das Bild auf Kohle fort.
+     Im hochformatigen Fenster wäre das Foto so stark vergrößert, dass kein Rücken Gesicht und Zitat nebeneinander zeigt. */
   .sticky-bild--portrait {
     height: auto;
     --sticky-text-from: 1;
@@ -174,13 +195,6 @@
   .sticky-bild--portrait .sticky-bild__pane {
     position: static;
     padding-block: var(--head-gap);
-  }
-  .sticky-bild__media::after {
-    background: rgb(10 10 10 / 0.66);
-  }
-  .sticky-bild__pane {
-    align-content: end;
-    padding-bottom: clamp(48px, 12svh, 96px);
   }
 }
 

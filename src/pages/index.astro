@@ -338,11 +338,11 @@ import '../styles/signaturen/signaturen.css';
       <figure class="sticky-bild-wrap">
         <div class="sticky-bild sticky-bild--portrait" data-sig="sticky">
           <div class="sticky-bild__media">
-            {/* sizes: Bildbreite folgt aus der Kastenhöhe (cover), Höhe x 1,12 (Überstand) x 2000/1313; mobil 4:5 = 125vw, Desktop 140vh */}
+            {/* sizes: Bildbreite folgt aus der Kastenhöhe (cover), Höhe x 1,12 (Überstand) x 2000/1313; mobil und hochkant 4:5 = 125vw, Desktop 140vh */}
             <Bild
               class="sticky-bild__img"
               src="/img/kwm/portrait-yjl.webp"
-              sizes="(max-width: 900px) 213vw, max(100vw, 239vh)"
+              sizes="(max-width: 900px) 213vw, (orientation: portrait) 213vw, max(100vw, 239vh)"
               width="2000"
               height="1313"
               loading="lazy"
