@@ -27,14 +27,19 @@ export interface Veroeffentlichung {
 }
 
 const WAGNER = 'Thomas Wagner';
+/** Titel des Katalogtextes laut konzept/CONTENT-FUNDE.md 2.3 (Schreibweise „benützen“) */
+const GEFAESSE_DREHEN = 'Gefäße drehen, Gefäße betrachten, Gefäße benützen';
+const GESPANNTE_LEBENDIGKEIT = 'Gespannte Lebendigkeit';
 /** Titel des Katalogtextes laut konzept/CONTENT-FUNDE.md 2.6 (mit Fragezeichen) */
 const AUFGEHOBENE_ZEIT = 'Die aufgehobene Zeit?';
 /** Quellenangabe unter Zitaten aus diesem Text */
 export const wagnerQuelle = `${WAGNER}, »${AUFGEHOBENE_ZEIT}«`;
+export const jahnQuelle = `Gisela Jahn, »${GEFAESSE_DREHEN}«`;
+export const catoirQuelle = `Barbara Catoir, »${GESPANNTE_LEBENDIGKEIT}«`;
 
 export const texte: readonly Text[] = [
   {
-    titel: 'Gespannte Lebendigkeit',
+    titel: GESPANNTE_LEBENDIGKEIT,
     autor: 'Barbara Catoir',
     auszug:
       '„Young-Jae Lees Gefäße nehmen einen geheimnisvollen Dialog mit der spätgotischen Emporenkirche Sankt Peter auf.“',
@@ -42,7 +47,7 @@ export const texte: readonly Text[] = [
     pdf: 'https://kwm-1924.de/wp-content/uploads/2023/08/catoir.pdf',
   },
   {
-    titel: 'Gefäße drehen, Gefäße betrachten, Gefäße benützen',
+    titel: GEFAESSE_DREHEN,
     autor: 'Gisela Jahn',
     untertitel: 'Über die Schalen- und Vasenserien von Young-Jae Lee',
     auszug:

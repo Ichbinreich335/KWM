@@ -6,7 +6,7 @@ import DateList from '../components/DateList.astro';
 import YearArchive from '../components/YearArchive.astro';
 import { ausstellungsarchiv } from '../data/archiv';
 import PubList from '../components/PubList.astro';
-import { publikationen, texte, wagnerQuelle } from '../data/texte';
+import { catoirQuelle, jahnQuelle, publikationen, texte, wagnerQuelle } from '../data/texte';
 import { auszeichnungen, ausstellungsauswahl, biografie } from '../data/vita';
 import Statement from '../components/Statement.astro';
 import ChapterHead from '../components/ChapterHead.astro';
@@ -84,7 +84,7 @@ import Figure from '../components/Figure.astro';
           existenzielle Auseinandersetzung.“
         </p>
         <span class="prose__source" data-reveal="fade">
-          Gisela Jahn, »Gefäße drehen, Gefäße betrachten, Gefäße benützen«
+          {jahnQuelle}
         </span>
       </div>
     </section>
@@ -95,7 +95,7 @@ import Figure from '../components/Figure.astro';
         <h2 class="h2" id="memory-title" data-reveal="words">
           Eine nach der anderen.
         </h2>
-        <Statement typ="zitat-lang" einblendung="fade" quelle="Barbara Catoir, »Gespannte Lebendigkeit«">
+        <Statement typ="zitat-lang" einblendung="fade" quelle={catoirQuelle}>
           „Sie erzählte von den Zeremonien in den Tempeln, dem Ritual eines hundertfachen Niederkniens, Niederfallens
           vor den Buddha-Statuen. Sie erzählte von ihrer Großmutter, die sich diesen geistig-körperlichen Übungen bis
           ins hohe Alter unterzog. Daran habe sie sich immer wieder erinnert, während sie ihre Schalen drehte, eine nach

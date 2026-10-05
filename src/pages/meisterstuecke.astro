@@ -10,7 +10,7 @@ import { stimmung, werk } from '../data/werke';
 import Bild from '../components/Bild.astro';
 import Steps from '../components/Steps.astro';
 import { arbeitsschritte } from '../data/arbeitsweise';
-import { wagnerQuelle } from '../data/texte';
+import { jahnQuelle, wagnerQuelle } from '../data/texte';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import InquiryBand from '../components/InquiryBand.astro';
 import SubNav from '../components/SubNav.astro';
@@ -82,7 +82,7 @@ import PageHero from '../components/PageHero.astro';
         <Statement
           typ="zitat"
           class="catalog__quote"
-          quelle="Gisela Jahn, »Gefäße drehen, Gefäße betrachten, Gefäße benutzen«"
+          quelle={jahnQuelle}
         >
           Vom Volumen bezieht die Schale ihre Kraft, ihre Präsenz.
         </Statement>
@@ -155,7 +155,7 @@ import PageHero from '../components/PageHero.astro';
         <Statement
           typ="zitat"
           class="catalog__quote"
-          quelle="Gisela Jahn, »Gefäße drehen, Gefäße betrachten, Gefäße benutzen«"
+          quelle={jahnQuelle}
         >
           Das sinnliche Gespür […] reifte in der frühen Essener Zeit mit der Wiederannäherung an die koreanische
           Keramik.

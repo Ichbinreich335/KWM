@@ -15,7 +15,7 @@ import { kontakt } from '../data/kontakt';
 import Hours from '../components/Hours.astro';
 import PlaceGrid from '../components/PlaceGrid.astro';
 import { kacheln } from '../data/orte';
-import { wagnerQuelle } from '../data/texte';
+import { catoirQuelle, jahnQuelle, wagnerQuelle } from '../data/texte';
 import Timeline from '../components/Timeline.astro';
 import Chronicle from '../components/Chronicle.astro';
 import { chronik } from '../data/chronik';
@@ -104,19 +104,19 @@ const mokLink = `/aktuelles#f-${mok.schluessel}`;
             typ="zitat-lang"
             einblendung="keine"
             class="sticky-bild__text sticky-bild__quote"
-            quelle="Barbara Catoir, »Gespannte Lebendigkeit«"
+            quelle={catoirQuelle}
           >
             „Sie erzählte von den Zeremonien in den Tempeln, dem Ritual eines hundertfachen Niederkniens, Niederfallens
             vor den Buddha-Statuen. Sie erzählte von ihrer Großmutter, die sich diesen geistig-körperlichen Übungen bis
             ins hohe Alter unterzog. Daran habe sie sich immer wieder erinnert, während sie ihre Schalen drehte, eine
-            nach der anderen, ohne je darüber müde zu werden.“
+            nach der anderen, ohne je darüber müde zu werden […].“
           </Statement>
         </SigSticky>
         <figcaption class="sticky-bild__caption">Young-Jae Lee in der Keramischen Werkstatt Margaretenhöhe</figcaption>
       </figure>
 
       <div class="artist__body grid">
-        <Statement typ="zitat" einblendung="fade" class="artist__quote" quelle="Gisela Jahn">
+        <Statement typ="zitat" einblendung="fade" class="artist__quote" quelle={jahnQuelle}>
           „Die minimale Veränderung ist Young-Jae Lees unbegrenzter Freiraum – in der Form wie in der Farbigkeit der
           Glasur und der Bemalung. Ihr geht es nicht um Formerfindung, sondern um die Individualität des Gefäßes.“
         </Statement>
