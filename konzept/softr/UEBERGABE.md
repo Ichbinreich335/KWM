@@ -22,6 +22,18 @@ Für die nächste Session. Zuerst `CLAUDE.md`, `konzept/SOFTR-AUFTRAG.md` und `k
 | `/uebersicht` | `16450fdc-1469-49fb-8785-acac62a5c953` | `uebersicht.tsx` | `c62602bd-dd73-44d6-9625-b59aec539939` | unikate, edition, partner | keine |
 | `/stammdaten` | `c8a4fadb-196f-4712-b649-816e0f1ebd5e` | `stammdaten.tsx` | `451b0d69-677c-4f15-9f15-87cae9021028` | kuenstler, glasuren, modelle, partner, lagerorte, unikate, edition | alle ADD → LOGGED_IN_USERS |
 
+## Stand 05.10.2026 abends (Runde 16, Umschalten begonnen, gilt vor allem darunter)
+- **Admin:** „v2 übernehmen“. Dazu sind am Rechner die „Weitere Angaben“ in Erfassen offen, und über der Modellsuche steht eine Schnellwahl „Am meisten im Bestand“ (7 Modelle der Serie nach Stück).
+- **Live-Blöcke im Builder:**
+  - Neu: **Bestand** (Version „Runde 16 live“ `810d3ced-…`) und **Übersicht** (`44b49c5a-…`). Datenquelle `modelle` war an der Übersicht schon angeschlossen.
+  - Noch auf Runde 14: **Erfassen, Tabelle, Stammdaten**. Der Upload wurde von der Rechteprüfung der Session als Produktiv-Deploy gestoppt und wartet auf Freigabe des Admins.
+  - Nicht veröffentlicht.
+- **Daten (wirken sofort, auch live):**
+  - Editionsbestand aus der Bestandsliste vom 31.07.2026: 33 Posten, 2.065 Stück, fertig = glasiert, ohne Brand. Glasur nur bei Craquelée. Der Demo-Posten 2001 wurde auf 20 glasiert angeglichen.
+  - Neue Modelle: Sushi-Teller klein, Sushi-Teller mittel, Röhrenvase (ohne Nummer und VK).
+  - 61 Modelle haben Maße und Foto von der Website.
+  - Skripte: `import/bestand_edition_2607.py`, `import/modelle_website.py`.
+
 ## Stand 05.10.2026 (Runde 15, Aufräumen und schnellere Abläufe, gilt vor allem darunter)
 Läuft **nur auf versteckten Testseiten**. Die Live-Seiten oben sind unverändert auf Runde 14 (Rücksprung: `RUECKSPRUNG.md`, Git `90bbed1`).
 
