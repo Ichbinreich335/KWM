@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
-import { datasource, q, useFieldOptions, useRecordUpdate, useRecords, useUpload } from "@/lib/datasource";
+import { datasource, q, useFieldOptions, useRecordCreate, useRecordDelete, useRecordUpdate, useRecords, useUpload } from "@/lib/datasource";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { Check, ClipboardList, ImageOff, Images, Loader2, Minus, Pencil, Plus, Star } from "lucide-react";
+import { Check, ClipboardList, ImageOff, Images, Loader2, Pencil, Star } from "lucide-react";
 import { toast } from "sonner";
-import { AUSSER_HAUS_ORT, EDITION_PROGRAMM, MANUFAKTUR_PROGRAMM, PAGE_SIZE, RESERVIERT, ROHLING, VERFUEGBAR, VERKAUFT, isAusserHaus } from "../shared/konstanten";
+import { AUSSER_HAUS_ORT, EDITION_PROGRAMM, GESCHIRR, GESCHRUEHT, GLASIERT, PAGE_SIZE, RESERVIERT, ROH, VERFUEGBAR, VERKAUFT, ZUSTAENDE, isAusserHaus } from "../shared/konstanten";
 import {
   type Attachment,
   type Opt,
@@ -11,13 +11,10 @@ import {
   activeOptions,
   asAttachments,
   asOpts,
-  compareNr,
   euro,
   formatDate,
   freshItems,
   link,
-  lookupValue,
-  modellLabel,
   num,
   parseNumber,
   str,
@@ -26,7 +23,9 @@ import {
   useAllPages,
   zahl,
 } from "../shared/daten";
+import { type ModellStand, type Posten, type PostenKey, bezeichnung, nachModell, naechsterZustand, planeUmbuchung, postenText, schrittName, standText, toPosten } from "../shared/mengen";
 import {
+  AktionKnopf,
   AnsichtToggle,
   Auswahl,
   ChoiceChips,
@@ -55,18 +54,21 @@ import {
   SEITE_CLASS,
   StatusBadge,
   STICKY_BOTTOM,
+  Stueckzahl,
   Tabs,
   Textfeld,
+  TextMitVorschlag,
   useAnsicht,
   WISCHEN,
   ZusatzKnopf,
 } from "../shared/ui";
 
-const ds = datasource.define({ unikate: "unikate", edition: "edition", kuenstler: "kuenstler", glasuren: "glasuren", lagerorte: "lagerorte", partner: "partner" });
+const ds = datasource.define({ unikate: "unikate", edition: "edition", kuenstler: "kuenstler", glasuren: "glasuren", lagerorte: "lagerorte", partner: "partner", modelle: "modelle" });
 const kuenstlerSelect = q.select({ name: "vqD0c", archiviert: "TOhYe" });
 const glasurSelect = q.select({ name: "OuhBi", archiviert: "jxxXN" });
 const lagerortSelect = q.select({ name: "AoOjs", archiviert: "kMBsy" });
 const partnerSelect = q.select({ name: "a4yfc", archiviert: "24Tn9" });
+const modellSelect = q.select({ glasuren: "EazCZ" });
 
 const unikatSelect = q.select({
   nummer: "T63YN",
@@ -93,6 +95,7 @@ const unikatSelect = q.select({
   erfasstVon: "zjHi8",
   erfasstAm: "p4ha0",
   verkauftAm: "48BXo",
+  verkauftAn: "4qhRx",
   seit: "Evxm2",
   rueckgabe: "ENQkk",
 });
@@ -116,6 +119,7 @@ const unikatUpdateFields = q.select({
   website: "e5hSY",
   notiz: "Ku4py",
   verkauftAm: "48BXo",
+  verkauftAn: "4qhRx",
   seit: "Evxm2",
   rueckgabe: "ENQkk",
   fotos: "rqreT",
@@ -131,11 +135,13 @@ const editionSelect = q.select({
   notiz: "lyJky",
   artikelnr: "Zzp1S",
   programm: "IIAdh",
+  brand: "jqmqn",
+  reserviert: "L1bO5",
 });
 const editionUpdateFields = q.select({ anzahl: "Ciiwp", lagerort: "T5iQe", notiz: "lyJky" });
+const editionCreateFields = q.select({ bezeichnung: "LFUIR", modell: "jxN6x", glasur: "pbGEk", zustand: "WUkN3", anzahl: "Ciiwp", lagerort: "T5iQe", brand: "jqmqn", reserviert: "L1bO5" });
 
 const LIST_STEP = 50;
-const LOW_STOCK = 5;
 const UNDO_MS = 10000;
 
 type Unikat = {
@@ -164,25 +170,13 @@ type Unikat = {
   erfasstVon: string;
   erfasstAm: string;
   verkauftAm: string;
+  verkauftAn: string;
   seit: string;
   rueckgabe: string;
 };
 
-type Edition = {
-  id: string;
-  nr: string;
-  programm: string;
-  modell: string;
-  typ: string;
-  glasur: string;
-  zustand: string;
-  anzahl: number;
-  lagerort: Opt | undefined;
-  fotos: Attachment[];
-  notiz: string;
-};
-
-type Art = "unikat" | "edition";
+// Drei Serien der Werkstatt. Geschirr und Edition sind Mengenware (Stück je Zustand), Unikate Einzelstücke.
+type Art = "geschirr" | "edition" | "unikat";
 type TabKey = "imhaus" | "kommission" | "verkauft" | "alle";
 type StammData = { pages: { items: unknown[] }[] } | undefined;
 type Stamm = { lagerorte: StammData; partner: StammData; kuenstler: StammData; glasuren: StammData };
@@ -204,16 +198,23 @@ const SORTS: { key: SortKey; label: string }[] = [
   { key: "lagerort", label: "Lagerort" },
 ];
 
-type ZustandKey = "alle" | "rohling" | "glasiert";
-const ZUSTAND_FILTER: { key: ZustandKey; label: string; match?: (e: Edition) => boolean }[] = [
-  { key: "alle", label: "Alle" },
-  { key: "rohling", label: "Rohlinge", match: (e) => e.zustand === ROHLING },
-  { key: "glasiert", label: "Glasiert", match: (e) => e.zustand !== ROHLING },
+type MengenFilter = "alle" | "reserviert" | (typeof ZUSTAENDE)[number];
+const MENGEN_FILTER: { key: MengenFilter; label: string; match: (s: ModellStand) => boolean }[] = [
+  { key: "alle", label: "Alle", match: () => true },
+  { key: GESCHRUEHT, label: "Geschrüht", match: (s) => (s.je[GESCHRUEHT] ?? 0) > 0 },
+  { key: GLASIERT, label: "Glasiert", match: (s) => (s.je[GLASIERT] ?? 0) > 0 },
+  { key: ROH, label: "Roh", match: (s) => (s.je[ROH] ?? 0) > 0 },
+  { key: "reserviert", label: "Reserviert", match: (s) => s.reserviert > 0 },
 ];
-type ProgrammKey = "" | typeof EDITION_PROGRAMM | typeof MANUFAKTUR_PROGRAMM;
 
 function initialParam(name: string): string {
   return new URLSearchParams(window.location.search).get(name) ?? "";
+}
+
+// ?tab=geschirr | edition, sonst die Unikate (auch die alten Links mit Status, z. B. ?tab=kommission).
+function initialArt(): Art {
+  const t = initialParam("tab");
+  return t === "edition" ? "edition" : t === "geschirr" || !t ? "geschirr" : "unikat";
 }
 
 function toUnikat(item: RawItem): Unikat {
@@ -244,25 +245,9 @@ function toUnikat(item: RawItem): Unikat {
     erfasstVon: str(f.erfasstVon),
     erfasstAm: str(f.erfasstAm),
     verkauftAm: str(f.verkauftAm),
+    verkauftAn: str(f.verkauftAn),
     seit: str(f.seit),
     rueckgabe: str(f.rueckgabe),
-  };
-}
-
-function toEdition(item: RawItem): Edition {
-  const f = item.fields;
-  return {
-    id: item.id,
-    nr: str(lookupValue(f.artikelnr)),
-    programm: asOpts(f.programm)[0]?.label ?? "",
-    modell: modellLabel(str(lookupValue(f.artikelnr)), asOpts(f.modell)[0]?.label ?? ""),
-    typ: asOpts(f.typ)[0]?.label ?? "",
-    glasur: asOpts(f.glasur)[0]?.label ?? "",
-    zustand: asOpts(f.zustand)[0]?.label ?? "",
-    anzahl: num(f.anzahl) ?? 0,
-    lagerort: asOpts(f.lagerort)[0],
-    fotos: asAttachments(f.foto),
-    notiz: str(f.notiz),
   };
 }
 
@@ -314,10 +299,27 @@ type EditForm = {
   preis: string;
   website: boolean;
   verkauftAm: string;
+  verkauftAn: string;
   notiz: string;
 };
 
-function UnikatDetail({ u, onClose, onSaved, stamm, typen, statusListe }: { u: Unikat; onClose: () => void; onSaved: () => Promise<unknown>; stamm: Stamm; typen: Opt[]; statusListe: Opt[] }) {
+function UnikatDetail({
+  u,
+  onClose,
+  onSaved,
+  stamm,
+  typen,
+  statusListe,
+  kunden,
+}: {
+  u: Unikat;
+  onClose: () => void;
+  onSaved: () => Promise<unknown>;
+  stamm: Stamm;
+  typen: Opt[];
+  statusListe: Opt[];
+  kunden: string[];
+}) {
   const lagerorte = activeOptions(stamm.lagerorte, link(u.lagerort?.id));
   const galerien = activeOptions(stamm.partner, link(u.galerie?.id));
   const personen = activeOptions(stamm.kuenstler, [u.kuenstler?.id, u.gedreht?.id, u.glasiert?.id].filter((id): id is string => !!id));
@@ -340,6 +342,7 @@ function UnikatDetail({ u, onClose, onSaved, stamm, typen, statusListe }: { u: U
     preis: u.preis !== null ? String(u.preis) : "",
     website: u.website,
     verkauftAm: u.verkauftAm.slice(0, 10),
+    verkauftAn: u.verkauftAn,
     notiz: u.notiz,
   };
   const [editing, setEditing] = useState(false);
@@ -443,6 +446,7 @@ function UnikatDetail({ u, onClose, onSaved, stamm, typen, statusListe }: { u: U
           preis,
           website: form.website,
           verkauftAm: form.verkauftAm || null,
+          verkauftAn: form.verkauftAn.trim(),
           notiz: form.notiz.trim(),
           ...(fotos ? { fotos } : {}),
         },
@@ -468,7 +472,7 @@ function UnikatDetail({ u, onClose, onSaved, stamm, typen, statusListe }: { u: U
     ["Maße", u.masse],
     ["Außer Haus seit", formatDate(u.seit)],
     ["Auf Website zeigen", u.website ? "ja" : "nein"],
-    ["Verkauft am", formatDate(u.verkauftAm)],
+    ["Verkauft", [u.verkauftAn && `an ${u.verkauftAn}`, u.verkauftAm && `am ${formatDate(u.verkauftAm)}`].filter(Boolean).join(" ")],
     ["Bildnachweis", u.bildnachweis],
     ["Erfasst", [formatDate(u.erfasstAm), u.erfasstVon].filter(Boolean).join(", von ")],
   ];
@@ -685,9 +689,15 @@ function UnikatDetail({ u, onClose, onSaved, stamm, typen, statusListe }: { u: U
                 </div>
                 <SchalterFeld id="d-website" label="Auf Website zeigen" checked={form.website} onChange={(v) => set("website", v)} lage="self-end" />
               </div>
-              <div>
-                <FieldLabel htmlFor="d-verkauft">Verkauft am</FieldLabel>
-                <Feld id="d-verkauft" type="date" value={form.verkauftAm} onChange={(e) => set("verkauftAm", e.target.value)} />
+              <div className="grid sm:grid-cols-2 gap-5">
+                <div>
+                  <FieldLabel htmlFor="d-verkauft-an">Verkauft an</FieldLabel>
+                  <TextMitVorschlag id="d-verkauft-an" value={form.verkauftAn} onChange={(v) => set("verkauftAn", v)} vorschlaege={kunden} placeholder="Name der Käuferin oder des Käufers" />
+                </div>
+                <div>
+                  <FieldLabel htmlFor="d-verkauft">Verkauft am</FieldLabel>
+                  <Feld id="d-verkauft" type="date" value={form.verkauftAm} onChange={(e) => set("verkauftAm", e.target.value)} />
+                </div>
               </div>
               <div>
                 <FieldLabel htmlFor="d-notiz">Notiz</FieldLabel>
@@ -761,7 +771,7 @@ function UnikatTile({ u, onOpen }: { u: Unikat; onOpen: () => void }) {
   );
 }
 
-type InventurChange = { e: Edition; gezaehlt: number };
+type InventurChange = { e: Posten; gezaehlt: number };
 const INVENTUR_KEY = "kwm-inventur";
 
 function loadCounts(): Record<string, string> {
@@ -775,7 +785,7 @@ function loadCounts(): Record<string, string> {
 
 // Inventur: gezählte Menge je Posten eintippen, Abweichungen sehen und gesammelt übernehmen.
 // Die Zahlen bleiben auf dem Gerät gespeichert, bis sie übernommen sind (Neuladen oder Unterbrechung schadet nicht).
-function InventurView({ rows, onApply, onClose }: { rows: Edition[]; onApply: (changes: InventurChange[]) => Promise<string[]>; onClose: () => void }) {
+function InventurView({ rows, onApply, onClose }: { rows: Posten[]; onApply: (changes: InventurChange[]) => Promise<string[]>; onClose: () => void }) {
   const [counts, setCounts] = useState<Record<string, string>>(loadCounts);
   const [ort, setOrt] = useState("");
   const [confirm, setConfirm] = useState(false);
@@ -833,12 +843,12 @@ function InventurView({ rows, onApply, onClose }: { rows: Edition[]; onApply: (c
                 <li key={e.id} className="flex items-center gap-3 py-2">
                   <span className="flex-1 min-w-0">
                     <span className="block font-medium truncate">{e.modell}</span>
-                    <span className="block text-sm text-muted-foreground">{[e.zustand, e.glasur].filter(Boolean).join(" · ")}</span>
+                    <span className="block text-sm text-muted-foreground">{[e.zustand, postenText(e), e.reserviert && `für ${e.reserviert}`].filter((t, i, all) => t && all.indexOf(t) === i).join(" · ")}</span>
                   </span>
                   <span className="text-sm text-muted-foreground tabular-nums whitespace-nowrap">Soll {zahl.format(e.anzahl)}</span>
                   <Feld
                     inputMode="numeric"
-                    aria-label={`${e.modell} ${e.zustand} ${e.glasur}: gezählt`}
+                    aria-label={`${e.modell} ${postenText(e)}: gezählt`}
                     placeholder="–"
                     value={value}
                     onChange={(ev) => setCounts((c) => ({ ...c, [e.id]: ev.target.value.replace(/\D/g, "").slice(0, 5) }))}
@@ -871,7 +881,7 @@ function InventurView({ rows, onApply, onClose }: { rows: Edition[]; onApply: (c
           <ul className="divide-y text-base">
             {changes.map((c) => (
               <li key={c.e.id} className="flex justify-between gap-3 py-2">
-                <span className="min-w-0 truncate">{[c.e.modell, c.e.zustand, c.e.glasur].filter(Boolean).join(" · ")}</span>
+                <span className="min-w-0 truncate">{[c.e.modell, postenText(c.e)].join(" · ")}</span>
                 <span className="tabular-nums whitespace-nowrap">
                   {zahl.format(c.e.anzahl)} → <strong>{zahl.format(c.gezaehlt)}</strong>
                 </span>
@@ -891,105 +901,340 @@ function InventurView({ rows, onApply, onClose }: { rows: Edition[]; onApply: (c
   );
 }
 
-function EditionRow({ e, busy, canEdit, onAdjust, onOpen }: { e: Edition; busy: boolean; canEdit: boolean; onAdjust: (delta: number) => void; onOpen: () => void }) {
-  return (
-    // Am Handy stehen Plus und Minus unter dem Text, damit Modell und Glasur nicht in eine schmale Spalte gedrückt werden.
-    <div className="flex flex-wrap sm:flex-nowrap items-center gap-x-2 py-1">
-      <div className="basis-full sm:basis-auto sm:flex-1 min-w-0">
-        <ListRow fotos={e.fotos} title={e.modell} sub={[e.zustand, e.glasur, e.lagerort?.label ?? "Kein Lagerort"].filter(Boolean).join(" · ")} onClick={onOpen} />
-      </div>
-      <div className="flex items-center gap-1 shrink-0 ml-auto pb-1 sm:pb-0">
-        {canEdit && (
-          <Knopf variant="outline" className="h-11 w-11 p-0" aria-label={`${e.modell}: eins weniger`} disabled={busy || e.anzahl <= 0} onClick={() => onAdjust(-1)}>
-            <Minus className="w-5 h-5" aria-hidden />
-          </Knopf>
-        )}
-        <span className={`w-12 text-center text-lg font-semibold tabular-nums ${e.anzahl < LOW_STOCK ? "text-amber-800" : ""}`} aria-label={`Anzahl ${e.anzahl}`}>
-          {e.anzahl}
-        </span>
-        {canEdit && (
-          <Knopf variant="outline" className="h-11 w-11 p-0" aria-label={`${e.modell}: eins mehr`} disabled={busy} onClick={() => onAdjust(1)}>
-            <Plus className="w-5 h-5" aria-hidden />
-          </Knopf>
-        )}
-      </div>
-    </div>
-  );
-}
+type Schritt = { art: "liste" } | { art: "wahl" | "weiter" | "reservieren" | "freigeben" | "ausbuchen" | "korrigieren"; p: Posten };
+type UmbuchenFn = (p: Posten, auftrag: { entnommen: number; ausschuss: number; ziel: PostenKey | null; glasur: string; lagerortId: string; meldung: string }) => Promise<boolean>;
+type KorrigierenFn = (p: Posten, fields: { anzahl: number; lagerort: string[]; notiz: string }) => Promise<boolean>;
 
-function EditionDetail({
-  e,
-  onClose,
-  onSave,
-  lagerorte,
+const keyVon = (p: Posten): PostenKey => ({ modellId: p.modellId, zustand: p.zustand, glasurId: p.glasurId, brand: p.brand, reserviert: p.reserviert });
+
+// Ein Modell mit allen Posten (Zustand, Glasur, Brand, Reservierung). Ein Posten antippen, dann eine Sache wählen:
+// weiterbrennen, reservieren, ausbuchen oder korrigieren. Jede Sache ist ein eigener, kurzer Schritt.
+function ModellFenster({
+  stand,
   canEdit,
+  glasuren,
+  lagerorte,
+  kunden,
+  onClose,
+  onUmbuchen,
+  onKorrigieren,
 }: {
-  e: Edition;
-  onClose: () => void;
-  onSave: (fields: { anzahl: number; lagerort: string[]; notiz: string }) => Promise<void>;
-  lagerorte: Opt[];
+  stand: ModellStand;
   canEdit: boolean;
+  glasuren: Opt[];
+  lagerorte: Opt[];
+  kunden: string[];
+  onClose: () => void;
+  onUmbuchen: UmbuchenFn;
+  onKorrigieren: KorrigierenFn;
 }) {
-  const [anzahl, setAnzahl] = useState(String(e.anzahl));
-  const [lagerortId, setLagerortId] = useState(e.lagerort?.id ?? "");
-  const [notiz, setNotiz] = useState(e.notiz);
-  const [busy, setBusy] = useState(false);
-  const value = Number(anzahl) || 0;
+  const [schritt, setSchritt] = useState<Schritt>({ art: "liste" });
+  // Nach dem Neuladen den Posten mit aktueller Anzahl zeigen. Gibt es ihn nicht mehr, zurück zur Liste.
+  const aktuell = schritt.art === "liste" ? undefined : stand.posten.find((p) => p.id === schritt.p.id);
+  const zurListe = () => setSchritt({ art: "liste" });
+  const zustaende = ZUSTAENDE.filter((z) => stand.posten.some((p) => p.zustand === z));
+  const andere = stand.posten.filter((p) => !ZUSTAENDE.includes(p.zustand));
+
   return (
     <Dialog open onOpenChange={(o) => !o && onClose()}>
       <DialogContent className={`${DIALOG_CLASS} max-w-lg`}>
-        <PanelHeader title={e.modell} description={[e.typ, e.zustand, e.glasur].filter(Boolean).join(" · ")} />
-        <div className="pb-2 space-y-6">
-          {e.fotos[0] && <img src={thumb(e.fotos[0], "large")} alt={e.modell} className="w-full max-h-72 object-contain rounded-lg bg-muted" />}
-          <div>
-            <FieldLabel htmlFor="ed-anzahl">Anzahl</FieldLabel>
-            <div className="flex items-center gap-3">
-              <Knopf variant="outline" className="h-12 w-12" aria-label="Eins weniger" disabled={!canEdit} onClick={() => setAnzahl(String(Math.max(0, value - 1)))}>
-                <Minus className="w-5 h-5" aria-hidden />
-              </Knopf>
-              <Feld
-                id="ed-anzahl"
-                inputMode="numeric"
-                disabled={!canEdit}
-                value={anzahl}
-                onChange={(ev) => setAnzahl(ev.target.value.replace(/\D/g, ""))}
-                className="h-12 w-24 rounded-md text-center text-lg md:text-lg"
+        <PanelHeader title={stand.modell} description={schritt.art === "liste" || !aktuell ? [stand.serie, stand.typ, standText(stand.je)].filter(Boolean).join(" · ") : `${postenText(aktuell)} · ${aktuell.anzahl} Stück${aktuell.reserviert ? ` · für ${aktuell.reserviert}` : ""}`} />
+        {schritt.art === "liste" || !aktuell ? (
+          <div className="pb-2 space-y-5">
+            {stand.fotos[0] && <img src={thumb(stand.fotos[0], "large")} alt={stand.modell} className="w-full max-h-56 object-contain rounded-lg bg-muted" />}
+            {[...zustaende.map((z) => ({ titel: z, posten: stand.posten.filter((p) => p.zustand === z) })), ...(andere.length ? [{ titel: "Ohne Zustand", posten: andere }] : [])].map((g) => (
+              <section key={g.titel}>
+                <h3 className="font-semibold capitalize">
+                  {g.titel} · {zahl.format(g.posten.reduce((n, p) => n + p.anzahl, 0))} Stück
+                </h3>
+                <ul className="divide-y">
+                  {g.posten.map((p) => (
+                    <li key={p.id}>
+                      <ListRow
+                        title={p.glasur || p.lagerort?.label || "Ohne Lagerort"}
+                        sub={[p.brand && `Brand ${formatDate(p.brand)}`, p.reserviert && `reserviert für ${p.reserviert}`, p.glasur && (p.lagerort?.label ?? "Kein Lagerort")].filter(Boolean).join(" · ")}
+                        meta={<span className="text-lg font-semibold tabular-nums">{zahl.format(p.anzahl)}</span>}
+                        onClick={canEdit ? () => setSchritt({ art: "wahl", p }) : undefined}
+                      />
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            ))}
+            {canEdit && <Hint>Eine Zeile antippen, um zu glasieren, zu reservieren oder auszubuchen.</Hint>}
+            <DoneButton />
+          </div>
+        ) : schritt.art === "wahl" ? (
+          <div className="pb-2 space-y-3">
+            {schrittName(aktuell.zustand) && (
+              <AktionKnopf
+                haupt
+                titel={schrittName(aktuell.zustand)}
+                text={aktuell.zustand === GESCHRUEHT ? "Stücke aus dem Lager nehmen und als glasiert eintragen, mit Glasur und Brand." : "Nach dem Schrühbrand als geschrüht eintragen."}
+                onClick={() => setSchritt({ art: "weiter", p: aktuell })}
               />
-              <Knopf variant="outline" className="h-12 w-12" aria-label="Eins mehr" disabled={!canEdit} onClick={() => setAnzahl(String(value + 1))}>
-                <Plus className="w-5 h-5" aria-hidden />
-              </Knopf>
-            </div>
-          </div>
-          <div>
-            <FieldLabel htmlFor="ed-lagerort">Lagerort</FieldLabel>
-            <OptionSelect id="ed-lagerort" value={lagerortId} disabled={!canEdit} onChange={setLagerortId} options={lagerorte} placeholder="Kein Lagerort" />
-          </div>
-          <div>
-            <FieldLabel htmlFor="ed-notiz">Notiz</FieldLabel>
-            <Textfeld id="ed-notiz" rows={3} disabled={!canEdit} value={notiz} onChange={(ev) => setNotiz(ev.target.value)} />
-          </div>
-          {canEdit && (
-            <Knopf
-              className="w-full h-12 text-base"
-              disabled={busy}
-              onClick={async () => {
-                setBusy(true);
-                await onSave({ anzahl: value, lagerort: link(lagerortId), notiz: notiz.trim() });
-                setBusy(false);
-              }}
-            >
-              {busy ? "Wird gespeichert …" : "Änderungen speichern"}
+            )}
+            {aktuell.reserviert ? (
+              <AktionKnopf titel="Reservierung aufheben" text={`Wieder frei verfügbar machen (jetzt für ${aktuell.reserviert}).`} onClick={() => setSchritt({ art: "freigeben", p: aktuell })} />
+            ) : (
+              <AktionKnopf titel="Reservieren" text="Für einen Kunden oder Auftrag zurücklegen." onClick={() => setSchritt({ art: "reservieren", p: aktuell })} />
+            )}
+            <AktionKnopf titel="Ausbuchen" text="Verkauft, abgegeben oder zerbrochen: Stücke aus dem Bestand nehmen." onClick={() => setSchritt({ art: "ausbuchen", p: aktuell })} />
+            <AktionKnopf titel="Korrigieren" text="Anzahl, Lagerort oder Notiz berichtigen, z. B. nach dem Zählen." onClick={() => setSchritt({ art: "korrigieren", p: aktuell })} />
+            <Knopf variant="ghost" className="w-full h-12 text-base" onClick={zurListe}>
+              Zurück
             </Knopf>
-          )}
-          <DoneButton />
-        </div>
+          </div>
+        ) : schritt.art === "weiter" ? (
+          <WeiterSchritt key={aktuell.id} p={aktuell} glasuren={glasuren} lagerorte={lagerorte} kunden={kunden} onUmbuchen={onUmbuchen} onFertig={zurListe} onZurueck={() => setSchritt({ art: "wahl", p: aktuell })} />
+        ) : schritt.art === "korrigieren" ? (
+          <KorrigierenSchritt key={aktuell.id} p={aktuell} lagerorte={lagerorte} onKorrigieren={onKorrigieren} onFertig={zurListe} onZurueck={() => setSchritt({ art: "wahl", p: aktuell })} />
+        ) : (
+          <MengenSchritt key={`${schritt.art}-${aktuell.id}`} art={schritt.art} p={aktuell} kunden={kunden} onUmbuchen={onUmbuchen} onFertig={zurListe} onZurueck={() => setSchritt({ art: "wahl", p: aktuell })} />
+        )}
       </DialogContent>
     </Dialog>
   );
 }
 
+function SchrittKnoepfe({ text, busy, disabled, onSpeichern, onZurueck }: { text: string; busy: boolean; disabled?: boolean; onSpeichern: () => void; onZurueck: () => void }) {
+  return (
+    <div className="pt-2 space-y-2">
+      <Knopf className="w-full h-12 text-base" disabled={busy || disabled} onClick={onSpeichern}>
+        {busy ? <Loader2 className="w-5 h-5 mr-2 animate-spin" aria-hidden /> : null}
+        {text}
+      </Knopf>
+      <Knopf variant="ghost" className="w-full h-12 text-base" disabled={busy} onClick={onZurueck}>
+        Zurück
+      </Knopf>
+    </div>
+  );
+}
+
+// Schrühen bzw. Glasieren: Stück vom Posten nehmen, Ausschuss abziehen, den Rest im nächsten Zustand eintragen.
+function WeiterSchritt({
+  p,
+  glasuren,
+  lagerorte,
+  kunden,
+  onUmbuchen,
+  onFertig,
+  onZurueck,
+}: {
+  p: Posten;
+  glasuren: Opt[];
+  lagerorte: Opt[];
+  kunden: string[];
+  onUmbuchen: UmbuchenFn;
+  onFertig: () => void;
+  onZurueck: () => void;
+}) {
+  const ziel = naechsterZustand(p.zustand);
+  const glasieren = ziel === GLASIERT;
+  const [entnommen, setEntnommen] = useState(Math.min(1, p.anzahl));
+  const [ausschuss, setAusschuss] = useState(0);
+  const [glasurId, setGlasurId] = useState(glasuren.length === 1 ? glasuren[0].id : "");
+  const [brand, setBrand] = useState(today());
+  const [fuer, setFuer] = useState(p.reserviert);
+  const [lagerortId, setLagerortId] = useState(p.lagerort?.id ?? "");
+  const [fehler, setFehler] = useState("");
+  const [busy, setBusy] = useState(false);
+  const gut = Math.max(0, entnommen - ausschuss);
+  const glasur = glasuren.find((g) => g.id === glasurId)?.label ?? "";
+
+  async function speichern() {
+    if (glasieren && !glasurId) {
+      setFehler("Bitte die Glasur wählen.");
+      return;
+    }
+    setBusy(true);
+    const ok = await onUmbuchen(p, {
+      entnommen,
+      ausschuss,
+      ziel: { modellId: p.modellId, zustand: ziel, glasurId: glasieren ? glasurId : "", brand: glasieren ? brand : "", reserviert: fuer.trim() },
+      glasur,
+      lagerortId,
+      meldung: `${p.modell}: ${gut} Stück ${ziel}${glasur ? ` (${glasur})` : ""}${ausschuss ? `, ${ausschuss} Ausschuss` : ""}.`,
+    });
+    setBusy(false);
+    if (ok) onFertig();
+  }
+
+  return (
+    <div className="pb-2 space-y-5">
+      <div>
+        <FieldLabel htmlFor="w-entnommen">Aus dem Lager genommen</FieldLabel>
+        <Stueckzahl
+          id="w-entnommen"
+          value={entnommen}
+          min={1}
+          max={p.anzahl}
+          onChange={(n) => {
+            setEntnommen(n);
+            setAusschuss((a) => Math.min(a, n));
+          }}
+        />
+        <Hint>{`Vorhanden: ${p.anzahl} Stück ${p.zustand}.`}</Hint>
+      </div>
+      <div>
+        <FieldLabel htmlFor="w-ausschuss">Davon Ausschuss</FieldLabel>
+        <Stueckzahl id="w-ausschuss" value={ausschuss} max={entnommen} onChange={setAusschuss} />
+        <Hint>Stücke, die nicht gut genug sind. Sie werden nicht eingetragen.</Hint>
+      </div>
+      {glasieren && (
+        <>
+          <div>
+            {glasuren.length === 1 ? (
+              <p className="text-base">
+                Glasur: <strong>{glasuren[0].label}</strong>
+              </p>
+            ) : (
+              <>
+                <FieldLabel required>Glasur</FieldLabel>
+                <ChoiceChips
+                  label="Glasur"
+                  options={glasuren}
+                  value={glasur}
+                  onChange={(label) => {
+                    setGlasurId(glasuren.find((g) => g.label === label)?.id ?? "");
+                    setFehler("");
+                  }}
+                />
+                <ErrorText>{fehler}</ErrorText>
+              </>
+            )}
+          </div>
+          <div>
+            <FieldLabel htmlFor="w-brand">Brand vom</FieldLabel>
+            <Feld id="w-brand" type="date" value={brand} onChange={(e) => setBrand(e.target.value)} />
+            <Hint>Stücke aus einem Brand haben denselben Farbton und stehen zusammen.</Hint>
+          </div>
+        </>
+      )}
+      <div>
+        <FieldLabel htmlFor="w-fuer">Reserviert für</FieldLabel>
+        <TextMitVorschlag id="w-fuer" value={fuer} onChange={setFuer} vorschlaege={kunden} placeholder="Kunde oder Auftrag (freiwillig)" />
+      </div>
+      <div>
+        <FieldLabel htmlFor="w-lagerort">Lagerort</FieldLabel>
+        <OptionSelect id="w-lagerort" value={lagerortId} onChange={setLagerortId} options={lagerorte} placeholder="Kein Lagerort" />
+      </div>
+      <p className="rounded-md bg-muted p-3 text-base">
+        Danach: {p.zustand} <strong>{p.anzahl - entnommen}</strong> · {ziel}
+        {glasur ? ` ${glasur}` : ""} <strong>+{gut}</strong>
+        {ausschuss ? ` · ${ausschuss} Ausschuss` : ""}
+      </p>
+      <SchrittKnoepfe text={`${gut} Stück als ${ziel} eintragen`} busy={busy} disabled={entnommen < 1} onSpeichern={speichern} onZurueck={onZurueck} />
+    </div>
+  );
+}
+
+// Reservieren, Reservierung aufheben oder Ausbuchen: nur eine Anzahl (und beim Reservieren für wen).
+function MengenSchritt({
+  art,
+  p,
+  kunden,
+  onUmbuchen,
+  onFertig,
+  onZurueck,
+}: {
+  art: "reservieren" | "freigeben" | "ausbuchen";
+  p: Posten;
+  kunden: string[];
+  onUmbuchen: UmbuchenFn;
+  onFertig: () => void;
+  onZurueck: () => void;
+}) {
+  const [anzahl, setAnzahl] = useState(art === "ausbuchen" && !p.reserviert ? Math.min(1, p.anzahl) : p.anzahl);
+  const [fuer, setFuer] = useState("");
+  const [fehler, setFehler] = useState("");
+  const [busy, setBusy] = useState(false);
+  const text = { reservieren: `${anzahl} Stück reservieren`, freigeben: `${anzahl} Stück freigeben`, ausbuchen: `${anzahl} Stück ausbuchen` }[art];
+
+  async function speichern() {
+    if (art === "reservieren" && !fuer.trim()) {
+      setFehler("Bitte angeben, für wen reserviert wird.");
+      return;
+    }
+    setBusy(true);
+    const ok = await onUmbuchen(p, {
+      entnommen: anzahl,
+      ausschuss: 0,
+      ziel: art === "ausbuchen" ? null : { ...keyVon(p), reserviert: art === "reservieren" ? fuer.trim() : "" },
+      glasur: p.glasur,
+      lagerortId: p.lagerort?.id ?? "",
+      meldung: `${p.modell} · ${postenText(p)}: ${{ reservieren: `${anzahl} Stück für ${fuer.trim()} reserviert`, freigeben: `${anzahl} Stück wieder frei`, ausbuchen: `${anzahl} Stück ausgebucht` }[art]}.`,
+    });
+    setBusy(false);
+    if (ok) onFertig();
+  }
+
+  return (
+    <div className="pb-2 space-y-5">
+      <div>
+        <FieldLabel htmlFor="m-anzahl">Anzahl</FieldLabel>
+        <Stueckzahl id="m-anzahl" value={anzahl} min={1} max={p.anzahl} onChange={setAnzahl} />
+        <Hint>{art === "ausbuchen" ? "Verkauft, abgegeben oder zerbrochen. Die Stücke verlassen den Bestand." : `Vorhanden: ${p.anzahl} Stück.`}</Hint>
+      </div>
+      {art === "reservieren" && (
+        <div>
+          <FieldLabel htmlFor="m-fuer" required>
+            Reserviert für
+          </FieldLabel>
+          <TextMitVorschlag
+            id="m-fuer"
+            value={fuer}
+            onChange={(v) => {
+              setFuer(v);
+              setFehler("");
+            }}
+            vorschlaege={kunden}
+            placeholder="z. B. Café Lindenhof oder Auftrag 2026-14"
+          />
+          <ErrorText>{fehler}</ErrorText>
+        </div>
+      )}
+      <SchrittKnoepfe text={text} busy={busy} onSpeichern={speichern} onZurueck={onZurueck} />
+    </div>
+  );
+}
+
+function KorrigierenSchritt({ p, lagerorte, onKorrigieren, onFertig, onZurueck }: { p: Posten; lagerorte: Opt[]; onKorrigieren: KorrigierenFn; onFertig: () => void; onZurueck: () => void }) {
+  const [anzahl, setAnzahl] = useState(p.anzahl);
+  const [lagerortId, setLagerortId] = useState(p.lagerort?.id ?? "");
+  const [notiz, setNotiz] = useState(p.notiz);
+  const [busy, setBusy] = useState(false);
+  return (
+    <div className="pb-2 space-y-5">
+      <div>
+        <FieldLabel htmlFor="k-anzahl">Anzahl</FieldLabel>
+        <Stueckzahl id="k-anzahl" value={anzahl} onChange={setAnzahl} />
+      </div>
+      <div>
+        <FieldLabel htmlFor="k-lagerort">Lagerort</FieldLabel>
+        <OptionSelect id="k-lagerort" value={lagerortId} onChange={setLagerortId} options={lagerorte} placeholder="Kein Lagerort" />
+      </div>
+      <div>
+        <FieldLabel htmlFor="k-notiz">Notiz</FieldLabel>
+        <Textfeld id="k-notiz" rows={3} value={notiz} onChange={(e) => setNotiz(e.target.value)} />
+      </div>
+      <SchrittKnoepfe
+        text="Änderungen speichern"
+        busy={busy}
+        onSpeichern={async () => {
+          setBusy(true);
+          const ok = await onKorrigieren(p, { anzahl, lagerort: link(lagerortId), notiz: notiz.trim() });
+          setBusy(false);
+          if (ok) onFertig();
+        }}
+        onZurueck={onZurueck}
+      />
+    </div>
+  );
+}
+
 export default function Block() {
-  const [art, setArt] = useState<Art>(() => (initialParam("tab") === "edition" ? "edition" : "unikat"));
+  const [art, setArt] = useState<Art>(initialArt);
   const [tab, setTab] = useState<TabKey>(() => {
     const t = initialParam("tab");
     return TABS.some((x) => x.key === t) ? (t as TabKey) : "imhaus";
@@ -999,14 +1244,12 @@ export default function Block() {
   const [typFilter, setTypFilter] = useState(() => initialParam("typ"));
   const [kuenstlerFilter, setKuenstlerFilter] = useState("");
   const [selectedId, setSelectedId] = useState(() => initialParam("id"));
-  const [editionId, setEditionId] = useState("");
-  const [zustandFilter, setZustandFilter] = useState<ZustandKey>("alle");
-  const [programmFilter, setProgrammFilter] = useState<ProgrammKey>("");
+  const [modellKey, setModellKey] = useState("");
+  const [mengenFilter, setMengenFilter] = useState<MengenFilter>("alle");
   const [inventur, setInventur] = useState(false);
   const [filterSheet, setFilterSheet] = useState(false);
   const [ansicht, setAnsicht] = useAnsicht();
   const [limit, setLimit] = useState(LIST_STEP);
-  const [pendingEdition, setPendingEdition] = useState("");
 
   const unikateQuery = useRecords({ from: ds.unikate, select: unikatSelect, count: PAGE_SIZE });
   const editionQuery = useRecords({ from: ds.edition, select: editionSelect, count: PAGE_SIZE });
@@ -1014,24 +1257,33 @@ export default function Block() {
   const glasurQuery = useRecords({ from: ds.glasuren, select: glasurSelect, count: PAGE_SIZE });
   const lagerortQuery = useRecords({ from: ds.lagerorte, select: lagerortSelect, count: PAGE_SIZE });
   const partnerQuery = useRecords({ from: ds.partner, select: partnerSelect, count: PAGE_SIZE });
+  const modellQuery = useRecords({ from: ds.modelle, select: modellSelect, count: PAGE_SIZE });
   useAllPages(unikateQuery);
   useAllPages(editionQuery);
   useAllPages(kuenstlerQuery);
   useAllPages(glasurQuery);
   useAllPages(lagerortQuery);
   useAllPages(partnerQuery);
+  useAllPages(modellQuery);
 
   const editionUpdate = useRecordUpdate({ from: ds.edition, fields: editionUpdateFields });
+  const editionCreate = useRecordCreate({ from: ds.edition, fields: editionCreateFields });
+  const editionDelete = useRecordDelete({ from: ds.edition });
   const typen = useFieldOptions({ from: ds.unikate, select: unikatSelect, field: "typ" }).options as Opt[];
   const statusListe = useFieldOptions({ from: ds.unikate, select: unikatSelect, field: "status" }).options as Opt[];
   const stamm: Stamm = { lagerorte: lagerortQuery.data, partner: partnerQuery.data, kuenstler: kuenstlerQuery.data, glasuren: glasurQuery.data };
 
   const unikate = useMemo(() => (unikateQuery.data?.pages.flatMap((p) => p.items) ?? []).map((i) => toUnikat(i as RawItem)), [unikateQuery.data]);
-  const editionen = useMemo(() => (editionQuery.data?.pages.flatMap((p) => p.items) ?? []).map((i) => toEdition(i as RawItem)), [editionQuery.data]);
+  const posten = useMemo(() => (editionQuery.data?.pages.flatMap((p) => p.items) ?? []).map((i) => toPosten(i as RawItem)), [editionQuery.data]);
   // Filter nur mit Werten, die im Bestand vorkommen. So bleiben auch archivierte Künstler:innen auffindbar.
   const kuenstlerImBestand = useMemo(
     () => [...new Map<string, Opt>(unikate.flatMap((u) => (u.kuenstler ? [[u.kuenstler.id, u.kuenstler] as [string, Opt]] : []))).values()].sort((a, b) => a.label.localeCompare(b.label, "de")),
     [unikate],
+  );
+  // Frühere Kunden und Aufträge als Vorschläge, damit derselbe Name gleich geschrieben wird.
+  const kunden = useMemo(
+    () => [...new Set([...posten.map((p) => p.reserviert), ...unikate.map((u) => u.verkauftAn.trim())].filter(Boolean))].sort((a, b) => a.localeCompare(b, "de")),
+    [posten, unikate],
   );
 
   const activeTab = TABS.find((t) => t.key === tab) ?? TABS[0];
@@ -1043,67 +1295,70 @@ export default function Block() {
         .sort((a, b) => compare(a, b, sort)),
     [unikate, activeTab, typFilter, kuenstlerFilter, term, sort],
   );
-  const editionImProgramm = editionen.filter((e) => !programmFilter || e.programm === programmFilter);
-  const zustandChips = ZUSTAND_FILTER.map((z) => ({ key: z.key, label: z.label, count: editionImProgramm.filter((e) => !z.match || z.match(e)).length }));
-  const activeZustand = ZUSTAND_FILTER.find((z) => z.key === zustandFilter) ?? ZUSTAND_FILTER[0];
-  const visibleEdition = editionImProgramm
-    .filter((e) => !activeZustand.match || activeZustand.match(e))
-    .filter((e) => !term || [e.modell, e.programm, e.glasur, e.zustand, e.typ, e.lagerort?.label, e.notiz].join(" ").toLowerCase().includes(term.toLowerCase()))
-    .sort((a, b) => compareNr(a.nr, b.nr) || a.modell.localeCompare(b.modell, "de") || a.zustand.localeCompare(b.zustand, "de") || a.glasur.localeCompare(b.glasur, "de"));
-
   const tabs = useMemo(() => TABS.map((t) => ({ key: t.key, label: t.label, count: unikate.filter((u) => (t.match ? t.match(u) : true)).length })), [unikate]);
 
+  const isMenge = art !== "unikat";
+  const serie = art === "edition" ? EDITION_PROGRAMM : GESCHIRR;
+  const postenSerie = posten.filter((p) => p.serie === serie);
+  const staende = nachModell(postenSerie);
+  const imTyp = staende.filter((s) => !typFilter || s.typ === typFilter);
+  const mengenChips = MENGEN_FILTER.filter((f) => f.key !== ROH || imTyp.some(f.match)).map((f) => ({ key: f.key, label: f.label, count: imTyp.filter(f.match).length }));
+  const activeMenge = MENGEN_FILTER.find((f) => f.key === mengenFilter) ?? MENGEN_FILTER[0];
+  const visibleStaende = imTyp
+    .filter(activeMenge.match)
+    .filter((s) => !term || [s.modell, s.typ, ...s.posten.flatMap((p) => [p.glasur, p.reserviert, p.lagerort?.label])].join(" ").toLowerCase().includes(term.toLowerCase()));
+  const typenMenge = [...new Set(staende.map((s) => s.typ).filter(Boolean))].sort((a, b) => a.localeCompare(b, "de"));
+  const glasurenJeModell = useMemo(
+    () => new Map(((modellQuery.data?.pages.flatMap((p) => p.items) ?? []) as RawItem[]).map((m) => [m.id, asOpts(m.fields.glasuren)] as [string, Opt[]])),
+    [modellQuery.data],
+  );
+
   const selected = unikate.find((u) => u.id === selectedId);
-  const selectedEdition = editionen.find((e) => e.id === editionId);
-  const isEdition = art === "edition";
+  const offenesModell = staende.find((s) => (s.modellId || s.modell) === modellKey);
   const loading = unikateQuery.status === "pending" || editionQuery.status === "pending";
   const failed = unikateQuery.status === "error" || editionQuery.status === "error";
-  const stueckGesamt = visibleEdition.reduce((n, e) => n + e.anzahl, 0);
+  const stueckGesamt = visibleStaende.reduce((n, s) => n + Object.values(s.je).reduce((a, b) => a + b, 0), 0);
   const filtered = !!(search || typFilter || kuenstlerFilter);
+  const canEdit = editionUpdate.enabled && editionCreate.enabled && editionDelete.enabled;
 
-  // Aktuelle Anzahl direkt vom Server. Rechnet nie mit einem Stand, den ein zweites Gerät schon geändert hat.
-  async function currentAnzahl(id: string): Promise<number | null> {
-    const fresh = await freshItems(editionQuery);
-    const row = fresh?.find((i) => i.id === id);
-    return row ? (num(row.fields.anzahl) ?? 0) : null;
-  }
-
-  // Änderung um delta auf den frischen Wert. Rückgängig zieht genau diese Änderung wieder ab.
-  async function changeBy(id: string, delta: number): Promise<{ vorher: number; neu: number } | null> {
-    const vorher = await currentAnzahl(id);
-    if (vorher === null) {
-      toast.error("Diesen Posten gibt es nicht mehr. Die Liste wurde neu geladen.");
-      return null;
-    }
-    const neu = Math.max(0, vorher + delta);
-    await editionUpdate.mutateAsync({ recordId: id, fields: { anzahl: neu } } as never);
-    await editionQuery.refetch();
-    return { vorher, neu };
-  }
-
-  async function adjustEdition(e: Edition, delta: number) {
-    setPendingEdition(e.id);
+  // Umbuchen immer auf dem frisch geladenen Stand. Erst das Ziel schreiben, dann die Quelle verringern:
+  // Bricht es dazwischen ab, fehlt kein Stück, es ist höchstens doppelt gezählt und fällt beim Zählen auf.
+  async function umbuchen(p: Posten, a: { entnommen: number; ausschuss: number; ziel: PostenKey | null; glasur: string; lagerortId: string; meldung: string }): Promise<boolean> {
     try {
-      const result = await changeBy(e.id, delta);
-      if (!result) return;
-      const applied = result.neu - result.vorher;
-      toast.success(`${e.modell}${e.glasur ? ` · ${e.glasur}` : ""}: ${result.vorher} → ${result.neu}`, {
-        duration: UNDO_MS,
-        action: {
-          label: "Rückgängig",
-          onClick: async () => {
-            try {
-              await changeBy(e.id, -applied);
-            } catch {
-              toast.error("Rückgängig hat nicht geklappt.");
-            }
-          },
-        },
-      });
+      const fresh = await freshItems(editionQuery);
+      if (!fresh) {
+        toast.error("Der Bestand konnte nicht geladen werden. Bitte erneut versuchen.");
+        return false;
+      }
+      const plan = planeUmbuchung(fresh.map(toPosten), p.id, a.entnommen, a.ausschuss, a.ziel, a.lagerortId);
+      if (typeof plan === "string") {
+        toast.error(plan);
+        return false;
+      }
+      if (plan.ziel && "neu" in plan.ziel) {
+        const n = plan.ziel.neu;
+        await editionCreate.mutateAsync({
+          bezeichnung: bezeichnung(p.modell, { zustand: n.zustand, glasur: a.glasur, brand: n.brand, reserviert: n.reserviert }),
+          modell: link(n.modellId),
+          glasur: link(n.glasurId || undefined),
+          zustand: n.zustand,
+          anzahl: n.anzahl,
+          lagerort: link(n.lagerortId || undefined),
+          brand: n.brand || null,
+          reserviert: n.reserviert,
+        } as never);
+      } else if (plan.ziel) {
+        await editionUpdate.mutateAsync({ recordId: plan.ziel.id, fields: { anzahl: plan.ziel.anzahl } } as never);
+      }
+      if ("loeschen" in plan.quelle) await editionDelete.mutateAsync(plan.quelle.id);
+      else await editionUpdate.mutateAsync({ recordId: plan.quelle.id, fields: { anzahl: plan.quelle.anzahl } } as never);
+      toast.success(a.meldung);
+      return true;
     } catch {
-      toast.error("Anzahl konnte nicht gespeichert werden.");
+      toast.error("Speichern hat nicht geklappt. Bitte den Bestand dieses Modells prüfen.");
+      return false;
     } finally {
-      setPendingEdition("");
+      await editionQuery.refetch();
     }
   }
 
@@ -1135,43 +1390,45 @@ export default function Block() {
     return offen;
   }
 
-  async function saveEdition(e: Edition, fields: { anzahl: number; lagerort: string[]; notiz: string }) {
+  async function korrigieren(p: Posten, fields: { anzahl: number; lagerort: string[]; notiz: string }): Promise<boolean> {
     try {
       // Hat jemand die Anzahl geändert, seit das Fenster offen ist, nicht überschreiben, sondern melden.
-      const aktuell = await currentAnzahl(e.id);
-      if (aktuell === null) {
+      const fresh = await freshItems(editionQuery);
+      const row = fresh?.find((i) => i.id === p.id);
+      if (!row) {
         toast.error("Diesen Posten gibt es nicht mehr.");
-        setEditionId("");
-        return;
+        return false;
       }
-      const anzahlGeaendert = fields.anzahl !== e.anzahl;
-      if (anzahlGeaendert && aktuell !== e.anzahl) {
+      const aktuell = num(row.fields.anzahl) ?? 0;
+      const anzahlGeaendert = fields.anzahl !== p.anzahl;
+      if (anzahlGeaendert && aktuell !== p.anzahl) {
         toast.error(`Die Anzahl wurde inzwischen geändert (jetzt ${aktuell}). Bitte prüfen und erneut speichern.`);
-        return;
+        return false;
       }
-      // Anzahl nicht angefasst: den aktuellen Wert behalten, nur Lagerort und Notiz speichern.
-      await editionUpdate.mutateAsync({ recordId: e.id, fields: { ...fields, anzahl: anzahlGeaendert ? fields.anzahl : aktuell } } as never);
-      await editionQuery.refetch();
+      await editionUpdate.mutateAsync({ recordId: p.id, fields: { ...fields, anzahl: anzahlGeaendert ? fields.anzahl : aktuell } } as never);
       toast.success("Änderungen gespeichert.");
-      setEditionId("");
+      return true;
     } catch {
       toast.error("Speichern hat nicht geklappt.");
+      return false;
+    } finally {
+      await editionQuery.refetch();
     }
   }
 
-  // Filter-Auswahllisten: am Rechner in einer Zeile, am Handy im Blatt von unten (dann mit sichtbarer Beschriftung).
-  const typAuswahl = (id?: string) => (
-    <Auswahl id={id} aria-label={id ? undefined : "Typ"} value={typFilter} onChange={(e) => setTypFilter(e.target.value)}>
+  // Filter-Auswahllisten im Blatt (Handy und Rechner gleich), mit sichtbarer Beschriftung.
+  const typAuswahl = (id: string, liste: string[]) => (
+    <Auswahl id={id} value={typFilter} onChange={(e) => setTypFilter(e.target.value)}>
       <option value="">Alle Typen</option>
-      {typen.map((t) => (
-        <option key={t.id} value={t.label}>
-          {t.label}
+      {liste.map((t) => (
+        <option key={t} value={t}>
+          {t}
         </option>
       ))}
     </Auswahl>
   );
-  const kuenstlerAuswahl = (id?: string) => (
-    <Auswahl id={id} aria-label={id ? undefined : "Künstler:in"} value={kuenstlerFilter} onChange={(e) => setKuenstlerFilter(e.target.value)}>
+  const kuenstlerAuswahl = (id: string) => (
+    <Auswahl id={id} value={kuenstlerFilter} onChange={(e) => setKuenstlerFilter(e.target.value)}>
       <option value="">Alle Künstler:innen</option>
       {kuenstlerImBestand.map((k) => (
         <option key={k.id} value={k.id}>
@@ -1180,8 +1437,8 @@ export default function Block() {
       ))}
     </Auswahl>
   );
-  const sortAuswahl = (id?: string) => (
-    <Auswahl id={id} aria-label={id ? undefined : "Sortierung"} value={sort} onChange={(e) => setSort(e.target.value as SortKey)}>
+  const sortAuswahl = (id: string) => (
+    <Auswahl id={id} value={sort} onChange={(e) => setSort(e.target.value as SortKey)}>
       {SORTS.map((s) => (
         <option key={s.key} value={s.key}>
           {s.label}
@@ -1189,24 +1446,14 @@ export default function Block() {
       ))}
     </Auswahl>
   );
-  const programmAuswahl = (id?: string) => (
-    <Auswahl id={id} aria-label={id ? undefined : "Programm"} value={programmFilter} onChange={(e) => setProgrammFilter(e.target.value as ProgrammKey)}>
-      <option value="">Alle Programme</option>
-      <option value={EDITION_PROGRAMM}>Editionen</option>
-      <option value={MANUFAKTUR_PROGRAMM}>Manufakturprogramm</option>
-    </Auswahl>
-  );
-  const filterCount = isEdition ? (programmFilter ? 1 : 0) : [typFilter, kuenstlerFilter].filter(Boolean).length;
+  const filterCount = isMenge ? (typFilter ? 1 : 0) : [typFilter, kuenstlerFilter].filter(Boolean).length;
   function resetFilters() {
-    if (isEdition) setProgrammFilter("");
-    else {
-      setTypFilter("");
-      setKuenstlerFilter("");
-    }
+    setTypFilter("");
+    setKuenstlerFilter("");
   }
-  const searchPlaceholder = isEdition ? "Nummer, Modell, Glasur, Ort" : "Name, Nummer, Glasur, Ort";
+  const searchPlaceholder = isMenge ? "Nummer, Modell, Kunde" : "Name, Nummer, Glasur, Ort";
   const inventurButton =
-    isEdition && !inventur && editionUpdate.enabled ? (
+    isMenge && !inventur && editionUpdate.enabled ? (
       <Knopf variant="outline" className="h-12 text-base" onClick={() => setInventur(true)}>
         <ClipboardList className="w-5 h-5 mr-2" aria-hidden /> Inventur
       </Knopf>
@@ -1217,28 +1464,30 @@ export default function Block() {
       <div className="content space-y-4" lang="de">
         <PageHeader
           title="Bestand"
-          description={isEdition ? `${zahl.format(stueckGesamt)} Stück in ${zahl.format(visibleEdition.length)} Posten` : `${zahl.format(visible.length)} von ${zahl.format(unikate.length)} Unikaten`}
+          description={isMenge ? `${zahl.format(stueckGesamt)} Stück in ${zahl.format(visibleStaende.length)} ${visibleStaende.length === 1 ? "Modell" : "Modellen"}` : `${zahl.format(visible.length)} von ${zahl.format(unikate.length)} Unikaten`}
           // Handy und Desktop gleich: Ansichtsumschalter bzw. Inventur im Kopf, Filter hinter dem Filterknopf.
-          aside={isEdition ? inventurButton : <AnsichtToggle value={ansicht} onChange={setAnsicht} />}
+          aside={isMenge ? inventurButton : <AnsichtToggle value={ansicht} onChange={setAnsicht} />}
         />
 
         <Tabs
-          label="Art"
+          label="Serie"
           tabs={[
+            { key: "geschirr" as Art, label: GESCHIRR, count: nachModell(posten.filter((p) => p.serie === GESCHIRR)).length },
+            { key: "edition" as Art, label: EDITION_PROGRAMM, count: nachModell(posten.filter((p) => p.serie === EDITION_PROGRAMM)).length },
             { key: "unikat" as Art, label: "Unikate", count: unikate.length },
-            { key: "edition" as Art, label: "Editionsware", count: editionen.length },
           ]}
           value={art}
           onChange={(key) => {
             setArt(key);
             setSearch("");
+            setTypFilter("");
             setLimit(LIST_STEP);
             setInventur(false);
           }}
         />
 
-        {isEdition ? (
-          <FilterChips label="Zustand" options={zustandChips} value={zustandFilter} onChange={setZustandFilter} />
+        {isMenge ? (
+          <FilterChips label="Zustand" options={mengenChips} value={mengenFilter} onChange={setMengenFilter} />
         ) : (
           <FilterChips
             label="Status"
@@ -1259,21 +1508,19 @@ export default function Block() {
         <FilterSheet
           open={filterSheet}
           onOpenChange={setFilterSheet}
-          resultText={isEdition ? `${zahl.format(visibleEdition.length)} Posten anzeigen` : `${zahl.format(visible.length)} ${visible.length === 1 ? "Stück" : "Stücke"} anzeigen`}
+          resultText={isMenge ? `${zahl.format(visibleStaende.length)} ${visibleStaende.length === 1 ? "Modell" : "Modelle"} anzeigen` : `${zahl.format(visible.length)} ${visible.length === 1 ? "Stück" : "Stücke"} anzeigen`}
           canReset={filterCount > 0}
           onReset={resetFilters}
         >
-          {isEdition ? (
-            <div>
-              <FieldLabel htmlFor="f-programm">Programm</FieldLabel>
-              {programmAuswahl("f-programm")}
-            </div>
-          ) : (
+          <div>
+            <FieldLabel htmlFor="f-typ">Typ</FieldLabel>
+            {typAuswahl(
+              "f-typ",
+              isMenge ? typenMenge : typen.map((t) => t.label),
+            )}
+          </div>
+          {!isMenge && (
             <>
-              <div>
-                <FieldLabel htmlFor="f-typ">Typ</FieldLabel>
-                {typAuswahl("f-typ")}
-              </div>
               <div>
                 <FieldLabel htmlFor="f-kuenstler">Künstler:in</FieldLabel>
                 {kuenstlerAuswahl("f-kuenstler")}
@@ -1290,17 +1537,25 @@ export default function Block() {
           <ErrorState text="Der Bestand konnte nicht geladen werden. Bitte die Seite neu laden." />
         ) : loading ? (
           <LoadingState text="Bestand wird geladen …" />
-        ) : isEdition && inventur ? (
-          <InventurView rows={visibleEdition} onApply={applyInventur} onClose={() => setInventur(false)} />
-        ) : isEdition ? (
-          visibleEdition.length === 0 ? (
-            <EmptyState text="Keine Editionsware gefunden." />
+        ) : isMenge && inventur ? (
+          <InventurView rows={postenSerie} onApply={applyInventur} onClose={() => setInventur(false)} />
+        ) : isMenge ? (
+          visibleStaende.length === 0 ? (
+            <EmptyState text={term || typFilter || mengenFilter !== "alle" ? "Nichts gefunden. Suche oder Filter ändern." : `Noch kein ${serie} im Lager. Neue Ware unter „Erfassen“ eintragen.`} />
           ) : (
-            <div className={`${PANEL_CLASS} px-3 divide-y`}>
-              {visibleEdition.map((e) => (
-                <EditionRow key={e.id} e={e} busy={pendingEdition === e.id} canEdit={editionUpdate.enabled} onAdjust={(d) => adjustEdition(e, d)} onOpen={() => setEditionId(e.id)} />
+            <ul className={`${PANEL_CLASS} px-3 divide-y`}>
+              {visibleStaende.map((s) => (
+                <li key={s.modellId || s.modell}>
+                  <ListRow
+                    fotos={s.fotos}
+                    title={s.modell}
+                    sub={standText(s.je)}
+                    meta={s.reserviert > 0 ? <span className="text-sm text-amber-900">{zahl.format(s.reserviert)} reserviert</span> : undefined}
+                    onClick={() => setModellKey(s.modellId || s.modell)}
+                  />
+                </li>
               ))}
-            </div>
+            </ul>
           )
         ) : visible.length === 0 ? (
           <div className="space-y-3 text-center">
@@ -1360,15 +1615,20 @@ export default function Block() {
         )}
       </div>
 
-      {selected && <UnikatDetail key={selected.id} u={selected} onClose={() => setSelectedId("")} onSaved={() => unikateQuery.refetch()} stamm={stamm} typen={typen} statusListe={statusListe} />}
-      {selectedEdition && (
-        <EditionDetail
-          key={selectedEdition.id}
-          e={selectedEdition}
-          canEdit={editionUpdate.enabled}
-          onClose={() => setEditionId("")}
-          onSave={(fields) => saveEdition(selectedEdition, fields)}
-          lagerorte={activeOptions(stamm.lagerorte, link(selectedEdition.lagerort?.id))}
+      {selected && (
+        <UnikatDetail key={selected.id} u={selected} onClose={() => setSelectedId("")} onSaved={() => unikateQuery.refetch()} stamm={stamm} typen={typen} statusListe={statusListe} kunden={kunden} />
+      )}
+      {offenesModell && (
+        <ModellFenster
+          key={modellKey}
+          stand={offenesModell}
+          canEdit={canEdit}
+          glasuren={glasurenJeModell.get(offenesModell.modellId)?.length ? (glasurenJeModell.get(offenesModell.modellId) ?? []) : activeOptions(stamm.glasuren)}
+          lagerorte={activeOptions(stamm.lagerorte)}
+          kunden={kunden}
+          onClose={() => setModellKey("")}
+          onUmbuchen={umbuchen}
+          onKorrigieren={korrigieren}
         />
       )}
     </div>

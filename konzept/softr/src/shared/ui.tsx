@@ -10,8 +10,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
-import { AlertTriangle, Camera, ChevronDown, ChevronRight, Download, FileSpreadsheet, ImageOff, LayoutGrid, List, Loader2, Plus, Printer, Search, SlidersHorizontal, X } from "lucide-react";
-import { AUSGESTELLT, GLASIERT, KOMMISSION, RESERVIERT, ROHLING, VERFUEGBAR, VERKAUFT } from "../shared/konstanten";
+import { AlertTriangle, Camera, ChevronDown, ChevronRight, Download, FileSpreadsheet, ImageOff, LayoutGrid, List, Loader2, Minus, Plus, Printer, Search, SlidersHorizontal, X } from "lucide-react";
+import { AUSGESTELLT, GESCHRUEHT, GLASIERT, KOMMISSION, RESERVIERT, ROH, VERFUEGBAR, VERKAUFT } from "../shared/konstanten";
 import { type Attachment, type Opt, type ThumbSize, thumb } from "../shared/daten";
 
 // Die eine Rahmenfarbe der App: Flächen, Kacheln, Felder, Auswahlen, Knöpfe. Nur Trennlinien innerhalb einer Fläche bleiben heller.
@@ -46,14 +46,15 @@ export const SCROLL_ROW = `flex gap-2 py-0.5 ${WISCHEN} sm:flex-wrap sm:overflow
 // Klebende Leisten am unteren Rand: am Handy knapp über Softrs Navigationsleiste (ca. 56 px), ab Tablet am Rand.
 export const STICKY_BOTTOM = "bottom-[calc(4.25rem+env(safe-area-inset-bottom))] sm:bottom-4";
 
-// Farbe trägt nur den Status eines Unikats (farbiger Rand im Ton des Status). Neutrale Werte (verkauft, Rohling, glasiert) haben den App-Rahmen.
+// Farbe trägt nur den Status eines Unikats (farbiger Rand im Ton des Status). Neutrale Werte (verkauft und die Zustände der Mengenware) haben den App-Rahmen.
 const STATUS_BADGE: Record<string, string> = {
   [VERFUEGBAR]: "bg-emerald-50 text-emerald-800 border-emerald-200",
   [RESERVIERT]: "bg-amber-50 text-amber-900 border-amber-200",
   [VERKAUFT]: `bg-zinc-100 text-zinc-700 ${LINE}`,
   [KOMMISSION]: "bg-sky-50 text-sky-800 border-sky-200",
   [AUSGESTELLT]: "bg-violet-50 text-violet-800 border-violet-200",
-  [ROHLING]: `bg-background text-muted-foreground ${LINE}`,
+  [ROH]: `bg-background text-muted-foreground ${LINE}`,
+  [GESCHRUEHT]: `bg-background text-muted-foreground ${LINE}`,
   [GLASIERT]: `bg-muted text-foreground ${LINE}`,
 };
 
@@ -232,6 +233,55 @@ export function ErrorText({ children }: { children?: string }) {
     <p role="alert" data-error="true" className="text-sm text-destructive mt-1.5">
       {children}
     </p>
+  );
+}
+
+// Stückzahl mit Minus und Plus, dazwischen frei eintippbar. max: höchstens so viele (z. B. vorhandene Stück).
+export function Stueckzahl({ id, value, onChange, min = 0, max, disabled }: { id: string; value: number; onChange: (n: number) => void; min?: number; max?: number; disabled?: boolean }) {
+  const begrenzt = (n: number) => Math.max(min, max === undefined ? n : Math.min(max, n));
+  return (
+    <div className="flex items-center gap-3">
+      <Knopf type="button" variant="outline" className="h-12 w-12" aria-label="Eins weniger" disabled={disabled || value <= min} onClick={() => onChange(begrenzt(value - 1))}>
+        <Minus className="w-5 h-5" aria-hidden />
+      </Knopf>
+      <Feld
+        id={id}
+        inputMode="numeric"
+        disabled={disabled}
+        value={String(value)}
+        onChange={(e) => onChange(begrenzt(Number(e.target.value.replace(/\D/g, "").slice(0, 5)) || 0))}
+        className="h-12 w-24 text-center text-lg md:text-lg"
+      />
+      <Knopf type="button" variant="outline" className="h-12 w-12" aria-label="Eins mehr" disabled={disabled || (max !== undefined && value >= max)} onClick={() => onChange(begrenzt(value + 1))}>
+        <Plus className="w-5 h-5" aria-hidden />
+      </Knopf>
+    </div>
+  );
+}
+
+// Freitext mit Vorschlägen aus früheren Einträgen (z. B. Kunden). Hält Schreibweisen einheitlich, ohne eigene Kundenliste.
+export function TextMitVorschlag({ id, value, onChange, vorschlaege, placeholder }: { id: string; value: string; onChange: (v: string) => void; vorschlaege: string[]; placeholder?: string }) {
+  return (
+    <>
+      <Feld id={id} list={`${id}-vorschlaege`} autoComplete="off" placeholder={placeholder} value={value} onChange={(e) => onChange(e.target.value)} />
+      <datalist id={`${id}-vorschlaege`}>
+        {vorschlaege.map((v) => (
+          <option key={v} value={v} />
+        ))}
+      </datalist>
+    </>
+  );
+}
+
+// Großer Auswahlknopf mit Erklärung, z. B. „Glasieren – Stücke aus dem Lager nehmen …“. Für Entscheidungen in Fenstern.
+export function AktionKnopf({ titel, text, onClick, haupt }: { titel: string; text: string; onClick: () => void; haupt?: boolean }) {
+  return (
+    <Knopf variant={haupt ? "default" : "outline"} className="w-full h-auto min-h-14 py-3 px-4 justify-start text-left whitespace-normal" onClick={onClick}>
+      <span>
+        <span className="block text-base font-semibold">{titel}</span>
+        <span className={`block text-sm font-normal ${haupt ? "opacity-90" : "text-muted-foreground"}`}>{text}</span>
+      </span>
+    </Knopf>
   );
 }
 

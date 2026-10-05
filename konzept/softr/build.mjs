@@ -11,7 +11,7 @@ const ROOT = dirname(fileURLToPath(import.meta.url));
 const SRC = join(ROOT, "src", "blocks");
 const SHARED = join(ROOT, "src", "shared");
 const OUT = join(ROOT, "blocks");
-const SHARED_ORDER = ["konstanten.ts", "daten.ts", "ui.tsx"];
+const SHARED_ORDER = ["konstanten.ts", "daten.ts", "mengen.ts", "ui.tsx"];
 const CHECK = process.argv.includes("--check");
 
 const IMPORT_RE = /^import\s+([\s\S]*?)\s+from\s+"([^"]+)";\n/gm;

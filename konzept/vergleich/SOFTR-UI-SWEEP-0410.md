@@ -175,3 +175,13 @@ Grundlage: Feedback des Admins zu den Screens vom 04.10. und der Skill `impeccab
 - **Tabelle:** Standardspalten wie die Handy-Karte (Nr., Name, Typ, Status, Anzahl, Preis, Lagerort). Glasur und VK-Preis sind über „Spalten“ zuschaltbar. „Spalten“ bleibt nur am Rechner, weil das Handy statt der Tabelle Karten zeigt (Baustein `NUR_TABELLE`).
 - **Regel im Build:** Ein Bedienelement nur für den Rechner (`hidden sm:inline-flex` u. Ä.) bricht den Build ab. `useIsMobile` ist entfernt: Seiten bauen nichts mehr je nach Bildschirmgröße um.
 - **Prüfung:** Typprüfung und Einheitlichkeit grün. Messung 390/1440 px ohne Befund. Funktionstests Bestand (Rechner und Handy), Tabelle und Übersicht grün. Screens unter `konzept/vergleich/runde12/`.
+
+## Runde 13: Mengenlager für Geschirr und Edition (05.10.)
+
+- **Anlass:** Gespräch mit der Buchhaltung der Werkstatt. Geschirr und Edition sind der Hauptfluss, Unikate (Meisterstücke) kommen selten vor und rücken nach hinten. Gebraucht wird eine einfache Lagerliste wie auf Papier (roh, geschrüht, glasiert) und der Ablauf „Bestellung → aus dem Lager nehmen → prüfen → glasieren“.
+- **Bestand:** Reiter Geschirr | Edition | Unikate. Eine Zeile je Modell mit Stück je Zustand und „reserviert“. Im Modellfenster eine Zeile antippen, dann eine Sache wählen: Glasieren/Schrühen, Reservieren, Ausbuchen, Korrigieren. Glasieren fragt nach entnommenen Stück, Ausschuss, Glasur, Brand, Reservierung und Lagerort und zeigt vorher „Danach: geschrüht 18 · glasiert Rostbraun +6“.
+- **Erfassen:** „Geschirr & Edition“ ist der erste Reiter. Zustand roh/geschrüht/glasiert, bei glasiert zusätzlich Brand vom (heute) und Reserviert für.
+- **Übersicht:** Kennzahlen Geschirr, Edition, Reserviert, Unikate im Haus. Neu: Reservierungen je Kunde, „Geschirr je Modell“ und „Edition je Modell“, Hinweis „Geschirr: N Modelle mit weniger als 5 geschrühten“. Unikate-Abschnitte unten.
+- **Tabelle:** Reiter Alle | Geschirr & Edition | Unikate. Spalten „Brand vom“, „Reserviert für“, „Verkauft an“ (zuschaltbar), „Serie“ statt „Programm“.
+- **Neue Bausteine:** `Stueckzahl`, `TextMitVorschlag`, `AktionKnopf` (ui.tsx), Mengenlogik in `src/shared/mengen.ts`.
+- **Prüfung:** Typprüfung und Einheitlichkeit grün. Messung 390/1440 px ohne echten Befund (das lange Glasier-Fenster scrollt senkrecht, so gewollt). Neuer Funktionstest Mengenlager (Glasieren mit Ausschuss, Reservieren teilt, Ausbuchen löscht, zu viel wird abgelehnt) sowie Erfassen, Bestand, Tabelle, Übersicht, Stammdaten grün. Screens unter `konzept/vergleich/runde13/`.

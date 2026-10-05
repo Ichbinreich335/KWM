@@ -3,7 +3,7 @@ import { datasource, q, useFieldOptions, useRecordCreate, useRecordDelete, useRe
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Archive, ArchiveRestore, Check, ChevronDown, Loader2, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
-import { AUSSER_HAUS_ORT, PAGE_SIZE } from "../shared/konstanten";
+import { AUSSER_HAUS_ORT, PAGE_SIZE, serieVon } from "../shared/konstanten";
 import { type Attachment, type Opt, type RawItem, asAttachments, asOpts, compareNr, firstLabel, freshItems, modellLabel, parseNumber, str, useAllPages, zahl } from "../shared/daten";
 import {
   ChoiceChips,
@@ -397,7 +397,7 @@ export default function Block() {
       key: "modelle",
       label: "Modelle",
       singular: "Modell",
-      hint: "Artikel aus Editionen und Manufakturprogramm. Erscheinen beim Erfassen von Editionsware.",
+      hint: "Artikel aus Edition und Geschirr (in der Datenbank „Manufakturprogramm“). Erscheinen beim Erfassen von Geschirr und Edition.",
       fields: [
         { key: "artikelnr", label: "Artikelnr.", kind: "text", placeholder: "z. B. 2001 oder 6a" },
         { key: "name", label: "Name", kind: "text", required: true, placeholder: "z. B. Kugelvase Craquelée" },
@@ -410,7 +410,7 @@ export default function Block() {
       ],
       foto: true,
       entries: items(modellQuery).map((i) => {
-        const e = toEntry(i, ["name", "artikelnr", "nameEn", "programm", "typ", "masse", "vk"], (v) => [v.programm, v.typ, v.masse, v.vk && `${v.vk} €`].filter(Boolean).join(" · "), "foto");
+        const e = toEntry(i, ["name", "artikelnr", "nameEn", "programm", "typ", "masse", "vk"], (v) => [serieVon(v.programm), v.typ, v.masse, v.vk && `${v.vk} €`].filter(Boolean).join(" · "), "foto");
         e.values.glasuren = asOpts(i.fields.glasuren)
           .map((g) => g.id)
           .join(",");

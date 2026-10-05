@@ -6,7 +6,7 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ArrowDown, ArrowUp, Bookmark, ChevronDown, ChevronLeft, ChevronRight, Columns3, ImageOff, Plus, SlidersHorizontal, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
-import { PAGE_SIZE, VERKAUFT } from "../shared/konstanten";
+import { PAGE_SIZE, VERKAUFT, serieVon } from "../shared/konstanten";
 import { type Attachment, type RawItem, asAttachments, asOpts, downloadCsv, euro, formatDate, lookupValue, num, parseNumber, printTable, str, thumb, today, useAllPages, zahl } from "../shared/daten";
 import { Ankreuzfeld, Auswahl, DIALOG_CLASS, DoneButton, EmptyState, ErrorState, ErrorText, Etikett, ExportMenu, Feld, FieldLabel, Knopf, ListRow, LoadingState, NUR_TABELLE, PageHeader, PANEL_CLASS, PanelHeader, POPOVER_CLASS, SCROLL_ROW, SearchField, SEITE_BREIT_CLASS, StatusBadge, TABLE_PANEL_CLASS, Tabs, Thumb } from "../shared/ui";
 
@@ -37,6 +37,7 @@ const unikatSelect = q.select({
   erfasstAm: "p4ha0",
   geaendertAm: "aGhiL",
   verkauftAm: "48BXo",
+  verkauftAn: "4qhRx",
   rueckgabe: "ENQkk",
 });
 const editionSelect = q.select({
@@ -53,6 +54,8 @@ const editionSelect = q.select({
   artikelnr: "Zzp1S",
   vk: "kAyrB",
   programm: "IIAdh",
+  brand: "jqmqn",
+  reserviert: "L1bO5",
 });
 const ansichtSelect = q.select({ name: "8s5KL", definition: "rWGS9", von: "uPraE" });
 
@@ -60,7 +63,7 @@ const VIEW_VERSION = 3;
 const SCROLL_STEP = 320;
 const PAGE_ROWS = 50;
 const UNIKAT = "Unikat";
-const EDITION = "Editionsware";
+const EDITION = "Geschirr & Edition";
 const euroCent = new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR" });
 
 type ArtTab = "alle" | "unikat" | "edition";
@@ -96,6 +99,9 @@ type Row = {
   erfasstAm: string;
   geaendertAm: string;
   verkauftAm: string;
+  verkauftAn: string;
+  brand: string;
+  reserviert: string;
   rueckgabe: string;
   fotos: Attachment[];
 };
@@ -127,14 +133,17 @@ type ColKey =
   | "erfasstAm"
   | "geaendertAm"
   | "verkauftAm"
+  | "verkauftAn"
+  | "brand"
+  | "reserviert"
   | "rueckgabe";
 type CellValue = string | number | boolean | string[] | null;
-// only: Spalte gibt es nur bei Unikaten bzw. nur bei Editionsware. Im Reiter der anderen Art fällt sie weg.
+// only: Spalte gibt es nur bei Unikaten bzw. nur bei Geschirr und Edition. Im Reiter der anderen Art fällt sie weg.
 type Col = { key: ColKey; label: string; type: FieldType; get: (r: Row) => CellValue; visible: boolean; align?: "right"; only?: ArtTab };
 
 const COLUMNS: Col[] = [
   { key: "art", label: "Art", type: "select", get: (r) => r.art, visible: false, only: "alle" },
-  { key: "programm", label: "Programm", type: "select", get: (r) => r.programm || null, visible: false, only: "edition" },
+  { key: "programm", label: "Serie", type: "select", get: (r) => r.programm || null, visible: false, only: "edition" },
   { key: "inv", label: "Nr.", type: "text", get: (r) => r.inv || r.artikelnr || null, visible: true },
   { key: "name", label: "Name / Modell", type: "text", get: (r) => r.name, visible: true },
   { key: "typ", label: "Typ", type: "select", get: (r) => r.typ || null, visible: true },
@@ -158,6 +167,9 @@ const COLUMNS: Col[] = [
   { key: "erfasstAm", label: "Erfasst am", type: "date", get: (r) => r.erfasstAm.slice(0, 10) || null, visible: false },
   { key: "geaendertAm", label: "Geändert am", type: "date", get: (r) => r.geaendertAm.slice(0, 10) || null, visible: false },
   { key: "verkauftAm", label: "Verkauft am", type: "date", get: (r) => r.verkauftAm.slice(0, 10) || null, visible: false, only: "unikat" },
+  { key: "verkauftAn", label: "Verkauft an", type: "text", get: (r) => r.verkauftAn || null, visible: false, only: "unikat" },
+  { key: "brand", label: "Brand vom", type: "date", get: (r) => r.brand || null, visible: false, only: "edition" },
+  { key: "reserviert", label: "Reserviert für", type: "text", get: (r) => r.reserviert || null, visible: false, only: "edition" },
   { key: "rueckgabe", label: "Rückgabe bis", type: "date", get: (r) => r.rueckgabe.slice(0, 10) || null, visible: false, only: "unikat" },
 ];
 
@@ -289,6 +301,9 @@ function toUnikatRow(i: RawItem): Row {
     erfasstAm: str(f.erfasstAm),
     geaendertAm: str(f.geaendertAm),
     verkauftAm: str(f.verkauftAm),
+    verkauftAn: str(f.verkauftAn),
+    brand: "",
+    reserviert: "",
     rueckgabe: str(f.rueckgabe),
     fotos: asAttachments(f.fotos),
   };
@@ -301,7 +316,7 @@ function toEditionRow(i: RawItem): Row {
     art: EDITION,
     inv: "",
     artikelnr: str(lookupValue(f.artikelnr)),
-    programm: labels(f.programm)[0] ?? "",
+    programm: serieVon(labels(f.programm)[0] ?? ""),
     name: labels(f.modell)[0] ?? "",
     typ: labels(f.typ)[0] ?? "",
     status: labels(f.zustand)[0] ?? "",
@@ -326,6 +341,9 @@ function toEditionRow(i: RawItem): Row {
     erfasstAm: str(f.erfasstAm),
     geaendertAm: str(f.geaendertAm),
     verkauftAm: "",
+    verkauftAn: "",
+    brand: str(f.brand).slice(0, 10),
+    reserviert: str(f.reserviert),
     rueckgabe: "",
     fotos: asAttachments(f.foto),
   };
@@ -373,7 +391,7 @@ function matches(r: Row, c: Condition): boolean {
 
 function matchesSearch(r: Row, term: string): boolean {
   if (!term) return true;
-  const hay = [r.art, r.inv, r.artikelnr, r.programm, r.name, r.typ, r.status, r.kuenstler, r.gedreht, r.glasiert, r.lagerort, r.galerie, r.masse, r.notiz, ...r.glasur].join(" ").toLowerCase();
+  const hay = [r.art, r.inv, r.artikelnr, r.programm, r.name, r.typ, r.status, r.kuenstler, r.gedreht, r.glasiert, r.lagerort, r.galerie, r.masse, r.notiz, r.verkauftAn, r.reserviert, ...r.glasur].join(" ").toLowerCase();
   return term
     .toLowerCase()
     .split(/\s+/)
@@ -427,7 +445,7 @@ function legacyToConditions(def: Record<string, unknown>): Condition[] {
 function exportRows(rows: Row[]) {
   downloadCsv(
     `kwm-tabelle-${today()}.csv`,
-    ["Art", "Programm", "Inventarnummer", "Artikelnr.", "Name / Modell", "Typ", "Status / Zustand", "Anzahl", "Künstler:in", "Gedreht von", "Glasiert von", "Glasur", "Datum", "Jahr", "Maße", "Lagerort", "Partner", "Preis intern (€)", "VK-Preis (€)", "Auf Website", "Notiz", "Erfasst am", "Verkauft am"],
+    ["Art", "Serie", "Inventarnummer", "Artikelnr.", "Name / Modell", "Typ", "Status / Zustand", "Anzahl", "Künstler:in", "Gedreht von", "Glasiert von", "Glasur", "Datum", "Jahr", "Maße", "Lagerort", "Partner", "Preis intern (€)", "VK-Preis (€)", "Auf Website", "Notiz", "Erfasst am", "Verkauft am", "Verkauft an", "Brand vom", "Reserviert für"],
     rows.map((r) => [
       r.art,
       r.programm,
@@ -452,6 +470,9 @@ function exportRows(rows: Row[]) {
       r.notiz,
       formatDate(r.erfasstAm),
       formatDate(r.verkauftAm),
+      r.verkauftAn,
+      formatDate(r.brand),
+      r.reserviert,
     ]),
   );
 }
@@ -909,7 +930,7 @@ export default function Block() {
 
   // Untertitel der Druckansicht: was gerade gefiltert ist, damit eine Liste für sich verständlich bleibt.
   function filterBeschreibung(): string {
-    const teile: string[] = [tab === "alle" ? "Unikate und Editionsware" : tab === "unikat" ? "Unikate" : "Editionsware"];
+    const teile: string[] = [tab === "alle" ? "Geschirr, Edition und Unikate" : tab === "unikat" ? "Unikate" : EDITION];
     quickKeys.forEach((k) => quick[k]?.length && teile.push(`${quickLabel(k, tab)}: ${quick[k]?.join(", ")}`));
     if (search.trim()) teile.push(`Suche „${search.trim()}“`);
     if (activeConditions.length) teile.push(`${activeConditions.length} weitere Bedingung${activeConditions.length === 1 ? "" : "en"}`);
@@ -959,8 +980,8 @@ export default function Block() {
           label="Art"
           tabs={[
             { key: "alle" as ArtTab, label: "Alle", count: rows.length },
+            { key: "edition" as ArtTab, label: EDITION, count: rows.filter((r) => r.art === EDITION).length },
             { key: "unikat" as ArtTab, label: "Unikate", count: rows.filter((r) => r.art === UNIKAT).length },
-            { key: "edition" as ArtTab, label: "Editionsware", count: rows.filter((r) => r.art === EDITION).length },
           ]}
           value={tab}
           onChange={switchTab}

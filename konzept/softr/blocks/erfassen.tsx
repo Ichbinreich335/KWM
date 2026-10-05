@@ -18,15 +18,24 @@ const RESERVIERT = "reserviert";
 const VERKAUFT = "verkauft";
 const KOMMISSION = "in Kommission";
 const AUSGESTELLT = "ausgestellt";
-const ROHLING = "Rohling";
+const GESCHRUEHT = "geschrüht";
+const GLASIERT = "glasiert";
 
 // Programme der Werkstatt laut Anfrageformular: Editionen (Nr. 2001 ff.) und Geschirr (Nr. 1 ff.).
+// In der Datenbank heißt das Geschirr „Manufakturprogramm“, in der App „Geschirr“ (Begriff der Werkstatt).
 const EDITION_PROGRAMM = "Edition";
 
 const MANUFAKTUR_PROGRAMM = "Manufakturprogramm";
+const GESCHIRR = "Geschirr";
+
+function serieVon(programm: string): string {
+  return programm === MANUFAKTUR_PROGRAMM ? GESCHIRR : programm;
+}
+
 const AUSSER_HAUS_ORT = "Außer Haus";
 const isAusserHaus = (status: string) => status === KOMMISSION || status === AUSGESTELLT;
 type Opt = { id: string; label: string };
+type Attachment = { id?: string; url: string; filename?: string; thumbnails?: { url: string; size: string }[] };
 type RawItem = { id: string; fields: Record<string, unknown> };
 
 function asOpts(v: unknown): Opt[] {
@@ -39,8 +48,17 @@ function asOpts(v: unknown): Opt[] {
   return [];
 }
 
+function asAttachments(v: unknown): Attachment[] {
+  if (!v) return [];
+  return (Array.isArray(v) ? v : [v]).filter((a): a is Attachment => !!a && typeof a === "object" && "url" in a);
+}
+
 function str(v: unknown): string {
   return typeof v === "string" ? v : typeof v === "number" ? String(v) : "";
+}
+
+function num(v: unknown): number | null {
+  return typeof v === "number" && Number.isFinite(v) ? v : null;
 }
 
 // Auswahlliste aus einer Stammdaten-Tabelle (Felder name, archiviert). Archivierte fallen weg,
@@ -50,6 +68,11 @@ function activeOptions(data: { pages: { items: unknown[] }[] } | undefined, keep
     .filter((i) => i.fields.archiviert !== true || keep.includes(i.id))
     .map((i) => ({ id: i.id, label: str(i.fields.name) }))
     .sort((a, b) => a.label.localeCompare(b.label, "de"));
+}
+
+// Nachschlagefelder liefern je nach Feld einen Wert oder eine Liste mit einem Wert.
+function lookupValue(v: unknown): unknown {
+  return Array.isArray(v) ? v[0] : v;
 }
 
 // Artikelnummern wie 2, 6a, 10, 2018a in natürlicher Reihenfolge.
@@ -80,6 +103,12 @@ function today(): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
 
+function formatDate(iso: string): string {
+  if (!iso) return "";
+  const d = new Date(iso.length === 10 ? `${iso}T00:00:00` : iso);
+  return Number.isNaN(d.getTime()) ? "" : d.toLocaleDateString("de-DE");
+}
+
 // Deutsche Zahleneingabe: „1.200“ = 1200, „12,50“ = 12.5.
 function parseNumber(s: string): number | null {
   if (!s.trim()) return null;
@@ -92,6 +121,67 @@ function useAllPages(query: { hasNextPage?: boolean; isFetchingNextPage?: boolea
   useEffect(() => {
     if (hasNextPage && !isFetchingNextPage) fetchNextPage();
   }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+}
+
+type Posten = {
+  id: string;
+  modellId: string;
+  nr: string;
+  modell: string;
+  serie: string;
+  typ: string;
+  zustand: string;
+  glasurId: string;
+  glasur: string;
+  brand: string;
+  reserviert: string;
+  anzahl: number;
+  vk: number | null;
+  lagerort: Opt | undefined;
+  fotos: Attachment[];
+  notiz: string;
+};
+
+type PostenKey = Pick<Posten, "modellId" | "zustand" | "glasurId" | "brand" | "reserviert">;
+
+// Liest einen Datensatz des Editionsbestands. Jeder Block wählt seine Felder selbst aus, fehlende bleiben leer.
+function toPosten(item: RawItem): Posten {
+  const f = item.fields;
+  const modell = asOpts(f.modell)[0];
+  const nr = str(lookupValue(f.artikelnr));
+  const glasur = asOpts(f.glasur)[0];
+  return {
+    id: item.id,
+    modellId: modell?.id ?? "",
+    nr,
+    modell: modellLabel(nr, modell?.label ?? ""),
+    serie: serieVon(asOpts(f.programm)[0]?.label ?? ""),
+    typ: asOpts(f.typ)[0]?.label ?? "",
+    zustand: asOpts(f.zustand)[0]?.label ?? "",
+    glasurId: glasur?.id ?? "",
+    glasur: glasur?.label ?? "",
+    brand: str(f.brand).slice(0, 10),
+    reserviert: str(f.reserviert).trim(),
+    anzahl: num(f.anzahl) ?? 0,
+    vk: num(lookupValue(f.vk)),
+    lagerort: asOpts(f.lagerort)[0],
+    fotos: asAttachments(f.foto),
+    notiz: str(f.notiz),
+  };
+}
+
+function gleicherPosten(a: PostenKey, b: PostenKey): boolean {
+  return a.modellId === b.modellId && a.zustand === b.zustand && a.glasurId === b.glasurId && a.brand === b.brand && a.reserviert.toLowerCase() === b.reserviert.toLowerCase();
+}
+
+// Kurzbeschreibung eines Postens ohne Modell, z. B. „Rostbraun · Brand 24.09.2026“.
+function postenText(p: Pick<Posten, "zustand" | "glasur" | "brand">): string {
+  return [p.glasur || p.zustand, p.brand && `Brand ${formatDate(p.brand)}`].filter(Boolean).join(" · ");
+}
+
+// Bezeichnung des Datensatzes (Hauptfeld in der Datenbank), damit die Tabelle in Softr lesbar bleibt.
+function bezeichnung(modell: string, p: Pick<Posten, "zustand" | "glasur" | "brand" | "reserviert">): string {
+  return [modell, postenText(p), p.reserviert && `für ${p.reserviert}`].filter(Boolean).join(" · ");
 }
 
 // Die eine Rahmenfarbe der App: Flächen, Kacheln, Felder, Auswahlen, Knöpfe. Nur Trennlinien innerhalb einer Fläche bleiben heller.
@@ -256,6 +346,43 @@ function ErrorText({ children }: { children?: string }) {
     <p role="alert" data-error="true" className="text-sm text-destructive mt-1.5">
       {children}
     </p>
+  );
+}
+
+// Stückzahl mit Minus und Plus, dazwischen frei eintippbar. max: höchstens so viele (z. B. vorhandene Stück).
+function Stueckzahl({ id, value, onChange, min = 0, max, disabled }: { id: string; value: number; onChange: (n: number) => void; min?: number; max?: number; disabled?: boolean }) {
+  const begrenzt = (n: number) => Math.max(min, max === undefined ? n : Math.min(max, n));
+  return (
+    <div className="flex items-center gap-3">
+      <Knopf type="button" variant="outline" className="h-12 w-12" aria-label="Eins weniger" disabled={disabled || value <= min} onClick={() => onChange(begrenzt(value - 1))}>
+        <Minus className="w-5 h-5" aria-hidden />
+      </Knopf>
+      <Feld
+        id={id}
+        inputMode="numeric"
+        disabled={disabled}
+        value={String(value)}
+        onChange={(e) => onChange(begrenzt(Number(e.target.value.replace(/\D/g, "").slice(0, 5)) || 0))}
+        className="h-12 w-24 text-center text-lg md:text-lg"
+      />
+      <Knopf type="button" variant="outline" className="h-12 w-12" aria-label="Eins mehr" disabled={disabled || (max !== undefined && value >= max)} onClick={() => onChange(begrenzt(value + 1))}>
+        <Plus className="w-5 h-5" aria-hidden />
+      </Knopf>
+    </div>
+  );
+}
+
+// Freitext mit Vorschlägen aus früheren Einträgen (z. B. Kunden). Hält Schreibweisen einheitlich, ohne eigene Kundenliste.
+function TextMitVorschlag({ id, value, onChange, vorschlaege, placeholder }: { id: string; value: string; onChange: (v: string) => void; vorschlaege: string[]; placeholder?: string }) {
+  return (
+    <>
+      <Feld id={id} list={`${id}-vorschlaege`} autoComplete="off" placeholder={placeholder} value={value} onChange={(e) => onChange(e.target.value)} />
+      <datalist id={`${id}-vorschlaege`}>
+        {vorschlaege.map((v) => (
+          <option key={v} value={v} />
+        ))}
+      </datalist>
+    </>
   );
 }
 
@@ -587,6 +714,8 @@ const editionFields = q.select({
   lagerort: "T5iQe",
   foto: "nibt5",
   notiz: "lyJky",
+  brand: "jqmqn",
+  reserviert: "L1bO5",
 });
 
 const FIELD_NAMES: Record<string, string> = {
@@ -600,9 +729,10 @@ const FIELD_NAMES: Record<string, string> = {
 };
 
 type Art = "unikat" | "edition";
+// Geschirr und Edition sind der Hauptfluss der Werkstatt, darum zuerst. Unikate kommen seltener vor.
 const ART_TABS: { key: Art; label: string }[] = [
+  { key: "edition", label: "Geschirr & Edition" },
   { key: "unikat", label: "Unikat" },
-  { key: "edition", label: "Editionsware" },
 ];
 type Saved = { art: Art; recordId: string; text: string };
 
@@ -630,6 +760,8 @@ type EditionForm = {
   modell: string;
   zustand: string;
   glasur: string;
+  brand: string;
+  reserviert: string;
   anzahl: number;
   lagerort: string;
   notiz: string;
@@ -657,8 +789,10 @@ const emptyUnikat = (): UnikatForm => ({
 
 const emptyEdition = (): EditionForm => ({
   modell: "",
-  zustand: ROHLING,
+  zustand: GESCHRUEHT,
   glasur: "",
+  brand: today(),
+  reserviert: "",
   anzahl: 1,
   lagerort: "",
   notiz: "",
@@ -725,7 +859,7 @@ function SuccessCard({ saved, onNext }: { saved: Saved; onNext: () => void }) {
 export default function Block() {
   const user = useCurrentUser();
   const formRef = useRef<HTMLFormElement>(null);
-  const [art, setArt] = useState<Art>("unikat");
+  const [art, setArt] = useState<Art>("edition");
   const [unikat, setUnikat] = useState<UnikatForm>(emptyUnikat);
   const [edition, setEdition] = useState<EditionForm>(emptyEdition);
   const [files, setFiles] = useState<File[]>([]);
@@ -828,16 +962,12 @@ export default function Block() {
   useAllPages(editionQuery);
   const editionReady = editionQuery.status === "success" && !editionQuery.hasNextPage;
   const editionRows = editionQuery.data?.pages.flatMap((p) => p.items) ?? [];
-  const isGlasiert = edition.zustand !== ROHLING;
+  const isGlasiert = edition.zustand === GLASIERT;
   const wantGlasur = isGlasiert ? edition.glasur : "";
-  // Eine Editionszeile ist eindeutig durch Modell, Zustand und Glasur.
-  const findRow = (rows: { id: string; fields: unknown }[]) =>
-    edition.modell
-      ? rows.find((r) => {
-          const f = r.fields as { modell?: Opt; zustand?: Opt; glasur?: Opt };
-          return f.modell?.id === edition.modell && f.zustand?.label === edition.zustand && (f.glasur?.id ?? "") === wantGlasur;
-        })
-      : undefined;
+  const postenKey = { modellId: edition.modell, zustand: edition.zustand, glasurId: wantGlasur, brand: isGlasiert ? edition.brand : "", reserviert: isGlasiert ? edition.reserviert.trim() : "" };
+  // Gleicher Posten (Modell, Zustand, Glasur, Brand, Reservierung) wird weitergezählt statt doppelt angelegt.
+  const findRow = (rows: { id: string; fields: unknown }[]) => (edition.modell ? rows.find((r) => gleicherPosten(toPosten(r as RawItem), postenKey)) : undefined);
+  const kunden = [...new Set<string>(editionRows.map((r) => toPosten(r as RawItem).reserviert).filter(Boolean))].sort((a, b) => a.localeCompare(b, "de"));
   const existingRow = findRow(editionRows);
   const existingCount = Number((existingRow?.fields as { anzahl?: number } | undefined)?.anzahl ?? 0);
 
@@ -955,7 +1085,7 @@ export default function Block() {
       } else {
         const modell = gewaehltesModell?.label ?? "";
         const glasur = glasurOptions.find((g) => g.id === wantGlasur)?.label;
-        const variante = isGlasiert ? glasur ?? edition.zustand : ROHLING;
+        const variante = bezeichnung(modell, { zustand: edition.zustand, glasur: glasur ?? "", brand: postenKey.brand, reserviert: postenKey.reserviert });
         // Direkt vor dem Speichern frisch laden: Hat jemand anderes die Zeile gerade angelegt oder geändert,
         // wird dort weitergezählt statt eine doppelte Zeile anzulegen oder Stück zu verlieren.
         const fresh = await freshItems(editionQuery);
@@ -964,19 +1094,21 @@ export default function Block() {
         if (row) {
           const neu = Number((row.fields as { anzahl?: number }).anzahl ?? 0) + edition.anzahl;
           await updateEdition.mutateAsync({ recordId: row.id, fields: { anzahl: neu } } as never);
-          setSaved({ art, recordId: row.id, text: `${modell} · ${variante}: jetzt ${neu} Stück.` });
+          setSaved({ art, recordId: row.id, text: `${variante}: jetzt ${neu} Stück.` });
         } else {
           const created = await createEdition.mutateAsync({
-            bezeichnung: `${modell} · ${variante}`,
+            bezeichnung: variante,
             modell: link(edition.modell),
             glasur: link(wantGlasur || undefined),
             zustand: edition.zustand,
             anzahl: edition.anzahl,
+            brand: postenKey.brand || null,
+            reserviert: postenKey.reserviert,
             lagerort: link(edition.lagerort),
             foto: fotos,
             notiz: edition.notiz.trim(),
           } as never);
-          setSaved({ art, recordId: (created as { id: string }).id, text: `${modell} · ${variante}: ${edition.anzahl} Stück angelegt.` });
+          setSaved({ art, recordId: (created as { id: string }).id, text: `${variante}: ${edition.anzahl} Stück angelegt.` });
         }
         await editionQuery.refetch();
       }
@@ -1177,7 +1309,7 @@ export default function Block() {
             ) : (
               <div className={COLUMNS}>
                 <div className="space-y-6">
-                  <SectionTitle title="Pflichtangaben" hint="Reichen zum Speichern." />
+                  <SectionTitle title="Pflichtangaben" hint="Geschirr und Edition: Modell, Zustand, Anzahl." />
                   <div>
                     <FieldLabel htmlFor="e-modell" required>
                       Modell
@@ -1217,37 +1349,25 @@ export default function Block() {
                     </div>
                   )}
 
+                  {isGlasiert && (
+                    <div className="grid sm:grid-cols-2 gap-6">
+                      <div>
+                        <FieldLabel htmlFor="e-brand">Brand vom</FieldLabel>
+                        <Feld id="e-brand" type="date" value={edition.brand} onChange={(e) => setE("brand", e.target.value)} />
+                        <Hint>Stücke aus einem Brand stehen zusammen.</Hint>
+                      </div>
+                      <div>
+                        <FieldLabel htmlFor="e-reserviert">Reserviert für</FieldLabel>
+                        <TextMitVorschlag id="e-reserviert" value={edition.reserviert} onChange={(v) => setE("reserviert", v)} vorschlaege={kunden} placeholder="Kunde oder Auftrag (freiwillig)" />
+                      </div>
+                    </div>
+                  )}
+
                   <div>
                     <FieldLabel htmlFor="e-anzahl" required>
                       Anzahl
                     </FieldLabel>
-                    <div className="flex items-center gap-3">
-                      <Knopf
-                        type="button"
-                        variant="outline"
-                        className="h-12 w-12"
-                        aria-label="Eins weniger"
-                        onClick={() => setE("anzahl", Math.max(1, edition.anzahl - 1))}
-                      >
-                        <Minus className="w-5 h-5" aria-hidden />
-                      </Knopf>
-                      <Feld
-                        id="e-anzahl"
-                        inputMode="numeric"
-                        value={String(edition.anzahl)}
-                        onChange={(e) => setE("anzahl", Number(e.target.value.replace(/\D/g, "")) || 0)}
-                        className="h-12 w-24 rounded-md text-center text-lg md:text-lg"
-                      />
-                      <Knopf
-                        type="button"
-                        variant="outline"
-                        className="h-12 w-12"
-                        aria-label="Eins mehr"
-                        onClick={() => setE("anzahl", edition.anzahl + 1)}
-                      >
-                        <Plus className="w-5 h-5" aria-hidden />
-                      </Knopf>
-                    </div>
+                    <Stueckzahl id="e-anzahl" value={edition.anzahl} min={1} onChange={(n) => setE("anzahl", n)} />
                     <ErrorText>{errors.anzahl}</ErrorText>
                     {existingRow && (
                       <p className="mt-3 rounded-md bg-muted p-3 text-base">

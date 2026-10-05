@@ -17,10 +17,20 @@ Für die nächste Session. Zuerst `CLAUDE.md`, `konzept/SOFTR-AUFTRAG.md` und `k
 | Seite | Page-ID | Block (Datei) | Block-ID | Datenquellen | Aktionsrechte |
 |---|---|---|---|---|---|
 | `/erfassen` | `8cba05b9-7689-4bdf-a275-d6988ecdb8eb` | `erfassen.tsx` | `c2222c6c-2726-4590-9804-eef9c6d44ddb` | unikate, edition, glasuren, kuenstler | alle ADD → LOGGED_IN_USERS |
-| `/bestand` | `131c6c30-67d8-4939-87b8-b79f9bbe9bf6` | `bestand.tsx` | `cab355a2-0a7f-47a2-863a-41d2bbf7cae5` | unikate, edition | UPDATE → LOGGED_IN_USERS (Standard) |
+| `/bestand` | `131c6c30-67d8-4939-87b8-b79f9bbe9bf6` | `bestand.tsx` | `cab355a2-0a7f-47a2-863a-41d2bbf7cae5` | unikate, edition, kuenstler, glasuren, lagerorte, partner, modelle | ADD edition → LOGGED_IN_USERS; UPDATE/DELETE Standard |
 | `/tabelle` | `1c5c5fed-5ec8-40df-8b13-4ae96ced2fdd` | `tabelle.tsx` | `ad8e12f4-0372-492b-a713-87334990aa90` | unikate, edition, ansichten | ADD ansichten → LOGGED_IN_USERS |
 | `/uebersicht` | `16450fdc-1469-49fb-8785-acac62a5c953` | `uebersicht.tsx` | `c62602bd-dd73-44d6-9625-b59aec539939` | unikate, edition, partner | keine |
 | `/stammdaten` | `c8a4fadb-196f-4712-b649-816e0f1ebd5e` | `stammdaten.tsx` | `451b0d69-677c-4f15-9f15-87cae9021028` | kuenstler, glasuren, modelle, partner, lagerorte, unikate, edition | alle ADD → LOGGED_IN_USERS |
+
+## Stand 05.10.2026 (Runde 13, gilt vor allem darunter): Mengenlager nach Kundengespräch
+- **Drei Serien:** Geschirr (in der DB „Manufakturprogramm“, Nr. 1 ff., sechs Glasuren), Edition (Nr. 2001 ff., Farbe je nach Brand) und Unikate (= Meisterstücke von Young-Jae Lee, seltener). Geschirr und Edition sind der Hauptfluss und stehen überall zuerst.
+- **Zustände:** roh → geschrüht → glasiert (Feld `WUkN3`, „Rohling“ entfernt, die 5 Demo-Zeilen auf „geschrüht“ umgestellt).
+- **Neue Felder:** Editionsbestand „Brand vom“ `jqmqn` (Datum) und „Reserviert für“ `L1bO5` (Freitext); Unikate „Verkauft an“ `4qhRx` (Freitext). Nur ergänzt.
+- **Ein Posten** = Modell + Zustand + Glasur + Brand + Reservierung. Gleiche Posten werden zusammengezählt, ein Posten mit 0 Stück wird beim Umbuchen gelöscht.
+- **Bestand:** Reiter Geschirr | Edition | Unikate. Eine Zeile je Modell („geschrüht 25 · glasiert 14“). Modell antippen → Posten antippen → Glasieren bzw. Schrühen (mit Ausschuss, Glasur, Brand, Reservierung, Lagerort), Reservieren/Freigeben, Ausbuchen, Korrigieren. Kein Plus/Minus mehr in der Liste.
+- **Kunden:** keine eigene Tabelle. Freitext mit Vorschlägen aus früheren Einträgen (`TextMitVorschlag`).
+- **Kein Brandbuch und kein Verlauf** (Abschnitt 0: „Buchungsjournal vorerst raus“). „Brand vom“ macht Brände in der Tabelle filterbar.
+- **Bestand-Block** hat jetzt die Datenquelle `modelle` (Glasuren je Modell) und die Aktionen ADD und DELETE auf `edition`.
 
 ## Stand 04.10.2026 (gilt vor allem darunter)
 - **UI-Sweep** mit Skill `impeccable`: Bericht `konzept/vergleich/SOFTR-UI-SWEEP-0410.md`. Einziger Umschalter sind die unterstrichenen `Tabs`; Status und Zustand im Bestand sind Auswahllisten in der Filterzeile. Gewählter Status trägt seine Farbe im Knopf (`STATUS_ACTIVE`). `SearchPick` behält die Reihenfolge.

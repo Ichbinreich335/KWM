@@ -9,7 +9,25 @@ const RESERVIERT = "reserviert";
 const VERKAUFT = "verkauft";
 const KOMMISSION = "in Kommission";
 const AUSGESTELLT = "ausgestellt";
-const ROHLING = "Rohling";
+
+// Zustände im Mengenlager, in der Reihenfolge des Werkstattablaufs: roh → Schrühbrand → geschrüht → Glasurbrand → glasiert.
+const ROH = "roh";
+
+const GESCHRUEHT = "geschrüht";
+const GLASIERT = "glasiert";
+const ZUSTAENDE = [ROH, GESCHRUEHT, GLASIERT];
+
+// Programme der Werkstatt laut Anfrageformular: Editionen (Nr. 2001 ff.) und Geschirr (Nr. 1 ff.).
+// In der Datenbank heißt das Geschirr „Manufakturprogramm“, in der App „Geschirr“ (Begriff der Werkstatt).
+const EDITION_PROGRAMM = "Edition";
+
+const MANUFAKTUR_PROGRAMM = "Manufakturprogramm";
+const GESCHIRR = "Geschirr";
+
+function serieVon(programm: string): string {
+  return programm === MANUFAKTUR_PROGRAMM ? GESCHIRR : programm;
+}
+
 const isAusserHaus = (status: string) => status === KOMMISSION || status === AUSGESTELLT;
 type Opt = { id: string; label: string };
 type Attachment = { id?: string; url: string; filename?: string; thumbnails?: { url: string; size: string }[] };
@@ -54,8 +72,20 @@ function lookupValue(v: unknown): unknown {
   return Array.isArray(v) ? v[0] : v;
 }
 
+// Artikelnummern wie 2, 6a, 10, 2018a in natürlicher Reihenfolge.
+function compareNr(a: string, b: string): number {
+  if (!a || !b) return a ? -1 : b ? 1 : 0;
+  return a.localeCompare(b, "de", { numeric: true });
+}
+
 function modellLabel(nr: string, name: string): string {
   return nr ? `${nr} · ${name}` : name;
+}
+
+function formatDate(iso: string): string {
+  if (!iso) return "";
+  const d = new Date(iso.length === 10 ? `${iso}T00:00:00` : iso);
+  return Number.isNaN(d.getTime()) ? "" : d.toLocaleDateString("de-DE");
 }
 
 function useAllPages(query: { hasNextPage?: boolean; isFetchingNextPage?: boolean; fetchNextPage: () => unknown }) {
@@ -63,6 +93,91 @@ function useAllPages(query: { hasNextPage?: boolean; isFetchingNextPage?: boolea
   useEffect(() => {
     if (hasNextPage && !isFetchingNextPage) fetchNextPage();
   }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+}
+
+type Posten = {
+  id: string;
+  modellId: string;
+  nr: string;
+  modell: string;
+  serie: string;
+  typ: string;
+  zustand: string;
+  glasurId: string;
+  glasur: string;
+  brand: string;
+  reserviert: string;
+  anzahl: number;
+  vk: number | null;
+  lagerort: Opt | undefined;
+  fotos: Attachment[];
+  notiz: string;
+};
+
+// Liest einen Datensatz des Editionsbestands. Jeder Block wählt seine Felder selbst aus, fehlende bleiben leer.
+function toPosten(item: RawItem): Posten {
+  const f = item.fields;
+  const modell = asOpts(f.modell)[0];
+  const nr = str(lookupValue(f.artikelnr));
+  const glasur = asOpts(f.glasur)[0];
+  return {
+    id: item.id,
+    modellId: modell?.id ?? "",
+    nr,
+    modell: modellLabel(nr, modell?.label ?? ""),
+    serie: serieVon(asOpts(f.programm)[0]?.label ?? ""),
+    typ: asOpts(f.typ)[0]?.label ?? "",
+    zustand: asOpts(f.zustand)[0]?.label ?? "",
+    glasurId: glasur?.id ?? "",
+    glasur: glasur?.label ?? "",
+    brand: str(f.brand).slice(0, 10),
+    reserviert: str(f.reserviert).trim(),
+    anzahl: num(f.anzahl) ?? 0,
+    vk: num(lookupValue(f.vk)),
+    lagerort: asOpts(f.lagerort)[0],
+    fotos: asAttachments(f.foto),
+    notiz: str(f.notiz),
+  };
+}
+
+// Kurzbeschreibung eines Postens ohne Modell, z. B. „Rostbraun · Brand 24.09.2026“.
+function postenText(p: Pick<Posten, "zustand" | "glasur" | "brand">): string {
+  return [p.glasur || p.zustand, p.brand && `Brand ${formatDate(p.brand)}`].filter(Boolean).join(" · ");
+}
+
+type ModellStand = {
+  modellId: string;
+  nr: string;
+  modell: string;
+  serie: string;
+  typ: string;
+  fotos: Attachment[];
+  je: Record<string, number>;
+  reserviert: number;
+  posten: Posten[];
+};
+
+const ZUSTAND_RANG = (z: string) => (ZUSTAENDE.includes(z) ? ZUSTAENDE.indexOf(z) : ZUSTAENDE.length);
+
+// Fasst die Posten je Modell zusammen, wie auf der Lagerliste der Werkstatt: eine Zeile je Artikel, Stück je Zustand.
+// Posten mit 0 Stück zählen nicht und erscheinen nicht.
+function nachModell(posten: Posten[]): ModellStand[] {
+  const map = new Map<string, ModellStand>();
+  for (const p of posten) {
+    if (p.anzahl <= 0) continue;
+    const key = p.modellId || p.modell;
+    const s = map.get(key) ?? { modellId: p.modellId, nr: p.nr, modell: p.modell, serie: p.serie, typ: p.typ, fotos: [], je: {}, reserviert: 0, posten: [] };
+    s.je[p.zustand] = (s.je[p.zustand] ?? 0) + p.anzahl;
+    if (p.reserviert) s.reserviert += p.anzahl;
+    if (!s.fotos.length && p.fotos.length) s.fotos = p.fotos;
+    s.posten.push(p);
+    map.set(key, s);
+  }
+  const stande = [...map.values()];
+  for (const s of stande) {
+    s.posten.sort((a, b) => ZUSTAND_RANG(a.zustand) - ZUSTAND_RANG(b.zustand) || a.glasur.localeCompare(b.glasur, "de") || b.brand.localeCompare(a.brand) || a.reserviert.localeCompare(b.reserviert, "de"));
+  }
+  return stande.sort((a, b) => compareNr(a.nr, b.nr) || a.modell.localeCompare(b.modell, "de"));
 }
 
 // Die eine Rahmenfarbe der App: Flächen, Kacheln, Felder, Auswahlen, Knöpfe. Nur Trennlinien innerhalb einer Fläche bleiben heller.
@@ -196,6 +311,9 @@ const editionSelect = q.select({
   geaendertAm: "JZyKO",
   artikelnr: "Zzp1S",
   vk: "kAyrB",
+  programm: "IIAdh",
+  brand: "jqmqn",
+  reserviert: "L1bO5",
 });
 
 const RECENT_COUNT = 6;
@@ -220,17 +338,7 @@ type Unikat = {
   geaendertAm: string;
   verkauftAm: string;
 };
-type Edition = {
-  id: string;
-  modell: string;
-  glasur: string;
-  zustand: string;
-  anzahl: number;
-  vk: number | null;
-  fotos: Attachment[];
-  erfasstAm: string;
-  geaendertAm: string;
-};
+type Edition = Posten & { erfasstAm: string; geaendertAm: string };
 type CountRow = { label: string; href: string; values: number[] };
 type Pruefpunkt = { label: string; items: { id: string; label: string; href: string }[] };
 type Ton = "rot" | "gelb";
@@ -458,17 +566,7 @@ export default function Block() {
     () =>
       (editionQuery.data?.pages.flatMap((p) => p.items) ?? []).map((i) => {
         const f = (i as RawItem).fields;
-        return {
-          id: i.id,
-          modell: modellLabel(str(lookupValue(f.artikelnr)), firstLabel(f.modell)),
-          glasur: firstLabel(f.glasur),
-          zustand: firstLabel(f.zustand),
-          anzahl: num(f.anzahl) ?? 0,
-          vk: num(lookupValue(f.vk)),
-          fotos: asAttachments(f.foto),
-          erfasstAm: str(f.erfasstAm),
-          geaendertAm: str(f.geaendertAm),
-        };
+        return { ...toPosten(i as RawItem), erfasstAm: str(f.erfasstAm), geaendertAm: str(f.geaendertAm) };
       }),
     [editionQuery.data],
   );
@@ -502,9 +600,6 @@ export default function Block() {
       verkauftLuecken: by(VERKAUFT).filter((u) => !u.verkauftAm || u.preis === null).length,
       bald: ausserHaus.filter((u) => fristStatus(u.rueckgabe) === "bald").length,
       ueberfaelligBei: [...new Set(ausserHaus.filter((u) => fristStatus(u.rueckgabe) === "ueberfaellig").map((u) => u.galerie || "ohne Partner"))],
-      rohlinge: editionen.filter((e) => e.zustand === ROHLING).reduce((n, e) => n + e.anzahl, 0),
-      glasiert: editionen.filter((e) => e.zustand !== ROHLING).reduce((n, e) => n + e.anzahl, 0),
-      glasiertWert: editionen.filter((e) => e.zustand !== ROHLING).reduce((n, e) => n + e.anzahl * (e.vk ?? 0), 0),
     };
   }, [unikate, editionen, jahr]);
 
@@ -519,14 +614,44 @@ export default function Block() {
     });
   }, [unikate]);
 
-  const modellRows = useMemo<CountRow[]>(() => {
-    const modelle = [...new Set(editionen.map((e) => e.modell).filter(Boolean))].sort((a, b) => a.localeCompare(b, "de", { numeric: true }));
-    return modelle.map((modell) => {
-      const list = editionen.filter((e) => e.modell === modell);
-      const roh = list.filter((e) => e.zustand === ROHLING).reduce((n, e) => n + e.anzahl, 0);
-      const glas = list.filter((e) => e.zustand !== ROHLING).reduce((n, e) => n + e.anzahl, 0);
-      return { label: modell, href: `/bestand?tab=edition&q=${encodeURIComponent(modell)}`, values: [roh, glas, roh + glas] };
-    });
+  // Mengenlager je Serie wie auf der Lagerliste: eine Zeile je Modell, Stück je Zustand. „roh“ nur, wenn es Rohware gibt.
+  const mengen = useMemo(
+    () =>
+      [GESCHIRR, EDITION_PROGRAMM].map((serie) => {
+        const staende = nachModell(editionen.filter((e) => e.serie === serie));
+        const zustaende = ZUSTAENDE.filter((z) => z !== ROH || staende.some((s) => (s.je[ROH] ?? 0) > 0));
+        const summe = (z: string) => staende.reduce((n, s) => n + (s.je[z] ?? 0), 0);
+        const tab = serie === GESCHIRR ? "geschirr" : "edition";
+        return {
+          serie,
+          tab,
+          staende,
+          zustaende,
+          je: Object.fromEntries(zustaende.map((z) => [z, summe(z)])) as Record<string, number>,
+          gesamt: zustaende.reduce((n, z) => n + summe(z), 0),
+          wertGlasiert: editionen.filter((e) => e.serie === serie && e.zustand === GLASIERT).reduce((n, e) => n + e.anzahl * (e.vk ?? 0), 0),
+          rows: staende.map((s) => {
+            const values = zustaende.map((z) => s.je[z] ?? 0);
+            return { label: s.modell, href: `/bestand?tab=${tab}&q=${encodeURIComponent(s.modell)}`, values: [...values, values.reduce((a, b) => a + b, 0)] };
+          }),
+        };
+      }),
+    [editionen],
+  );
+  const [geschirr, edition] = mengen;
+
+  // Reservierungen je Kunde oder Auftrag (Freitext), mit den reservierten Posten.
+  const reservierungen = useMemo(() => {
+    const map = new Map<string, { name: string; anzahl: number; posten: Edition[] }>();
+    for (const e of editionen) {
+      if (!e.reserviert || e.anzahl <= 0) continue;
+      const key = e.reserviert.toLowerCase();
+      const r = map.get(key) ?? { name: e.reserviert, anzahl: 0, posten: [] };
+      r.anzahl += e.anzahl;
+      r.posten.push(e);
+      map.set(key, r);
+    }
+    return [...map.values()].sort((a, b) => a.name.localeCompare(b.name, "de"));
   }, [editionen]);
 
   const ausserHausGruppen = useMemo(() => {
@@ -557,9 +682,9 @@ export default function Block() {
       })),
       ...editionen.map((e) => ({
         key: `e-${e.id}`,
-        href: `/bestand?tab=edition&q=${encodeURIComponent(e.modell)}`,
+        href: `/bestand?tab=${e.serie === GESCHIRR ? "geschirr" : "edition"}&q=${encodeURIComponent(e.modell)}`,
         titel: e.modell,
-        zeile: [e.zustand, e.glasur, plural(e.anzahl, "Stück", "Stück")].filter(Boolean).join(" · "),
+        zeile: [postenText(e), plural(e.anzahl, "Stück", "Stück")].join(" · "),
         fotos: e.fotos,
         zeit: latest(e.erfasstAm, e.geaendertAm),
       })),
@@ -567,24 +692,26 @@ export default function Block() {
     return items.sort((a, b) => b.zeit.localeCompare(a.zeit)).slice(0, RECENT_COUNT);
   }, [unikate, editionen]);
 
-  const knapp = editionen.filter((e) => e.anzahl > 0 && e.anzahl < LOW_STOCK).sort((a, b) => a.anzahl - b.anzahl);
+  // Geschirr wird aus geschrühter Ware glasiert. Wird sie knapp, muss nachgedreht werden.
+  const knapp = geschirr.staende.filter((s) => (s.je[GESCHRUEHT] ?? 0) < LOW_STOCK).sort((a, b) => (a.je[GESCHRUEHT] ?? 0) - (b.je[GESCHRUEHT] ?? 0));
   const loading = unikateQuery.status === "pending" || editionQuery.status === "pending";
   const failed = unikateQuery.status === "error" || editionQuery.status === "error";
 
+  const mengeSub = (m: (typeof mengen)[number]) => m.zustaende.filter((z) => m.je[z] > 0).map((z) => `${z} ${zahl.format(m.je[z])}`);
   const kennzahlen: Kennzahl[] = [
+    { label: GESCHIRR, value: zahl.format(geschirr.gesamt), sub: mengeSub(geschirr), href: "/bestand?tab=geschirr" },
+    { label: EDITION_PROGRAMM, value: zahl.format(edition.gesamt), sub: [...mengeSub(edition), ...(edition.wertGlasiert > 0 ? [`Wert glasiert ${euro.format(edition.wertGlasiert)}`] : [])], href: "/bestand?tab=edition" },
     {
-      label: "Im Haus",
-      value: zahl.format(stats.verfuegbar + stats.reserviert),
-      sub: [`davon ${zahl.format(stats.reserviert)} reserviert`, `Wert ${euro.format(stats.verfuegbarWert)}`],
-      href: "/bestand?tab=imhaus",
+      label: "Reserviert",
+      value: zahl.format(reservierungen.reduce((n, r) => n + r.anzahl, 0)),
+      sub: [reservierungen.length === 1 ? "für 1 Kunden oder Auftrag" : `für ${zahl.format(reservierungen.length)} Kunden oder Aufträge`],
+      href: "/bestand?tab=geschirr",
     },
-    { label: "Außer Haus", value: zahl.format(stats.ausserHaus), sub: [stats.partner === 1 ? "bei 1 Partner" : `bei ${zahl.format(stats.partner)} Partnern`], href: AUSSER_HAUS_LINK },
-    { label: `Verkauft ${jahr}`, value: zahl.format(stats.verkauftJahr), sub: [`Umsatz ${euro.format(stats.umsatzJahr)}`], href: "/bestand?tab=verkauft" },
     {
-      label: "Editionsware",
-      value: zahl.format(stats.rohlinge + stats.glasiert),
-      sub: [`davon ${zahl.format(stats.rohlinge)} Rohlinge`, ...(stats.glasiertWert > 0 ? [`Wert glasiert ${euro.format(stats.glasiertWert)}`] : [])],
-      href: "/bestand?tab=edition",
+      label: "Unikate im Haus",
+      value: zahl.format(stats.verfuegbar + stats.reserviert),
+      sub: [`${zahl.format(stats.ausserHaus)} außer Haus`, `${zahl.format(stats.verkauftJahr)} verkauft ${jahr}`],
+      href: "/bestand?tab=imhaus",
     },
   ];
 
@@ -608,9 +735,9 @@ export default function Block() {
       key: "knapp",
       ton: "gelb",
       icon: <Package className={ICON} aria-hidden />,
-      text: `${plural(knapp.length, "Editionsposten", "Editionsposten")} unter ${LOW_STOCK} Stück`,
-      detail: knapp.map((e) => `${e.modell}: ${e.anzahl}`).join(" · "),
-      href: "/bestand?tab=edition",
+      text: `Geschirr: ${plural(knapp.length, "Modell", "Modelle")} mit weniger als ${LOW_STOCK} geschrühten`,
+      detail: knapp.map((s) => `${s.modell}: ${s.je[GESCHRUEHT] ?? 0}`).join(" · "),
+      href: "/bestand?tab=geschirr",
     },
     stats.verkauftLuecken > 0 && {
       key: "verkauft",
@@ -637,10 +764,6 @@ export default function Block() {
       items: unikate.filter((u) => isAusserHaus(u.status) && !u.galerieId).map((u) => ({ id: u.id, label: u.name || u.inv, href: `/bestand?id=${u.id}` })),
     },
     {
-      label: "Editionsposten mit 0 Stück",
-      items: editionen.filter((e) => e.anzahl === 0).map((e) => ({ id: e.id, label: [e.modell, e.zustand, e.glasur].filter(Boolean).join(" · "), href: `/bestand?tab=edition&q=${encodeURIComponent(e.modell)}` })),
-    },
-    {
       label: "Modelle ohne VK-Preis",
       items: ((modellQuery.data?.pages.flatMap((p) => p.items) ?? []) as RawItem[])
         .filter((i) => i.fields.archiviert !== true && num(i.fields.vk) === null)
@@ -651,7 +774,7 @@ export default function Block() {
   return (
     <div className={SEITE_CLASS}>
       <div className="content space-y-6" lang="de">
-        <PageHeader title="Übersicht" description={`${plural(unikate.length, "Unikat", "Unikate")} · ${zahl.format(stats.rohlinge + stats.glasiert)} Stück Editionsware`} />
+        <PageHeader title="Übersicht" description={`${zahl.format(geschirr.gesamt)} Stück Geschirr · ${zahl.format(edition.gesamt)} Stück Edition · ${plural(unikate.length, "Unikat", "Unikate")}`} />
 
         {failed ? (
           <ErrorState text="Die Übersicht konnte nicht geladen werden. Bitte die Seite neu laden." />
@@ -664,8 +787,49 @@ export default function Block() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
               <ZuErledigen aufgaben={aufgaben} pflege={pruefpunkte} />
 
+              <Section title="Reservierungen" description="Geschirr und Edition, je Kunde oder Auftrag">
+                {reservierungen.length === 0 ? (
+                  <EmptyState text="Zurzeit ist nichts reserviert." />
+                ) : (
+                  <ul className="divide-y">
+                    {reservierungen.map((r) => (
+                      <li key={r.name}>
+                        <ListRow
+                          title={r.name}
+                          sub={r.posten.map((e) => `${e.modell} · ${postenText(e)} · ${e.anzahl}`).join(" | ")}
+                          meta={<span className="text-base font-semibold tabular-nums">{plural(r.anzahl, "Stück", "Stück")}</span>}
+                          href={`/bestand?tab=${r.posten[0].serie === GESCHIRR ? "geschirr" : "edition"}&q=${encodeURIComponent(r.name)}`}
+                        />
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </Section>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
+              {mengen.map((m) => (
+                <Section key={m.serie} title={`${m.serie} je Modell`} description="Stück nach Zustand">
+                  <CountTable
+                    head={["Modell", ...m.zustaende, "gesamt"]}
+                    rows={alleModelle ? m.rows : m.rows.slice(0, MODELLE_SICHTBAR)}
+                    empty={`Noch kein ${m.serie} im Lager.`}
+                  />
+                  {m.rows.length > MODELLE_SICHTBAR && (
+                    <button type="button" onClick={() => setAlleModelle((x) => !x)} className="inline-flex items-center gap-1 min-h-11 text-base font-medium text-primary hover:underline underline-offset-4">
+                      {alleModelle ? "Weniger zeigen" : `Alle ${zahl.format(m.rows.length)} Modelle zeigen`}
+                      <ChevronDown className={`w-4 h-4 transition-transform ${alleModelle ? "rotate-180" : ""}`} aria-hidden />
+                    </button>
+                  )}
+                </Section>
+              ))}
+            </div>
+
+            <Section title="Zuletzt erfasst oder geändert">{zuletzt.length === 0 ? <EmptyState text="Noch nichts erfasst." /> : <Bildleiste items={zuletzt} />}</Section>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
               <Section
-                title="Außer Haus"
+                title="Unikate außer Haus"
                 description="Nach Partner, früheste Rückgabe zuerst"
               >
                 {ausserHausGruppen.length === 0 ? (
@@ -686,23 +850,9 @@ export default function Block() {
                 )}
                 {ausserHausGruppen.length > AUSSER_HAUS_MAX && <p className="text-sm text-muted-foreground">und {ausserHausGruppen.length - AUSSER_HAUS_MAX} weitere Partner im Bestand</p>}
               </Section>
-            </div>
 
-            <Section title="Zuletzt erfasst oder geändert">{zuletzt.length === 0 ? <EmptyState text="Noch nichts erfasst." /> : <Bildleiste items={zuletzt} />}</Section>
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
               <Section title="Unikate nach Typ" description="Ohne verkaufte Stücke">
                 <CountTable head={["Typ", "im Haus", "außer Haus", "gesamt"]} rows={typRows} empty="Noch keine Unikate im Bestand." />
-              </Section>
-
-              <Section title="Editionsware je Modell" description="Stück nach Zustand">
-                <CountTable head={["Modell", "Rohlinge", "glasiert", "gesamt"]} rows={alleModelle ? modellRows : modellRows.slice(0, MODELLE_SICHTBAR)} empty="Noch keine Editionsware." />
-                {modellRows.length > MODELLE_SICHTBAR && (
-                  <button type="button" onClick={() => setAlleModelle((a) => !a)} className="inline-flex items-center gap-1 min-h-11 text-base font-medium text-primary hover:underline underline-offset-4">
-                    {alleModelle ? "Weniger zeigen" : `Alle ${zahl.format(modellRows.length)} Modelle zeigen`}
-                    <ChevronDown className={`w-4 h-4 transition-transform ${alleModelle ? "rotate-180" : ""}`} aria-hidden />
-                  </button>
-                )}
               </Section>
             </div>
           </>

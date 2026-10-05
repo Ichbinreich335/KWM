@@ -28,7 +28,7 @@ export function pruefeEinheitlich(root) {
       });
   }
   // Gestaltung (Rahmen) gehört nur in ui.tsx, nicht in die übrigen gemeinsamen Dateien.
-  for (const datei of ["konstanten.ts", "daten.ts"]) {
+  for (const datei of ["konstanten.ts", "daten.ts", "mengen.ts"]) {
     readFileSync(join(root, "src", "shared", datei), "utf8")
       .split("\n")
       .forEach((zeile, i) => {

@@ -12,11 +12,12 @@ import {
 import { useNavigationSetting } from "@/lib/editable-settings";
 import { NavigationAction } from "@/components/navigation-action";
 import { useCurrentUser } from "@/lib/user";
-import { Check, Loader2, Minus, Plus } from "lucide-react";
+import { Check, Loader2 } from "lucide-react";
 import { toast } from "sonner";
-import { AUSSER_HAUS_ORT, EDITION_PROGRAMM, MANUFAKTUR_PROGRAMM, PAGE_SIZE, ROHLING, isAusserHaus } from "../shared/konstanten";
+import { AUSSER_HAUS_ORT, EDITION_PROGRAMM, GESCHRUEHT, GLASIERT, MANUFAKTUR_PROGRAMM, PAGE_SIZE, isAusserHaus } from "../shared/konstanten";
 import { type Opt, type RawItem, activeOptions, asOpts, compareNr, freshItems, link, modellLabel, parseNumber, str, today, useAllPages } from "../shared/daten";
-import { AddNew, ChoiceChips, ErrorText, Feld, FieldLabel, GroupedSelect, Hint, Knopf, OptionSelect, PageHeader, PANEL_CLASS, PhotoPicker, Rueckfrage, SchalterFeld, SearchPick, SEITE_CLASS, STICKY_BOTTOM, Tabs, Textfeld, ZusatzKnopf } from "../shared/ui";
+import { bezeichnung, gleicherPosten, toPosten } from "../shared/mengen";
+import { AddNew, ChoiceChips, ErrorText, Feld, FieldLabel, GroupedSelect, Hint, Knopf, OptionSelect, PageHeader, PANEL_CLASS, PhotoPicker, Rueckfrage, SchalterFeld, SearchPick, SEITE_CLASS, STICKY_BOTTOM, Stueckzahl, Tabs, Textfeld, TextMitVorschlag, ZusatzKnopf } from "../shared/ui";
 
 const ds = datasource.define({ unikate: "unikate", edition: "edition", glasuren: "glasuren", kuenstler: "kuenstler", lagerorte: "lagerorte", partner: "partner", modelle: "modelle" });
 const glasurNeu = q.select({ name: "OuhBi" });
@@ -60,6 +61,8 @@ const editionFields = q.select({
   lagerort: "T5iQe",
   foto: "nibt5",
   notiz: "lyJky",
+  brand: "jqmqn",
+  reserviert: "L1bO5",
 });
 
 const FIELD_NAMES: Record<string, string> = {
@@ -73,9 +76,10 @@ const FIELD_NAMES: Record<string, string> = {
 };
 
 type Art = "unikat" | "edition";
+// Geschirr und Edition sind der Hauptfluss der Werkstatt, darum zuerst. Unikate kommen seltener vor.
 const ART_TABS: { key: Art; label: string }[] = [
+  { key: "edition", label: "Geschirr & Edition" },
   { key: "unikat", label: "Unikat" },
-  { key: "edition", label: "Editionsware" },
 ];
 type Saved = { art: Art; recordId: string; text: string };
 
@@ -103,6 +107,8 @@ type EditionForm = {
   modell: string;
   zustand: string;
   glasur: string;
+  brand: string;
+  reserviert: string;
   anzahl: number;
   lagerort: string;
   notiz: string;
@@ -130,8 +136,10 @@ const emptyUnikat = (): UnikatForm => ({
 
 const emptyEdition = (): EditionForm => ({
   modell: "",
-  zustand: ROHLING,
+  zustand: GESCHRUEHT,
   glasur: "",
+  brand: today(),
+  reserviert: "",
   anzahl: 1,
   lagerort: "",
   notiz: "",
@@ -198,7 +206,7 @@ function SuccessCard({ saved, onNext }: { saved: Saved; onNext: () => void }) {
 export default function Block() {
   const user = useCurrentUser();
   const formRef = useRef<HTMLFormElement>(null);
-  const [art, setArt] = useState<Art>("unikat");
+  const [art, setArt] = useState<Art>("edition");
   const [unikat, setUnikat] = useState<UnikatForm>(emptyUnikat);
   const [edition, setEdition] = useState<EditionForm>(emptyEdition);
   const [files, setFiles] = useState<File[]>([]);
@@ -301,16 +309,12 @@ export default function Block() {
   useAllPages(editionQuery);
   const editionReady = editionQuery.status === "success" && !editionQuery.hasNextPage;
   const editionRows = editionQuery.data?.pages.flatMap((p) => p.items) ?? [];
-  const isGlasiert = edition.zustand !== ROHLING;
+  const isGlasiert = edition.zustand === GLASIERT;
   const wantGlasur = isGlasiert ? edition.glasur : "";
-  // Eine Editionszeile ist eindeutig durch Modell, Zustand und Glasur.
-  const findRow = (rows: { id: string; fields: unknown }[]) =>
-    edition.modell
-      ? rows.find((r) => {
-          const f = r.fields as { modell?: Opt; zustand?: Opt; glasur?: Opt };
-          return f.modell?.id === edition.modell && f.zustand?.label === edition.zustand && (f.glasur?.id ?? "") === wantGlasur;
-        })
-      : undefined;
+  const postenKey = { modellId: edition.modell, zustand: edition.zustand, glasurId: wantGlasur, brand: isGlasiert ? edition.brand : "", reserviert: isGlasiert ? edition.reserviert.trim() : "" };
+  // Gleicher Posten (Modell, Zustand, Glasur, Brand, Reservierung) wird weitergezählt statt doppelt angelegt.
+  const findRow = (rows: { id: string; fields: unknown }[]) => (edition.modell ? rows.find((r) => gleicherPosten(toPosten(r as RawItem), postenKey)) : undefined);
+  const kunden = [...new Set<string>(editionRows.map((r) => toPosten(r as RawItem).reserviert).filter(Boolean))].sort((a, b) => a.localeCompare(b, "de"));
   const existingRow = findRow(editionRows);
   const existingCount = Number((existingRow?.fields as { anzahl?: number } | undefined)?.anzahl ?? 0);
 
@@ -428,7 +432,7 @@ export default function Block() {
       } else {
         const modell = gewaehltesModell?.label ?? "";
         const glasur = glasurOptions.find((g) => g.id === wantGlasur)?.label;
-        const variante = isGlasiert ? glasur ?? edition.zustand : ROHLING;
+        const variante = bezeichnung(modell, { zustand: edition.zustand, glasur: glasur ?? "", brand: postenKey.brand, reserviert: postenKey.reserviert });
         // Direkt vor dem Speichern frisch laden: Hat jemand anderes die Zeile gerade angelegt oder geändert,
         // wird dort weitergezählt statt eine doppelte Zeile anzulegen oder Stück zu verlieren.
         const fresh = await freshItems(editionQuery);
@@ -437,19 +441,21 @@ export default function Block() {
         if (row) {
           const neu = Number((row.fields as { anzahl?: number }).anzahl ?? 0) + edition.anzahl;
           await updateEdition.mutateAsync({ recordId: row.id, fields: { anzahl: neu } } as never);
-          setSaved({ art, recordId: row.id, text: `${modell} · ${variante}: jetzt ${neu} Stück.` });
+          setSaved({ art, recordId: row.id, text: `${variante}: jetzt ${neu} Stück.` });
         } else {
           const created = await createEdition.mutateAsync({
-            bezeichnung: `${modell} · ${variante}`,
+            bezeichnung: variante,
             modell: link(edition.modell),
             glasur: link(wantGlasur || undefined),
             zustand: edition.zustand,
             anzahl: edition.anzahl,
+            brand: postenKey.brand || null,
+            reserviert: postenKey.reserviert,
             lagerort: link(edition.lagerort),
             foto: fotos,
             notiz: edition.notiz.trim(),
           } as never);
-          setSaved({ art, recordId: (created as { id: string }).id, text: `${modell} · ${variante}: ${edition.anzahl} Stück angelegt.` });
+          setSaved({ art, recordId: (created as { id: string }).id, text: `${variante}: ${edition.anzahl} Stück angelegt.` });
         }
         await editionQuery.refetch();
       }
@@ -650,7 +656,7 @@ export default function Block() {
             ) : (
               <div className={COLUMNS}>
                 <div className="space-y-6">
-                  <SectionTitle title="Pflichtangaben" hint="Reichen zum Speichern." />
+                  <SectionTitle title="Pflichtangaben" hint="Geschirr und Edition: Modell, Zustand, Anzahl." />
                   <div>
                     <FieldLabel htmlFor="e-modell" required>
                       Modell
@@ -690,37 +696,25 @@ export default function Block() {
                     </div>
                   )}
 
+                  {isGlasiert && (
+                    <div className="grid sm:grid-cols-2 gap-6">
+                      <div>
+                        <FieldLabel htmlFor="e-brand">Brand vom</FieldLabel>
+                        <Feld id="e-brand" type="date" value={edition.brand} onChange={(e) => setE("brand", e.target.value)} />
+                        <Hint>Stücke aus einem Brand stehen zusammen.</Hint>
+                      </div>
+                      <div>
+                        <FieldLabel htmlFor="e-reserviert">Reserviert für</FieldLabel>
+                        <TextMitVorschlag id="e-reserviert" value={edition.reserviert} onChange={(v) => setE("reserviert", v)} vorschlaege={kunden} placeholder="Kunde oder Auftrag (freiwillig)" />
+                      </div>
+                    </div>
+                  )}
+
                   <div>
                     <FieldLabel htmlFor="e-anzahl" required>
                       Anzahl
                     </FieldLabel>
-                    <div className="flex items-center gap-3">
-                      <Knopf
-                        type="button"
-                        variant="outline"
-                        className="h-12 w-12"
-                        aria-label="Eins weniger"
-                        onClick={() => setE("anzahl", Math.max(1, edition.anzahl - 1))}
-                      >
-                        <Minus className="w-5 h-5" aria-hidden />
-                      </Knopf>
-                      <Feld
-                        id="e-anzahl"
-                        inputMode="numeric"
-                        value={String(edition.anzahl)}
-                        onChange={(e) => setE("anzahl", Number(e.target.value.replace(/\D/g, "")) || 0)}
-                        className="h-12 w-24 rounded-md text-center text-lg md:text-lg"
-                      />
-                      <Knopf
-                        type="button"
-                        variant="outline"
-                        className="h-12 w-12"
-                        aria-label="Eins mehr"
-                        onClick={() => setE("anzahl", edition.anzahl + 1)}
-                      >
-                        <Plus className="w-5 h-5" aria-hidden />
-                      </Knopf>
-                    </div>
+                    <Stueckzahl id="e-anzahl" value={edition.anzahl} min={1} onChange={(n) => setE("anzahl", n)} />
                     <ErrorText>{errors.anzahl}</ErrorText>
                     {existingRow && (
                       <p className="mt-3 rounded-md bg-muted p-3 text-base">

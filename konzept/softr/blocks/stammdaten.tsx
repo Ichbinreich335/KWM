@@ -14,6 +14,13 @@ const RESERVIERT = "reserviert";
 const VERKAUFT = "verkauft";
 const KOMMISSION = "in Kommission";
 const AUSGESTELLT = "ausgestellt";
+const MANUFAKTUR_PROGRAMM = "Manufakturprogramm";
+const GESCHIRR = "Geschirr";
+
+function serieVon(programm: string): string {
+  return programm === MANUFAKTUR_PROGRAMM ? GESCHIRR : programm;
+}
+
 const AUSSER_HAUS_ORT = "Außer Haus";
 type Opt = { id: string; label: string };
 type Attachment = { id?: string; url: string; filename?: string; thumbnails?: { url: string; size: string }[] };
@@ -811,7 +818,7 @@ export default function Block() {
       key: "modelle",
       label: "Modelle",
       singular: "Modell",
-      hint: "Artikel aus Editionen und Manufakturprogramm. Erscheinen beim Erfassen von Editionsware.",
+      hint: "Artikel aus Edition und Geschirr (in der Datenbank „Manufakturprogramm“). Erscheinen beim Erfassen von Geschirr und Edition.",
       fields: [
         { key: "artikelnr", label: "Artikelnr.", kind: "text", placeholder: "z. B. 2001 oder 6a" },
         { key: "name", label: "Name", kind: "text", required: true, placeholder: "z. B. Kugelvase Craquelée" },
@@ -824,7 +831,7 @@ export default function Block() {
       ],
       foto: true,
       entries: items(modellQuery).map((i) => {
-        const e = toEntry(i, ["name", "artikelnr", "nameEn", "programm", "typ", "masse", "vk"], (v) => [v.programm, v.typ, v.masse, v.vk && `${v.vk} €`].filter(Boolean).join(" · "), "foto");
+        const e = toEntry(i, ["name", "artikelnr", "nameEn", "programm", "typ", "masse", "vk"], (v) => [serieVon(v.programm), v.typ, v.masse, v.vk && `${v.vk} €`].filter(Boolean).join(" · "), "foto");
         e.values.glasuren = asOpts(i.fields.glasuren)
           .map((g) => g.id)
           .join(",");
