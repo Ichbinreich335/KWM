@@ -67,22 +67,9 @@
   margin: 0;
   text-wrap: pretty;
 }
+/* Zitat im Porträt: Typografie steckt in Statement (zitat-bild), hier nur der Abstand zur Quelle */
 .sticky-bild__quote {
-  margin: 0;
-  display: grid;
   gap: 18px;
-}
-.sticky-bild__quote p {
-  font-family: var(--f-text);
-  font-size: var(--t-quote);
-  line-height: var(--t-quote-lh);
-  margin: 0;
-  text-wrap: pretty;
-}
-.sticky-bild__quote footer {
-  font-size: var(--t-small);
-  line-height: var(--t-small-lh);
-  color: var(--on-coal);
 }
 
 /* Porträt: Text rechts, Foto läuft links weiter; Bildunterschrift auf dem Papier darunter */
@@ -110,10 +97,6 @@
   height: auto;
   padding-block: calc(var(--head) + var(--head-gap)) var(--head-gap);
   box-sizing: border-box;
-}
-.sticky-bild--portrait .sticky-bild__quote p {
-  font-size: var(--t-lede);
-  line-height: var(--t-lede-lh);
 }
 .sticky-bild--portrait .sticky-bild__media::after {
   background: linear-gradient(270deg, rgb(10 10 10 / 0.78) 0%, rgb(10 10 10 / 0.6) 45%, rgb(10 10 10 / 0.12) 100%);
