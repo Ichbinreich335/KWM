@@ -15,8 +15,12 @@ import PageHero from '../components/PageHero.astro';
 import Figure from '../components/Figure.astro';
 import { kontakt } from '../data/kontakt';
 
-const routeGoogle = `https://www.google.com/maps/search/?api=1&query=${`${kontakt.strasse} ${kontakt.plzOrt}`.replaceAll(' ', '+')}`;
-const routeOsm = `https://www.openstreetmap.org/search?query=${encodeURIComponent(kontakt.anschrift)}`;
+// Routenlinks über URL und searchParams: kodiert die Adresse einheitlich
+const routeGoogle = new URL('https://www.google.com/maps/search/');
+routeGoogle.searchParams.set('api', '1');
+routeGoogle.searchParams.set('query', `${kontakt.strasse} ${kontakt.plzOrt}`);
+const routeOsm = new URL('https://www.openstreetmap.org/search');
+routeOsm.searchParams.set('query', kontakt.anschrift);
 ---
 
 <BaseLayout
@@ -60,8 +64,8 @@ const routeOsm = `https://www.openstreetmap.org/search?query=${encodeURIComponen
           <p class="visit-hours__note ts-small">Seit 1987 im Baulager der Zeche Zollverein, heute Weltkulturerbe.</p>
         </div>
         <p class="visit-hours__actions" data-reveal="fade">
-          <Button href={routeGoogle}>Route planen</Button>
-          <LinkArrow href={routeOsm}>Route in OpenStreetMap öffnen</LinkArrow>
+          <Button href={routeGoogle.href}>Route planen</Button>
+          <LinkArrow href={routeOsm.href}>Route in OpenStreetMap öffnen</LinkArrow>
           <LinkArrow href={kontakt.telefonHref}>{kontakt.telefon}</LinkArrow>
         </p>
       </div>

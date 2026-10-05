@@ -74,7 +74,7 @@ export default defineConfig({
   site: 'https://kwm-1924.de',
   output: 'static',
   // 404 und Datenschutz (noindex) gehören nicht in die Sitemap
-  integrations: [sitemap({ filter: (seite) => !/\/(404|datenschutz)(\.html)?$/.test(seite) })],
+  integrations: [sitemap({ filter: (seite) => !/\/(404|datenschutz)$/.test(seite) })],
   // aktuelles.astro → dist/aktuelles.html, von Cloudflare als /aktuelles ausgeliefert
   build: { format: 'file', inlineStylesheets: 'never' },
   trailingSlash: 'never',
