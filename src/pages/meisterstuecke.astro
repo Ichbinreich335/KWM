@@ -1,5 +1,6 @@
 ---
 import '../styles/basis.css';
+import { BRENNTEMPERATUR, grad } from '../data/brenntemperatur';
 import Statement from '../components/Statement.astro';
 import ChapterHead from '../components/ChapterHead.astro';
 import WorkCard from '../components/WorkCard.astro';
@@ -170,8 +171,8 @@ import '../styles/signaturen/signaturen.css';
           Spindelvasen, 2006/07
         </h3>
         <p class="spindle__text" data-reveal="fade">
-          Gebrannt im Holzofen bei 1260&#8239;°C oder im Gasofen bei rund 1280&#8239;°C, jeweils in reduzierender
-          Atmosphäre.
+          Gebrannt im Holzofen bei {grad(BRENNTEMPERATUR.holzofen)} oder im Gasofen bei rund{' '}
+          {grad(BRENNTEMPERATUR.gasofen)}, jeweils in reduzierender Atmosphäre.
         </p>
       </div>
       <div class="catalog catalog--spindle">

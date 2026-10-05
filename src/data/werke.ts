@@ -1,6 +1,8 @@
 // Meisterstücke: Katalog der Seite Meisterstücke und Werkschau der Startseite (Sanity-Typ `werk`)
 // Keine Preise, kein Bestand, keine Lagerorte, keine Verfügbarkeit: nur freigegebene Angaben.
+import { BRENNTEMPERATUR, grad } from './brenntemperatur';
 import type { BildAngabe } from './typen';
+import { SCHMALES_LEERZEICHEN } from './zeichen';
 
 /** Eine Zeile der Werkangaben; Maße, Glasur, Brand, Ort und Jahr erscheinen mit ` · ` getrennt */
 export interface Angabe {
@@ -37,7 +39,7 @@ export function angabeText(angabe: Angabe): string {
 
 /** Bezeichnung für das Feld „Stück“ im Anfrageformular (schmales Leerzeichen wird zum normalen) */
 export function stueckBezeichnung(werk: Werk): string {
-  return `${werk.titel} (${werk.angaben.map(angabeText).join('; ')})`.replaceAll(' ', ' ');
+  return `${werk.titel} (${werk.angaben.map(angabeText).join('; ')})`.replaceAll(SCHMALES_LEERZEICHEN, ' ');
 }
 
 export const katalog: readonly Werk[] = [
@@ -308,7 +310,7 @@ export const katalog: readonly Werk[] = [
       {
         masse: 'H 35,5 cm, D 37 cm',
         glasur: 'Petalit-Eichenasche-Feldspat-Glasur',
-        brand: 'Holzofen 1260 °C · Reduktion',
+        brand: `Holzofen ${grad(BRENNTEMPERATUR.holzofen)} · Reduktion`,
       },
     ],
     bild: {
@@ -322,7 +324,11 @@ export const katalog: readonly Werk[] = [
     schluessel: 'spindelvase-2',
     titel: 'Spindelvase',
     angaben: [
-      { masse: 'H 40,4 cm, D 34,5 cm', glasur: 'Wollastonit-Feldspat-Glasur', brand: 'Gasofen 1280 °C · Reduktion' },
+      {
+        masse: 'H 40,4 cm, D 34,5 cm',
+        glasur: 'Wollastonit-Feldspat-Glasur',
+        brand: `Gasofen ${grad(BRENNTEMPERATUR.gasofen)} · Reduktion`,
+      },
     ],
     bild: {
       src: '/img/kwm/spindelvase2.webp',
@@ -338,7 +344,7 @@ export const katalog: readonly Werk[] = [
       {
         masse: 'H 35,5 cm, D 37 cm',
         glasur: 'Petalit-Eichenasche-Feldspat-Glasur',
-        brand: 'Holzofen 1260 °C · Reduktion',
+        brand: `Holzofen ${grad(BRENNTEMPERATUR.holzofen)} · Reduktion`,
       },
     ],
     bild: {
@@ -355,9 +361,13 @@ export const katalog: readonly Werk[] = [
       {
         masse: 'H 34,7 cm, D 33 cm',
         glasur: 'Magnesium-Zinn-Feldspat-Glasur',
-        brand: 'Gasofen ca. 1280 °C · Reduktion',
+        brand: `Gasofen ca. ${grad(BRENNTEMPERATUR.gasofen)} · Reduktion`,
       },
-      { masse: 'H 45 cm, D 36 cm', glasur: 'Magnesium-Zinn-Feldspat-Glasur', brand: 'Gasofen ca. 1280 °C · Reduktion' },
+      {
+        masse: 'H 45 cm, D 36 cm',
+        glasur: 'Magnesium-Zinn-Feldspat-Glasur',
+        brand: `Gasofen ca. ${grad(BRENNTEMPERATUR.gasofen)} · Reduktion`,
+      },
     ],
     bild: {
       src: '/img/kwm/spindelvase4.webp',
@@ -370,11 +380,15 @@ export const katalog: readonly Werk[] = [
     schluessel: 'spindelvasen-2',
     titel: 'Spindelvasen',
     angaben: [
-      { masse: 'H 40,4 cm, D 34,5 cm', glasur: 'Wollastonit-Feldspat-Glasur', brand: 'Gasofen 1280 °C · Reduktion' },
+      {
+        masse: 'H 40,4 cm, D 34,5 cm',
+        glasur: 'Wollastonit-Feldspat-Glasur',
+        brand: `Gasofen ${grad(BRENNTEMPERATUR.gasofen)} · Reduktion`,
+      },
       {
         masse: 'H 34,5 cm, D 36,5 cm',
         glasur: 'Petalit-Eichenasche-Feldspat-Glasur',
-        brand: 'Holzofen 1260 °C · Reduktion',
+        brand: `Holzofen ${grad(BRENNTEMPERATUR.holzofen)} · Reduktion`,
       },
     ],
     bild: {
@@ -391,12 +405,12 @@ export const katalog: readonly Werk[] = [
       {
         masse: 'H 38,8 cm, D 35,3 cm',
         glasur: 'Petalit-Eichenasche-Feldspat-Glasur',
-        brand: 'Holzofen 1260 °C · Reduktion',
+        brand: `Holzofen ${grad(BRENNTEMPERATUR.holzofen)} · Reduktion`,
       },
       {
         masse: 'H 35 cm, D 36,5 cm',
         glasur: 'Petalit-Eichenasche-Feldspat-Glasur',
-        brand: 'Holzofen 1260 °C · Reduktion',
+        brand: `Holzofen ${grad(BRENNTEMPERATUR.holzofen)} · Reduktion`,
       },
     ],
     bild: {

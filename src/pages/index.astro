@@ -1,5 +1,6 @@
 ---
 import '../styles/basis.css';
+import { BRENNTEMPERATUR, grad } from '../data/brenntemperatur';
 import Statement from '../components/Statement.astro';
 import SectionHead from '../components/SectionHead.astro';
 import FactsTable from '../components/FactsTable.astro';
@@ -490,8 +491,9 @@ import '../styles/signaturen/signaturen.css';
             Neun bis zehn Stunden Feuer.
           </h2>
           <p class="sticky-bild__lede">
-            Im Holzofen wird über neun bis zehn Stunden kontinuierlich bis auf 1300&#8239;°C gefeuert – für einen Brand
-            braucht es etwa 1,5 Festmeter Holz. Die Tönung wird reicher, manche Verfärbung lässt sich nicht steuern.
+            Im Holzofen wird über neun bis zehn Stunden kontinuierlich bis auf {grad(BRENNTEMPERATUR.holzbrandMax)}{' '}
+            gefeuert – für einen Brand braucht es etwa 1,5 Festmeter Holz. Die Tönung wird reicher, manche Verfärbung
+            lässt sich nicht steuern.
           </p>
           <a class="link-arrow" href="/werkstatt#feuer">
             Wie die Glasur ihre Farbe bekommt

@@ -1,4 +1,5 @@
 // Signatur: feuer – eine Schale, vier Glasuren. Alle Zustände teilen exakt dieselbe Form; der Wechsel blendet nur die Glasurfarbe über und lässt die Schale kurz glühen.
+import { BRENNTEMPERATUR, grad } from '../data/brenntemperatur';
 import { random, reducedMotion } from './keramik';
 
 type Metal = 'eisen' | 'kupfer';
@@ -378,7 +379,7 @@ export default function init(el: Element) {
 
   const note = document.createElement('p');
   note.className = 'feuer-farben__note';
-  note.textContent = 'Holzofen · 9–10 Stunden · bis 1300\u202F°C';
+  note.textContent = `Holzofen · 9–10 Stunden · bis ${grad(BRENNTEMPERATUR.holzbrandMax)}`;
 
   el.replaceChildren(...intro, stage, controls, result, note);
 

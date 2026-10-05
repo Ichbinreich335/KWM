@@ -1,3 +1,4 @@
+import { BRENNTEMPERATUR, grad } from './brenntemperatur';
 import type { Schritt } from './typen';
 
 /** Wie ein Meisterstück entsteht, von der Masse bis zum Holzbrand */
@@ -20,14 +21,14 @@ export const arbeitsschritte: readonly Schritt[] = [
   },
   {
     titel: 'Schrühbrand und Glasur',
-    text: 'Nach dem ersten Brand bei etwa 950\u202f°C werden die Gefäße glasiert: größere übergossen, kleinere Schalen zumeist in die Glasur getaucht. Bemalungen mit Kobalt-, Eisen- oder Kupferoxiden werden zuvor mit dem Pinsel aufgetragen. Die Glasuren sind Feldspatglasuren, zum Teil mit Asche versetzt; als färbendes Mittel beschränkt sich Young-Jae Lee auf Eisenoxid.',
+    text: `Nach dem ersten Brand bei etwa ${grad(BRENNTEMPERATUR.schruehbrand)} werden die Gefäße glasiert: größere übergossen, kleinere Schalen zumeist in die Glasur getaucht. Bemalungen mit Kobalt-, Eisen- oder Kupferoxiden werden zuvor mit dem Pinsel aufgetragen. Die Glasuren sind Feldspatglasuren, zum Teil mit Asche versetzt; als färbendes Mittel beschränkt sich Young-Jae Lee auf Eisenoxid.`,
   },
   {
     titel: 'Ofenatmosphäre',
-    text: 'Eisenoxid färbt in oxidierender Atmosphäre gelb bis braun, in reduzierender grün, während Kupfer von Grün nach Rot umschlägt. Die Glasurbrände erfolgen im Gasofen bei etwa 1300\u202f°C.',
+    text: `Eisenoxid färbt in oxidierender Atmosphäre gelb bis braun, in reduzierender grün, während Kupfer von Grün nach Rot umschlägt. Die Glasurbrände erfolgen im Gasofen bei etwa ${grad(BRENNTEMPERATUR.glasurbrandGas)}.`,
   },
   {
     titel: 'Holzbrand',
-    text: 'Eine reichere Tönung und oft nicht zu steuernde Verfärbungen ergeben sich im Holzbrand. Über neun bis zehn Stunden wird kontinuierlich bis auf 1300\u202f°C gefeuert – für einen Brand braucht es etwa 1,5 Festmeter Holz.',
+    text: `Eine reichere Tönung und oft nicht zu steuernde Verfärbungen ergeben sich im Holzbrand. Über neun bis zehn Stunden wird kontinuierlich bis auf ${grad(BRENNTEMPERATUR.holzbrandMax)} gefeuert – für einen Brand braucht es etwa 1,5 Festmeter Holz.`,
   },
 ];

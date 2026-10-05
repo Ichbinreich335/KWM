@@ -1,11 +1,12 @@
+import { BRENNTEMPERATUR, grad } from './brenntemperatur';
 import type { Fakt } from './typen';
 
 /** Wie das Manufakturprogramm entsteht */
 export const methodenfakten: readonly Fakt[] = [
   { label: 'Masse', wert: 'Westerwälder Steinzeug, auf der Töpferscheibe gedreht' },
   { label: 'Viereckteller', wert: 'Aus Platten über Gipsmodellen geformt' },
-  { label: 'Schrühbrand', wert: 'Elektroofen, etwa 950 °C' },
-  { label: 'Glasurbrand', wert: 'Gasofen, ca. 1300 °C, reduzierende Atmosphäre' },
+  { label: 'Schrühbrand', wert: `Elektroofen, etwa ${grad(BRENNTEMPERATUR.schruehbrand)}` },
+  { label: 'Glasurbrand', wert: `Gasofen, ca. ${grad(BRENNTEMPERATUR.glasurbrandGas)}, reduzierende Atmosphäre` },
 ];
 
 /** Adresse, Öffnungszeiten, Nahverkehr und Kontakt (Kontaktdaten wandern in D4 nach `kontakt.ts`) */
