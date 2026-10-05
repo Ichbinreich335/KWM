@@ -4,6 +4,10 @@ Kurzüberblick: was fertig ist, was läuft, was als Nächstes kommt. Wird bei je
 
 Stand: 05.10.2026, nachmittags
 
+## Aktueller Gesamtstand (für die Werkstatt)
+
+**https://gesamtstand-kwm-redesign.entwicklung-7f3.workers.dev** – ein Stand mit allem Abgenommenen: Bausteine 1–5, Zitate einheitlich, Handy kürzer, ruhige Bilder (kein Parallax), echte Flyer, Formular über Worker (in der Vorschau ohne Versand), SEO/Sicherheit, alle Befunde der Qualitätsprüfung behoben. 365 Tests in Chrome und Safari-Engine (Desktop und iPhone). Branch `gesamtstand`, Ordner `../KWM-gesamt`. Vergleich: Startseite „Bauhaus“ https://startseite-bauhaus-kwm-redesign.entwicklung-7f3.workers.dev (nur Startseite anders; Teile übernehmbar).
+
 ## Jetzt gerade
 
 | Strang | Stand | Wo |
