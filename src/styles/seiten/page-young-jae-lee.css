@@ -17,14 +17,14 @@
   }
 }
 
-/* Haltung: großes Zitat, dann Bild und Text versetzt */
+/* Haltung: Zitat, dann Bild und Text versetzt */
 .stance {
   padding-top: var(--section);
   row-gap: clamp(56px, 8vw, 120px);
   align-items: start;
 }
 .stance__quote {
-  grid-column: 1 / 11;
+  grid-column: 1 / 9;
 }
 .stance__media {
   grid-column: 1 / 6;

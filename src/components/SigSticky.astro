@@ -91,9 +91,10 @@ const { variante, als: Tag = 'div', ...rest } = Astro.props;
     margin: 0;
     text-wrap: pretty;
   }
-  /* Zitat im Porträt: Typografie steckt in Statement (zitat-bild), hier nur der Abstand zur Quelle */
+  /* Zitat im Porträt: Typografie und Abstand zur Quelle stecken in Statement (zitat-lang); auf dem Foto trägt die Quelle die volle Textfarbe */
   .sticky-bild__quote {
-    gap: 18px;
+    --ink-2: var(--on-coal);
+    gap: 0;
   }
 
   /* Porträt: Text rechts, Foto läuft links weiter; Bildunterschrift auf dem Papier darunter */
