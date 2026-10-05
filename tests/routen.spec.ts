@@ -113,3 +113,23 @@ test('Sitemap: Index antwortet, alle Seiten ohne .html, ohne 404 und Datenschutz
   expect([...urls].sort()).toEqual([...erwartet].sort());
   expect(urls.filter((url) => url.endsWith('.html'))).toEqual([]);
 });
+
+test('Canonical und Open Graph: je Seite genau ein Canonical ohne .html, og:title wie title, og:image antwortet', async ({
+  page,
+  request,
+}) => {
+  for (const seite of seiten) {
+    await page.goto(seite.astro);
+    const canonical = await page
+      .locator('link[rel=canonical]')
+      .evaluateAll((links) => links.map((l) => l.getAttribute('href') ?? ''));
+    expect(canonical.length, `${seite.name}: Anzahl Canonical`).toBe(1);
+    expect(canonical[0], seite.name).toMatch(/^https:\/\/kwm-1924\.de\/[^.]*$/);
+    expect(await page.locator('meta[property="og:title"]').getAttribute('content'), seite.name).toBe(
+      await page.title(),
+    );
+    // Die Domain ist noch nicht live; geprüft wird der Pfad auf dem Testserver.
+    const bild = await page.locator('meta[property="og:image"]').getAttribute('content');
+    expect((await request.get(new URL(bild ?? '', 'https://kwm-1924.de').pathname)).status(), seite.name).toBe(200);
+  }
+});
