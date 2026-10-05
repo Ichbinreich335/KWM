@@ -26,7 +26,8 @@ export const MAX_ZEICHEN: Record<FeldSchluessel, number> = {
   nachricht: 4000,
 };
 
-const EMAIL_MUSTER = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+// Keine Leerzeichen und keine Zeichen, die in einer Absender-/Antwortadresse Kopfzeilen verändern könnten (< > " , ;)
+const EMAIL_MUSTER = /^[^\s@<>",;]+@[^\s@<>",;]+\.[^\s@<>",;]{2,}$/;
 const TELEFON_MUSTER = /^[0-9 +()/.-]{5,}$/;
 
 const zuLang = (feld: string, max: number) => `${feld} ist zu lang (höchstens ${max} Zeichen).`;

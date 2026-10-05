@@ -19,9 +19,12 @@ describe('gemeinsame Regeln', () => {
     expect(Object.keys(fehler).sort()).toEqual(['email', 'nachricht', 'name']);
   });
 
-  it.each(['ohne-at.de', 'a@b', 'a b@c.de', 'a@b.c'])('lehnt die E-Mail-Adresse %s ab', (email) => {
-    expect(pruefeFeld('email', email)).toMatch(/E-Mail-Adresse/);
-  });
+  it.each(['ohne-at.de', 'a@b', 'a b@c.de', 'a@b.c', 'a<b@c.de', 'a@c.de>', 'a,b@c.de', '"a"@c.de'])(
+    'lehnt die E-Mail-Adresse %s ab',
+    (email) => {
+      expect(pruefeFeld('email', email)).toMatch(/E-Mail-Adresse/);
+    },
+  );
 
   it('lehnt Buchstaben in der Telefonnummer ab', () => {
     expect(pruefeFeld('telefon', '0201 abc')).toMatch(/Ziffern/);
