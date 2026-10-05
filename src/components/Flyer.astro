@@ -1,0 +1,237 @@
+---
+import type { Flyer } from '../data/ausstellungen';
+import Bild from './Bild.astro';
+import LinkArrow from './LinkArrow.astro';
+
+interface Props {
+  flyer: Flyer;
+  /** Titel der Ausstellung, wie er im Dialog und für Screenreader steht */
+  titel: string;
+  /** Eindeutig je Seite; benennt den Dialog */
+  schluessel: string;
+  /** `vorschau`: kleine Vorschauen beider Seiten (Seite Aktuelles); `link`: nur ein Textlink (Startseite) */
+  modus: 'vorschau' | 'link';
+}
+
+const { flyer, titel, schluessel, modus } = Astro.props;
+const titelId = `flyer-${schluessel}-${modus}`;
+const lesetitel = titel.replaceAll('‑', '-').replaceAll(' & ', ' und ');
+const seiten = [
+  { name: 'vorne', label: 'Vorderseite', bild: flyer.vorne },
+  ...(flyer.hinten ? [{ name: 'hinten', label: 'Rückseite', bild: flyer.hinten }] : []),
+] as const;
+---
+
+{/* Flyer: Vorschau oder Textlink öffnet ein natives <dialog> mit beiden Seiten (sig-flyer.ts). Ohne Skript bleibt der Auslöser wirkungslos und ist ausgeblendet. */}
+<div class:list={['flyer', `flyer--${modus}`]} data-sig="flyer">
+  {modus === 'vorschau' ? (
+    <ul class="flyer__vorschau" aria-label={`Flyer zur Ausstellung ${lesetitel}`}>
+      {seiten.map(({ name, label, bild }) => (
+        <li>
+          <button
+            type="button"
+            class="flyer__auf"
+            data-flyer-oeffnen={name}
+            aria-haspopup="dialog"
+            aria-label={`${label} des Flyers vergrößern`}
+          >
+            <Bild
+              src={bild.src}
+              width={bild.breite}
+              height={bild.hoehe}
+              alt=""
+              widths={[96, 192]}
+              sizes="96px"
+              loading="lazy"
+              decoding="async"
+            />
+            <span>{label}</span>
+          </button>
+        </li>
+      ))}
+    </ul>
+  ) : (
+    <LinkArrow als="button" class="flyer__link" data-flyer-oeffnen="vorne" aria-haspopup="dialog">
+      Flyer ansehen
+    </LinkArrow>
+  )}
+  <dialog class="flyer-dialog" aria-labelledby={titelId}>
+    <div class="flyer-dialog__leiste">
+      <h2 class="flyer-dialog__titel" id={titelId}>
+        Flyer {titel}
+      </h2>
+      <button type="button" class="flyer-dialog__zu" data-flyer-schliessen>
+        Schließen
+      </button>
+    </div>
+    <div class="flyer-dialog__seiten">
+      {seiten.map(({ name, label, bild }) => (
+        <figure class="flyer-dialog__seite" data-flyer-seite={name}>
+          {bild.widths && bild.sizes ? (
+            <Bild
+              src={bild.src}
+              width={bild.breite}
+              height={bild.hoehe}
+              alt={bild.alt}
+              loading="lazy"
+              decoding="async"
+              widths={[...bild.widths]}
+              sizes={bild.sizes}
+            />
+          ) : (
+            <Bild
+              src={bild.src}
+              width={bild.breite}
+              height={bild.hoehe}
+              alt={bild.alt}
+              loading="lazy"
+              decoding="async"
+            />
+          )}
+          <figcaption>{label}</figcaption>
+        </figure>
+      ))}
+    </div>
+  </dialog>
+</div>
+
+<style>
+  /* Ohne Skript tut der Auslöser nichts: ausblenden */
+  .flyer {
+    display: none;
+  }
+  :global(.js) .flyer {
+    display: block;
+  }
+  .flyer--link {
+    margin-top: 4px;
+  }
+
+  /* Vorschau: kleine Seiten nebeneinander, Tippfläche je Seite mindestens 44 px */
+  .flyer__vorschau {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 20px;
+    margin: 0 0 28px;
+    padding: 0;
+    list-style: none;
+  }
+  .flyer__auf {
+    display: grid;
+    justify-items: start;
+    gap: 8px;
+    min-width: 44px;
+    min-height: 44px;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--ink);
+    font: inherit;
+    font-size: var(--t-meta);
+    line-height: var(--t-meta-lh);
+    text-align: left;
+    cursor: pointer;
+  }
+  .flyer__auf :global(img) {
+    display: block;
+    width: 96px;
+    height: auto;
+    border: 1px solid var(--ground-3);
+    transition: border-color 0.3s var(--ease);
+  }
+  .flyer__auf span {
+    background: linear-gradient(currentColor, currentColor) 0 100% / 100% 1px no-repeat;
+    padding-bottom: 2px;
+  }
+  .flyer__auf:hover :global(img) {
+    border-color: var(--ink);
+  }
+  .flyer__auf:focus-visible,
+  .flyer-dialog__zu:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  /* Dialog: Seiten nebeneinander, am Handy untereinander; Bilder nie über ihre Originalgröße (constrained-Layout von Bild) */
+  .flyer-dialog {
+    width: min(94vw, 1120px);
+    max-width: none;
+    max-height: 94dvh;
+    padding: 0;
+    border: 0;
+    overflow: auto;
+    overscroll-behavior: contain;
+    background: var(--ground);
+    color: var(--ink);
+  }
+  .flyer-dialog::backdrop {
+    background: rgb(18 18 18 / 0.72);
+  }
+  .flyer-dialog__leiste {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 6px 12px 6px 20px;
+    background: var(--ground);
+    border-bottom: 1px solid var(--ground-3);
+  }
+  .flyer-dialog__titel {
+    margin: 0;
+    font-family: var(--f-text);
+    font-size: var(--t-small);
+    font-weight: 400;
+    line-height: var(--t-small-lh);
+    text-wrap: balance;
+  }
+  .flyer-dialog__zu {
+    flex: none;
+    min-width: 44px;
+    min-height: 44px;
+    padding: 0 16px;
+    border: 1px solid var(--ink);
+    background: transparent;
+    color: var(--ink);
+    font: inherit;
+    font-size: var(--t-small);
+    line-height: var(--t-small-lh);
+    cursor: pointer;
+  }
+  .flyer-dialog__zu:hover {
+    background: var(--ink);
+    color: var(--ground);
+  }
+  .flyer-dialog__seiten {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 24px;
+    padding: 24px 20px 28px;
+  }
+  .flyer-dialog__seite {
+    flex: 1 1 min(100%, 320px);
+    max-width: max-content;
+    margin: 0;
+    scroll-margin-top: 72px;
+  }
+  .flyer-dialog__seite :global(img) {
+    display: block;
+    margin-inline: auto;
+    height: auto;
+  }
+  .flyer-dialog__seite figcaption {
+    margin-top: 8px;
+    text-align: center;
+    font-size: var(--t-meta);
+    line-height: var(--t-meta-lh);
+    color: var(--ink);
+  }
+  :global(body:has(.flyer-dialog[open])) {
+    overflow: hidden;
+  }
+</style>

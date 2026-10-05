@@ -134,3 +134,37 @@ test('Orte-Kacheln: Schließen-Knopf und zweite Kachel tauschen den Detailbereic
   await orte.locator('.orte__close').press('Enter');
   await expect(muenchen).toHaveAttribute('aria-expanded', 'false');
 });
+
+test('Flyer auf Aktuelles: Vorschau öffnet den Dialog, Esc schließt und gibt den Fokus zurück', async ({ page }) => {
+  await page.goto('/aktuelles');
+  const rueckseite = page.getByRole('button', { name: 'Rückseite des Flyers vergrößern' }).first();
+  await rueckseite.scrollIntoViewIfNeeded();
+  const tippflaeche = await rueckseite.boundingBox();
+  expect(tippflaeche?.height).toBeGreaterThanOrEqual(44);
+  await rueckseite.click();
+  const dialog = page.getByRole('dialog', { name: /Flyer „Kummerschalen“/ });
+  await expect(dialog).toBeVisible();
+  await expect(dialog.getByRole('img')).toHaveCount(2);
+  // Das niedrig aufgelöste Bild wird nicht über seine Originalgröße gezogen (330 px)
+  const breite = await dialog
+    .getByRole('img')
+    .last()
+    .evaluate((img) => img.getBoundingClientRect().width);
+  expect(breite).toBeLessThanOrEqual(330);
+  await page.keyboard.press('Escape');
+  await expect(dialog).toBeHidden();
+  await expect(rueckseite).toBeFocused();
+});
+
+test('Flyer auf der Startseite: Textlink in der aufgeklappten Karte öffnet denselben Dialog', async ({ page }) => {
+  await page.goto('/');
+  const karte = page.locator('.aktuell__item', { hasText: 'Kummerschalen' });
+  await karte.scrollIntoViewIfNeeded();
+  await karte.getByRole('button', { name: 'Mehr zur Ausstellung' }).click();
+  await karte.getByRole('button', { name: 'Flyer ansehen' }).click();
+  const dialog = page.getByRole('dialog', { name: /Flyer „Kummerschalen“/ });
+  await expect(dialog).toBeVisible();
+  await dialog.getByRole('button', { name: 'Schließen' }).click();
+  await expect(dialog).toBeHidden();
+  await expect(karte.getByRole('button', { name: 'Flyer ansehen' })).toBeFocused();
+});

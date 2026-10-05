@@ -1,16 +1,16 @@
 ---
 import type { HTMLAttributes } from 'astro/types';
 
-type Props = HTMLAttributes<'a'> & {
-  /** `span`, wenn der Pfeil innerhalb eines schon verlinkten Blocks steht (kein verschachtelter Link) */
-  als?: 'a' | 'span';
+type Props = Omit<HTMLAttributes<'a'>, 'type'> & {
+  /** `span`, wenn der Pfeil innerhalb eines schon verlinkten Blocks steht (kein verschachtelter Link); `button` für Auslöser ohne Ziel (z. B. Dialog öffnen) */
+  als?: 'a' | 'span' | 'button';
 };
 
 const { als = 'a', class: klasse, ...attribute } = Astro.props;
 const Tag = als;
 ---
 
-<Tag class:list={['link-arrow', klasse]} {...attribute}>
+<Tag class:list={['link-arrow', klasse]} {...attribute} {...(als === 'button' ? { type: 'button' } : {})}>
   <slot />
 </Tag>
 
@@ -26,6 +26,15 @@ const Tag = als;
     padding-block: 10px 11px;
     margin-block: -10px -8px;
     transition: background-size 0.5s var(--ease);
+  }
+  button.link-arrow {
+    border: 0;
+    border-radius: 0;
+    padding-inline: 0;
+    color: inherit;
+    font-family: inherit;
+    cursor: pointer;
+    text-align: left;
   }
   .link-arrow::after {
     content: '';

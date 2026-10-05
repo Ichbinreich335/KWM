@@ -6,6 +6,7 @@ import { statusText, tagAusIso } from '../scripts/status';
 import { zeitraumKurz, zeitraumMitBis } from '../scripts/zeitraum';
 import Bild from './Bild.astro';
 import FactsList from './FactsList.astro';
+import Flyer from './Flyer.astro';
 
 interface Props {
   ausstellung: Ausstellung;
@@ -78,6 +79,14 @@ const datum = zeitraumKurz(ausstellung.start, ausstellung.ende);
             {ausstellung.beschreibung}
           </p>
           <FactsList typ="zeile-hell" fakten={aktuellesFakten} einblenden />
+          {ausstellung.flyer && (
+            <Flyer
+              flyer={ausstellung.flyer}
+              titel={ausstellung.titel}
+              schluessel={ausstellung.schluessel}
+              modus="vorschau"
+            />
+          )}
           {ausstellung.link && (
             <LinkArrow href={ausstellung.link.href} data-reveal="fade">
               {ausstellung.link.text}
@@ -159,6 +168,14 @@ const datum = zeitraumKurz(ausstellung.start, ausstellung.ende);
               <p class="aktuell__text">{ausstellung.beschreibung}</p>
               <FactsList typ="zeile-anker" fakten={fakten} />
               {ausstellung.link && <LinkArrow href={ausstellung.link.href}>{ausstellung.link.text}</LinkArrow>}
+              {ausstellung.flyer && (
+                <Flyer
+                  flyer={ausstellung.flyer}
+                  titel={ausstellung.titel}
+                  schluessel={ausstellung.schluessel}
+                  modus="link"
+                />
+              )}
             </div>
           </div>
         </Fragment>
