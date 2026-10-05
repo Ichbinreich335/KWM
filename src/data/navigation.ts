@@ -28,7 +28,7 @@ export const fussLinks = [
   { href: '/aktuelles', name: 'Aktuelles' },
   { href: '/besuch', name: 'Besuch & Anfahrt' },
   { href: '/zahlung', name: 'Zahlung' },
-  { href: '/versand', name: 'Verpackung & Transport' },
+  { href: '/versand', name: 'Verpackung und Transport' },
   { href: '/agb', name: 'AGB' },
   { href: '/impressum', name: 'Impressum' },
   { href: '/datenschutz', name: 'Datenschutz' },

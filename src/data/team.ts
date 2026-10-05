@@ -14,7 +14,7 @@ export interface Person {
 export const team: readonly Person[] = [
   {
     name: 'Young-Jae Lee',
-    rolle: 'Werkstatt-Leitung',
+    rolle: 'Werkstattleitung',
     text: 'Geboren 1951 in Seoul. Seit 1987 Leitung der Keramischen Werkstatt Margaretenhöhe.',
     link: { href: '/young-jae-lee', text: 'Biografie' },
   },

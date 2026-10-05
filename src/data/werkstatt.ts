@@ -17,7 +17,7 @@ export const ortsfakten: readonly Fakt[] = [
     label: 'Öffnungszeiten',
     wert: [
       ...oeffnungszeitZeilen(kontakt.oeffnungszeiten, 'lang').map(({ tage, zeit }) => `${tage} ${zeit}`),
-      `ansonsten ${kontakt.hinweisZeiten}`,
+      `sonst ${kontakt.hinweisZeiten}`,
     ],
   },
   { label: 'Nahverkehr', wert: kontakt.nahverkehr },
