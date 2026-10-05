@@ -35,10 +35,6 @@ export interface Ausstellung {
   fotos: { kachel: Foto; haupt?: Foto };
   /** Angaben, die auf der Seite Aktuelles anders formuliert oder geordnet sind als auf der Startseite */
   aktuelles?: { fakten: readonly Fakt[] };
-  /** Noch nicht dargestellt: Flyer der Ausstellung (Bild, Alternativtext) */
-  flyer?: { src: string; alt: string };
-  /** Schlüssel der Galerie in `galerien` (`orte.ts`), wenn die Ausstellung in einer Galerie stattfindet; noch nicht dargestellt */
-  galerie?: string;
 }
 
 export const ausstellungen: readonly Ausstellung[] = [
@@ -132,7 +128,6 @@ export const ausstellungen: readonly Ausstellung[] = [
     haus: 'Galerie Karsten Greve',
     stadt: 'St. Moritz, Schweiz',
     ort: 'st-moritz',
-    galerie: 'karsten-greve',
     start: '2026-10-03',
     ende: '2026-12-12',
     beschreibung: 'Malerei von Kathleen Jacobs (Öl auf Leinen) und Keramik von Young‑Jae Lee.',

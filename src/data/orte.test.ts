@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { ausstellungen } from './ausstellungen';
-import { galerie, galerien, hausName, kacheln, orte, ortZahlen } from './orte';
+import { galerien, hausName, kacheln, orte, ortZahlen } from './orte';
 
 const ort = (schluessel: string) => {
   const treffer = orte.find((eintrag) => eintrag.schluessel === schluessel);
@@ -18,13 +18,12 @@ describe('ortZahlen', () => {
 });
 
 describe('Verweise', () => {
-  it('jede Ausstellung verweist auf einen vorhandenen Ort und eine vorhandene Galerie', () => {
+  it('jede Ausstellung verweist auf einen vorhandenen Ort', () => {
     for (const ausstellung of ausstellungen) {
       expect(
         orte.map((eintrag) => eintrag.schluessel),
         ausstellung.schluessel,
       ).toContain(ausstellung.ort);
-      if (ausstellung.galerie) expect(() => galerie(ausstellung.galerie as string)).not.toThrow();
     }
   });
   it('jeder Auftritt und jedes Haus mit Galerie verweist auf einen vorhandenen Eintrag', () => {
