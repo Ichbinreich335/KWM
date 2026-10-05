@@ -6,29 +6,16 @@ import DateList from '../components/DateList.astro';
 import { arbeitsweise, gruppe } from '../data/manufaktur';
 import Statement from '../components/Statement.astro';
 import ChapterHead from '../components/ChapterHead.astro';
-import { getImage } from 'astro:assets';
 import Bild from '../components/Bild.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import InquiryBand from '../components/InquiryBand.astro';
 import SubNav from '../components/SubNav.astro';
 import PageHero from '../components/PageHero.astro';
 import Figure from '../components/Figure.astro';
+import GlazeStage from '../components/GlazeStage.astro';
+import { glasurproben } from '../data/glasuren';
 import '../styles/seiten/page-manufaktur.css';
 import '../styles/signaturen/signaturen.css';
-import { bildMetadaten } from '../data/bilder';
-
-// Die Glasurknöpfe tragen die gebaute Bild-URL in data-img (Doku: Bild-URL an den Client reichen).
-const glasurBild = async (src: string) =>
-  (
-    await getImage({
-      src: bildMetadaten(src),
-      width: 100,
-      height: 100,
-      layout: 'constrained',
-      fit: 'fill',
-      position: 'center',
-    })
-  ).src;
 ---
 
 <BaseLayout
@@ -193,175 +180,7 @@ const glasurBild = async (src: string) =>
         Wählen Sie eine Glasurprobe.
       </Fragment>
 
-      <div class="glaze grid" data-glaze>
-        <div class="glaze__stage" data-glaze-stage aria-live="polite">
-          <div class="glaze__layers" data-glaze-layers aria-hidden="true"></div>
-          <div class="glaze__label">
-            <p class="glaze__name" data-glaze-name>
-              weiß
-            </p>
-            <p class="glaze__meta" data-glaze-meta>
-              Geschirr
-            </p>
-          </div>
-        </div>
-        <div class="glaze__pick">
-          <p class="glaze__group">Geschirr</p>
-          <ul class="glaze__list">
-            <li>
-              <button
-                type="button"
-                class="glaze__btn"
-                aria-pressed="true"
-                data-name="weiß"
-                data-meta="Geschirr"
-                data-color="#e1dccc"
-                data-img={await glasurBild('/img/kwm/weiss.webp')}
-              >
-                <Bild src="/img/kwm/weiss.webp" width="100" height="100" alt="" loading="lazy" />
-                <span>weiß</span>
-              </button>
-            </li>
-            <li>
-              <button
-                type="button"
-                class="glaze__btn"
-                aria-pressed="false"
-                data-name="hellgrün matt"
-                data-meta="Geschirr · matt"
-                data-color="#cfe0d5"
-                data-img={await glasurBild('/img/kwm/hellgruen_matt.webp')}
-              >
-                <Bild src="/img/kwm/hellgruen_matt.webp" width="100" height="100" alt="" loading="lazy" />
-                <span>hellgrün matt</span>
-              </button>
-            </li>
-            <li>
-              <button
-                type="button"
-                class="glaze__btn"
-                aria-pressed="false"
-                data-name="hellgrün glänzend"
-                data-meta="Geschirr · glänzend"
-                data-color="#92ad9b"
-                data-img={await glasurBild('/img/kwm/hellgruen_glaenzend.webp')}
-                data-gloss
-              >
-                <Bild src="/img/kwm/hellgruen_glaenzend.webp" width="100" height="100" alt="" loading="lazy" />
-                <span>hellgrün glänzend</span>
-              </button>
-            </li>
-            <li>
-              <button
-                type="button"
-                class="glaze__btn"
-                aria-pressed="false"
-                data-name="dunkelgrün glänzend"
-                data-meta="Geschirr · glänzend"
-                data-color="#3f3b22"
-                data-img={await glasurBild('/img/kwm/dunkelgruen_glaenzend.webp')}
-                data-gloss
-                data-dark
-              >
-                <Bild src="/img/kwm/dunkelgruen_glaenzend.webp" width="100" height="100" alt="" loading="lazy" />
-                <span>dunkelgrün glänzend</span>
-              </button>
-            </li>
-            <li>
-              <button
-                type="button"
-                class="glaze__btn"
-                aria-pressed="false"
-                data-name="dunkelgrün matt"
-                data-meta="Geschirr · matt"
-                data-color="#474931"
-                data-img={await glasurBild('/img/kwm/dunkelgruen_matt.webp')}
-                data-dark
-              >
-                <Bild src="/img/kwm/dunkelgruen_matt.webp" width="100" height="100" alt="" loading="lazy" />
-                <span>dunkelgrün matt</span>
-              </button>
-            </li>
-            <li>
-              <button
-                type="button"
-                class="glaze__btn"
-                aria-pressed="false"
-                data-name="rostbraun"
-                data-meta="Geschirr"
-                data-color="#8c580a"
-                data-img={await glasurBild('/img/kwm/rostbraun.webp')}
-                data-dark
-              >
-                <Bild src="/img/kwm/rostbraun.webp" width="100" height="100" alt="" loading="lazy" />
-                <span>rostbraun</span>
-              </button>
-            </li>
-          </ul>
-          <p class="glaze__group">Edition</p>
-          <ul class="glaze__list">
-            <li>
-              <button
-                type="button"
-                class="glaze__btn"
-                aria-pressed="false"
-                data-name="hellblau"
-                data-meta="Edition"
-                data-color="#75857a"
-                data-img={await glasurBild('/img/kwm/hellblau.webp')}
-                data-dark
-              >
-                <Bild src="/img/kwm/hellblau.webp" width="100" height="100" alt="" loading="lazy" />
-                <span>hellblau</span>
-              </button>
-            </li>
-            <li>
-              <button
-                type="button"
-                class="glaze__btn"
-                aria-pressed="false"
-                data-name="weiß"
-                data-meta="Edition · Craquelé"
-                data-color="#c3bcaf"
-                data-img={await glasurBild('/img/kwm/craquele_weiss.webp')}
-              >
-                <Bild src="/img/kwm/craquele_weiss.webp" width="100" height="100" alt="" loading="lazy" />
-                <span>weiß</span>
-              </button>
-            </li>
-            <li>
-              <button
-                type="button"
-                class="glaze__btn"
-                aria-pressed="false"
-                data-name="hellgrün"
-                data-meta="Edition · Craquelé"
-                data-color="#848d7a"
-                data-img={await glasurBild('/img/kwm/craquele_hellgruen.webp')}
-                data-dark
-              >
-                <Bild src="/img/kwm/craquele_hellgruen.webp" width="100" height="100" alt="" loading="lazy" />
-                <span>hellgrün</span>
-              </button>
-            </li>
-            <li>
-              <button
-                type="button"
-                class="glaze__btn"
-                aria-pressed="false"
-                data-name="dunkelgrün"
-                data-meta="Edition · Craquelé"
-                data-color="#5a6251"
-                data-img={await glasurBild('/img/kwm/craquele_dunkelgruen.webp')}
-                data-dark
-              >
-                <Bild src="/img/kwm/craquele_dunkelgruen.webp" width="100" height="100" alt="" loading="lazy" />
-                <span>dunkelgrün</span>
-              </button>
-            </li>
-          </ul>
-        </div>
-      </div>
+      <GlazeStage proben={glasurproben} />
     </ChapterHead>
 
     {/* Arbeitsweise */}
@@ -389,56 +208,5 @@ const glasurBild = async (src: string) =>
         Edition (PDF)
       </LinkArrow>
     </InquiryBand>
-
-    <script>
-      (() => {
-        // Glasurbühne: die Probe wird zur Fläche
-        const root = document.querySelector('[data-glaze]');
-        if (!root) return;
-        const stage = root.querySelector('[data-glaze-stage]');
-        const layers = root.querySelector('[data-glaze-layers]');
-        const nameEl = root.querySelector('[data-glaze-name]');
-        const metaEl = root.querySelector('[data-glaze-meta]');
-        const buttons = [...root.querySelectorAll<HTMLButtonElement>('.glaze__btn')];
-        const [first] = buttons;
-        if (!stage || !layers || !nameEl || !metaEl || !first) return;
-        const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        let current: HTMLButtonElement | null = null;
-
-        const show = (btn: HTMLButtonElement) => {
-          if (btn === current) return;
-          current = btn;
-          const layer = document.createElement('div');
-          layer.className = 'glaze__layer';
-          layer.style.setProperty('--g', btn.dataset.color ?? '');
-          layer.style.setProperty('--img', `url("${new URL(btn.dataset.img ?? '', location.href).href}")`);
-          if ('gloss' in btn.dataset) layer.classList.add('is-gloss');
-          layers.appendChild(layer);
-          requestAnimationFrame(() => layer.classList.add('is-in'));
-          const old = [...layers.children].slice(0, -1);
-          setTimeout(() => old.forEach((l) => l.remove()), reduced ? 0 : 1200);
-          stage.classList.toggle('is-dark', 'dark' in btn.dataset);
-          nameEl.textContent = btn.dataset.name ?? '';
-          metaEl.textContent = btn.dataset.meta ?? '';
-        };
-        const select = (btn: HTMLButtonElement) => {
-          buttons.forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
-          show(btn);
-        };
-        let pinned = first;
-        buttons.forEach((btn) => {
-          btn.addEventListener('pointerenter', (e) => {
-            if (e.pointerType === 'mouse') show(btn);
-          });
-          btn.addEventListener('focus', () => select(btn));
-          btn.addEventListener('click', () => {
-            pinned = btn;
-            select(btn);
-          });
-        });
-        root.querySelector('.glaze__pick')?.addEventListener('pointerleave', () => show(pinned));
-        select(pinned);
-      })();
-    </script>
   </main>
 </BaseLayout>
