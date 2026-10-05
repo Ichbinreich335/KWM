@@ -2179,6 +2179,11 @@ body::after {
   .facts {
     grid-column: 1 / -1;
   }
+  /* Handy: das zweite Foto und ergänzende Angaben entfallen, sie stehen auf /manufaktur */
+  .craft__media3,
+  .facts__mehr {
+    display: none;
+  }
 
   .footer__logo {
     grid-column: 1 / -1;
