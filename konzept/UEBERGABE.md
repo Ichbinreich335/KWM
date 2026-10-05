@@ -128,6 +128,8 @@ main
 - **Portfolio-Seite** aus der Lager-Datenbank: vorerst nicht bauen.
 - Weiter gilt: keine Preise, kein Bestand, keine Lagerorte, keine Verfügbarkeit auf der Website.
 
+**Stand 05.10.2026, nachts – `main` ist live:** Sammel-PR #19 (`gesamtstand`) nach `main` gemergt (b49fa32), Produktion https://kwm-redesign.entwicklung-7f3.workers.dev geprüft (13 Seiten, WebKit + Chromium, 1440/390, Konsole sauber). Weiterarbeit künftig auf Feature-Branches von `main`. Offene Punkte und Aufräum-Merkliste: `ADMIN-OFFEN.md`. Sanity-Fassung (`phase-2-website`) muss auf `main` gezogen werden, bevor sie weitergeht.
+
 **Stand 05.10.2026, abends – Hauptlinie ist jetzt `gesamtstand`:**
 - **Gesamtstand** (Branch `gesamtstand`, Ordner `../KWM-gesamt`, Port 8787, Vorschau https://gesamtstand-kwm-redesign.entwicklung-7f3.workers.dev): EIN Stand mit Bausteinen 1–5, Zitaten (Statement-Typen), Handy-Kürzung, SEO/CSP (ohne `style-src-attr`), Formular-Worker mit Vorschau-Modus (Branch ≠ main: kein Turnstile, Bestätigung ohne Versand), echten Flyern, ohne Parallax, mit allen Befunden der Opus-Qualitätsprüfung (`.superpowers/sdd/GESAMT/audit-opus.md`) behoben. Tests in Chromium und WebKit (Desktop + iPhone) inkl. `tests/bewegung.spec.ts`. Diesen Link hat die Werkstatt bekommen. Ledger: `.superpowers/sdd/GESAMT/progress.md`.
 - **Mittelweg-Startseite** (Branch `startseite-mittelweg`, `../KWM-mittelweg`, Port 8784): Gesamtstand + ausgewählte Teile der Bauhaus-Variante nach Admin-Entscheid (Bauhaus-Station in drei umschaltbaren Entwürfen `?bauhaus=1|2|3`, Orte nach Young-Jae Lee, Meditation und doppelte Zitate raus, neues Meisterstück-Bild). Ledger `.superpowers/sdd/MITTELWEG/progress.md`.

@@ -4,9 +4,9 @@ Kurzüberblick: was fertig ist, was läuft, was als Nächstes kommt. Wird bei je
 
 Stand: 05.10.2026, nachmittags
 
-## Aktueller Gesamtstand (für die Werkstatt)
+## Live (Stand für Kunde und Werkstatt)
 
-**https://gesamtstand-kwm-redesign.entwicklung-7f3.workers.dev** – ein Stand mit allem Abgenommenen: Bausteine 1–5, Zitate einheitlich, Handy kürzer, ruhige Bilder (kein Parallax), echte Flyer, Formular über Worker (in der Vorschau ohne Versand), SEO/Sicherheit, alle Befunde der Qualitätsprüfung behoben. 365 Tests in Chrome und Safari-Engine (Desktop und iPhone). Branch `gesamtstand`, Ordner `../KWM-gesamt`. Sammel-PR [#19](https://github.com/Ichbinreich335/KWM/pull/19) gegen `main` (ersetzt #4–#18). **Gebündeltes Code-Review** (zwei Achsen, Opus) gelaufen: alle Befunde erledigt oder als begründete Ausnahme in DESIGN.md eingetragen; dabei das Go-live-Risiko „Vorschau-Modus an zwei Schaltern“ behoben (eine Quelle, Tests). Stand: 396 Tests grün, eigener Testlauf für den Vorschau-Modus. Mittelweg-Startseite mit drei Bauhaus-Entwürfen: https://startseite-mittelweg-kwm-redesign.entwicklung-7f3.workers.dev/?bauhaus=1 (=2, =3). Vergleich: Startseite „Bauhaus“ https://startseite-bauhaus-kwm-redesign.entwicklung-7f3.workers.dev (nur Startseite anders; Teile übernehmbar).
+**https://kwm-redesign.entwicklung-7f3.workers.dev** – `main` = b49fa32 (Sammel-PR #19 gemergt am 05.10.2026). Enthält: Startseite „Mittelweg“ (Bauhaus-Station „Seit 1927 …“ mit Teller-Tafel, Farbskala, Orte nach Young-Jae Lee), Bausteine, Zitate, Handy-Kürzung, Flyer, Formular-Worker (bis Go-live bewusst ohne echten Versand), SEO/CSP, alle Review-Befunde (Qualitätsprüfung, Code-Review, Astro nach Doku), Textkorrekturen. Rund 400 Tests in Chrome und Safari-Engine. `noindex` bleibt, `kwm-1924.de` unberührt. Offen vor Go-live: siehe `ADMIN-OFFEN.md` → „Vor Produktion aufräumen“.
 
 ## Jetzt gerade
 
