@@ -82,7 +82,7 @@ test('Startseite: Chronik und Lebensweg tragen ihre Skript-Stile (Startzustand u
   await page.locator(eintrag).scrollIntoViewIfNeeded();
   await page.locator('.chronicle__list').scrollIntoViewIfNeeded();
   await expect.poll(() => stil(page, eintrag, 'opacity')).toBe('1');
-  expect(await stil(page, eintrag, 'transform')).toBe('none');
+  await expect.poll(() => stil(page, eintrag, 'transform')).toBe('none');
   await expect.poll(() => stil(page, jahr, 'color')).not.toBe(gedaempft);
   await expect.poll(() => stil(page, jahr, 'scale', '::before')).toBe('1');
 });
@@ -92,8 +92,9 @@ test('Startseite: Details der Ausstellungskarten sind zu (.is-ready) und öffnen
   await page.waitForLoadState('networkidle');
   await expect(page.locator('.aktuell')).toHaveClass(/is-ready/);
   const geschlossen = '.aktuell__item:not(.is-open)';
-  expect(await stil(page, `${geschlossen} .aktuell__panel`, 'visibility')).toBe('hidden');
-  expect(await stil(page, `${geschlossen} .aktuell__panel-in`, 'opacity')).toBe('0');
+  // Das Schließen läuft als Übergang (visibility mit Verzögerung): abwarten statt sofort lesen
+  await expect.poll(() => stil(page, `${geschlossen} .aktuell__panel`, 'visibility')).toBe('hidden');
+  await expect.poll(() => stil(page, `${geschlossen} .aktuell__panel-in`, 'opacity')).toBe('0');
   expect(await stil(page, '.aktuell__more', 'display')).not.toBe('none');
   await page.locator(`${geschlossen} .aktuell__more`).first().click();
   await expect.poll(() => stil(page, '.aktuell__item.is-open .aktuell__panel', 'visibility')).toBe('visible');
