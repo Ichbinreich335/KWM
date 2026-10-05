@@ -394,18 +394,18 @@ export const stimmungen: readonly Stimmung[] = [
 ];
 
 /**
- * Einzelwerk der Startseite (Meisterstücke): Titel und Jahr wie auf den Seiten Meisterstücke und Young-Jae Lee
- * („Teeschale, ohne Titel, 2023“), Maße und Fotonachweis sind nicht belegt.
+ * Einzelwerk der Startseite (Meisterstücke): zwei Schalen aus dem Foto der Ausstellung „99 Schalen – ein Kosmos“
+ * (MOK Köln 2026, alte Seite /neuigkeiten/aktuelles/). Titel, Jahr, Maße und Fotonachweis sind nicht belegt.
  */
-export const einzelwerk: Werk = {
-  schluessel: 'teeschale-2023',
-  titel: 'Teeschale, ohne Titel',
-  jahr: '2023',
-  angaben: [{ jahr: '2023' }],
+export const einzelwerk: Werk & { unterschrift: string } = {
+  schluessel: 'zwei-schalen-mok',
+  titel: 'Zwei Schalen',
+  angaben: [{ ort: 'gezeigt in „99 Schalen – ein Kosmos“, Köln', jahr: '2026' }],
   bild: {
-    src: '/img/kwm/teeschale.webp',
-    alt: 'Teeschale von Young-Jae Lee mit rotbraun geflammter Glasur, hellen Pinselzügen und dunklen Eisensprenkeln',
+    src: '/img/kwm/werke/zwei-schalen-mok.webp',
+    alt: 'Zwei Schalen von Young-Jae Lee auf hellgrauem Grund: vorn eine ochsenblutrot glasierte, dahinter eine weiße mit blauem Tupfen',
   },
+  unterschrift: 'Schalen von Young-Jae Lee aus der Ausstellung „99 Schalen – ein Kosmos“, Köln 2026',
 };
 
 /** Auswahl der Startseite: Kacheln mit Jahr, Maßen und Ausführung, verlinkt auf den Katalog */

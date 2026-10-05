@@ -450,14 +450,12 @@ body::after {
 }
 .works__single {
   grid-column: 1 / 7;
-  background: var(--ground-2);
 }
 .works__single img {
   width: 100%;
-  aspect-ratio: 1;
+  aspect-ratio: 5 / 4;
   max-height: var(--werk-max);
   object-fit: cover;
-  mix-blend-mode: multiply;
 }
 .works__single-text {
   grid-column: 7 / 13;
@@ -599,6 +597,46 @@ body::after {
   border-radius: 50%;
   background: var(--c);
   flex: none;
+}
+
+/* Farben: Farbskala des Geschirrs (Signatur SigFarbskala), Grundstil der Bänder */
+.farben {
+  padding-block: var(--section);
+}
+.farben__note {
+  padding-top: 16px;
+}
+.farben__note span {
+  grid-column: 1 / 8;
+  font-size: var(--t-small);
+  line-height: var(--t-small-lh);
+  color: var(--ink-2);
+  max-width: 70ch;
+}
+.scale {
+  display: flex;
+}
+.scale__band {
+  flex: 1 1 0;
+  background: var(--c);
+  color: var(--t);
+  position: relative;
+  overflow: hidden;
+  transition: flex-grow var(--dur-zoom) var(--ease);
+}
+.scale:hover .scale__band {
+  flex-grow: 0.8;
+}
+.scale .scale__band:hover {
+  flex-grow: 2.6;
+}
+.scale__sample {
+  position: absolute;
+  left: clamp(12px, 1.4vw, 22px);
+  top: clamp(14px, 2vw, 26px);
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.18);
 }
 
 /* Besuch */
@@ -821,6 +859,9 @@ body::after {
     animation: none;
     stroke-dashoffset: 0;
   }
+  .scale__band {
+    transition: none;
+  }
 }
 
 /* ---------- Responsive ---------- */
@@ -1037,6 +1078,26 @@ body::after {
     display: block;
     text-align: center;
     padding: 24px var(--m) 0;
+  }
+  .scale {
+    flex-direction: column;
+    height: auto;
+  }
+  .scale__band {
+    min-height: 84px;
+  }
+  .scale:hover .scale__band,
+  .scale .scale__band:hover {
+    flex-grow: 1;
+  }
+  .scale__sample {
+    left: auto;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  .farben__note span {
+    grid-column: 1 / -1;
   }
   .works__statement {
     display: none;

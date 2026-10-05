@@ -27,6 +27,8 @@ import Figure from '../components/Figure.astro';
 import Woerter from '../components/Woerter.astro';
 import SigSticky from '../components/SigSticky.astro';
 import BauhausStation from '../components/BauhausStation.astro';
+import SigFarbskala from '../components/SigFarbskala.astro';
+import { glasuren } from '../data/glasuren';
 
 // 99 Schalen: Satz und Link kommen aus der Ausstellung im MOK; vorbei ist sie im Browser ausgeblendet (main.ts)
 const mok = ausstellungen.find((eintrag) => eintrag.schluessel === 'mok');
@@ -139,7 +141,7 @@ const mokLink = `/aktuelles#f-${mok.schluessel}`;
         <LinkArrow href="/meisterstuecke">Alle Meisterstücke</LinkArrow>
       </SectionHead>
       <div class="works__feature grid">
-        <Figure class="works__single">
+        <Figure class="works__single" unterschrift={einzelwerk.unterschrift}>
           <Bild
             src={einzelwerk.bild.src}
             loading="lazy"
@@ -153,10 +155,10 @@ const mokLink = `/aktuelles#f-${mok.schluessel}`;
           </Statement>
           <div class="works__single-meta">
             <p class="works__single-name" data-reveal="fade">
-              {einzelwerk.titel} <span>{einzelwerk.jahr}</span>
+              {einzelwerk.titel}
             </p>
             <LinkArrow href={anfrageLink(stueckBezeichnung(einzelwerk))} data-reveal="fade">
-              Zu diesem Stück anfragen
+              Zu diesen Stücken anfragen
             </LinkArrow>
           </div>
         </div>
@@ -205,6 +207,22 @@ const mokLink = `/aktuelles#f-${mok.schluessel}`;
           </LinkArrow>
         </div>
       </div>
+    </section>
+
+    {/* Farben: die sechs Glasuren des Geschirrs, alle Teile untereinander kombinierbar */}
+    <section class="farben" id="farben" aria-labelledby="farben-title">
+      <SectionHead typ="start" titelId="farben-title">
+        <Fragment slot="titel">Sechs Glasuren, ein Geschirr.</Fragment>
+        <p data-reveal="fade">Alle Teile eines Geschirrs, gleich welcher Farbe, sind miteinander kombinierbar.</p>
+        <LinkArrow href="/manufaktur#farben">Zum Manufakturprogramm</LinkArrow>
+      </SectionHead>
+      <SigFarbskala glasuren={glasuren} />
+      <p class="farben__note grid">
+        <span>
+          In monatelangen Experimenten entstand die sechstonige Farbskala – von Schattierungen des Jadegrün über ein
+          gebrochenes Weiß bis zu Rostbraun.
+        </span>
+      </p>
     </section>
 
     {/* Feuer: Text bleibt beim Scrollen auf dem Glasurfoto stehen */}

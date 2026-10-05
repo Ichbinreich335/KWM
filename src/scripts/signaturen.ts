@@ -3,6 +3,7 @@ type Signatur = { default: (el: Element) => void };
 
 const modules: Record<string, () => Promise<Signatur>> = {
   logo: () => import('./sig-logo'),
+  farbskala: () => import('./sig-farbskala'),
   feuer: () => import('./sig-feuer'),
   aktuell: () => import('./sig-aktuell'),
   flyer: () => import('./sig-flyer'),
