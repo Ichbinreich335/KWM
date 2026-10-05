@@ -63,7 +63,8 @@ export const texte: readonly Text[] = [
     titel: 'Die aufgehobene Zeit',
     autor: 'Thomas Wagner',
     untertitel: 'Elf Bemerkungen zu eintausendeinhundertundelf Schalen von Young-Jae Lee',
-    auszug: '„Immer sind es Schalen, und doch ist keine wie die andere.“',
+    auszug:
+      '„Schalen über Schalen, einfach auf den Boden gestellt. Ein Meer aus Schalen, ein Feld aus Kelchen, ein Ring aus Teilchen um eine leere Mitte, eine kleine Milchstraße voll schimmernder Gefäße.“',
     online:
       'https://kwm-1924.de/die-aufgehobene-zeitelf-bemerkungen-zu-eintausendeinhundertundelf-schalen-von-young-jae-lee/',
     pdf: 'https://kwm-1924.de/wp-content/uploads/2023/08/wagner_zeit-1.pdf',

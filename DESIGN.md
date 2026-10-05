@@ -107,18 +107,21 @@ Größen bei 1440 px: Mega 179, Seitentitel 101, Abschnitt 66, Aussage 52, Lede 
 
 | # | Abschnitt | Typ | Zweck |
 |---|---|---|---|
-| 1 | Einstieg: Zitat und Kummerschalen-Foto | hell | Haltung in einem Satz und einem Bild |
+| 1 | Einstieg: Zitat und Kummerschalen-Foto, ein Satz, zwei Links | hell | Haltung in einem Satz und einem Bild |
 | 2 | Aktuell: Spotlight mit Details, weitere zum Aufklappen, Hinweiszeile | Anker | Was jetzt zu sehen ist und wo. Häufigster Besuchsgrund |
-| 3 | Lede und „Zwei Linien“ | hell | Wer wir sind, dazu der Abzweig zu Meisterstücke oder Manufaktur |
-| 4 | Young-Jae Lee: Name, Porträt mit Zitat, Lebensweg | hell, Bild | Die Person hinter den Stücken |
-| 5 | Meisterstücke: Einzelwerk und Auswahl | hell | Die Unikate selbst. Bilder statt Worte |
+| 3 | Bauhaus: Grundformen (Teller, Schale, Krug) und Farbskala im selben Raster | hell | Das Prinzip des Hauses als Bild: wenige Formen, sechs Farben, alles kombinierbar |
+| 4 | Young-Jae Lee: Name, Porträt mit einem Satz, Lebensweg | hell, Bild | Die Person hinter den Stücken |
+| 5 | Meisterstücke: Einzelwerk groß und Auswahl | hell | Die Unikate selbst. Bilder statt Worte |
 | 6 | Ausstellungsorte | Anker | Reichweite und Anerkennung (Museen, Galerien) |
-| 7 | Haltung: Meditation und 99 Schalen | hell, dann Fläche | Wiederholung und Differenz. Warum keine wie die andere ist |
-| 8 | Manufaktur mit Farbskala | hell | Das Geschirr für den Alltag und seine Farben |
-| 9 | Feuer | Bild | Der Brand als Moment, ein kurzer Bildwechsel |
-| 10 | Chronik, hundert Jahre | Fläche | Herkunft des Hauses. Die Überschrift bleibt stehen, die Jahre ziehen vorbei |
-| 11 | Besuch und Anfrage | hell | Kommen oder schreiben: Öffnungszeiten und Formular |
-| 12 | Footer | Anker | Kontakt, Logo, Wortmarke |
+| 7 | 99 Schalen: ein Satz und der Ring | Fläche | Wiederholung und Differenz. Warum keine wie die andere ist |
+| 8 | Feuer | Bild | Der Brand als Moment, ein kurzer Bildwechsel |
+| 9 | Chronik, hundert Jahre: nur Jahr und Titel | Fläche | Herkunft des Hauses. Die Überschrift bleibt stehen, die Jahre ziehen vorbei |
+| 10 | Besuch und Anfrage | hell | Kommen oder schreiben: Öffnungszeiten und Formular |
+| 11 | Footer | Anker | Kontakt, Logo, Wortmarke |
+
+**Regel für die Startseite:** ein Abschnitt, ein Satz, ein Bild. Begleittexte höchstens zwei Zeilen. Was erklärt, steht auf der Unterseite. Konzept und Herleitung: `konzept/STARTSEITE-BAUHAUS.md`.
+
+**Grundformen** (`.principle__forms`, nur Startseite): drei Fotos des Manufakturprogramms im Format 3:2, je 4 Spalten, gleiches Licht und gleicher Grund, Beschriftung nur mit dem Namen (Zitat klein, Display). Darunter die Farbskala mit denselben Spaltenkanten (je 2 Spalten). Mobil untereinander. Daten: `grundformen` in `src/data/manufaktur.ts`.
 
 ## 6. Komponenten
 
@@ -210,7 +213,7 @@ Sticky unter dem Header, mobil seitlich scrollbar mit Randausblendung. Der aktiv
 | `kosmos` | Ausstellung (`main.js`) | 99 Schalen im Ring um eine leere Mitte, die Schalen weichen dem Zeiger aus |
 | `orte` | nach Meisterstücke | Ausstellungsorte als Bildraster, Orts-Name groß über einem gedämpften Foto |
 | `feuer` | Feuer | Eine Schale, umschaltbar zwischen oxidierendem und reduzierendem Brand |
-| `farbskala` | Manufaktur | Glasur-Testkacheln mit gemessenen Farben |
+| `farbskala` | Bauhaus (Startseite) | Glasur-Testkacheln mit gemessenen Farben |
 | `logo` | Footer | Logo als Konstruktionszeichnung, Hilfslinien verschwinden am Ende |
 
 ## 8. Bewegung
@@ -278,7 +281,6 @@ Statement kennt fünf Typen nach Rolle, nicht nach Fundstelle: `lede` (Einleitun
 | `WorkTile` | Kachel der Werkschau auf der Startseite: Bild, Name, Jahr, Maße, ganz ein Link zum Katalog | Zitat (Name), Meta (Jahr, Maße) | ein Look; eigenes Markup (`li`), daher getrennt von `WorkCard`; Daten aus `src/data/werke.ts` | `.piece` (Platzierung: `global.css`, `.works__grid`) |
 | `WareCard` | Geschirrserie mit Bild, Titel, Größenliste | Titel, Begleittext (Liste), Meta (Nummern) | Satz (`.set`, auch `breit`, `kontur`, nur Text); `WareGroup` bündelt die Sätze einer Warengruppe (Geschirr, Edition) | `.ware`, `.set` (`css/page-manufaktur.css`) |
 | `FactsList` | Werkangaben und Fakten: Label links, Wert rechts, Haarlinien | Meta (Label, Versalien), Fließtext oder Begleittext (Wert) | `ort`, `raster`, `zeile-hell`, `zeile-anker` (je ein bestehender Look, siehe Komponente) | `.method__facts`, `.place__info`, `.aktuell__facts`, `.feature__facts` |
-| `FactsTable` | Fakten neben dem Bild: Bezeichnung über dem Wert, optional Schaltfläche im Slot | Meta (Label, Versalien), Fließtext (Wert) | ein Look; getrennt von `FactsList`, weil Markup und Zeilenbau abweichen | `.facts` |
 | `DateList` | Liste mit Jahr links, Text rechts | Jahreszahl, Begleittext, Meta | `liste` (nummeriert), `definition` (Stichwort links); hell, Fläche | `.datelist` (`css/pages.css`), Young-Jae Lee, Manufaktur, Werkstatt |
 | `PubList` | Veröffentlichungen und Texte mit Autor, Titel, Auszug | Titel, Meta, Begleittext | `artikel` (Aktuelles), `literatur`, `essays` (Young-Jae Lee) | `.pubs`, `.pub`, `.texts` (`css/page-aktuelles.css`, `css/page-young-jae-lee.css`) |
 | `PersonCard` | Mensch der Werkstatt mit Rolle und Text | Titel (Name), Meta (Rolle), Begleittext | Reihe in `.people` (Seite) | `.person` (`css/pages.css`, `css/page-werkstatt.css`) |
@@ -291,7 +293,7 @@ Statement kennt fünf Typen nach Rolle, nicht nach Fundstelle: `lede` (Einleitun
 | `Expander` | Die eine Aufklapp-Komponente (Abschnitt 6) | Aussage oder Titel (Label), Begleittext (Teaser) | `row` (Jahresarchiv), `lang` (ganze Breite, Schließen-Leiste sticky); Custom Element `kwm-expander` | `src/components/Expander.astro`; Aktuelles, Young-Jae Lee |
 | `YearArchive` | Jahresblock im Archiv mit Jahr und Einträgen | Aussage (Jahr), Body (Titel), Begleittext (Ort), Meta (Datum) | `auswahl` (ein `Expander` `row` je Jahr, Aktuelles), `gesamt` (ein `Expander` `lang` mit allen Jahren, Young-Jae Lee); Daten aus `src/data/archiv.ts` | `src/components/YearArchive.astro` (`.year__list`, `.exh-year`) |
 | `Timeline` | Lebensweg der Künstlerin, Jahr, Ort, Satz; füllt sich beim Scrollen (Abschnitt 8) | Meta (Jahr), Titel (Ort), Begleittext | hell; Daten aus `src/data/lebensweg.ts` | `src/components/Timeline.astro` (`.journey`, Verhalten in `src/scripts/main.ts`) |
-| `Chronicle` | Hundert Jahre Werkstatt, Jahre ziehen vorbei, Punkte füllen sich beim Erreichen der Linie | Aussage (Jahr), Titel, Begleittext, Zitat klein (Lede) | Fläche; `kurz` (Startseite, nur Einträge mit Kurztext), Daten aus `src/data/chronik.ts` | `src/components/Chronicle.astro` (`.chronicle`, Verhalten in `src/scripts/main.ts`) |
+| `Chronicle` | Hundert Jahre Werkstatt, Jahre ziehen vorbei, Punkte füllen sich beim Erreichen der Linie | Aussage (Jahr), Titel, Begleittext, Zitat klein (Lede) | Fläche; `kurz` (Startseite: nur Einträge mit `startseite`, nur Jahr und Titel), Daten aus `src/data/chronik.ts` | `src/components/Chronicle.astro` (`.chronicle`, Verhalten in `src/scripts/main.ts`) |
 | `PlaceGrid` | Ausstellungsorte als Bildraster mit Detail | Abschnitt (XL), Aussage (M), Titel, Meta, Begleittext | Anker; Custom Element `kwm-places`, Daten aus `src/data/orte.ts` (Zahlen pro Ort berechnet) | `src/components/PlaceGrid.astro` |
 
 ### Formulare und Hinweise
