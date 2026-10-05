@@ -1,6 +1,6 @@
 // @ts-check
 import sitemap from '@astrojs/sitemap';
-import { defineConfig, fontProviders } from 'astro/config';
+import { defineConfig, envField, fontProviders } from 'astro/config';
 
 // Unicode-Bereiche der beiden Teilmengen: Der Browser lädt nur die Datei, deren Zeichen auf der Seite vorkommen.
 /** @type {Record<'latin' | 'latin-ext', [string, ...string[]]>} */
@@ -78,6 +78,18 @@ export default defineConfig({
   // aktuelles.astro → dist/aktuelles.html, von Cloudflare als /aktuelles ausgeliefert
   build: { format: 'file', inlineStylesheets: 'never' },
   trailingSlash: 'never',
+  // Build-Variablen, gelesen über astro:env in src/lib/umgebung.ts (Werte nur beim Build, nichts davon ist geheim)
+  env: {
+    schema: {
+      // Öffentlicher Site-Key des Turnstile-Widgets; ohne Angabe gilt der Testschlüssel „immer gültig“
+      PUBLIC_TURNSTILE_SITEKEY: envField.string({ context: 'server', access: 'public', optional: true }),
+      // Setzt Workers Builds bei jedem Build (Cloudflare-Doku „Build configuration“)
+      WORKERS_CI: envField.string({ context: 'server', access: 'public', optional: true }),
+      WORKERS_CI_BRANCH: envField.string({ context: 'server', access: 'public', optional: true }),
+      // Branch der Produktion; ohne Angabe main
+      PRODUKTIONS_BRANCH: envField.string({ context: 'server', access: 'public', optional: true }),
+    },
+  },
   // CSP als <meta> mit Hashes der gebündelten Skripte und Styles (Astro). frame-ancestors steht in public/_headers.
   security: {
     csp: {

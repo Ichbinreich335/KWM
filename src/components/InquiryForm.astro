@@ -1,9 +1,11 @@
 ---
 import { kontakt } from '../data/kontakt';
 import Button from './Button.astro';
-import { turnstileSitekey } from '../data/turnstile';
-import { vorschauBuild } from '../data/umgebung';
+import { turnstileSitekey, turnstileWarnung, vorschauBuild } from '../lib/umgebung';
 import { HONIGTOPF_FELD, MAX_ZEICHEN } from '../lib/anfrage';
+
+// Produktions-Build ohne echten Site-Key: kein Abbruch (bis zum Go-live gewollt), aber deutlich im Build-Log
+if (turnstileWarnung) Astro.logger.warn(turnstileWarnung);
 ---
 
 {/* Anfrage-Formular (wiederverwendbar, Modul sig-anfrage).

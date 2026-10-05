@@ -63,10 +63,10 @@ Voraussetzung: Die Domain liegt als Zone im Cloudflare-Konto, oder der Admin ste
 
 ## 5a. Formular scharf schalten (vor oder mit dem Umlegen)
 
-Bis dahin läuft das Formular in Vorschauen im Vorschau-Modus (kein Turnstile, kein Versand, Hinweis „Vorschau“). Produktion ist streng: `ANFRAGE_MODUS` steht in `wrangler.jsonc` oben auf `produktion`, nur der `previews`-Block auf `vorschau`. Ein Test (`src/data/umgebung.test.ts`) sichert das.
+Bis dahin läuft das Formular in Vorschauen im Vorschau-Modus (kein Turnstile, kein Versand, Hinweis „Vorschau“). Produktion ist streng: `ANFRAGE_MODUS` steht in `wrangler.jsonc` oben auf `produktion`, nur der `previews`-Block auf `vorschau`. Ein Test (`src/lib/umgebung.test.ts`) sichert das.
 
 - [ ] Produktions-Branch festlegen: Der Build erkennt einen Vorschau-Build daran, dass `WORKERS_CI_BRANCH` vom Produktions-Branch abweicht. Standard ist `main`. Heißt der Branch anders, in Workers Builds unter Settings, Build, Build variables die Variable `PRODUKTIONS_BRANCH` auf den Namen setzen. Sonst zeigt die Live-Seite kein Turnstile-Widget, der Worker lehnt aber ohne Token ab, und jede Anfrage scheitert.
-- [ ] Turnstile-Widget in Cloudflare anlegen (Hostnamen `kwm-1924.de` und `www.kwm-1924.de`). Den Site-Key als Build-Variable `PUBLIC_TURNSTILE_SITEKEY` setzen (ersetzt den öffentlichen Testschlüssel, siehe `.env.example`).
+- [ ] Turnstile-Widget in Cloudflare anlegen (Hostnamen `kwm-1924.de` und `www.kwm-1924.de`). Den Site-Key als Build-Variable `PUBLIC_TURNSTILE_SITEKEY` setzen (ersetzt den öffentlichen Testschlüssel, siehe `.env.example`). Solange er fehlt, steht im Build-Log von `main` die Warnung „Produktions-Build … ohne echten Turnstile-Site-Key“.
 - [ ] Secret setzen: `npx wrangler secret put TURNSTILE_SECRET` (nie ins Repo).
 - [ ] Zieladresse der Werkstatt freigeben lassen und in `wrangler.jsonc` als `ANFRAGE_ZIEL` eintragen (ersetzt `ziel@example.invalid`).
 - [ ] Email Routing im Dashboard aktivieren und die Zieladresse als verifizierte Adresse eintragen. Der Versand geht nur an verifizierte Adressen; der Absender `anfrage@kwm-1924.de` muss zur Domain gehören.
