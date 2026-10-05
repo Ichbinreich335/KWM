@@ -189,16 +189,12 @@ interface Bowl extends Schale {
     window.addEventListener('resize', relayout, { passive: true });
   }
 
-  /* ---------- Scrollgebundene Bewegung: Einstiegsbild, Kopfzeile ---------- */
-  const heroImg = $('[data-parallax]');
+  /* ---------- Scrollgebundene Bewegung: Kopfzeile ---------- */
   const masthead = $('[data-masthead]');
   let lastY = window.scrollY;
   let ticking = false;
   const onScroll = () => {
     const y = window.scrollY;
-    if (!reduced) {
-      if (heroImg && y < window.innerHeight * 1.2) heroImg.style.translate = `0 ${y * 0.08}px`;
-    }
     if (masthead) {
       const menuOpen = toggle?.getAttribute('aria-expanded') === 'true';
       if (!menuOpen && y > window.innerHeight * 0.9 && y > lastY + 2) masthead.classList.add('is-hidden');
