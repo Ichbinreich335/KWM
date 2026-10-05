@@ -247,9 +247,3 @@ export const ausstellungen: readonly Ausstellung[] = [
     },
   },
 ];
-
-export const ausstellung = (schluessel: string): Ausstellung => {
-  const treffer = ausstellungen.find((eintrag) => eintrag.schluessel === schluessel);
-  if (!treffer) throw new Error(`Ausstellung nicht gefunden: ${schluessel}`);
-  return treffer;
-};
