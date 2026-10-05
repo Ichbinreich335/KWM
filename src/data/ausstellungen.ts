@@ -14,7 +14,7 @@ export interface Ausstellung {
   haus: string;
   /** Stadt und gegebenenfalls Land hinter dem Haus */
   stadt: string;
-  /** Schlüssel des Ortes in der Ortsliste (`orte.ts`, Phase D3) */
+  /** Schlüssel des Ortes in `orte.ts` (Referenz `ort` des Sanity-Typs `ausstellung`) */
   ort: string;
   /** Anschrift in Zeilen */
   adresse?: readonly string[];
@@ -37,7 +37,7 @@ export interface Ausstellung {
   aktuelles?: { fakten: readonly Fakt[] };
   /** Noch nicht dargestellt: Flyer der Ausstellung (Bild, Alternativtext) */
   flyer?: { src: string; alt: string };
-  /** Noch nicht dargestellt: Schlüssel einer Galerie mit Ausstellungsansichten */
+  /** Schlüssel der Galerie in `galerien` (`orte.ts`), wenn die Ausstellung in einer Galerie stattfindet; noch nicht dargestellt */
   galerie?: string;
 }
 
@@ -132,6 +132,7 @@ export const ausstellungen: readonly Ausstellung[] = [
     haus: 'Galerie Karsten Greve',
     stadt: 'St. Moritz, Schweiz',
     ort: 'st-moritz',
+    galerie: 'karsten-greve',
     start: '2026-10-03',
     ende: '2026-12-12',
     beschreibung: 'Malerei von Kathleen Jacobs (Öl auf Leinen) und Keramik von Young‑Jae Lee.',
