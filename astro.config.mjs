@@ -116,12 +116,12 @@ export default defineConfig({
       assetsInlineLimit: 0,
       rolldownOptions: {
         output: {
-          // Eigene Chunks, damit die Reihenfolge Grundstile, Seiten-CSS, Signaturen im HTML erhalten bleibt
+          // Eigene Chunks, damit die Reihenfolge Grundstile, Seiten-CSS, Signaturen im HTML erhalten bleibt (Signaturen: die Hüllen Sig* und InquiryForm)
           codeSplitting: {
             groups: [
               {
                 name: 'signaturen',
-                test: /\/src\/styles\/signaturen\/|\/src\/components\/Sig[^/]+\.astro\?astro&type=style/,
+                test: /\/src\/components\/(Sig[^/]+|InquiryForm)\.astro\?astro&type=style/,
               },
               {
                 name: 'basis',
