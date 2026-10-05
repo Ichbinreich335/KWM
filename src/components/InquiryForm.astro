@@ -2,13 +2,15 @@
 import { kontakt } from '../data/kontakt';
 import Button from './Button.astro';
 import { turnstileSitekey } from '../data/turnstile';
+import { vorschauBuild } from '../data/umgebung';
 import { HONIGTOPF_FELD, MAX_ZEICHEN } from '../lib/anfrage';
 ---
 
 {/* Anfrage-Formular (wiederverwendbar, Modul sig-anfrage).
      Das Modul prüft die Felder mit den Regeln aus src/lib/anfrage.ts und schickt sie per POST an /api/anfrage (Worker).
-     Das Turnstile-Widget wird erst beim ersten Antippen eines Feldes geladen. */}
-<div class="anfrage" data-sig="anfrage" data-sitekey={turnstileSitekey}>
+     Das Turnstile-Widget wird erst beim ersten Antippen eines Feldes geladen.
+     Vorschau-Build (Branch ungleich main): kein Widget, der Worker versendet nichts und meldet Erfolg; ein Hinweis sagt das. */}
+<div class="anfrage" data-sig="anfrage" data-sitekey={turnstileSitekey} data-vorschau={vorschauBuild ? '' : undefined}>
   <p class="anfrage__nojs">
     Bitte schreiben Sie uns an <a href={`${kontakt.mailHref}?subject=Anfrage`}>{kontakt.mail}</a> oder rufen Sie an:{' '}
     <a href={kontakt.telefonHref}>{kontakt.telefon}</a>.
@@ -92,9 +94,13 @@ import { HONIGTOPF_FELD, MAX_ZEICHEN } from '../lib/anfrage';
       Margaretenhöhe. Zum Schutz vor automatischem Missbrauch prüft Cloudflare Turnstile den Versand, siehe
       <a href="/datenschutz">Datenschutz</a>.
     </p>
-    <div class="anfrage__turnstile" data-turnstile>
-      <p class="anfrage__turnstile-hinweis">Die Sicherheitsprüfung erscheint hier, sobald Sie ein Feld ausfüllen.</p>
-    </div>
+    {vorschauBuild ? (
+      <p class="anfrage__vorschau">Vorschau – Anfragen werden noch nicht versendet.</p>
+    ) : (
+      <div class="anfrage__turnstile" data-turnstile>
+        <p class="anfrage__turnstile-hinweis">Die Sicherheitsprüfung erscheint hier, sobald Sie ein Feld ausfüllen.</p>
+      </div>
+    )}
     <div class="anfrage__submit">
       <Button type="submit">Anfrage senden</Button>
       <p class="anfrage__summary" role="alert" hidden></p>
@@ -285,6 +291,14 @@ import { HONIGTOPF_FELD, MAX_ZEICHEN } from '../lib/anfrage';
   .anfrage__turnstile-hinweis {
     margin: 0;
     padding-top: 8px;
+    font-size: var(--t-small);
+    line-height: var(--t-small-lh);
+    color: var(--ink-2);
+  }
+  .anfrage__vorschau {
+    margin: 0;
+    padding-left: 12px;
+    border-left: 2px solid var(--accent);
     font-size: var(--t-small);
     line-height: var(--t-small-lh);
     color: var(--ink-2);

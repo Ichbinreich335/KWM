@@ -21,6 +21,8 @@
     "ANFRAGE_ABSENDER": "anfrage@kwm-1924.de",
     "ERLAUBTE_ORIGINS": "https://kwm-1924.de,https://www.kwm-1924.de",
     "TURNSTILE_HOSTNAMES": "kwm-1924.de,www.kwm-1924.de",
+    // "vorschau" schaltet Prüfung und Versand ab (nur im previews-Block); Produktion bleibt streng
+    "ANFRAGE_MODUS": "produktion",
   },
   // Ziel-Adresse und Absender stehen in den Variablen; der Versand geht nur an bei Cloudflare verifizierte Adressen.
   "send_email": [{ "name": "ANFRAGE_MAIL" }],
@@ -37,6 +39,8 @@
       // Nur Vorschauen dieses Kontos (Subdomain ändert sich beim Konto-Umzug)
       "ERLAUBTE_ORIGINS": "https://*.entwicklung-7f3.workers.dev",
       "TURNSTILE_HOSTNAMES": "example.com",
+      // Vorschau für die Werkstatt: kein Turnstile, kein Versand, Antwort „Danke“ (siehe worker/anfrage.ts)
+      "ANFRAGE_MODUS": "vorschau",
     },
     "send_email": [{ "name": "ANFRAGE_MAIL" }],
     // Eigener Zähler, damit Tests in Vorschauen das Limit der Produktion nicht verbrauchen

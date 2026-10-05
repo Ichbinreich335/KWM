@@ -45,6 +45,9 @@ export async function handleAnfrage(request: Request, env: Env): Promise<Respons
     return antwort(400, { ok: false, meldung: MELDUNGEN.felder, felder: feldFehler });
   }
 
+  // Vorschau (nur im previews-Block von wrangler.jsonc gesetzt): Felder sind geprüft, aber es wird nichts verifiziert oder gesendet.
+  if (env.ANFRAGE_MODUS === 'vorschau') return antwort(200, { ok: true });
+
   const token = daten[TURNSTILE_FELD];
   if (typeof token !== 'string' || token === '' || token.length > MAX_TOKEN_ZEICHEN) {
     return fehler(403, MELDUNGEN.turnstile);

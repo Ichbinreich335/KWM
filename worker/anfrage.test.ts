@@ -53,6 +53,35 @@ beforeEach(() => {
 });
 afterEach(() => vi.restoreAllMocks());
 
+describe('POST /api/anfrage im Vorschau-Modus', () => {
+  const vorschauEnv = (): Env => ({ ...testEnv(), ANFRAGE_MODUS: 'vorschau' });
+
+  it('antwortet mit Erfolg, ohne Turnstile zu prüfen und ohne zu senden', async () => {
+    const spy = siteverify({ success: false });
+    const ohneToken = { ...GUELTIGER_BODY, 'cf-turnstile-response': '' };
+    const antwort = await handleAnfrage(anfrage(ohneToken), vorschauEnv());
+    expect(antwort.status).toBe(200);
+    expect(await antwort.json()).toEqual({ ok: true });
+    expect(spy).not.toHaveBeenCalled();
+    expect(senden).not.toHaveBeenCalled();
+  });
+
+  it('prüft Felder, Ursprung und Rate Limit weiterhin', async () => {
+    expect((await handleAnfrage(anfrage({ ...GUELTIGER_BODY, email: 'kaputt' }), vorschauEnv())).status).toBe(400);
+    expect(
+      (await handleAnfrage(anfrage(GUELTIGER_BODY, { Origin: 'https://boese.example' }), vorschauEnv())).status,
+    ).toBe(403);
+    limit.mockResolvedValue({ success: false });
+    expect((await handleAnfrage(anfrage(GUELTIGER_BODY), vorschauEnv())).status).toBe(429);
+  });
+
+  it('bleibt in Produktion streng: ohne Token 403', async () => {
+    const ohneToken = { ...GUELTIGER_BODY, 'cf-turnstile-response': '' };
+    const env = { ...testEnv(), ANFRAGE_MODUS: 'produktion' } as Env;
+    expect((await handleAnfrage(anfrage(ohneToken), env)).status).toBe(403);
+  });
+});
+
 describe('POST /api/anfrage', () => {
   it('sendet eine gültige Anfrage als Text-Mail mit Reply-To', async () => {
     const antwort = await handleAnfrage(anfrage(GUELTIGER_BODY), testEnv());

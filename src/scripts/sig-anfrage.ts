@@ -126,9 +126,21 @@ export default function init(el: Element) {
   const fail = root.querySelector<HTMLElement>('.anfrage__fail');
   const failText = root.querySelector<HTMLElement>('.anfrage__fail-text');
   const turnstileBehaelter = root.querySelector<HTMLElement>('[data-turnstile]');
+  // Vorschau-Build: ohne Widget; der Worker versendet nichts und antwortet mit Erfolg
+  const vorschau = root.dataset['vorschau'] !== undefined;
   const sendeKnopf = root.querySelector<HTMLButtonElement>('button[type="submit"]');
   const sitekey = root.dataset['sitekey'];
-  if (!form || !done || !summary || !status || !fail || !failText || !turnstileBehaelter || !sendeKnopf || !sitekey) {
+  if (
+    !form ||
+    !done ||
+    !summary ||
+    !status ||
+    !fail ||
+    !failText ||
+    (!vorschau && !turnstileBehaelter) ||
+    !sendeKnopf ||
+    !sitekey
+  ) {
     return;
   }
 
@@ -188,7 +200,7 @@ export default function init(el: Element) {
   // Erst beim ersten Antippen eines Feldes Kontakt zu Cloudflare aufnehmen
   let sicherheit: Sicherheitspruefung | undefined;
   const sicherheitStarten = () => {
-    if (!sicherheit) {
+    if (!sicherheit && turnstileBehaelter) {
       turnstileBehaelter.replaceChildren();
       sicherheit = starteSicherheitspruefung(turnstileBehaelter, sitekey);
     }
@@ -227,16 +239,16 @@ export default function init(el: Element) {
       return;
     }
     const pruefung = sicherheitStarten();
-    setzeBeschaeftigt(TEXT.pruefung);
+    setzeBeschaeftigt(pruefung ? TEXT.pruefung : TEXT.sendet);
     try {
-      const token = await pruefung.token();
-      if (!token) return zeigeVersandfehler(TEXT.keinePruefung);
+      const token = pruefung ? await pruefung.token() : '';
+      if (token === null) return zeigeVersandfehler(TEXT.keinePruefung);
       setzeBeschaeftigt(TEXT.sendet);
       await sende(token);
     } catch {
       zeigeVersandfehler(TEXT.keinVersand);
     } finally {
-      pruefung.erneuern();
+      pruefung?.erneuern();
       setzeBeschaeftigt('');
     }
   });
