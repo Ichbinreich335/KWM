@@ -1,38 +1,16 @@
-// Gemeinsame Grundlagen der generativen Elemente: Glasuren der Werkstatt und reproduzierbarer Zufall.
-
-// Glasuren: Rand, Mitte (wo die Glasur sich sammelt), Gewicht für die Auswahl, optional Sprenkel
-export interface Glasur {
-  name: string;
-  rim: string;
-  pool: string;
-  w: number;
-  speckle?: string;
-}
+// Gemeinsame Grundlagen der generativen Elemente: Ton, reproduzierbarer Zufall und Schalen (Glasuren in data/glasuren.ts).
+import { schalenglasuren, type Schalenglasur } from '../data/glasuren';
 
 export type Rng = () => number;
 
 /** Parameter einer Schale für `renderBowlSprite`. */
 export interface Schale {
   r: number;
-  glaze: Glasur;
+  glaze: Schalenglasur;
   wob: readonly [number, number, number, number];
   rings: number;
   speckles: readonly (readonly [number, number, number])[];
 }
-
-export const GLAZES: readonly [Glasur, ...Glasur[]] = [
-  { name: 'Seladon', rim: '#C3D2C4', pool: '#7FA493', w: 16 },
-  { name: 'Hellblau', rim: '#CBD9DD', pool: '#8DAFB9', w: 11 },
-  { name: 'Weiß', rim: '#EEEAE1', pool: '#D3CCBE', w: 13 },
-  { name: 'Craquelé', rim: '#DDD8CA', pool: '#BAB19D', w: 6 },
-  { name: 'Dunkelgrün', rim: '#56725F', pool: '#2D4739', w: 8 },
-  { name: 'Rostbraun', rim: '#A2623F', pool: '#6C3522', w: 9 },
-  { name: 'Eisenbraun', rim: '#77533C', pool: '#3E2A1D', w: 8 },
-  { name: 'Schwarz gesprenkelt', rim: '#4A4744', pool: '#23211F', w: 5, speckle: '#D9D2C4' },
-  { name: 'Seladon gesprenkelt', rim: '#BCCDC0', pool: '#86A797', w: 6, speckle: '#3A3530' },
-  { name: 'Rosé', rim: '#D9BDB5', pool: '#B98E86', w: 4 },
-  { name: 'Kupferrot', rim: '#A8413A', pool: '#6E1F1C', w: 3 },
-];
 
 // Farben des Tons: roher und gebrannter Scherben
 export const CLAY = { raw: '#B89A76', bisque: '#E2D3BC' };
@@ -48,11 +26,11 @@ export function random(seed: number): Rng {
   };
 }
 
-export function pickGlaze(rand: Rng): Glasur {
-  const total = GLAZES.reduce((a, g) => a + g.w, 0);
+export function pickGlaze(rand: Rng): Schalenglasur {
+  const total = schalenglasuren.reduce((a, g) => a + g.w, 0);
   let r = rand() * total;
-  for (const g of GLAZES) if ((r -= g.w) <= 0) return g;
-  return GLAZES[0];
+  for (const g of schalenglasuren) if ((r -= g.w) <= 0) return g;
+  return schalenglasuren[0];
 }
 
 export const reducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
