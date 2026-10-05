@@ -106,12 +106,12 @@ import { glasuren } from '../data/glasuren';
       </h2>
       <figure class="sticky-bild-wrap">
         <SigSticky variante="portrait">
-          {/* sizes: Bildbreite folgt aus der Kastenhöhe (cover), Höhe x 1,12 (Überstand) x 2000/1313; mobil und hochkant 1:1 mit Seitenrand = 115vw, Desktop 140vh */}
+          {/* sizes: Bildbreite folgt aus der Kastenhöhe (cover), Höhe x 2000/1313; mobil und hochkant 1:1 mit Seitenrand = 115vw, Desktop 140vh */}
           <Bild
             slot="bild"
             class="sticky-bild__img"
             src="/img/kwm/portrait-yjl.webp"
-            sizes="(max-width: 900px) 170vw, (orientation: portrait) 170vw, max(100vw, 239vh)"
+            sizes="(max-width: 900px) 170vw, (orientation: portrait) 170vw, max(100vw, 215vh)"
             width="2000"
             height="1313"
             loading="lazy"
@@ -307,7 +307,7 @@ import { glasuren } from '../data/glasuren';
 
     {/* Feuer: Text bleibt beim Scrollen auf dem Glasurfoto stehen */}
     <SigSticky variante="feuer" als="section" id="feuer" aria-labelledby="feuer-title">
-      {/* sizes: Bildbreite folgt aus der Kastenhöhe (cover), Höhe x 1,12 (Überstand) x 1,5; Desktop 160vh, mobil 150vh */}
+      {/* sizes: Bildbreite folgt aus der Kastenhöhe (cover), Höhe x 1,5; Desktop 160vh, mobil 150vh */}
       <Bild
         slot="bild"
         class="sticky-bild__img"

@@ -11,8 +11,8 @@ interface Props {
 const { variante, als: Tag = 'div', ...rest } = Astro.props;
 ---
 
-{/* Das Bild bleibt beim Scrollen stehen und der Text läuft darüber (sig-sticky.ts); ohne Skript stehen Bild und Text untereinander */}
-<Tag class={`sticky-bild sticky-bild--${variante}`} data-sig="sticky" {...rest}>
+{/* Der Text haftet oben im Bild (reines CSS), das Bild selbst bewegt sich nicht gegenläufig */}
+<Tag class={`sticky-bild sticky-bild--${variante}`} {...rest}>
   <div class="sticky-bild__media">
     <slot name="bild" />
   </div>
@@ -24,12 +24,9 @@ const { variante, als: Tag = 'div', ...rest } = Astro.props;
 <style is:global>
   /* Signatur: sticky – Text bleibt beim Scrollen oben im Foto stehen, bis das Bild durch ist (Porträt und Feuer).
      Abschnitt ist höher als der Bildschirm, die Textebene ist nur so hoch wie der Text, klebt oben und zieht am Ende mit dem Abschnitt weiter.
-     Das Foto läuft normal mit; src/scripts/sig-sticky.ts verschiebt es nur minimal gegenläufig (Parallax, ≤ 5 %). */
+     Das Foto läuft normal mit und bleibt im Rahmen ruhig (kein Parallax). */
   .sticky-bild {
     --sticky-h: 150svh;
-    --sticky-over-anteil: 0.06; /* Bild ragt oben und unten über, Platz für den Parallax */
-    --sticky-over: calc(var(--sticky-over-anteil) * 100%);
-    --sticky-shift: 0%; /* setzt sig-sticky.ts, Wertebereich ±5 % der Bildhöhe */
     --sticky-text-from: 1;
     --sticky-text-to: 9;
     position: relative;
@@ -53,12 +50,10 @@ const { variante, als: Tag = 'div', ...rest } = Astro.props;
   .sticky-bild__img {
     position: absolute;
     inset-inline: 0;
-    top: calc(var(--sticky-over) * -1);
+    inset-block: 0;
     width: 100%;
-    height: calc(100% + var(--sticky-over) * 2);
+    height: 100%;
     object-fit: cover;
-    transform: translate3d(0, var(--sticky-shift), 0);
-    will-change: transform;
   }
   /* Abdunklung: so viel wie für 4,5:1 nötig, stärker auf der Textseite, Foto bleibt rechts lesbar */
   .sticky-bild__media::after {
@@ -111,8 +106,8 @@ const { variante, als: Tag = 'div', ...rest } = Astro.props;
   .sticky-bild--portrait .sticky-bild__img {
     --bild-format: calc(2000 / 1313); /* Seitenverhältnis von portrait-yjl.webp */
     --bild-kopf: 0.16; /* Haar beginnt bei 19 % der Bildbreite; höchstens so viel links abschneiden */
-    /* Breite des Fotos bei cover: Kastenhöhe samt Überstand mal Seitenverhältnis, mindestens die Kastenbreite */
-    --bild-b: max(100cqw, 100cqh * (1 + 2 * var(--sticky-over-anteil)) * var(--bild-format));
+    /* Breite des Fotos bei cover: Kastenhöhe mal Seitenverhältnis, mindestens die Kastenbreite */
+    --bild-b: max(100cqw, 100cqh * var(--bild-format));
     object-position: max((100cqw - var(--bild-b)) * 0.55, var(--bild-b) * var(--bild-kopf) * -1) 50%;
   }
   /* Wie beim Feuer: Der Text steht oben im Bild fest (sticky), das Bild läuft darunter durch, am Ende zieht er mit */
@@ -198,21 +193,12 @@ const { variante, als: Tag = 'div', ...rest } = Astro.props;
       content: none;
     }
     .sticky-bild--portrait .sticky-bild__img {
-      inset-block: 0;
-      height: 100%;
-      transform: none;
       object-position: 8% 50%; /* Gesicht liegt im 4:5-Ausschnitt mittig */
     }
     .sticky-bild--portrait .sticky-bild__pane {
       position: static;
       padding-inline: 0;
       padding-block: var(--head-gap);
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .sticky-bild__img {
-      will-change: auto;
     }
   }
 </style>

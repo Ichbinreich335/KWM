@@ -5,7 +5,6 @@ const modules: Record<string, () => Promise<Signatur>> = {
   logo: () => import('./sig-logo'),
   farbskala: () => import('./sig-farbskala'),
   feuer: () => import('./sig-feuer'),
-  sticky: () => import('./sig-sticky'),
   aktuell: () => import('./sig-aktuell'),
   anfrage: () => import('./sig-anfrage'),
 };
