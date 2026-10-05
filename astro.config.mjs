@@ -78,6 +78,26 @@ export default defineConfig({
   // aktuelles.astro → dist/aktuelles.html, von Cloudflare als /aktuelles ausgeliefert
   build: { format: 'file', inlineStylesheets: 'never' },
   trailingSlash: 'never',
+  // CSP als <meta> mit Hashes der gebündelten Skripte und Styles (Astro). frame-ancestors steht in public/_headers.
+  security: {
+    csp: {
+      directives: [
+        "default-src 'self'",
+        "img-src 'self' data:",
+        "font-src 'self'",
+        "connect-src 'self'",
+        "base-uri 'self'",
+        "form-action 'self' mailto:",
+        "object-src 'none'",
+      ],
+      // Kopf-Skript in BaseLayout.astro (is:inline); tests/sicherheit.spec.ts rechnet den Hash nach
+      scriptDirective: { hashes: ['sha256-bzycTj6gg2/wtgss/NQeh2E42eImIs6BuefgIDZCIRI='] },
+      // style="…"-Attribute (Farbwerte der Farbskala, Glasuren, Positionen)
+      styleDirective: {
+        resources: ["'self'", { resource: "'unsafe-inline'", kind: 'attribute' }],
+      },
+    },
+  },
   // Globale Stile für die responsiven Bilder (max-width bei constrained)
   image: { responsiveStyles: true },
   // Astro 7 entfernt sonst Leerzeichen zwischen Inline-Elementen (Standard 'jsx')
