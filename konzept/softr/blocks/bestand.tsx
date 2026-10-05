@@ -2,13 +2,14 @@
 import { forwardRef, useEffect, useMemo, useRef, useState } from "react";
 import { datasource, q, useFieldOptions, useRecordCreate, useRecordDelete, useRecords, useRecordUpdate, useUpload } from "@/lib/datasource";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { AlertTriangle, Camera, Check, ChevronRight, ClipboardList, ImageOff, Images, LayoutGrid, List, Loader2, Minus, Pencil, Plus, Search, SlidersHorizontal, Star, X } from "lucide-react";
+import { AlertTriangle, Camera, Check, ChevronDown, ChevronRight, ClipboardList, ImageOff, Images, LayoutGrid, List, Loader2, Minus, Pencil, Plus, Search, Star, X } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 const PAGE_SIZE = 100;
 const VERFUEGBAR = "verfügbar";
@@ -370,6 +371,9 @@ const LINE = "border-neutral-300";
 // Jedes Fenster (Dialog). Rahmen in der App-Rahmenfarbe.
 const DIALOG_CLASS = `w-[calc(100vw-2rem)] max-h-[90vh] overflow-y-auto rounded-lg border ${LINE} p-4 sm:p-6 [&>button:last-child]:hidden`;
 
+// Jedes aufklappende Menü (Popover, Ausklappliste).
+const POPOVER_CLASS = `border ${LINE}`;
+
 // md:text-base hebt das md:text-sm der shadcn-Felder auf, damit Eingabe und Auswahlliste gleich groß schreiben.
 const FIELD_CLASS = `h-12 min-w-0 rounded-md text-base md:text-base ${LINE}`;
 
@@ -457,6 +461,11 @@ function SchalterFeld({ id, label, hint, checked, onChange, lage = "" }: { id: s
       <Switch id={id} className="scale-125 data-[state=unchecked]:bg-zinc-300" checked={checked} onCheckedChange={onChange} />
     </label>
   );
+}
+
+// Jedes Ankreuzfeld.
+function Ankreuzfeld({ checked, onChange }: { checked: boolean; onChange: (v: boolean) => void }) {
+  return <Checkbox className={LINE} checked={checked} onCheckedChange={(v) => onChange(v === true)} />;
 }
 
 const MOBILE_QUERY = "(max-width: 639px)";
@@ -1001,51 +1010,84 @@ function AnsichtToggle({ value, onChange }: { value: Ansicht; onChange: (a: Ansi
   );
 }
 
-// Filter-Knopf am Handy. Die Zahl zeigt, wie viele Filter gerade greifen.
-function FilterButton({ count, onClick }: { count: number; onClick: () => void }) {
+// Liste zum Ankreuzen, z. B. in einem Schnellfilter.
+function CheckList({ options, value, onChange }: { options: string[]; value: string[]; onChange: (v: string[]) => void }) {
+  if (options.length === 0) return <p className="text-sm text-muted-foreground p-2">Keine Werte vorhanden.</p>;
   return (
-    <Knopf variant={count ? "secondary" : "outline"} className="relative h-12 w-12 px-0 shrink-0" aria-label={count ? `Filter, ${count} aktiv` : "Filter"} onClick={onClick}>
-      <SlidersHorizontal className="w-5 h-5" aria-hidden />
-      {count > 0 && <span className="absolute -top-1.5 -right-1.5 min-w-5 h-5 px-1 rounded-full bg-primary text-primary-foreground text-xs font-medium leading-5 tabular-nums">{count}</span>}
-    </Knopf>
+    <>
+      {options.map((o) => {
+        const checked = value.includes(o);
+        return (
+          <label key={o} className="flex items-center gap-3 min-h-11 px-2 rounded-md hover:bg-muted cursor-pointer">
+            <Ankreuzfeld checked={checked} onChange={() => onChange(checked ? value.filter((x) => x !== o) : [...value, o])} />
+            <span className="text-base">{o}</span>
+          </label>
+        );
+      })}
+    </>
   );
 }
 
-// Filter am Handy als Blatt von unten (wischbar). Auswahllisten darin öffnen die Auswahl des Telefons.
-function FilterSheet({
-  open,
-  onOpenChange,
-  resultText,
-  canReset,
-  onReset,
-  children,
-}: {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  resultText: string;
-  canReset: boolean;
-  onReset: () => void;
-  children: React.ReactNode;
-}) {
+// Schnellfilter wie in Softrs Tabellen: ein Knopf je Feld, darunter klappt die Auswahl auf. Mehrere Werte je Feld (oder).
+// Am Handy und am Rechner gleich, ohne Blatt von unten.
+function Schnellfilter({ label, options, value, onChange }: { label: string; options: string[]; value: string[]; onChange: (v: string[]) => void }) {
+  const active = value.length > 0;
   return (
-    <Drawer open={open} onOpenChange={onOpenChange}>
-      {/* Hoher z-index: Das Blatt muss über Softrs eigener Navigationsleiste liegen. Am Rechner mittig und schmal statt bildschirmbreit. */}
-      <DrawerContent lang="de" className={`z-[99999] sm:mx-auto sm:max-w-lg ${LINE}`}>
-        <DrawerHeader className="text-left">
-          <DrawerTitle className="text-xl">Filter</DrawerTitle>
-          <DrawerDescription className="text-base">Gilt sofort für die Liste.</DrawerDescription>
-        </DrawerHeader>
-        <div className="px-4 space-y-5">{children}</div>
-        <DrawerFooter className="pt-6 pb-[calc(1rem+env(safe-area-inset-bottom))]">
-          <DrawerClose asChild>
-            <Knopf className="h-12 text-base">{resultText}</Knopf>
-          </DrawerClose>
-          <Knopf variant="ghost" className="h-12 text-base" disabled={!canReset} onClick={onReset}>
-            Filter zurücksetzen
+    <Popover>
+      <PopoverTrigger asChild>
+        <Knopf variant={active ? "secondary" : "outline"} className="h-11 text-base font-normal max-w-72 shrink-0">
+          <span className="truncate">
+            {label}
+            {active && <span className="font-medium">: {value.length === 1 ? value[0] : `${value.length} gewählt`}</span>}
+          </span>
+          <ChevronDown className="w-4 h-4 ml-1 shrink-0" aria-hidden />
+        </Knopf>
+      </PopoverTrigger>
+      <PopoverContent align="start" className={`${POPOVER_CLASS} w-64 max-h-80 overflow-y-auto p-2`}>
+        <CheckList options={options} value={value} onChange={onChange} />
+        {active && (
+          <Knopf variant="ghost" className="w-full h-11 text-base mt-1" onClick={() => onChange([])}>
+            Auswahl aufheben
           </Knopf>
-        </DrawerFooter>
-      </DrawerContent>
-    </Drawer>
+        )}
+      </PopoverContent>
+    </Popover>
+  );
+}
+
+// Eine Wahl aus wenigen festen Möglichkeiten im selben Knopf-Stil, z. B. die Sortierung.
+function EinzelWahl<K extends string>({ label, options, value, onChange }: { label: string; options: { key: K; label: string }[]; value: K; onChange: (key: K) => void }) {
+  const [open, setOpen] = useState(false);
+  const aktuell = options.find((o) => o.key === value);
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Knopf variant="outline" className="h-11 text-base font-normal max-w-72 shrink-0">
+          <span className="truncate">
+            {label}
+            {aktuell && <span className="font-medium">: {aktuell.label}</span>}
+          </span>
+          <ChevronDown className="w-4 h-4 ml-1 shrink-0" aria-hidden />
+        </Knopf>
+      </PopoverTrigger>
+      <PopoverContent align="start" className={`${POPOVER_CLASS} w-64 p-2`}>
+        {options.map((o) => (
+          <button
+            key={o.key}
+            type="button"
+            aria-pressed={o.key === value}
+            className={`w-full flex items-center gap-3 min-h-11 px-2 rounded-md text-left text-base hover:bg-muted ${o.key === value ? "font-medium" : ""}`}
+            onClick={() => {
+              onChange(o.key);
+              setOpen(false);
+            }}
+          >
+            <Check className={`w-4 h-4 shrink-0 ${o.key === value ? "" : "invisible"}`} aria-hidden />
+            {o.label}
+          </button>
+        ))}
+      </PopoverContent>
+    </Popover>
   );
 }
 
@@ -2482,12 +2524,11 @@ export default function Block() {
   });
   const [search, setSearch] = useState(() => initialParam("q"));
   const [sort, setSort] = useState<SortKey>("neu");
-  const [typFilter, setTypFilter] = useState(() => initialParam("typ"));
+  const [typFilter, setTypFilter] = useState<string[]>(() => (initialParam("typ") ? [initialParam("typ")] : []));
   const [selectedId, setSelectedId] = useState(() => initialParam("id"));
   const [modellKey, setModellKey] = useState("");
   const [mengenFilter, setMengenFilter] = useState<MengenFilter>("alle");
   const [inventur, setInventur] = useState(false);
-  const [filterSheet, setFilterSheet] = useState(false);
   const [ansicht, setAnsicht] = useAnsicht();
   const [limit, setLimit] = useState(LIST_STEP);
 
@@ -2534,7 +2575,7 @@ export default function Block() {
   const activeTab = TABS.find((t) => t.key === tab) ?? TABS[0];
   const term = search.trim();
   const visible = useMemo(
-    () => unikate.filter((u) => (activeTab.match ? activeTab.match(u) : true) && (!typFilter || u.typ === typFilter) && matchesSearch(u, term)).sort((a, b) => compare(a, b, sort)),
+    () => unikate.filter((u) => (activeTab.match ? activeTab.match(u) : true) && (!typFilter.length || typFilter.includes(u.typ)) && matchesSearch(u, term)).sort((a, b) => compare(a, b, sort)),
     [unikate, activeTab, typFilter, term, sort],
   );
   const tabs = useMemo(() => TABS.map((t) => ({ key: t.key, label: t.label, count: unikate.filter((u) => (t.match ? t.match(u) : true)).length })), [unikate]);
@@ -2543,7 +2584,7 @@ export default function Block() {
   const serie = art === "edition" ? EDITION_PROGRAMM : GESCHIRR;
   const postenSerie = posten.filter((p) => p.serie === serie);
   const staende = nachModell(postenSerie);
-  const imTyp = staende.filter((s) => !typFilter || s.typ === typFilter);
+  const imTyp = staende.filter((s) => !typFilter.length || typFilter.includes(s.typ));
   const mengenChips = MENGEN_FILTER.filter((f) => !NUR_WENN_VORHANDEN.includes(f.key) || imTyp.some(f.match)).map((f) => ({ key: f.key, label: f.label, count: imTyp.filter(f.match).length }));
   const activeMenge = MENGEN_FILTER.find((f) => f.key === mengenFilter) ?? MENGEN_FILTER[0];
   const visibleStaende = imTyp
@@ -2560,7 +2601,7 @@ export default function Block() {
   const loading = unikateQuery.status === "pending" || editionQuery.status === "pending";
   const failed = unikateQuery.status === "error" || editionQuery.status === "error";
   const stueckGesamt = visibleStaende.reduce((n, s) => n + Object.values(s.je).reduce((a, b) => a + b, 0), 0);
-  const filtered = !!(search || typFilter);
+  const filtered = !!(search || typFilter.length);
   const canEdit = editionUpdate.enabled && editionCreate.enabled && editionDelete.enabled;
 
   // Umbuchen immer auf dem frisch geladenen Stand. Erst das Ziel schreiben, dann die Quelle verringern:
@@ -2679,30 +2720,6 @@ export default function Block() {
     }
   }
 
-  // Filter-Auswahllisten im Blatt (Handy und Rechner gleich), mit sichtbarer Beschriftung.
-  const typAuswahl = (id: string, liste: string[]) => (
-    <Auswahl id={id} value={typFilter} onChange={(e) => setTypFilter(e.target.value)}>
-      <option value="">Alle Typen</option>
-      {liste.map((t) => (
-        <option key={t} value={t}>
-          {t}
-        </option>
-      ))}
-    </Auswahl>
-  );
-  const sortAuswahl = (id: string) => (
-    <Auswahl id={id} value={sort} onChange={(e) => setSort(e.target.value as SortKey)}>
-      {SORTS.map((s) => (
-        <option key={s.key} value={s.key}>
-          {s.label}
-        </option>
-      ))}
-    </Auswahl>
-  );
-  const filterCount = typFilter ? 1 : 0;
-  function resetFilters() {
-    setTypFilter("");
-  }
   const searchPlaceholder = isMenge ? "Nummer, Modell, Kunde" : "Name, Nummer, Glasur, Ort";
   const inventurButton =
     isMenge && !inventur && editionUpdate.enabled ? (
@@ -2732,7 +2749,7 @@ export default function Block() {
           onChange={(key) => {
             setArt(key);
             setSearch("");
-            setTypFilter("");
+            setTypFilter([]);
             setLimit(LIST_STEP);
             setInventur(false);
           }}
@@ -2752,32 +2769,14 @@ export default function Block() {
           />
         )}
 
-        <div className="flex gap-3">
+        {/* Suche und Filter wie in der Tabelle: Knöpfe mit aufklappender Auswahl, am Handy als Wischzeile unter der Suche. */}
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
           <SearchField label="Suche" placeholder={searchPlaceholder} value={search} onChange={setSearch} />
-          <FilterButton count={filterCount} onClick={() => setFilterSheet(true)} />
-        </div>
-
-        <FilterSheet
-          open={filterSheet}
-          onOpenChange={setFilterSheet}
-          resultText={isMenge ? `${zahl.format(visibleStaende.length)} ${visibleStaende.length === 1 ? "Modell" : "Modelle"} anzeigen` : `${zahl.format(visible.length)} ${visible.length === 1 ? "Stück" : "Stücke"} anzeigen`}
-          canReset={filterCount > 0}
-          onReset={resetFilters}
-        >
-          <div>
-            <FieldLabel htmlFor="f-typ">Typ</FieldLabel>
-            {typAuswahl(
-              "f-typ",
-              isMenge ? typenMenge : typen.map((t) => t.label),
-            )}
+          <div className={`${SCROLL_ROW} sm:flex-nowrap`}>
+            <Schnellfilter label="Typ" options={isMenge ? typenMenge : typen.map((t) => t.label)} value={typFilter} onChange={setTypFilter} />
+            {!isMenge && <EinzelWahl label="Sortierung" options={SORTS} value={sort} onChange={setSort} />}
           </div>
-          {!isMenge && (
-            <div>
-              <FieldLabel htmlFor="f-sort">Sortierung</FieldLabel>
-              {sortAuswahl("f-sort")}
-            </div>
-          )}
-        </FilterSheet>
+        </div>
 
         {failed ? (
           <ErrorState text="Der Bestand konnte nicht geladen werden. Bitte die Seite neu laden." />
@@ -2787,7 +2786,7 @@ export default function Block() {
           <InventurView rows={postenSerie} onApply={applyInventur} onClose={() => setInventur(false)} />
         ) : isMenge ? (
           visibleStaende.length === 0 ? (
-            <EmptyState text={term || typFilter || mengenFilter !== "alle" ? "Nichts gefunden. Suche oder Filter ändern." : `Noch kein ${serie} im Lager. Neue Ware unter „Erfassen“ eintragen.`} />
+            <EmptyState text={term || typFilter.length || mengenFilter !== "alle" ? "Nichts gefunden. Suche oder Filter ändern." : `Noch kein ${serie} im Lager. Neue Ware unter „Erfassen“ eintragen.`} />
           ) : (
             <ul className={`${PANEL_CLASS} px-3 divide-y`}>
               {visibleStaende.map((s) => (
@@ -2817,7 +2816,7 @@ export default function Block() {
                 className="h-11 text-base"
                 onClick={() => {
                   setSearch("");
-                  setTypFilter("");
+                  setTypFilter([]);
                 }}
               >
                 Suche und Filter zurücksetzen

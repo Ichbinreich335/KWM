@@ -18,9 +18,8 @@ import {
   ErrorText,
   Feld,
   FieldLabel,
-  FilterButton,
   FilterChips,
-  FilterSheet,
+  EinzelWahl,
   GlasurWahl,
   Hint,
   Knopf,
@@ -32,6 +31,8 @@ import {
   PanelHeader,
   PhotoPicker,
   SchalterFeld,
+  Schnellfilter,
+  SCROLL_ROW,
   SearchField,
   SearchPick,
   SEITE_CLASS,
@@ -1479,12 +1480,11 @@ export default function Block() {
   });
   const [search, setSearch] = useState(() => initialParam("q"));
   const [sort, setSort] = useState<SortKey>("neu");
-  const [typFilter, setTypFilter] = useState(() => initialParam("typ"));
+  const [typFilter, setTypFilter] = useState<string[]>(() => (initialParam("typ") ? [initialParam("typ")] : []));
   const [selectedId, setSelectedId] = useState(() => initialParam("id"));
   const [modellKey, setModellKey] = useState("");
   const [mengenFilter, setMengenFilter] = useState<MengenFilter>("alle");
   const [inventur, setInventur] = useState(false);
-  const [filterSheet, setFilterSheet] = useState(false);
   const [ansicht, setAnsicht] = useAnsicht();
   const [limit, setLimit] = useState(LIST_STEP);
 
@@ -1531,7 +1531,7 @@ export default function Block() {
   const activeTab = TABS.find((t) => t.key === tab) ?? TABS[0];
   const term = search.trim();
   const visible = useMemo(
-    () => unikate.filter((u) => (activeTab.match ? activeTab.match(u) : true) && (!typFilter || u.typ === typFilter) && matchesSearch(u, term)).sort((a, b) => compare(a, b, sort)),
+    () => unikate.filter((u) => (activeTab.match ? activeTab.match(u) : true) && (!typFilter.length || typFilter.includes(u.typ)) && matchesSearch(u, term)).sort((a, b) => compare(a, b, sort)),
     [unikate, activeTab, typFilter, term, sort],
   );
   const tabs = useMemo(() => TABS.map((t) => ({ key: t.key, label: t.label, count: unikate.filter((u) => (t.match ? t.match(u) : true)).length })), [unikate]);
@@ -1540,7 +1540,7 @@ export default function Block() {
   const serie = art === "edition" ? EDITION_PROGRAMM : GESCHIRR;
   const postenSerie = posten.filter((p) => p.serie === serie);
   const staende = nachModell(postenSerie);
-  const imTyp = staende.filter((s) => !typFilter || s.typ === typFilter);
+  const imTyp = staende.filter((s) => !typFilter.length || typFilter.includes(s.typ));
   const mengenChips = MENGEN_FILTER.filter((f) => !NUR_WENN_VORHANDEN.includes(f.key) || imTyp.some(f.match)).map((f) => ({ key: f.key, label: f.label, count: imTyp.filter(f.match).length }));
   const activeMenge = MENGEN_FILTER.find((f) => f.key === mengenFilter) ?? MENGEN_FILTER[0];
   const visibleStaende = imTyp
@@ -1557,7 +1557,7 @@ export default function Block() {
   const loading = unikateQuery.status === "pending" || editionQuery.status === "pending";
   const failed = unikateQuery.status === "error" || editionQuery.status === "error";
   const stueckGesamt = visibleStaende.reduce((n, s) => n + Object.values(s.je).reduce((a, b) => a + b, 0), 0);
-  const filtered = !!(search || typFilter);
+  const filtered = !!(search || typFilter.length);
   const canEdit = editionUpdate.enabled && editionCreate.enabled && editionDelete.enabled;
 
   // Umbuchen immer auf dem frisch geladenen Stand. Erst das Ziel schreiben, dann die Quelle verringern:
@@ -1676,30 +1676,6 @@ export default function Block() {
     }
   }
 
-  // Filter-Auswahllisten im Blatt (Handy und Rechner gleich), mit sichtbarer Beschriftung.
-  const typAuswahl = (id: string, liste: string[]) => (
-    <Auswahl id={id} value={typFilter} onChange={(e) => setTypFilter(e.target.value)}>
-      <option value="">Alle Typen</option>
-      {liste.map((t) => (
-        <option key={t} value={t}>
-          {t}
-        </option>
-      ))}
-    </Auswahl>
-  );
-  const sortAuswahl = (id: string) => (
-    <Auswahl id={id} value={sort} onChange={(e) => setSort(e.target.value as SortKey)}>
-      {SORTS.map((s) => (
-        <option key={s.key} value={s.key}>
-          {s.label}
-        </option>
-      ))}
-    </Auswahl>
-  );
-  const filterCount = typFilter ? 1 : 0;
-  function resetFilters() {
-    setTypFilter("");
-  }
   const searchPlaceholder = isMenge ? "Nummer, Modell, Kunde" : "Name, Nummer, Glasur, Ort";
   const inventurButton =
     isMenge && !inventur && editionUpdate.enabled ? (
@@ -1729,7 +1705,7 @@ export default function Block() {
           onChange={(key) => {
             setArt(key);
             setSearch("");
-            setTypFilter("");
+            setTypFilter([]);
             setLimit(LIST_STEP);
             setInventur(false);
           }}
@@ -1749,32 +1725,14 @@ export default function Block() {
           />
         )}
 
-        <div className="flex gap-3">
+        {/* Suche und Filter wie in der Tabelle: Knöpfe mit aufklappender Auswahl, am Handy als Wischzeile unter der Suche. */}
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
           <SearchField label="Suche" placeholder={searchPlaceholder} value={search} onChange={setSearch} />
-          <FilterButton count={filterCount} onClick={() => setFilterSheet(true)} />
-        </div>
-
-        <FilterSheet
-          open={filterSheet}
-          onOpenChange={setFilterSheet}
-          resultText={isMenge ? `${zahl.format(visibleStaende.length)} ${visibleStaende.length === 1 ? "Modell" : "Modelle"} anzeigen` : `${zahl.format(visible.length)} ${visible.length === 1 ? "Stück" : "Stücke"} anzeigen`}
-          canReset={filterCount > 0}
-          onReset={resetFilters}
-        >
-          <div>
-            <FieldLabel htmlFor="f-typ">Typ</FieldLabel>
-            {typAuswahl(
-              "f-typ",
-              isMenge ? typenMenge : typen.map((t) => t.label),
-            )}
+          <div className={`${SCROLL_ROW} sm:flex-nowrap`}>
+            <Schnellfilter label="Typ" options={isMenge ? typenMenge : typen.map((t) => t.label)} value={typFilter} onChange={setTypFilter} />
+            {!isMenge && <EinzelWahl label="Sortierung" options={SORTS} value={sort} onChange={setSort} />}
           </div>
-          {!isMenge && (
-            <div>
-              <FieldLabel htmlFor="f-sort">Sortierung</FieldLabel>
-              {sortAuswahl("f-sort")}
-            </div>
-          )}
-        </FilterSheet>
+        </div>
 
         {failed ? (
           <ErrorState text="Der Bestand konnte nicht geladen werden. Bitte die Seite neu laden." />
@@ -1784,7 +1742,7 @@ export default function Block() {
           <InventurView rows={postenSerie} onApply={applyInventur} onClose={() => setInventur(false)} />
         ) : isMenge ? (
           visibleStaende.length === 0 ? (
-            <EmptyState text={term || typFilter || mengenFilter !== "alle" ? "Nichts gefunden. Suche oder Filter ändern." : `Noch kein ${serie} im Lager. Neue Ware unter „Erfassen“ eintragen.`} />
+            <EmptyState text={term || typFilter.length || mengenFilter !== "alle" ? "Nichts gefunden. Suche oder Filter ändern." : `Noch kein ${serie} im Lager. Neue Ware unter „Erfassen“ eintragen.`} />
           ) : (
             <ul className={`${PANEL_CLASS} px-3 divide-y`}>
               {visibleStaende.map((s) => (
@@ -1814,7 +1772,7 @@ export default function Block() {
                 className="h-11 text-base"
                 onClick={() => {
                   setSearch("");
-                  setTypFilter("");
+                  setTypFilter([]);
                 }}
               >
                 Suche und Filter zurücksetzen

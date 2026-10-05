@@ -444,6 +444,51 @@ function ExportMenu({ onCsv, onPdf, disabled }: { onCsv: () => void; onPdf: () =
   );
 }
 
+// Liste zum Ankreuzen, z. B. in einem Schnellfilter.
+function CheckList({ options, value, onChange }: { options: string[]; value: string[]; onChange: (v: string[]) => void }) {
+  if (options.length === 0) return <p className="text-sm text-muted-foreground p-2">Keine Werte vorhanden.</p>;
+  return (
+    <>
+      {options.map((o) => {
+        const checked = value.includes(o);
+        return (
+          <label key={o} className="flex items-center gap-3 min-h-11 px-2 rounded-md hover:bg-muted cursor-pointer">
+            <Ankreuzfeld checked={checked} onChange={() => onChange(checked ? value.filter((x) => x !== o) : [...value, o])} />
+            <span className="text-base">{o}</span>
+          </label>
+        );
+      })}
+    </>
+  );
+}
+
+// Schnellfilter wie in Softrs Tabellen: ein Knopf je Feld, darunter klappt die Auswahl auf. Mehrere Werte je Feld (oder).
+// Am Handy und am Rechner gleich, ohne Blatt von unten.
+function Schnellfilter({ label, options, value, onChange }: { label: string; options: string[]; value: string[]; onChange: (v: string[]) => void }) {
+  const active = value.length > 0;
+  return (
+    <Popover>
+      <PopoverTrigger asChild>
+        <Knopf variant={active ? "secondary" : "outline"} className="h-11 text-base font-normal max-w-72 shrink-0">
+          <span className="truncate">
+            {label}
+            {active && <span className="font-medium">: {value.length === 1 ? value[0] : `${value.length} gewählt`}</span>}
+          </span>
+          <ChevronDown className="w-4 h-4 ml-1 shrink-0" aria-hidden />
+        </Knopf>
+      </PopoverTrigger>
+      <PopoverContent align="start" className={`${POPOVER_CLASS} w-64 max-h-80 overflow-y-auto p-2`}>
+        <CheckList options={options} value={value} onChange={onChange} />
+        {active && (
+          <Knopf variant="ghost" className="w-full h-11 text-base mt-1" onClick={() => onChange([])}>
+            Auswahl aufheben
+          </Knopf>
+        )}
+      </PopoverContent>
+    </Popover>
+  );
+}
+
 const ds = datasource.define({ unikate: "unikate", edition: "edition", ansichten: "ansichten" });
 
 const unikatSelect = q.select({
@@ -959,23 +1004,6 @@ function matchesQuick(r: Row, quick: Quick): boolean {
   });
 }
 
-function CheckList({ options, value, onChange }: { options: string[]; value: string[]; onChange: (v: string[]) => void }) {
-  if (options.length === 0) return <p className="text-sm text-muted-foreground p-2">Keine Werte vorhanden.</p>;
-  return (
-    <>
-      {options.map((o) => {
-        const checked = value.includes(o);
-        return (
-          <label key={o} className="flex items-center gap-3 min-h-11 px-2 rounded-md hover:bg-muted cursor-pointer">
-            <Ankreuzfeld checked={checked} onChange={() => onChange(checked ? value.filter((x) => x !== o) : [...value, o])} />
-            <span className="text-base">{o}</span>
-          </label>
-        );
-      })}
-    </>
-  );
-}
-
 function MultiPick({ options, value, onChange, label }: { options: string[]; value: string[]; onChange: (v: string[]) => void; label: string }) {
   const text = value.length === 0 ? "Wert wählen" : value.length <= 2 ? value.join(", ") : `${value.length} ausgewählt`;
   return (
@@ -987,32 +1015,6 @@ function MultiPick({ options, value, onChange, label }: { options: string[]; val
       </PopoverTrigger>
       <PopoverContent align="start" className={`${POPOVER_CLASS} w-64 max-h-80 overflow-y-auto p-2`}>
         <CheckList options={options} value={value} onChange={onChange} />
-      </PopoverContent>
-    </Popover>
-  );
-}
-
-// Schnellfilter wie in Softrs Tabellen: ein Knopf je Feld, mehrere Werte je Feld (oder), Felder untereinander (und).
-function QuickFilter({ label, options, value, onChange }: { label: string; options: string[]; value: string[]; onChange: (v: string[]) => void }) {
-  const active = value.length > 0;
-  return (
-    <Popover>
-      <PopoverTrigger asChild>
-        <Knopf variant={active ? "secondary" : "outline"} className="h-11 text-base font-normal max-w-72">
-          <span className="truncate">
-            {label}
-            {active && <span className="font-medium">: {value.length === 1 ? value[0] : `${value.length} gewählt`}</span>}
-          </span>
-          <ChevronDown className="w-4 h-4 ml-1 shrink-0" aria-hidden />
-        </Knopf>
-      </PopoverTrigger>
-      <PopoverContent align="start" className={`${POPOVER_CLASS} w-64 max-h-80 overflow-y-auto p-2`}>
-        <CheckList options={options} value={value} onChange={onChange} />
-        {active && (
-          <Knopf variant="ghost" className="w-full h-11 text-base mt-1" onClick={() => onChange([])}>
-            Auswahl aufheben
-          </Knopf>
-        )}
       </PopoverContent>
     </Popover>
   );
@@ -1447,7 +1449,7 @@ export default function Block() {
         <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
           <div className={`${SCROLL_ROW} sm:contents`}>
             {quickKeys.map((key) => (
-              <QuickFilter
+              <Schnellfilter
                 key={key}
                 label={quickLabel(key, tab)}
                 options={optionsFor(key)}

@@ -9,8 +9,8 @@ import { Switch } from "@/components/ui/switch";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
-import { AlertTriangle, Camera, ChevronDown, ChevronRight, Download, FileSpreadsheet, ImageOff, LayoutGrid, List, Loader2, Minus, Plus, Printer, Search, SlidersHorizontal, X } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { AlertTriangle, Camera, Check, ChevronDown, ChevronRight, Download, FileSpreadsheet, ImageOff, LayoutGrid, List, Loader2, Minus, Plus, Printer, Search, X } from "lucide-react";
 import { AUSGESTELLT, GESCHRUEHT, GLASIERT, KOMMISSION, RESERVIERT, ROH, VERFUEGBAR, VERKAUFT } from "../shared/konstanten";
 import { type Attachment, type Opt, type ThumbSize, thumb } from "../shared/daten";
 
@@ -823,50 +823,83 @@ export function AnsichtToggle({ value, onChange }: { value: Ansicht; onChange: (
   );
 }
 
-// Filter-Knopf am Handy. Die Zahl zeigt, wie viele Filter gerade greifen.
-export function FilterButton({ count, onClick }: { count: number; onClick: () => void }) {
+// Liste zum Ankreuzen, z. B. in einem Schnellfilter.
+export function CheckList({ options, value, onChange }: { options: string[]; value: string[]; onChange: (v: string[]) => void }) {
+  if (options.length === 0) return <p className="text-sm text-muted-foreground p-2">Keine Werte vorhanden.</p>;
   return (
-    <Knopf variant={count ? "secondary" : "outline"} className="relative h-12 w-12 px-0 shrink-0" aria-label={count ? `Filter, ${count} aktiv` : "Filter"} onClick={onClick}>
-      <SlidersHorizontal className="w-5 h-5" aria-hidden />
-      {count > 0 && <span className="absolute -top-1.5 -right-1.5 min-w-5 h-5 px-1 rounded-full bg-primary text-primary-foreground text-xs font-medium leading-5 tabular-nums">{count}</span>}
-    </Knopf>
+    <>
+      {options.map((o) => {
+        const checked = value.includes(o);
+        return (
+          <label key={o} className="flex items-center gap-3 min-h-11 px-2 rounded-md hover:bg-muted cursor-pointer">
+            <Ankreuzfeld checked={checked} onChange={() => onChange(checked ? value.filter((x) => x !== o) : [...value, o])} />
+            <span className="text-base">{o}</span>
+          </label>
+        );
+      })}
+    </>
   );
 }
 
-// Filter am Handy als Blatt von unten (wischbar). Auswahllisten darin öffnen die Auswahl des Telefons.
-export function FilterSheet({
-  open,
-  onOpenChange,
-  resultText,
-  canReset,
-  onReset,
-  children,
-}: {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  resultText: string;
-  canReset: boolean;
-  onReset: () => void;
-  children: React.ReactNode;
-}) {
+// Schnellfilter wie in Softrs Tabellen: ein Knopf je Feld, darunter klappt die Auswahl auf. Mehrere Werte je Feld (oder).
+// Am Handy und am Rechner gleich, ohne Blatt von unten.
+export function Schnellfilter({ label, options, value, onChange }: { label: string; options: string[]; value: string[]; onChange: (v: string[]) => void }) {
+  const active = value.length > 0;
   return (
-    <Drawer open={open} onOpenChange={onOpenChange}>
-      {/* Hoher z-index: Das Blatt muss über Softrs eigener Navigationsleiste liegen. Am Rechner mittig und schmal statt bildschirmbreit. */}
-      <DrawerContent lang="de" className={`z-[99999] sm:mx-auto sm:max-w-lg ${LINE}`}>
-        <DrawerHeader className="text-left">
-          <DrawerTitle className="text-xl">Filter</DrawerTitle>
-          <DrawerDescription className="text-base">Gilt sofort für die Liste.</DrawerDescription>
-        </DrawerHeader>
-        <div className="px-4 space-y-5">{children}</div>
-        <DrawerFooter className="pt-6 pb-[calc(1rem+env(safe-area-inset-bottom))]">
-          <DrawerClose asChild>
-            <Knopf className="h-12 text-base">{resultText}</Knopf>
-          </DrawerClose>
-          <Knopf variant="ghost" className="h-12 text-base" disabled={!canReset} onClick={onReset}>
-            Filter zurücksetzen
+    <Popover>
+      <PopoverTrigger asChild>
+        <Knopf variant={active ? "secondary" : "outline"} className="h-11 text-base font-normal max-w-72 shrink-0">
+          <span className="truncate">
+            {label}
+            {active && <span className="font-medium">: {value.length === 1 ? value[0] : `${value.length} gewählt`}</span>}
+          </span>
+          <ChevronDown className="w-4 h-4 ml-1 shrink-0" aria-hidden />
+        </Knopf>
+      </PopoverTrigger>
+      <PopoverContent align="start" className={`${POPOVER_CLASS} w-64 max-h-80 overflow-y-auto p-2`}>
+        <CheckList options={options} value={value} onChange={onChange} />
+        {active && (
+          <Knopf variant="ghost" className="w-full h-11 text-base mt-1" onClick={() => onChange([])}>
+            Auswahl aufheben
           </Knopf>
-        </DrawerFooter>
-      </DrawerContent>
-    </Drawer>
+        )}
+      </PopoverContent>
+    </Popover>
+  );
+}
+
+// Eine Wahl aus wenigen festen Möglichkeiten im selben Knopf-Stil, z. B. die Sortierung.
+export function EinzelWahl<K extends string>({ label, options, value, onChange }: { label: string; options: { key: K; label: string }[]; value: K; onChange: (key: K) => void }) {
+  const [open, setOpen] = useState(false);
+  const aktuell = options.find((o) => o.key === value);
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Knopf variant="outline" className="h-11 text-base font-normal max-w-72 shrink-0">
+          <span className="truncate">
+            {label}
+            {aktuell && <span className="font-medium">: {aktuell.label}</span>}
+          </span>
+          <ChevronDown className="w-4 h-4 ml-1 shrink-0" aria-hidden />
+        </Knopf>
+      </PopoverTrigger>
+      <PopoverContent align="start" className={`${POPOVER_CLASS} w-64 p-2`}>
+        {options.map((o) => (
+          <button
+            key={o.key}
+            type="button"
+            aria-pressed={o.key === value}
+            className={`w-full flex items-center gap-3 min-h-11 px-2 rounded-md text-left text-base hover:bg-muted ${o.key === value ? "font-medium" : ""}`}
+            onClick={() => {
+              onChange(o.key);
+              setOpen(false);
+            }}
+          >
+            <Check className={`w-4 h-4 shrink-0 ${o.key === value ? "" : "invisible"}`} aria-hidden />
+            {o.label}
+          </button>
+        ))}
+      </PopoverContent>
+    </Popover>
   );
 }
