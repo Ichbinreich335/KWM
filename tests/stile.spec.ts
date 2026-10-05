@@ -1,13 +1,11 @@
 import { expect, test } from '@playwright/test';
-import { seiten, ziel } from './seiten';
-
-test.skip(ziel !== 'astro', 'prüft den Astro-Build unter wrangler dev');
+import { seiten } from './seiten';
 
 // Die Optik-Tests laufen mit reduzierter Bewegung und sehen deshalb nicht, wenn Regeln mit Skriptklasse
 // am html-Element wirkungslos sind. Diese Tests laufen mit voller Bewegung und mit Skript.
 test.use({ reducedMotion: 'no-preference' });
 
-const seitenPfade = seiten.map((seite) => seite.astro);
+const seitenPfade = seiten.map((seite) => seite.pfad);
 
 /** Zeigt einen Stil eines Elements (oder Pseudo-Elements) im Zustand, den die Seite gerade hat. */
 async function stil(page: import('@playwright/test').Page, selektor: string, eigenschaft: string, pseudo?: string) {

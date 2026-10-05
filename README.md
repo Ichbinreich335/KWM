@@ -10,14 +10,13 @@ Node 24 (siehe `.nvmrc`).
 npm install
 npx playwright install chromium webkit   # einmalig, für die Tests (WebKit = Safari)
 npm run dev                       # Entwicklungsserver http://localhost:4321
-npm run preview                   # baut dist/ und startet wrangler dev (wie in Produktion: Weiterleitungen, Header, 404)
+npm run preview                   # baut dist/ und startet wrangler dev (wie in Produktion: Header, 404)
 ```
 
 ## Prüfen
 
 ```bash
 npm run check                     # Prettier, ESLint, astro check, Worker-Typen, Unit-Tests und Worker-Tests (Vitest), Build – muss vor jedem Merge grün sein (CI prüft dasselbe)
-npm run test:ausgangsstand        # Referenz-Screens aus dem Prototyp erzeugen (tests/__screens__/, nicht im Repo)
 npm run test:unit                 # Unit-Tests der Skripte und Daten (Vitest, src/**/*.test.ts)
 npm run test:worker               # nur die Worker-Tests (Vitest in workerd, vitest.worker.config.ts)
 npm run types                     # worker-configuration.d.ts neu erzeugen, nach jeder Änderung an wrangler.jsonc
@@ -31,7 +30,7 @@ OPTIK_TOLERANZ=0.02 npm run test:optik   # höhere Toleranz (Standard 0.002), z.
 | -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `tests/optik.spec.ts`            | Ganzseitige Screens aller 13 Seiten, Desktop 1440 px und Mobil 390 px in Chromium und WebKit (eigene Referenzen je Projekt); keine Konsolenfehler |
 | `tests/bewegung.spec.ts`         | Mit voller Bewegung (Chromium, WebKit, iPhone): kein Bild hängt am Scrollen, keine Sprünge, Inhalte sichtbar ohne Hauptskript                     |
-| `tests/routen.spec.ts`           | 404-Seite, saubere URLs ohne `.html`, `noindex`, Linkprüfung aller Seiten, Weiterleitung alter `/v3/`-Links                                       |
+| `tests/routen.spec.ts`           | 404-Seite, saubere URLs ohne `.html`, `noindex`, Linkprüfung aller Seiten                                                                         |
 | `tests/verhalten.spec.ts`        | Anfrage-Leiste und -Formular, Sonderzeichen, Leerzeichen, datumsabhängige Hinweise                                                                |
 | `tests/barrierefreiheit.spec.ts` | axe-core, WCAG 2.2 AA, alle Seiten                                                                                                                |
 | `tests/formular.spec.ts`         | Anfrageformular gegen `wrangler dev` mit Turnstile-Testschlüsseln: Danke-Zustand, Versandfehler, Feldfehler (braucht Netz)                        |
@@ -69,7 +68,7 @@ src/styles/           basis.css (bindet global.css und pages.css ein), seiten/ (
 src/scripts/          Browser-Skripte (TypeScript, Unit-Tests `*.test.ts` mit Vitest: `npm run test:unit`): status (Ausstellungsstatus aus dem Datum, `heuteTag`), lesetitel, zeitraum, anfrage-link, main, signaturen (lädt die sig-* als eigene Chunks), keramik (gemeinsame Typen und Daten); das Layout bindet sie als ein verarbeitetes Skript ein
 src/assets/fonts/     Selbst gehostete Schriften (woff2, je Teilmenge latin und latin-ext); registriert in `astro.config.mjs` (`fonts`), eingebunden über `<Font>` im Layout
 src/assets/img/       Bilder, nur über `<Bild src="/img/…">` einbinden (Pfad ohne `src/assets`)
-public/               Favicon (`img/kwm/logo.svg`), _headers, _redirects, robots.txt
+public/               Favicon (`img/kwm/logo.svg`), _headers, robots.txt
 tests/                Playwright-Tests (siehe oben)
 konzept/              Konzepte, Pläne, Berichte; figures.json = Bilderliste der alten WordPress-Seite
 .shots/               Skripte für Screenshots zur Sichtprüfung (Bilder werden nicht eingecheckt)

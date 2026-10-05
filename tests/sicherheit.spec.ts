@@ -1,8 +1,6 @@
 import { createHash } from 'node:crypto';
 import { expect, test } from '@playwright/test';
-import { seiten, ziel } from './seiten';
-
-test.skip(ziel !== 'astro', 'prüft den Astro-Build unter wrangler dev');
+import { seiten } from './seiten';
 
 const SICHERHEITS_HEADER = {
   'x-content-type-options': 'nosniff',
@@ -19,7 +17,7 @@ test('Antwort-Header enthalten die Sicherheits-Header', async ({ request }) => {
 
 for (const seite of seiten) {
   test(`CSP-Meta: genau ein Tag, Kopf-Skript-Hash stimmt: ${seite.name}`, async ({ request }) => {
-    const html = await (await request.get(seite.astro)).text();
+    const html = await (await request.get(seite.pfad)).text();
     const metas = [...html.matchAll(/<meta http-equiv="content-security-policy" content="([^"]*)"/g)];
     expect(metas).toHaveLength(1);
     // Inline-Skripte ohne Attribute sind nur das Kopf-Skript; sein Hash muss in der CSP stehen

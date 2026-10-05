@@ -1,7 +1,4 @@
 import { expect, test, type Page } from '@playwright/test';
-import { ziel } from './seiten';
-
-test.skip(ziel !== 'astro', 'prüft das Formular gegen wrangler dev mit Turnstile-Testschlüsseln');
 
 const FORMULAR = '/besuch#anfrage';
 

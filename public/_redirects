@@ -1,5 +1,0 @@
-# Prototyp-Links (V3 lag unter /v3/, V2 unter /v2/). Ziel /<seite>.html leitet Cloudflare selbst auf /<seite> weiter.
-/v3 / 302
-/v3/ / 302
-/v3/:seite /:seite 302
-/v2/* / 302

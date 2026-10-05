@@ -1,7 +1,4 @@
 import { expect, test, type Page } from '@playwright/test';
-import { ziel } from './seiten';
-
-test.skip(ziel !== 'astro', 'prüft den Astro-Build unter wrangler dev');
 
 // Diese Specs laufen mit voller Bewegung (Projekte bewegung-*): Sie sehen, was die Optik-Tests mit
 // reduzierter Bewegung nicht sehen, nämlich Bewegung am Scrollen, Sprünge und fehlende Skripte.

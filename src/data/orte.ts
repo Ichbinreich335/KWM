@@ -99,7 +99,7 @@ export const orte: readonly Ort[] = [
     schluessel: 'koeln',
     stadt: 'Köln',
     land: 'Deutschland',
-    bild: { src: '/img/kwm/schalen-trio-1400.webp', alt: '' },
+    bild: { src: '/img/kwm/schalen-trio.webp', alt: '', breite: 1400, hoehe: 652 },
     gewicht: 'gross',
     reihenfolge: 1,
     haeuser: [

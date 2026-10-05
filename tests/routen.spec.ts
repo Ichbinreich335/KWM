@@ -1,7 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { seiten, ziel } from './seiten';
-
-test.skip(ziel !== 'astro', 'prüft den Astro-Build unter wrangler dev');
+import { seiten } from './seiten';
 
 test('Unbekannte Seite: Status 404 mit eigener Seite, auch tief verschachtelt', async ({ page, request }) => {
   const antwort = await page.goto('/a/b/gibt-es-nicht');
@@ -22,7 +20,7 @@ test('noindex bleibt bis zum Go-live', async ({ request }) => {
 
 test('Seiten antworten ohne .html mit 200', async ({ request }) => {
   for (const seite of seiten.filter((s) => s.name !== '404')) {
-    expect((await request.get(seite.astro, { maxRedirects: 0 })).status(), seite.astro).toBe(200);
+    expect((await request.get(seite.pfad, { maxRedirects: 0 })).status(), seite.pfad).toBe(200);
   }
 });
 
@@ -36,7 +34,7 @@ test('.html leitet auf die saubere URL um', async ({ request }) => {
 test('Alle internen Links, Bilder, Skripte und Stylesheets antworten mit 200', async ({ page, request }) => {
   const geprueft = new Set<string>();
   for (const seite of seiten) {
-    await page.goto(seite.astro);
+    await page.goto(seite.pfad);
     const ziele = await page
       .locator('a[href], img[src], link[href], script[src], [data-img]')
       .evaluateAll((els) =>
@@ -48,7 +46,7 @@ test('Alle internen Links, Bilder, Skripte und Stylesheets antworten mit 200', a
       const url = new URL(ziel, page.url());
       if (url.origin !== new URL(page.url()).origin || geprueft.has(url.pathname)) continue;
       geprueft.add(url.pathname);
-      expect((await request.get(url.pathname)).status(), `${seite.astro} → ${url.pathname}`).toBe(200);
+      expect((await request.get(url.pathname)).status(), `${seite.pfad} → ${url.pathname}`).toBe(200);
     }
   }
 });
@@ -56,12 +54,12 @@ test('Alle internen Links, Bilder, Skripte und Stylesheets antworten mit 200', a
 test('Anker (#…) auf Links zeigen auf ein vorhandenes Element der Zielseite', async ({ page }) => {
   const fragmente = new Map<string, string>();
   for (const seite of seiten) {
-    await page.goto(seite.astro);
+    await page.goto(seite.pfad);
     const hrefs = await page.locator('a[href*="#"]').evaluateAll((els) => els.map((e) => e.getAttribute('href') ?? ''));
     for (const href of hrefs) {
       const url = new URL(href, page.url());
       if (url.origin !== new URL(page.url()).origin || url.hash.length < 2) continue;
-      fragmente.set(`${url.pathname}${url.hash}`, `${seite.astro} → ${href}`);
+      fragmente.set(`${url.pathname}${url.hash}`, `${seite.pfad} → ${href}`);
     }
   }
   for (const [ziel, quelle] of fragmente) {
@@ -74,17 +72,9 @@ test('Anker (#…) auf Links zeigen auf ein vorhandenes Element der Zielseite', 
   }
 });
 
-test('Geteilte Prototyp-Links unter /v3/ führen auf die neue Seite, mit Parametern', async ({ page }) => {
-  await page.goto('/v3/aktuelles.html?praesentation');
-  expect(new URL(page.url()).pathname).toBe('/aktuelles');
-  expect(new URL(page.url()).search).toBe('?praesentation');
-  await page.goto('/v3/index.html');
-  expect(new URL(page.url()).pathname).toBe('/');
-});
-
 test('Stylesheet-Reihenfolge: Grundstile, Seiten-CSS, Signaturen, nur die Schrift-Stile inline', async ({ page }) => {
   for (const seite of seiten) {
-    await page.goto(seite.astro);
+    await page.goto(seite.pfad);
     const pfade = await page
       .locator('link[rel=stylesheet]')
       .evaluateAll((links) => links.map((l) => new URL((l as HTMLLinkElement).href).pathname));
@@ -114,7 +104,7 @@ test('Chunk basis: Komponenten-Stile stehen nach global und pages', async ({ req
 test('Schriften: genau zwei Preloads, Libre Caslon Display und Jost, jeweils die latin-Datei', async ({ page }) => {
   const latin = 'U+0000-00FF';
   for (const seite of seiten) {
-    await page.goto(seite.astro);
+    await page.goto(seite.pfad);
     const preloads = await page
       .locator('link[rel=preload][as=font]')
       .evaluateAll((links) => links.map((l) => new URL((l as HTMLLinkElement).href).pathname));
@@ -141,7 +131,7 @@ test('Sitemap: Index antwortet, alle Seiten ohne .html, ohne 404 und Datenschutz
   const urls = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((treffer) => treffer[1] ?? '');
   const erwartet = seiten
     .filter((s) => s.name !== '404' && s.name !== 'datenschutz')
-    .map((s) => new URL(s.astro, 'https://kwm-1924.de').href);
+    .map((s) => new URL(s.pfad, 'https://kwm-1924.de').href);
   expect([...urls].sort()).toEqual([...erwartet].sort());
   expect(urls.filter((url) => url.endsWith('.html'))).toEqual([]);
 });
@@ -151,7 +141,7 @@ test('Canonical und Open Graph: je Seite genau ein Canonical ohne .html, og:titl
   request,
 }) => {
   for (const seite of seiten) {
-    await page.goto(seite.astro);
+    await page.goto(seite.pfad);
     const canonical = await page
       .locator('link[rel=canonical]')
       .evaluateAll((links) => links.map((l) => l.getAttribute('href') ?? ''));
@@ -177,7 +167,7 @@ test('Canonical und Open Graph: je Seite genau ein Canonical ohne .html, og:titl
 
 test('Strukturierte Daten: nur die Startseite, genau ein parsebares JSON-LD ohne Preise', async ({ page }) => {
   for (const seite of seiten) {
-    await page.goto(seite.astro);
+    await page.goto(seite.pfad);
     const bloecke = await page.locator('script[type="application/ld+json"]').allTextContents();
     if (seite.name !== 'start') {
       expect(bloecke.length, `${seite.name}: kein JSON-LD erwartet`).toBe(0);

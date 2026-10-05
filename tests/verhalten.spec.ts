@@ -1,7 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { seiten, ziel } from './seiten';
-
-test.skip(ziel !== 'astro', 'prüft den Astro-Build unter wrangler dev');
+import { seiten } from './seiten';
 
 test('Anfrage-Leiste kodiert das Stück für die Formular-URL', async ({ page }) => {
   await page.goto('/meisterstuecke');
@@ -226,14 +224,14 @@ for (const breite of [360, 375, 768, 1024, 1100]) {
   test(`Kein waagrechter Überlauf bei ${breite} px auf allen Seiten`, async ({ page }) => {
     await page.setViewportSize({ width: breite, height: 800 });
     for (const seite of seiten) {
-      await page.goto(seite.astro);
+      await page.goto(seite.pfad);
       const ueberlauf = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
-      expect(ueberlauf, `${seite.astro} bei ${breite} px`).toBeLessThanOrEqual(0);
+      expect(ueberlauf, `${seite.pfad} bei ${breite} px`).toBeLessThanOrEqual(0);
       const titel = await page
         .locator('h1')
         .first()
         .evaluate((h) => h.getBoundingClientRect().right);
-      expect(titel, `${seite.astro}: Titel ragt über den Rand`).toBeLessThanOrEqual(breite);
+      expect(titel, `${seite.pfad}: Titel ragt über den Rand`).toBeLessThanOrEqual(breite);
     }
   });
 }

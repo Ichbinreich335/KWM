@@ -10,8 +10,6 @@
     "format": "prettier --write .",
     "lint": "eslint .",
     "check": "prettier --check . && eslint . && astro check && tsc -p worker/tsconfig.json && npm run test:unit && npm run test:worker && astro build",
-    "prototyp": "node archiv/prototyp/tools/build.mjs && python3 -m http.server 4392 -d archiv/prototyp/site",
-    "test:ausgangsstand": "ZIEL=prototyp playwright test tests/optik.spec.ts --update-snapshots",
     "test:optik": "playwright test tests/optik.spec.ts",
     "test": "playwright test",
     "test:vorschau": "playwright test -c playwright.vorschau.config.ts",
