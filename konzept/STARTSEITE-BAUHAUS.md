@@ -2,6 +2,8 @@
 
 Stand: 05.10.2026. Branch `startseite-bauhaus`, Vorschau https://startseite-bauhaus-kwm-redesign.entwicklung-7f3.workers.dev. Nur eine Vergleichsvariante: Gemergt wird erst, wenn der Admin entschieden hat.
 
+Basis: gesamtstand (dfe75bd). Die Variante unterscheidet sich vom Gesamtstand nur in der Startseite und den dafür verschobenen Texten.
+
 **Auftrag des Admins (05.10.2026):** Die Landing ist zu voll, zu viel Text, obwohl Bilder mehr sagen. Minimalismus und Bauhaus kommen zu kurz. Gemeint ist **Bauhaus als Prinzip**: Reduktion, Raster, Grundformen, Form aus dem Gebrauch. Farbwelt und Schriften bleiben, ebenso der eigene Charme der Seite.
 
 ## 1. Konzept in fünf Sätzen
