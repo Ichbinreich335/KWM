@@ -1,10 +1,14 @@
+---
+import { kontakt } from '../data/kontakt';
+---
+
 {/* Anfrage-Formular (wiederverwendbar, Modul sig-anfrage).
      Später: action="/api/anfrage" method="post" an einen Cloudflare-Worker mit Mail-Dienst und Turnstile.
      Bis dahin fängt das Modul das Absenden ab, prüft die Felder und öffnet eine vorbereitete E-Mail. */}
 <div class="anfrage" data-sig="anfrage">
   <p class="anfrage__nojs">
-    Bitte schreiben Sie uns an <a href="mailto:kontakt@kwm1924.de?subject=Anfrage">kontakt@kwm1924.de</a> oder rufen Sie
-    an: <a href="tel:+49201305080">+49 201 30 50 80</a>.
+    Bitte schreiben Sie uns an <a href={`${kontakt.mailHref}?subject=Anfrage`}>{kontakt.mail}</a> oder rufen Sie an:{' '}
+    <a href={kontakt.telefonHref}>{kontakt.telefon}</a>.
   </p>
   <form class="anfrage__form" novalidate>
     <div class="anfrage__field">
@@ -85,8 +89,8 @@
     <p class="anfrage__done-title">Danke, Ihre Anfrage ist vorbereitet.</p>
     <p>Ihr E-Mail-Programm öffnet sich mit der vorbereiteten Anfrage. Bitte senden Sie die Nachricht dort ab.</p>
     <p>
-      Es öffnet sich nichts? Schreiben Sie an <a href="mailto:kontakt@kwm1924.de">kontakt@kwm1924.de</a> oder rufen Sie
-      an: <a href="tel:+49201305080">+49 201 30 50 80</a>.
+      Es öffnet sich nichts? Schreiben Sie an <a href={kontakt.mailHref}>{kontakt.mail}</a> oder rufen Sie an:{' '}
+      <a href={kontakt.telefonHref}>{kontakt.telefon}</a>.
     </p>
     <button class="anfrage__again" type="button">
       Angaben ändern

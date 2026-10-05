@@ -6,6 +6,7 @@ import PageHero from '../components/PageHero.astro';
 import Prose from '../components/Prose.astro';
 import '../styles/seiten/page-text.css';
 import '../styles/signaturen/signaturen.css';
+import { kontakt, telefonText } from '../data/kontakt';
 ---
 
 <BaseLayout
@@ -223,15 +224,15 @@ import '../styles/signaturen/signaturen.css';
           von zwei Wochen nach Eingang der Ware zu widerrufen. Der Widerruf muss keine Begründung enthalten und ist
           schriftlich (auch per Email) oder durch Rücksendung der Ware gegenüber dem Verkäufer
           <br />
-          Keramische Werkstatt Margaretenhöhe GmbH
+          {kontakt.firma}
           <br />
-          Bullmannaue 19
+          {kontakt.strasse}
           <br />
-          45327 Essen
+          {kontakt.plzOrt}
           <br />
-          Tel.: 0201 /30 50 80
+          Tel.: {telefonText(kontakt.telefon, 'inland')}
           <br />
-          Email: kontakt@kwm1924.de
+          Email: {kontakt.mail}
           <br />
           zu erklären; zur Fristwahrung genügt die rechtzeitige Absendung. Das vorgenannte Widerrufsrecht des
           Verbrauchers besteht dagegen nicht bei der Lieferung von Waren, die nach seiner Spezifikation angefertigt
@@ -427,7 +428,7 @@ import '../styles/signaturen/signaturen.css';
           Die für die Geschäftsabwicklung notwendigen Daten werden erhoben, gespeichert und im Rahmen der
           Bestellabwicklung bearbeitet und genutzt. Der Besteller stimmt dieser Erhebung, Verarbeitung und Nutzung
           personenbezogener Daten ausdrücklich zu. Alle personenbezogenen Daten werden selbstverständlich vertraulich
-          behandelt, vgl. insoweit unseren Datenschutzhinweis auf unserer Website www.kwm1924.de mit den dort
+          behandelt, vgl. insoweit unseren Datenschutzhinweis auf unserer Website {kontakt.webseite} mit den dort
           angeführten Erläuterungen. Der weiteren Nutzung Ihrer Daten zu unseren eigenen Werbezwecken können Sie
           jederzeit durch Mitteilung an uns widersprechen. Nach Erhalt Ihres Widerspruches werden wir die weitere
           Zusendung von Werbemitteln einstellen.
@@ -463,7 +464,7 @@ import '../styles/signaturen/signaturen.css';
     </div>
 
     <InquiryBand text="Fragen zu Bestellung, Lieferung oder Widerruf? Wir antworten gern persönlich.">
-      Telefonisch erreichen Sie uns Mo–Fr 9–17 Uhr, Sa 11–15 Uhr.
+      Telefonisch erreichen Sie uns {kontakt.zeitenKurz}.
     </InquiryBand>
   </main>
 </BaseLayout>

@@ -11,6 +11,7 @@ import { anfrageLink } from '../scripts/anfrage-link';
 import ExhibitionCard from '../components/ExhibitionCard.astro';
 import { ausstellungen } from '../data/ausstellungen';
 import { hinweise } from '../data/hinweise';
+import { kontakt } from '../data/kontakt';
 import PlaceGrid from '../components/PlaceGrid.astro';
 import { kacheln } from '../data/orte';
 import Timeline from '../components/Timeline.astro';
@@ -542,8 +543,8 @@ import '../styles/signaturen/signaturen.css';
             </tbody>
           </table>
           <p class="visit__actions">
-            <a class="link-arrow" href="tel:+49201305080">
-              Lieber anrufen: +49 201 30 50 80
+            <a class="link-arrow" href={kontakt.telefonHref}>
+              Lieber anrufen: {kontakt.telefon}
             </a>
             <a class="link-arrow" href="/besuch">
               Anfahrt und Besuch

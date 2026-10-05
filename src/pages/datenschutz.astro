@@ -5,6 +5,7 @@ import PageHero from '../components/PageHero.astro';
 import Prose from '../components/Prose.astro';
 import '../styles/seiten/page-text.css';
 import '../styles/signaturen/signaturen.css';
+import { kontakt, telefonText } from '../data/kontakt';
 ---
 
 <BaseLayout
@@ -53,13 +54,13 @@ import '../styles/signaturen/signaturen.css';
         </div>
         <h2 id="verantwortlich">Verantwortliche Stelle</h2>
         <p>
-          Keramische Werkstatt Margaretenhöhe GmbH
+          {kontakt.firma}
           <br />
-          Bullmannaue 19, 45327 Essen
+          {kontakt.anschrift}
           <br />
-          Telefon 0049 (0)201 – 30 50 80
+          Telefon {telefonText(kontakt.telefon, 'impressum')}
           <br />
-          E-Mail: <a href="mailto:kontakt@kwm1924.de">kontakt@kwm1924.de</a>
+          E-Mail: <a href={kontakt.mailHref}>{kontakt.mail}</a>
         </p>
         <h2 id="bisherige-hinweise">Bisherige Hinweise</h2>
         <p>

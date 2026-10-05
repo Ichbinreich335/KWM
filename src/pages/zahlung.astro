@@ -7,6 +7,7 @@ import PageHero from '../components/PageHero.astro';
 import Prose from '../components/Prose.astro';
 import '../styles/seiten/page-text.css';
 import '../styles/signaturen/signaturen.css';
+import { kontakt } from '../data/kontakt';
 ---
 
 <BaseLayout
@@ -57,7 +58,7 @@ import '../styles/signaturen/signaturen.css';
           </section>
           <section class="pay-text__item" aria-labelledby="zahl-paypal">
             <h2 id="zahl-paypal">PayPal</h2>
-            <p>kontakt@kwm1924.de</p>
+            <p>{kontakt.mail}</p>
             <figure class="pay-text__qr">
               <Bild
                 src="/img/kwm/paypal-qr.webp"
@@ -65,7 +66,7 @@ import '../styles/signaturen/signaturen.css';
                 sizes="177px"
                 width="177"
                 height="177"
-                alt="QR-Code für die Zahlung per PayPal an kontakt@kwm1924.de"
+                alt={`QR-Code für die Zahlung per PayPal an ${kontakt.mail}`}
                 loading="lazy"
               />
             </figure>

@@ -1,4 +1,5 @@
 import { BRENNTEMPERATUR, grad } from './brenntemperatur';
+import { kontakt, oeffnungszeitZeilen } from './kontakt';
 import type { Fakt } from './typen';
 
 /** Wie das Manufakturprogramm entsteht */
@@ -9,19 +10,22 @@ export const methodenfakten: readonly Fakt[] = [
   { label: 'Glasurbrand', wert: `Gasofen, ca. ${grad(BRENNTEMPERATUR.glasurbrandGas)}, reduzierende Atmosphäre` },
 ];
 
-/** Adresse, Öffnungszeiten, Nahverkehr und Kontakt (Kontaktdaten wandern in D4 nach `kontakt.ts`) */
+/** Adresse, Öffnungszeiten, Nahverkehr und Kontakt, alles aus `kontakt.ts` */
 export const ortsfakten: readonly Fakt[] = [
-  { label: 'Adresse', wert: ['Keramische Werkstatt Margaretenhöhe GmbH', 'Bullmannaue 19, 45327 Essen'] },
+  { label: 'Adresse', wert: [kontakt.firma, kontakt.anschrift] },
   {
     label: 'Öffnungszeiten',
-    wert: ['Montag bis Freitag 9–17 Uhr', 'Samstag 11–15 Uhr', 'ansonsten nach Vereinbarung'],
+    wert: [
+      ...oeffnungszeitZeilen(kontakt.oeffnungszeiten, 'lang').map(({ tage, zeit }) => `${tage} ${zeit}`),
+      `ansonsten ${kontakt.hinweisZeiten}`,
+    ],
   },
-  { label: 'Nahverkehr', wert: 'Haltestelle Katernberg Süd' },
+  { label: 'Nahverkehr', wert: kontakt.nahverkehr },
   {
     label: 'Kontakt',
     links: [
-      { href: 'tel:+49201305080', text: '+49 201 30 50 80' },
-      { href: 'mailto:kontakt@kwm1924.de', text: 'kontakt@kwm1924.de' },
+      { href: kontakt.telefonHref, text: kontakt.telefon },
+      { href: kontakt.mailHref, text: kontakt.mail },
     ],
   },
 ];

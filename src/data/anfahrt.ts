@@ -1,3 +1,5 @@
+import { kontakt } from './kontakt';
+
 /** Wegbeschreibung: Titel mit nummerierten Schritten */
 export interface Weg {
   titel: string;
@@ -40,4 +42,4 @@ export const anfahrtAuto: readonly Weg[] = [
   },
 ];
 
-export const oepnv: Weg = { titel: 'Mit öffentlichen Verkehrsmitteln', schritte: ['Haltestelle Katernberg Süd'] };
+export const oepnv: Weg = { titel: 'Mit öffentlichen Verkehrsmitteln', schritte: [kontakt.nahverkehr] };

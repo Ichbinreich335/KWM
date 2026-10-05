@@ -5,6 +5,7 @@ import PageHero from '../components/PageHero.astro';
 import Prose from '../components/Prose.astro';
 import '../styles/seiten/page-text.css';
 import '../styles/signaturen/signaturen.css';
+import { kontakt, telefonText } from '../data/kontakt';
 ---
 
 <BaseLayout
@@ -15,7 +16,9 @@ import '../styles/signaturen/signaturen.css';
   <main id="inhalt">
     <PageHero typ="name" textseite>
       <Fragment slot="titel">Impressum</Fragment>
-      <Fragment slot="lede">Keramische Werkstatt Margaretenhöhe GmbH, Bullmannaue 19, 45327 Essen.</Fragment>
+      <Fragment slot="lede">
+        {kontakt.firma}, {kontakt.anschrift}.
+      </Fragment>
     </PageHero>
 
     <div class="legal grid">
@@ -97,9 +100,9 @@ import '../styles/signaturen/signaturen.css';
       </aside>
       <Prose>
         <p>
-          Keramische Werkstatt Margaretenhöhe GmbH, Bullmannaue 19, 45327 Essen
+          {kontakt.firma}, {kontakt.anschrift}
           <br />
-          Telefon 0049 (0)201 – 30 50 80, E-Mail: kontakt@kwm1924.de
+          Telefon {telefonText(kontakt.telefon, 'impressum')}, E-Mail: {kontakt.mail}
           <br />
           Vertreten durch die Geschäftsführung Young-Jae Griepentrog, geb. Lee
           <br />
@@ -270,11 +273,11 @@ import '../styles/signaturen/signaturen.css';
           <br />
           Frau Claudia Prien
           <br />
-          Keramische Werkstatt Margaretenhöhe GmbH
+          {kontakt.firma}
           <br />
-          Bullmannaue 19
+          {kontakt.strasse}
           <br />
-          45327 Essen
+          {kontakt.plzOrt}
         </p>
         <h2 id="geltungsbereich">Geltungsbereich</h2>
         <p>
@@ -289,7 +292,7 @@ import '../styles/signaturen/signaturen.css';
           <br />
           Name und Anschrift der verantwortlichen Stelle:
           <br />
-          Keramische Werkstatt Margaretenhöhe GmbH, Bullmannaue 19, 45327 Essen
+          {kontakt.firma}, {kontakt.anschrift}
         </p>
         <p>
           Zu § 4e Nr. 2 BDSG

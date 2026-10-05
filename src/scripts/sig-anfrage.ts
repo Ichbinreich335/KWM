@@ -1,6 +1,8 @@
 // Anfrage-Formular: prüft die Felder und öffnet eine vorbereitete E-Mail.
 // Später ersetzt ein POST an /api/anfrage (Worker mit Mail-Dienst und Turnstile) den mailto-Schritt.
-const RECIPIENT = 'kontakt@kwm1924.de';
+import { kontakt } from '../data/kontakt';
+
+const RECIPIENT = kontakt.mail;
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 const PHONE_PATTERN = /^[0-9 +()\/.\-]{5,}$/;
 
