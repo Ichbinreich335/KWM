@@ -2,6 +2,7 @@
 import '../styles/basis.css';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PageHero from '../components/PageHero.astro';
+import Notice from '../components/Notice.astro';
 import Prose from '../components/Prose.astro';
 import '../styles/seiten/page-text.css';
 import '../styles/signaturen/signaturen.css';
@@ -48,10 +49,9 @@ import { kontakt, telefonText } from '../data/kontakt';
         </nav>
       </aside>
       <Prose>
-        <div class="legal__notice" role="note">
-          <p class="legal__notice-title">Text folgt</p>
+        <Notice titel="Text folgt">
           <p>Die Datenschutzerklärung wird von der Werkstatt geliefert und hier veröffentlicht, sobald sie vorliegt.</p>
-        </div>
+        </Notice>
         <h2 id="verantwortlich">Verantwortliche Stelle</h2>
         <p>
           {kontakt.firma}

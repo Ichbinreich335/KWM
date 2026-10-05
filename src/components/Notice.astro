@@ -1,0 +1,29 @@
+---
+interface Props {
+  /** Kopfzeile des Kastens, z. B. „Text folgt“ */
+  titel: string;
+}
+
+const { titel } = Astro.props;
+---
+
+<div class="legal__notice" role="note">
+  <p class="legal__notice-title">{titel}</p>
+  <slot />
+</div>
+
+<style>
+  .legal__notice {
+    background: var(--ground-2);
+    padding: clamp(20px, 3vw, 36px);
+    margin-bottom: 1em;
+  }
+  .legal__notice :global(p:last-child) {
+    margin-bottom: 0;
+  }
+  .legal__notice-title {
+    font-family: var(--f-display);
+    font-size: var(--t-h3);
+    line-height: var(--t-h3-lh);
+  }
+</style>
