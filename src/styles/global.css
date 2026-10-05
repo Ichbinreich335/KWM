@@ -70,6 +70,11 @@
   :root {
     --t-mega: clamp(3rem, 15.5vw, 6rem);
   }
+  /* Startseite: große Aussagen und Zitate eine Stufe kleiner, damit sie am Handy nicht wuchtig stehen */
+  .page-home {
+    --t-lede: clamp(1.45rem, 5.6vw, 1.65rem);
+    --t-statement: clamp(1.75rem, 7vw, 2rem);
+  }
 }
 
 *,
@@ -2178,6 +2183,9 @@ body::after {
   }
   .facts {
     grid-column: 1 / -1;
+  }
+  .craft__media img {
+    aspect-ratio: 4 / 3;
   }
   /* Handy: das zweite Foto und ergänzende Angaben entfallen, sie stehen auf /manufaktur */
   .craft__media3,
