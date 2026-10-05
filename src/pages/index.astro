@@ -115,12 +115,12 @@ const mokLink = `/aktuelles#f-${mok.schluessel}`;
       </h2>
       <figure class="sticky-bild-wrap">
         <SigSticky variant="portrait">
-          {/* sizes: Bildbreite folgt aus der Kastenhöhe (cover), Höhe x 2000/1313; mobil und hochkant 1:1 mit Seitenrand = 115vw, Desktop 140vh */}
+          {/* sizes: Mobil und hochkant steht das Bild quadratisch mit Seitenrand, cover macht es 2000/1313 x (Breite - 2 x Rand) breit, also etwa 140vw; Desktop folgt die Breite der Kastenhöhe (140svh x 2000/1313, etwa 215vh), mindestens 100vw */}
           <Bild
             slot="bild"
             class="sticky-bild__img"
             src="/img/kwm/portrait-yjl.webp"
-            sizes="(max-width: 900px) 170vw, (orientation: portrait) 170vw, max(100vw, 215vh)"
+            sizes="(max-width: 900px) 140vw, (orientation: portrait) 140vw, max(100vw, 215vh)"
             loading="lazy"
             decoding="async"
             alt="Young-Jae Lee in der Werkstatt, vor ihr ungebrannte Schalen und Vasen, hinter ihr Regale voller Gefäße"
