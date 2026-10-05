@@ -106,7 +106,7 @@ test('Sitemap: Index antwortet, alle Seiten ohne .html, ohne 404 und Datenschutz
   const index = await request.get('/sitemap-index.xml');
   expect(index.status()).toBe(200);
   const sitemap = await (await request.get('/sitemap-0.xml')).text();
-  const urls = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((treffer) => treffer[1]);
+  const urls = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((treffer) => treffer[1] ?? '');
   const erwartet = seiten
     .filter((s) => s.name !== '404' && s.name !== 'datenschutz')
     .map((s) => new URL(s.astro, 'https://kwm-1924.de').href);
@@ -131,5 +131,22 @@ test('Canonical und Open Graph: je Seite genau ein Canonical ohne .html, og:titl
     // Die Domain ist noch nicht live; geprüft wird der Pfad auf dem Testserver.
     const bild = await page.locator('meta[property="og:image"]').getAttribute('content');
     expect((await request.get(new URL(bild ?? '', 'https://kwm-1924.de').pathname)).status(), seite.name).toBe(200);
+  }
+});
+
+test('Strukturierte Daten: nur die Startseite, genau ein parsebares JSON-LD ohne Preise', async ({ page }) => {
+  for (const seite of seiten) {
+    await page.goto(seite.astro);
+    const bloecke = await page.locator('script[type="application/ld+json"]').allTextContents();
+    if (seite.name !== 'start') {
+      expect(bloecke.length, `${seite.name}: kein JSON-LD erwartet`).toBe(0);
+      continue;
+    }
+    expect(bloecke.length).toBe(1);
+    const daten = JSON.parse(bloecke[0] ?? '');
+    expect(daten['@type']).toContain('LocalBusiness');
+    expect(daten.address.postalCode).toBe('45327');
+    expect(daten.openingHoursSpecification).toHaveLength(2);
+    expect(bloecke[0]).not.toMatch(/Offer|Product|price/i);
   }
 });

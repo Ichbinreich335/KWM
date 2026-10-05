@@ -1,0 +1,37 @@
+---
+import { kontakt } from '../data/kontakt';
+
+interface Props {
+  /** Absolute URL eines Fotos der Werkstatt */
+  bild: URL;
+}
+const { bild } = Astro.props;
+
+const stunde = (h: number) => `${String(h).padStart(2, '0')}:00`;
+
+// Bewusst ohne Preise, Bestand und Verfügbarkeit (kein Offer/Product); sameAs fehlt, solange keine Profile belegt sind.
+const daten = {
+  '@context': 'https://schema.org',
+  '@type': ['LocalBusiness', 'Store'],
+  name: kontakt.firma,
+  url: Astro.site,
+  image: bild,
+  telephone: kontakt.telefonE164,
+  email: kontakt.mail,
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: kontakt.strasse,
+    postalCode: kontakt.plz,
+    addressLocality: kontakt.ort,
+    addressCountry: 'DE',
+  },
+  openingHoursSpecification: kontakt.oeffnungszeiten.map(({ wochentage, von, bis }) => ({
+    '@type': 'OpeningHoursSpecification',
+    dayOfWeek: wochentage,
+    opens: stunde(von),
+    closes: stunde(bis),
+  })),
+};
+---
+
+<script type="application/ld+json" set:html={JSON.stringify(daten)} />

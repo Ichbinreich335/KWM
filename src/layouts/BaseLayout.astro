@@ -3,6 +3,7 @@ import type { ImageMetadata } from 'astro';
 import { Font, fontData, getImage } from 'astro:assets';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
+import StrukturierteDaten from '../components/StrukturierteDaten.astro';
 import { bildMetadaten } from '../data/bilder';
 import type { NavKey } from '../data/navigation';
 
@@ -11,10 +12,19 @@ interface Props {
   description: string;
   bodyClass: string;
   nav?: NavKey;
+  /** Strukturierte Daten (JSON-LD) der Werkstatt ausgeben; nur auf der Startseite. */
+  strukturiert?: boolean;
   /** Vorschaubild für Link-Vorschauen (Open Graph); Standard: das Einstiegsbild der Startseite. */
   bild?: ImageMetadata;
 }
-const { title, description, bodyClass, nav, bild = bildMetadaten('/img/kwm/kummerschalen.webp') } = Astro.props;
+const {
+  title,
+  description,
+  bodyClass,
+  nav,
+  strukturiert = false,
+  bild = bildMetadaten('/img/kwm/kummerschalen.webp'),
+} = Astro.props;
 
 // build.format 'file' liefert pathname mit .html; die öffentliche URL hat keins (Cloudflare entfernt es)
 const canonical = new URL(Astro.url.pathname.replace(/\.html$/, '').replace(/\/index$/, '/'), Astro.site);
@@ -53,6 +63,7 @@ const vorgeladeneSchriften = (['--font-caslon-display', '--font-jost'] as const)
     <Font cssVariable="--font-caslon-display" />
     <Font cssVariable="--font-caslon-text" />
     <Font cssVariable="--font-jost" />
+    {strukturiert && <StrukturierteDaten bild={vorschaubild} />}
     <slot name="head" />
     {/* Muss vor dem ersten Rendern laufen (Logo-Zeichnung einmal pro Sitzung), daher inline */}
     <script is:inline>
