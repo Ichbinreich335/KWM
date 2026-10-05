@@ -15,9 +15,11 @@ interface Props {
   typ: 'spotlight' | 'kachel' | 'eintrag';
   /** Nur `eintrag`: Bild rechts, Text links */
   gespiegelt?: boolean;
+  /** Nur `eintrag`: Bild im ersten Bildschirm (größtes Element beim Laden), lädt mit hoher Priorität */
+  prioritaet?: boolean;
 }
 
-const { ausstellung, typ, gespiegelt = false } = Astro.props;
+const { ausstellung, typ, gespiegelt = false, prioritaet = false } = Astro.props;
 const { fotos } = ausstellung;
 // Der Browser berechnet den Status beim Laden neu (sig-aktuell.ts); das hier ist der Stand zum Bauzeitpunkt
 const status = statusText(tagAusIso(ausstellung.start), tagAusIso(ausstellung.ende), heuteTag());
@@ -49,7 +51,7 @@ const datum = zeitraumKurz(ausstellung.start, ausstellung.ende);
   >
     {fotos.haupt && (
       <figure class="feature__media" data-reveal="img">
-        <Bild bild={fotos.haupt} />
+        <Bild bild={fotos.haupt} priority={prioritaet} />
         <figcaption>{fotos.haupt.unterschrift}</figcaption>
       </figure>
     )}
