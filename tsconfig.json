@@ -14,6 +14,8 @@
     ".impeccable",
     "test-results",
     "playwright-report",
-    ".wrangler"
+    ".wrangler",
+    "worker",
+    "worker-configuration.d.ts"
   ]
 }

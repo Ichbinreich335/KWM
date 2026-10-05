@@ -1,0 +1,9 @@
+# Kopie als .dev.vars anlegen (gitignored). Nur Testwerte, keine echten Geheimnisse.
+# Turnstile-Testschlüssel "immer gültig" (Cloudflare-Doku "Test your Turnstile implementation"):
+# Site-Key 1x00000000000000000000AA steht als PUBLIC_TURNSTILE_SITEKEY in .env.example, hier das Secret.
+TURNSTILE_SECRET=1x0000000000000000000000000000000AA
+# Mit Testschlüsseln meldet Turnstile den Hostnamen example.com
+TURNSTILE_HOSTNAMES=example.com
+# Lokale Seite (wrangler dev) und Playwright
+ERLAUBTE_ORIGINS=http://localhost:8787,http://localhost:8790
+ANFRAGE_ZIEL=ziel@example.invalid
