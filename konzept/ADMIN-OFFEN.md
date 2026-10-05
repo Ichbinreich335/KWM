@@ -62,6 +62,7 @@ Stand: 05.10.2026 (mittags)
 
 ## Erledigt
 
+- 05.10.2026: Entscheidungen Admin: Handy kürzer abgenommen (Ausstellungen zum Wischen; Wagner-Zitat bleibt), graue Fläche bei den 99 Schalen entfällt, Zitate angleichen übernommen (Kritiker-Zitate bleiben), Flyer = Vorschau mit Vergrößern auf Aktuelles (Startseite nur Link; Vorder- und Rückseite), Galerien in den Orten (Extraseite später), Bauhaus als Prinzip (Variante läuft). Alles fließt in den einheitlichen Gesamtstand (Branch `gesamtstand`).
 - 05.10.2026: Porträt im schmalen Fenster: Ausschnitt rückt, Gesicht bleibt frei, hochkant untereinander (Admin-Wunsch, im Feinschliff).
 - 04.10.2026: Build-Befehl für Produktion und für neue Vorschauen gesetzt (Admin).
 - 04.10.2026: Hilfsskripte ohne Funktion in `.shots/` entfernt (Admin-Entscheidung).
