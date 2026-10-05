@@ -1,4 +1,10 @@
-// Ausstellungen und Veranstaltungen (Sanity-Typ `ausstellung`). Keine Preise, kein Bestand, keine Lagerorte.
+// Ausstellungen und Veranstaltungen (Sanity-Typ `ausstellung`), beim Bauen aus Sanity geladen.
+// Keine Preise, kein Bestand, keine Lagerorte.
+import { bildAngabe, type SanityBild } from '../sanity/bild';
+import { abfrage } from '../sanity/client';
+import { AUSSTELLUNGEN_QUERY } from '../sanity/queries';
+import type { AUSSTELLUNGEN_QUERY_RESULT } from '../sanity/sanity.types';
+import { absaetze } from '../sanity/text';
 import type { BildAngabe, Fakt } from './typen';
 
 /** Bild mit Unterschrift (Bildnachweis steht in der Unterschrift) */
@@ -6,16 +12,21 @@ export interface Foto extends BildAngabe {
   unterschrift: string;
 }
 
+export type Art = 'Museum' | 'Kirche' | 'Galerie' | 'Werkstatt' | 'Messe';
+
 export interface Ausstellung {
+  /** Dokument-ID in Sanity; Anker und Bedienelemente der Seite leiten ihre Ids daraus ab */
   schluessel: string;
   titel: string;
-  art: 'Museum' | 'Kirche' | 'Galerie' | 'Werkstatt' | 'Messe';
+  art: Art;
   /** Name des Hauses, wie die Zeile unter dem Titel ihn zeigt */
   haus: string;
   /** Stadt und gegebenenfalls Land hinter dem Haus */
   stadt: string;
-  /** Schlüssel des Ortes in `orte.ts` (Referenz `ort` des Sanity-Typs `ausstellung`) */
+  /** Dokument-ID des Ortes (Referenz `ort` des Sanity-Typs `ausstellung`) */
   ort: string;
+  /** Name der Galerie, wenn die Ausstellung in einer Galerie stattfindet */
+  galerie?: string;
   /** Anschrift in Zeilen */
   adresse?: readonly string[];
   /** Erster und letzter Tag, `JJJJ-MM-TT`; der Status wird daraus berechnet */
@@ -23,7 +34,8 @@ export interface Ausstellung {
   ende: string;
   /** Genau eine laufende Ausstellung steht groß und mit offenen Details */
   spotlight?: boolean;
-  beschreibung?: string;
+  /** Absätze der Beschreibung als HTML (Absatz, fett, kursiv, Link) */
+  beschreibung?: readonly string[];
   /** Eröffnung in Sinnabschnitten; die Startseite setzt sie in einen Satz */
   eroeffnung?: readonly string[];
   oeffnungszeiten?: readonly string[];
@@ -31,175 +43,114 @@ export interface Ausstellung {
   oeffnungszeitenLabel?: string;
   kooperation?: readonly string[];
   link?: { href: string; text: string };
-  /** Foto der Kachel auf der Startseite und Hauptbild der Seite Aktuelles */
-  fotos: { kachel: Foto; haupt?: Foto };
-  /** Angaben, die auf der Seite Aktuelles anders formuliert oder geordnet sind als auf der Startseite */
-  aktuelles?: { fakten: readonly Fakt[] };
+  /** Foto der Kachel auf der Startseite und Bild der Seite Aktuelles (das erste weitere Bild, sonst das Hauptbild) */
+  fotos: { kachel: Foto; haupt: Foto };
 }
 
-export const ausstellungen: readonly Ausstellung[] = [
-  {
-    schluessel: 'mok',
-    titel: '„99 Schalen – ein Kosmos“',
-    art: 'Museum',
-    haus: 'Museum für Ostasiatische Kunst (MOK)',
-    stadt: 'Köln',
-    ort: 'koeln',
-    adresse: ['Universitätsstraße 100', '50674 Köln'],
-    start: '2026-04-23',
-    ende: '2026-10-25',
-    spotlight: true,
-    beschreibung: 'Schalen von Young-Jae Lee im Museum für Ostasiatische Kunst in Köln.',
-    link: { href: 'https://museum-fuer-ostasiatische-kunst.de/99-Schalen-ein-Kosmos', text: 'Zur Ausstellung im MOK' },
-    fotos: {
-      kachel: {
-        src: '/img/kwm/aktuell/mok-2000.webp',
-        breite: 1400,
-        hoehe: 652,
-        widths: [960, 1400, 2000],
-        sizes: '(min-width: 900px) 64vw, 100vw',
-        alt: 'Vier Schalen von Young-Jae Lee: ochsenblutrot, weiß mit blauem Tupfen, rosé und hellbraun',
-        unterschrift: 'Schalen von Young-Jae Lee',
-      },
-      haupt: {
-        src: '/img/kwm/schalen-trio.webp',
-        breite: 2000,
-        hoehe: 931,
-        sizes: '100vw',
-        alt: 'Vier Schalen von Young-Jae Lee: ochsenblutrot, weiß mit blauem Tupfen, rosé und hellbraun',
-        unterschrift: 'Schalen von Young-Jae Lee',
-      },
-    },
-  },
-  {
-    schluessel: 'wesel',
-    titel: '„Kummerschalen“',
-    art: 'Kirche',
-    haus: 'Willibrordi-Dom',
-    stadt: 'Wesel',
-    ort: 'wesel',
-    adresse: ['Großer Markt', '46483 Wesel'],
-    start: '2026-08-16',
-    ende: '2026-10-31',
-    beschreibung:
-      'Der Niederrheinische Kunstverein zeigt in Kooperation mit der Evangelischen Kirchengemeinde Wesel handgefertigte Schalen der international renommierten Keramikerin Young-Jae Lee.',
-    eroeffnung: [
-      'Sonntag, 16. August 2026, 11 Uhr',
-      'Gottesdienst zur Ausstellung, 12.15 Uhr Eröffnung der Ausstellung.',
-    ],
-    oeffnungszeiten: ['Di–So 14.30–17.00 Uhr', 'Mi und Sa 10–12 Uhr'],
-    fotos: {
-      kachel: {
-        src: '/img/kwm/aktuell/wesel-seladon-800.webp',
-        breite: 640,
-        hoehe: 480,
-        widths: [640, 800],
-        sizes: '(min-width: 900px) 31vw, 100vw',
-        alt: 'Flache Schalen von Young-Jae Lee mit seladonfarbener Glasur, die sich in der Mitte sammelt',
-        unterschrift: 'Foto: Christopher Clem Franken',
-      },
-      haupt: {
-        src: '/img/kwm/kummerschalen.webp',
-        breite: 937,
-        hoehe: 1040,
-        alt: 'Viele flache Schalen in Seladon, Schwarz und Rotbraun, auf dem Boden ausgelegt',
-        unterschrift:
-          'Schalen von Young-Jae Lee · Fotografie: Christopher Clem Franken, © Kunst-Station Sankt Peter, Köln',
-      },
-    },
-    aktuelles: {
-      fakten: [
-        { label: 'Ort', wert: ['Willibrordi-Dom', 'Großer Markt, 46483 Wesel'] },
-        {
-          label: 'Eröffnung',
-          wert: [
-            'Sonntag, 16. August 2026, 11 Uhr',
-            'Gottesdienst zur Ausstellung, 12.15 Uhr Eröffnung der Ausstellung. Die Künstlerin wird anwesend sein.',
-          ],
-        },
-        { label: 'Öffnungszeiten Dom', wert: ['Di–So 14.30–17.00 Uhr', 'Mi und Sa 10–12 Uhr'] },
-      ],
-    },
-  },
-  {
-    schluessel: 'greve',
-    titel: '„Kathleen Jacobs / Young‑Jae Lee“',
-    art: 'Galerie',
-    haus: 'Galerie Karsten Greve',
-    stadt: 'St. Moritz, Schweiz',
-    ort: 'st-moritz',
-    start: '2026-10-03',
-    ende: '2026-12-12',
-    beschreibung: 'Malerei von Kathleen Jacobs (Öl auf Leinen) und Keramik von Young‑Jae Lee.',
-    link: { href: 'https://galerie-karsten-greve.com/', text: 'Galerie Karsten Greve' },
-    fotos: {
-      kachel: {
-        src: '/img/kwm/aktuell/greve-533.webp',
-        breite: 533,
-        hoehe: 400,
-        alt: 'Türkisfarbene Kumme von Young-Jae Lee mit feinem Craquelé',
-        unterschrift: 'Kumme von Young-Jae Lee',
-      },
-    },
-  },
-  {
-    schluessel: 'popup',
-    titel: 'Mode, Taschen, Keramik & Licht im Dialog',
-    art: 'Werkstatt',
-    haus: 'Pop-up-Store Vol. 2 in der Werkstatt',
-    stadt: 'Zeche Zollverein',
-    ort: 'essen',
-    adresse: ['Bullmannaue 19', '45327 Essen, Gelände der Zeche Zollverein'],
-    start: '2026-11-06',
-    ende: '2026-11-08',
-    beschreibung: 'Pop-up-Store in den Räumen der Keramischen Werkstatt Margaretenhöhe.',
-    oeffnungszeiten: ['Fr und Sa 11–18 Uhr', 'So 11–16 Uhr'],
-    oeffnungszeitenLabel: 'Geöffnet',
-    kooperation: [
-      'Burggraf Burggraf (Taschen)',
-      'Joachim Kern (Mode)',
-      'Christiane Kuntz (Mode)',
-      'Dietrich Pampus (Vintage Leuchten)',
-    ],
-    link: { href: '/besuch', text: 'Anfahrt zur Werkstatt' },
-    fotos: {
-      kachel: {
-        src: '/img/kwm/aktuell/popup-954.webp',
-        breite: 640,
-        hoehe: 480,
-        widths: [640, 954],
-        sizes: '(min-width: 900px) 31vw, 100vw',
-        alt: 'Regal voller ungebrannter Becher, Schalen, Teller und Kannen in der Werkstatt',
-        unterschrift: 'In der Werkstatt · Foto: Haydar Koyupinar',
-      },
-      haupt: {
-        src: '/img/kwm/regal.webp',
-        breite: 954,
-        hoehe: 905,
-        alt: 'Regal voller ungebrannter Becher, Schalen, Teller und Kannen in der Werkstatt',
-        unterschrift: 'In der Werkstatt · Foto: Haydar Koyupinar',
-      },
-    },
-    aktuelles: {
-      fakten: [
-        { label: 'Geöffnet', wert: ['Fr und Sa 11–18 Uhr', 'So 11–16 Uhr'] },
-        {
-          label: 'In Kooperation mit',
-          wert: [
-            'Burggraf Burggraf (Taschen)',
-            'Joachim Kern (Mode)',
-            'Christiane Kuntz (Mode)',
-            'Dietrich Pampus (Vintage Leuchten)',
-          ],
-        },
-        { label: 'Ort', wert: ['Bullmannaue 19, 45327 Essen', 'auf dem Gelände der Zeche Zollverein'] },
-      ],
-    },
-  },
-];
+type Roh = AUSSTELLUNGEN_QUERY_RESULT[number];
 
-export const ausstellung = (schluessel: string): Ausstellung => {
-  const treffer = ausstellungen.find((eintrag) => eintrag.schluessel === schluessel);
-  if (!treffer) throw new Error(`Ausstellung nicht gefunden: ${schluessel}`);
-  return treffer;
+const ARTEN: Record<NonNullable<Roh['art']>, Art> = {
+  museum: 'Museum',
+  kirche: 'Kirche',
+  galerie: 'Galerie',
+  werkstatt: 'Werkstatt',
+  messe: 'Messe',
 };
+
+/** Dieser Wert steht im Studio, wenn der Urheber eines Fotos unbekannt ist; er gehört nicht auf die Seite */
+const NACHWEIS_FEHLT = 'Nachweis fehlt';
+
+const KACHEL_SPOTLIGHT = { maxBreite: 1400, stufen: [960], sizes: '(min-width: 900px) 64vw, 100vw' } as const;
+const KACHEL = { maxBreite: 640, sizes: '(min-width: 900px) 31vw, 100vw' } as const;
+const HAUPT_SPOTLIGHT = { sizes: '100vw' } as const;
+
+type Foto_ = SanityBild & { bildunterschrift: string | null; nachweis: string | null };
+
+/** Unterschrift aus Bildunterschrift und Nachweis, getrennt durch einen Mittelpunkt */
+const unterschrift = (bild: Foto_) =>
+  [bild.bildunterschrift, bild.nachweis === NACHWEIS_FEHLT ? null : bild.nachweis].filter(Boolean).join(' · ');
+
+const foto = (bild: Foto_ | null | undefined, wo: string, darstellung: Parameters<typeof bildAngabe>[2]): Foto => ({
+  ...bildAngabe(bild, wo, darstellung),
+  unterschrift: bild ? unterschrift(bild) : '',
+});
+
+const landZusatz = (land: string | null) => (land && land !== 'Deutschland' ? `, ${land}` : '');
+
+export function ausstellungAusSanity(roh: Roh): Ausstellung {
+  const wo = `Ausstellung „${roh.titel ?? roh._id}“`;
+  const { titel, art, haus, start, ende, ort } = roh;
+  if (!titel || !art || !haus || !start || !ende || !ort?.stadt) {
+    throw new Error(`${wo}: Titel, Art, Haus, Beginn, Ende und Ort sind Pflicht.`);
+  }
+  const hauptbild = roh.hauptbild;
+  const weitere = roh.bilder?.[0];
+  return {
+    schluessel: roh._id,
+    titel,
+    art: ARTEN[art],
+    haus,
+    stadt: `${ort.stadt}${landZusatz(ort.land)}`,
+    ort: ort._id,
+    ...(roh.galerie?.name ? { galerie: roh.galerie.name } : {}),
+    ...(roh.adresse?.length ? { adresse: roh.adresse } : {}),
+    start,
+    ende,
+    ...(roh.spotlight ? { spotlight: true } : {}),
+    ...(roh.beschreibung?.length ? { beschreibung: absaetze(roh.beschreibung) } : {}),
+    ...(roh.eroeffnung?.length ? { eroeffnung: roh.eroeffnung } : {}),
+    ...(roh.oeffnungszeiten?.length ? { oeffnungszeiten: roh.oeffnungszeiten } : {}),
+    ...(roh.oeffnungszeiten?.length && roh.oeffnungszeitenBezeichnung
+      ? { oeffnungszeitenLabel: roh.oeffnungszeitenBezeichnung }
+      : {}),
+    ...(roh.kooperation?.length ? { kooperation: roh.kooperation } : {}),
+    ...(roh.link?.text && roh.link.url ? { link: { href: roh.link.url, text: roh.link.text } } : {}),
+    fotos: {
+      kachel: foto(hauptbild, `${wo}, Hauptbild`, roh.spotlight ? KACHEL_SPOTLIGHT : KACHEL),
+      haupt: foto(weitere ?? hauptbild, `${wo}, Seitenbild`, roh.spotlight ? HAUPT_SPOTLIGHT : {}),
+    },
+  };
+}
+
+/**
+ * Angaben der Seite Aktuelles aus den Feldern der Ausstellung, mit festen Bezeichnungen
+ * (dieselben Felder wie auf der Startseite). Ohne Eröffnung, Zeiten und Partner gibt es keine Tafel.
+ */
+export function aktuellesFakten(ausstellung: Ausstellung): Fakt[] | undefined {
+  const { haus, adresse, eroeffnung, oeffnungszeiten, kooperation } = ausstellung;
+  if (!eroeffnung && !oeffnungszeiten && !kooperation) return undefined;
+  return [
+    { label: 'Ort', wert: [haus, ...(adresse?.length ? [adresse.join(', ')] : [])] },
+    ...(eroeffnung ? [{ label: 'Eröffnung', wert: eroeffnung }] : []),
+    ...(oeffnungszeiten
+      ? [{ label: ausstellung.oeffnungszeitenLabel ?? 'Öffnungszeiten', wert: oeffnungszeiten }]
+      : []),
+    ...(kooperation ? [{ label: 'In Kooperation mit', wert: kooperation }] : []),
+  ];
+}
+
+/** Alle Ausstellungen, nach Beginn geordnet */
+export async function ladeAlleAusstellungen(): Promise<readonly Ausstellung[]> {
+  const roh = await abfrage<AUSSTELLUNGEN_QUERY_RESULT>('Ausstellungen', AUSSTELLUNGEN_QUERY);
+  return roh.map(ausstellungAusSanity);
+}
+
+/** Noch nicht beendete Ausstellungen (Startseite „Aktuell“) */
+export async function ladeAusstellungen(heute: string = heuteIso()): Promise<readonly Ausstellung[]> {
+  const alle = await ladeAlleAusstellungen();
+  const kommend = alle.filter((eintrag) => eintrag.ende >= heute);
+  if (kommend.length === 0) {
+    throw new Error('Keine laufende oder kommende Ausstellung gefunden: Die Startseite braucht mindestens eine.');
+  }
+  return kommend;
+}
+
+/** Ausstellungen der Seite Aktuelles: noch nicht beendet und mit eigenem Bild der Seite (weiteres Bild) */
+export async function ladeAktuelleSeite(heute: string = heuteIso()): Promise<readonly Ausstellung[]> {
+  const roh = await abfrage<AUSSTELLUNGEN_QUERY_RESULT>('Ausstellungen', AUSSTELLUNGEN_QUERY);
+  return roh
+    .filter((eintrag) => (eintrag.bilder?.length ?? 0) > 0 && (eintrag.ende ?? '') >= heute)
+    .map(ausstellungAusSanity);
+}
+
+export const heuteIso = (): string => new Date().toISOString().slice(0, 10);

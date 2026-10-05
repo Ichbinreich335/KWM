@@ -1,6 +1,7 @@
 ---
+import { bildProps } from '../data/bild-props';
 import Bild from './Bild.astro';
-import { hausName, ortZahlen, type Ort } from '../data/orte';
+import { ortZahlen, type Ort } from '../data/orte';
 import type { BildAngabe } from '../data/typen';
 
 interface Props {
@@ -41,18 +42,11 @@ const kachelKlasse = { gross: 'xl', mittel: 'm', klein: 's' } as const;
         <li
           class:list={[
             'orte__tile',
-            `orte__tile--${kachelKlasse[ort.gewicht ?? 'klein']}`,
+            `orte__tile--${kachelKlasse[ort.gewicht]}`,
             { 'orte__tile--full': ort.breitAmHandy },
           ]}
         >
-          <Bild
-            class="orte__img"
-            src={ort.bild.src}
-            width={ort.bild.breite}
-            height={ort.bild.hoehe}
-            loading="lazy"
-            alt={ort.bild.alt}
-          />
+          <Bild class="orte__img" {...bildProps(ort.bild)} loading="lazy" />
           <h3 class="orte__name">{ort.stadt}</h3>
           <p class="orte__meta">
             <span>{zahlen.zeitraum}</span>
@@ -60,7 +54,7 @@ const kachelKlasse = { gross: 'xl', mittel: 'm', klein: 's' } as const;
           </p>
           <ul class="orte__houses" aria-label={`Häuser in ${ort.stadt}`}>
             {ort.haeuser.map((haus) => (
-              <li>{hausName(haus)}</li>
+              <li>{haus}</li>
             ))}
           </ul>
           <ol class="orte__shows" aria-label={`Ausstellungen in ${ort.stadt}`} hidden>

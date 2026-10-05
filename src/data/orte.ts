@@ -1,32 +1,22 @@
-// Ausstellungsorte und Galerien (Sanity-Typen `ort` und `galerie`). Keine Preise, kein Bestand, keine Lagerorte.
-// Die Zahlen pro Ort (Zeitraum, Anzahl) werden aus den Auftritten berechnet, nicht gepflegt.
+// Ausstellungsorte (Sanity-Typ `ort`), beim Bauen aus Sanity geladen. Keine Preise, kein Bestand, keine Lagerorte.
+// Die Zahlen pro Ort (Zeitraum, Anzahl) werden aus den Auftritten berechnet, nicht gepflegt:
+// Auftritte sind die Archiv-Einträge (`archivEintrag`) und die Ausstellungen (`ausstellung`) mit Verweis auf den Ort.
+import { bildAngabe } from '../sanity/bild';
+import { abfrage } from '../sanity/client';
+import { ARCHIV_QUERY, ORTE_QUERY } from '../sanity/queries';
+import type { ARCHIV_QUERY_RESULT, ORTE_QUERY_RESULT } from '../sanity/sanity.types';
+import { ladeAlleAusstellungen, heuteIso, type Ausstellung } from './ausstellungen';
 import type { BildAngabe } from './typen';
 
-/** Galerie, die Young-Jae Lee zeigt oder vertritt (Sanity-Typ `galerie`; „Vertritt“ ist unbekannt und bleibt leer) */
-export interface Galerie {
-  schluessel: string;
-  name: string;
-  stadt: string;
-  adresse?: string;
-  link?: string;
-  vertretung?: boolean;
-  vertretungSeit?: number;
-}
-
-/** Haus eines Ortes: eine Galerie per Schlüssel (Name kommt aus `galerien`) oder ein Haus mit eigenem Namen */
-export type Haus = { galerie: string } | { name: string };
-
-/** Auftritt in der Liste einer Kachel, entspricht einer vergangenen `ausstellung` (Jahr des Beginns, Haus, Titel) */
+/** Auftritt in der Liste einer Kachel: Jahr des Beginns, Haus, Titel */
 export interface Auftritt {
   jahr: number;
-  /** Haus, wie die Liste es nennt (kann länger sein als der Name in den Häusern) */
   haus: string;
   titel?: string;
-  /** Schlüssel der Galerie, wenn der Auftritt in einer Galerie stattfand (Referenz `galerie` der `ausstellung`) */
-  galerie?: string;
 }
 
 export interface Ort {
+  /** Dokument-ID in Sanity */
   schluessel: string;
   /** Name der Kachel; bei Sammelorten wie „Korea“ ein Gebiet statt einer Stadt */
   stadt: string;
@@ -34,315 +24,104 @@ export interface Ort {
   kurztext?: string;
   /** Ohne Bild gibt es keine Kachel */
   bild?: BildAngabe;
-  /** Ergänzung zum Sanity-Modell (`reihenfolge` ist dort das Gewicht): Größe der Kachel im Raster */
-  gewicht?: 'gross' | 'mittel' | 'klein';
-  /** Ergänzung: Kachel läuft am Handy über die ganze Breite */
-  breitAmHandy?: boolean;
+  /** Größe der Kachel im Raster, aus der Reihenfolge abgeleitet (`kachelGroesse`) */
+  gewicht: 'gross' | 'mittel' | 'klein';
+  /** Kachel läuft am Handy über die ganze Breite */
+  breitAmHandy: boolean;
   reihenfolge: number;
-  haeuser: readonly Haus[];
+  /** Museen, Galerien und Räume, wie die Kachel sie nennt */
+  haeuser: readonly string[];
   auftritte: readonly Auftritt[];
 }
 
-export const galerien: readonly Galerie[] = [
-  {
-    schluessel: 'karsten-greve',
-    name: 'Galerie Karsten Greve',
-    stadt: 'Köln',
-    link: 'https://galerie-karsten-greve.com/',
-  },
-  {
-    schluessel: 'udo-adam-pasquale',
-    name: 'Galerie Udo Adam-Pasquale',
-    stadt: 'Köln',
-  },
-  {
-    schluessel: 'jahn-und-jahn',
-    name: 'Galerie Jahn und Jahn',
-    stadt: 'München',
-    adresse: 'Baaderstraße 56C, 80469 München',
-    link: 'https://www.jahnundjahn.com/',
-  },
-  {
-    schluessel: 'galerie-handwerk',
-    name: 'Galerie Handwerk',
-    stadt: 'München',
-  },
-  {
-    schluessel: 'gallery-tokyo',
-    name: 'Gallery Tokyo',
-    stadt: 'Tokio',
-  },
-  {
-    schluessel: 'pucker-gallery',
-    name: 'Pucker Gallery',
-    stadt: 'Boston',
-  },
-  {
-    schluessel: 'gisela-clement',
-    name: 'Galerie Gisela Clement',
-    stadt: 'Bonn',
-  },
-  {
-    schluessel: 'david-nolan',
-    name: 'David Nolan Gallery',
-    stadt: 'New York',
-  },
-  {
-    schluessel: 'galeria-neon',
-    name: 'Galeria NEON',
-    stadt: 'Breslau',
-  },
-];
+/** Die ersten zwei Orte stehen groß, die nächsten drei mittel, der Rest klein; die dritte Kachel läuft am Handy durch */
+const GROSS_BIS = 2;
+const MITTEL_BIS = 5;
+const BREIT_AM_HANDY = 3;
 
-export const orte: readonly Ort[] = [
-  {
-    schluessel: 'koeln',
-    stadt: 'Köln',
-    land: 'Deutschland',
-    bild: { src: '/img/kwm/schalen-trio-1400.webp', breite: 1400, hoehe: 652, alt: '' },
-    gewicht: 'gross',
-    reihenfolge: 1,
-    haeuser: [
-      { name: 'Museum für Ostasiatische Kunst' },
-      { galerie: 'karsten-greve' },
-      { name: 'Kunst-Station Sankt Peter' },
-      { galerie: 'udo-adam-pasquale' },
-    ],
-    auftritte: [
-      { jahr: 2026, haus: 'Museum für Ostasiatische Kunst', titel: '„99 Schalen – ein Kosmos“' },
-      { jahr: 2024, haus: 'Museum für Ostasiatische Kunst', titel: '„50 Jahre – 50 Schätze“' },
-      { jahr: 2023, haus: 'Galerie Udo Adam-Pasquale, Köln-Sülz', galerie: 'udo-adam-pasquale' },
-      { jahr: 2022, haus: 'Kunst-Station Sankt Peter', titel: '„SIEBEN MAL SIEBEN“' },
-      { jahr: 2020, haus: 'Galerie Karsten Greve', titel: '„Spinatschalen“', galerie: 'karsten-greve' },
-      {
-        jahr: 2020,
-        haus: 'Galerie Karsten Greve',
-        titel: 'Buchpräsentation „Das Grün in den Schalen“',
-        galerie: 'karsten-greve',
-      },
-      { jahr: 2018, haus: 'Galerie Karsten Greve', titel: '„Arbeiten in Keramik“', galerie: 'karsten-greve' },
-    ],
-  },
-  {
-    schluessel: 'muenchen',
-    stadt: 'München',
-    land: 'Deutschland',
-    bild: { src: '/img/kwm/regal.webp', breite: 954, hoehe: 905, alt: '' },
-    gewicht: 'gross',
-    reihenfolge: 2,
-    haeuser: [
-      { galerie: 'jahn-und-jahn' },
-      { galerie: 'galerie-handwerk' },
-      { name: 'Bayerischer Kunstgewerbeverein' },
-    ],
-    auftritte: [
-      { jahr: 2026, haus: 'Galerie Jahn und Jahn', titel: '„Young-Jae Lee“', galerie: 'jahn-und-jahn' },
-      { jahr: 2025, haus: 'Galerie Jahn und Jahn', titel: '„Young-Jae Lee: Keramik“', galerie: 'jahn-und-jahn' },
-      { jahr: 2024, haus: 'Bayerischer Kunstgewerbeverein' },
-      {
-        jahr: 2022,
-        haus: 'Galerie Jahn und Jahn',
-        titel: '„Young-Jae LEE – Spindelvasen und Spinatschalen“',
-        galerie: 'jahn-und-jahn',
-      },
-      { jahr: 2020, haus: 'Galerie Handwerk', titel: '„es grünt“', galerie: 'galerie-handwerk' },
-      { jahr: 2016, haus: 'Galerie Jahn', titel: '„Augenblicke“', galerie: 'jahn-und-jahn' },
-    ],
-  },
-  {
-    schluessel: 'tokio',
-    stadt: 'Tokio',
-    land: 'Japan',
-    bild: { src: '/img/kwm/seladon-schalen.webp', breite: 900, hoehe: 600, alt: '' },
-    gewicht: 'mittel',
-    breitAmHandy: true,
-    reihenfolge: 3,
-    haeuser: [{ galerie: 'gallery-tokyo' }, { name: 'LIVING MOTIF' }],
-    auftritte: [
-      { jahr: 2025, haus: 'Gallery Tokyo', titel: '„Lee Young-Jae“', galerie: 'gallery-tokyo' },
-      { jahr: 2023, haus: 'Gallery Tokyo', galerie: 'gallery-tokyo' },
-      { jahr: 2021, haus: 'Gallery Tokyo', galerie: 'gallery-tokyo' },
-      { jahr: 2019, haus: 'Gallery Tokyo', galerie: 'gallery-tokyo' },
-      { jahr: 2017, haus: 'Gallery Tokyo', galerie: 'gallery-tokyo' },
-      { jahr: 2016, haus: 'LIVING MOTIF', titel: '„Gefäße der Keramischen Werkstatt“' },
-    ],
-  },
-  {
-    schluessel: 'essen',
-    stadt: 'Essen',
-    land: 'Deutschland',
-    bild: { src: '/img/kwm/kummerschalen.webp', breite: 937, hoehe: 1040, alt: '' },
-    gewicht: 'mittel',
-    reihenfolge: 4,
-    haeuser: [{ name: 'Museum Folkwang' }, { name: 'Kokerei Zollverein' }, { name: 'Kunsthaus Essen' }],
-    auftritte: [
-      { jahr: 2025, haus: 'Festival in Essen', titel: '„OPEN House“ – Future Heritage. Das Erbe von Morgen' },
-      { jahr: 2022, haus: 'Kunsthaus Essen', titel: '„HOME! 3/5 Identitäten“' },
-      { jahr: 2019, haus: 'Mischanlage Kokerei Zollverein', titel: '„MATERIAL ZU FORM – Körper zu Körper“' },
-      { jahr: 2019, haus: 'Museum Folkwang', titel: '„Young-Jae Lee“' },
-    ],
-  },
-  {
-    schluessel: 'korea',
-    stadt: 'Korea',
-    land: 'Südkorea',
-    bild: { src: '/img/kwm/teeschale.webp', breite: 1200, hoehe: 1200, alt: '' },
-    gewicht: 'mittel',
-    reihenfolge: 5,
-    haeuser: [
-      { name: 'Gwangju Museum of Art' },
-      { name: 'Ha Jung-woong Museum of Art' },
-      { name: 'Shinsegae Gallery' },
-    ],
-    auftritte: [
-      {
-        jahr: 2019,
-        haus: 'Gwangju Museum of Art und Ha Jung-woong Museum of Art',
-        titel: '„Emptying, Filling and Emptying“',
-      },
-      { jahr: 2017, haus: 'Shinsegae Gallery in Daegu, Gwangju, Incheon und Busan' },
-    ],
-  },
-  {
-    schluessel: 'boston',
-    stadt: 'Boston',
-    land: 'USA',
-    bild: { src: '/img/kwm/kugelvase.webp', breite: 600, hoehe: 400, alt: '' },
-    gewicht: 'klein',
-    reihenfolge: 6,
-    haeuser: [{ galerie: 'pucker-gallery' }],
-    auftritte: [
-      {
-        jahr: 2022,
-        haus: 'Pucker Gallery',
-        titel: '„Hope / Hoffnung – Works by Young-Jae Lee“',
-        galerie: 'pucker-gallery',
-      },
-      {
-        jahr: 2019,
-        haus: 'Pucker Gallery',
-        titel: '„Fine Choices 2019 Featuring Young-Jae Lee“',
-        galerie: 'pucker-gallery',
-      },
-      { jahr: 2016, haus: 'Pucker Gallery', titel: '„WITNESS TO AN ANCIENT TRUTH“', galerie: 'pucker-gallery' },
-    ],
-  },
-  {
-    schluessel: 'krakau-breslau',
-    stadt: 'Krakau und Breslau',
-    land: 'Polen',
-    bild: { src: '/img/kwm/schalen.webp', breite: 600, hoehe: 400, alt: '' },
-    gewicht: 'klein',
-    reihenfolge: 7,
-    haeuser: [{ name: 'Manggha Museum' }, { name: 'Architekturmuseum Breslau' }, { galerie: 'galeria-neon' }],
-    auftritte: [
-      { jahr: 2016, haus: 'Manggha Museum, Krakau', titel: '„Young-Jae Lee Schalen“' },
-      { jahr: 2016, haus: 'Architekturmuseum Breslau', titel: '„Young-Jae Lee – Gefäße“' },
-      {
-        jahr: 2016,
-        haus: 'Galeria NEON, Breslau',
-        titel: '„Keramische Werkstatt Margaretenhöhe – Young-Jae Lee“',
-        galerie: 'galeria-neon',
-      },
-    ],
-  },
-  {
-    schluessel: 'chemnitz',
-    stadt: 'Chemnitz',
-    land: 'Deutschland',
-    bild: { src: '/img/kwm/schale_gross.webp', breite: 600, hoehe: 400, alt: '' },
-    gewicht: 'klein',
-    reihenfolge: 8,
-    haeuser: [{ name: 'Stadtkirche St. Jakobi' }],
-    auftritte: [
-      { jahr: 2025, haus: 'Stadtkirche St. Jakobi', titel: '„Young-Jae Lee: Vasen“' },
-      { jahr: 2024, haus: 'Stadtkirche St. Jakobi', titel: '„Young-Jae Lee: SCHALEN“' },
-    ],
-  },
-  {
-    schluessel: 'bonn',
-    stadt: 'Bonn',
-    land: 'Deutschland',
-    bild: { src: '/img/kwm/schalen2.webp', breite: 600, hoehe: 400, alt: '' },
-    gewicht: 'klein',
-    reihenfolge: 9,
-    haeuser: [{ galerie: 'gisela-clement' }, { name: 'ENTERVENTIONALE' }],
-    auftritte: [
-      { jahr: 2020, haus: 'ENTERVENTIONALE, Ausstellungsparcours', titel: '„ENTERVENTIONALE #2020“' },
-      { jahr: 2019, haus: 'Galerie Gisela Clement', titel: '„Schönheit !?“', galerie: 'gisela-clement' },
-    ],
-  },
-  {
-    schluessel: 'new-york',
-    stadt: 'New York',
-    land: 'USA',
-    bild: { src: '/img/kwm/spindelvase1.webp', breite: 600, hoehe: 400, alt: '' },
-    gewicht: 'klein',
-    reihenfolge: 10,
-    haeuser: [{ galerie: 'david-nolan' }],
-    auftritte: [
-      {
-        jahr: 2024,
-        haus: 'David Nolan Gallery',
-        titel: '„Young-Jae Lee – Forms from the Earth“',
-        galerie: 'david-nolan',
-      },
-    ],
-  },
-  {
-    schluessel: 'duesseldorf',
-    stadt: 'Düsseldorf',
-    land: 'Deutschland',
-    bild: { src: '/img/kwm/kannen.webp', breite: 600, hoehe: 400, alt: '' },
-    gewicht: 'klein',
-    reihenfolge: 11,
-    haeuser: [{ name: 'Hetjens-Museum' }],
-    auftritte: [
-      {
-        jahr: 2024,
-        haus: 'Hetjens-Museum',
-        titel: '„100 Jahre Keramische Werkstatt Margaretenhöhe – Young-Jae Lee im Hetjens“',
-      },
-    ],
-  },
-  {
-    schluessel: 'wien',
-    stadt: 'Wien',
-    land: 'Österreich',
-    bild: { src: '/img/kwm/schale2.webp', breite: 600, hoehe: 400, alt: '' },
-    gewicht: 'klein',
-    reihenfolge: 12,
-    haeuser: [{ name: 'MAK – Museum für angewandte Kunst' }],
-    auftritte: [{ jahr: 2016, haus: 'MAK – Österreichisches Museum für angewandte Kunst', titel: '„NICHT SCHÖN“' }],
-  },
-  {
-    schluessel: 'zuerich',
-    stadt: 'Zürich',
-    land: 'Schweiz',
-    bild: { src: '/img/kwm/schalen3.webp', breite: 600, hoehe: 400, alt: '' },
-    gewicht: 'klein',
-    reihenfolge: 13,
-    haeuser: [{ name: 'Raum 49' }],
-    auftritte: [{ jahr: 2023, haus: 'Raum 49' }],
-  },
-  { schluessel: 'wesel', stadt: 'Wesel', land: 'Deutschland', reihenfolge: 14, haeuser: [], auftritte: [] },
-  { schluessel: 'st-moritz', stadt: 'St. Moritz', land: 'Schweiz', reihenfolge: 15, haeuser: [], auftritte: [] },
-];
+export const kachelGroesse = (reihenfolge: number): Pick<Ort, 'gewicht' | 'breitAmHandy'> => ({
+  gewicht: reihenfolge <= GROSS_BIS ? 'gross' : reihenfolge <= MITTEL_BIS ? 'mittel' : 'klein',
+  breitAmHandy: reihenfolge === BREIT_AM_HANDY,
+});
 
-const galerieNachSchluessel = new Map(galerien.map((eintrag) => [eintrag.schluessel, eintrag]));
+type OrtRoh = ORTE_QUERY_RESULT[number];
+type ArchivRoh = ARCHIV_QUERY_RESULT[number];
 
-export const galerie = (schluessel: string): Galerie => {
-  const treffer = galerieNachSchluessel.get(schluessel);
-  if (!treffer) throw new Error(`Galerie nicht gefunden: ${schluessel}`);
-  return treffer;
-};
+/** Auftritte eines Ortes: neueste zuerst, innerhalb eines Jahres Ausstellungen vor Archiv, dann in Listenreihenfolge */
+export function auftritteVon(
+  ortId: string,
+  archiv: readonly ArchivRoh[],
+  ausstellungen: readonly Ausstellung[],
+  heute: string,
+): Auftritt[] {
+  const ausListe = ausstellungen
+    .filter((eintrag) => eintrag.ort === ortId && eintrag.start <= heute)
+    .map((eintrag, i) => ({
+      jahr: Number(eintrag.start.slice(0, 4)),
+      rang: -1000 + i,
+      auftritt: {
+        jahr: Number(eintrag.start.slice(0, 4)),
+        haus: eintrag.galerie ?? eintrag.haus,
+        titel: eintrag.titel,
+      },
+    }));
+  const archivListe = archiv
+    .filter((eintrag) => eintrag.ortId === ortId)
+    .map((eintrag) => {
+      const jahr = eintrag.beginnJahr ?? eintrag.jahr ?? 0;
+      const haus = eintrag.galerie?.name ?? eintrag.haus ?? eintrag.titel ?? '';
+      return {
+        jahr,
+        rang: eintrag.reihenfolge ?? 0,
+        // Ein Titel, der nur das Haus wiederholt, steht nicht doppelt in der Liste
+        auftritt: { jahr, haus, ...(eintrag.titel && !haus.includes(eintrag.titel) ? { titel: eintrag.titel } : {}) },
+      };
+    });
+  return [...ausListe, ...archivListe]
+    .sort((a, b) => b.jahr - a.jahr || a.rang - b.rang)
+    .map(({ auftritt }) => auftritt);
+}
 
-export const hausName = (haus: Haus): string => ('galerie' in haus ? galerie(haus.galerie).name : haus.name);
+export function baueOrte(
+  orte: readonly OrtRoh[],
+  archiv: readonly ArchivRoh[],
+  ausstellungen: readonly Ausstellung[],
+  heute: string,
+): Ort[] {
+  return orte.map((roh) => {
+    const wo = `Ort „${roh.stadt ?? roh._id}“`;
+    if (!roh.stadt || !roh.land || roh.reihenfolge === null) {
+      throw new Error(`${wo}: Stadt, Land und Reihenfolge sind Pflicht.`);
+    }
+    return {
+      schluessel: roh._id,
+      stadt: roh.stadt,
+      land: roh.land,
+      ...(roh.kurztext ? { kurztext: roh.kurztext } : {}),
+      ...(roh.bild?.asset ? { bild: bildAngabe(roh.bild, `${wo}, Bild`) } : {}),
+      ...kachelGroesse(roh.reihenfolge),
+      reihenfolge: roh.reihenfolge,
+      haeuser: roh.haeuser ?? [],
+      auftritte: auftritteVon(roh._id, archiv, ausstellungen, heute),
+    };
+  });
+}
+
+export async function ladeOrte(heute: string = heuteIso()): Promise<readonly Ort[]> {
+  const [orte, archiv, ausstellungen] = await Promise.all([
+    abfrage<ORTE_QUERY_RESULT>('Orte', ORTE_QUERY),
+    abfrage<ARCHIV_QUERY_RESULT>('Archiv', ARCHIV_QUERY),
+    ladeAlleAusstellungen(),
+  ]);
+  return baueOrte(orte, archiv, ausstellungen, heute);
+}
 
 /** Orte mit Kachel in der Reihenfolge der Seite */
-export const kacheln: readonly (Ort & { bild: BildAngabe })[] = orte
-  .flatMap((ort) => (ort.bild ? [{ ...ort, bild: ort.bild }] : []))
-  .sort((a, b) => a.reihenfolge - b.reihenfolge);
+export async function ladeKacheln(): Promise<readonly (Ort & { bild: BildAngabe })[]> {
+  const kacheln = (await ladeOrte()).flatMap((ort) => (ort.bild ? [{ ...ort, bild: ort.bild }] : []));
+  if (kacheln.length === 0) throw new Error('Kein Ort mit Bild gefunden: Die Startseite braucht Ausstellungsorte.');
+  return kacheln;
+}
 
 /** Zeitraum („2018–2026“, bei einem Jahr nur das Jahr) und Anzahl („7 Ausstellungen“) aus den Auftritten */
 export const ortZahlen = (ort: Ort): { zeitraum: string; anzahl: string } => {

@@ -1,4 +1,7 @@
-// Archiv vergangener Ausstellungen. Beides sind künftig `ausstellung`-Dokumente (Sanity-Typ `ausstellung`); bis Sanity Teil 2 stehen sie hier als Auswahl und als Gesamtliste.
+// Archiv vergangener Ausstellungen: Die Auswahl seit 2016 kommt als `archivEintrag` aus Sanity, die Gesamtliste seit 1980 steht hier im Code (wie die Chronik).
+import { abfrage } from '../sanity/client';
+import { ARCHIV_QUERY } from '../sanity/queries';
+import type { ARCHIV_QUERY_RESULT } from '../sanity/sanity.types';
 
 /** Eintrag der Auswahl auf der Seite Aktuelles: Titel, Ort und Zeitraum innerhalb des Jahres */
 export interface ArchivEintrag {
@@ -23,407 +26,91 @@ export interface AusstellungsJahr {
   jahr: string;
   eintraege: readonly string[];
 }
-
-export const vergangene: readonly ArchivJahr[] = [
-  {
-    jahr: '2026',
+/** Teaser und Link der Jahresseite gehören zum Jahr, nicht zu einem Eintrag, und stehen deshalb hier */
+const JAHRES_INFO: Readonly<Record<string, Pick<ArchivJahr, 'teaser' | 'alle'>>> = {
+  '2026': {
     teaser: 'Umbrella, Dänemark · Künstlerzeche Unser Fritz, Herne · Galerie Jahn und Jahn, München',
-    eintraege: [
-      {
-        titel: '„Young-Jae Lee – Schalen“',
-        ort: 'Umbrella, west coast exhibitions, Nørre Nebel, Dänemark',
-        datum: '7. März – 24. Mai',
-      },
-      {
-        titel: 'Mode, Taschen, Keramik und Licht im Dialog',
-        ort: 'No Nonsense – Pop Up Store, Köln',
-        datum: '28.–30. Mai',
-      },
-      {
-        titel: '„Stille Gäste“',
-        ort: 'Künstlerzeche Unser Fritz, Herne',
-        datum: '13. Juni – 5. Juli',
-      },
-      {
-        titel: '„Young-Jae Lee“',
-        ort: 'Galerie Jahn und Jahn GmbH, Baaderstraße 56C, 80469 München',
-        datum: '14. Juli – 12. September',
-        link: { href: 'https://www.jahnundjahn.com/', text: 'jahnundjahn.com' },
-      },
-    ],
     alle: { href: 'https://kwm-1924.de/neuigkeiten/vergangene/2026-2/', text: 'Alle Angaben zu 2026' },
   },
-  {
-    jahr: '2025',
+  '2025': {
     teaser: 'St. Jakobi, Chemnitz · Galerie Jahn und Jahn, München · Gallery Tokyo',
-    eintraege: [
-      {
-        titel: 'Weihnachtsausstellung 2025',
-        ort: 'in der Werkstatt, mit Christine Atmer de Reig (Keramik), Vivien Reig Atmer (Schmuck) und Masami Takeuchi (Kintsugi)',
-        datum: '22. November – 23. Dezember',
-      },
-      {
-        titel: '„OPEN House“ – Future Heritage. Das Erbe von Morgen',
-        ort: 'Festival in Essen',
-        datum: '6.–7. September',
-      },
-      {
-        titel: '„Lee Young-Jae“',
-        ort: 'Gallery Tokyo, Japan',
-        datum: '21.–26. Juni',
-      },
-      {
-        titel: '„100 + 1 Übungsstücke“',
-        ort: 'Ausstellung',
-        datum: '2.–30. Juni',
-      },
-      {
-        titel: '„Young-Jae Lee: Keramik“',
-        ort: 'Galerie Jahn und Jahn, München',
-        datum: '14. März – 26. April',
-      },
-      {
-        titel: '„Young-Jae Lee: Vasen“',
-        ort: 'St. Jakobi, Chemnitz – verlängert bis Ende 2025',
-        datum: 'ab 9. März',
-      },
-      {
-        titel: '„Young-Jae Lee: SCHALEN“',
-        ort: 'Stadtkirche St. Jakobi, Chemnitz',
-        datum: '29. August 2024 – 2. März 2025',
-      },
-      {
-        titel: 'Messe „Ambiente“',
-        ort: 'Messe Frankfurt, Halle 3.1, Stand A60',
-        datum: '7.–11. Februar',
-      },
-    ],
     alle: { href: 'https://kwm-1924.de/neuigkeiten/vergangene/2025-2/', text: 'Alle Angaben zu 2025' },
   },
-  {
-    jahr: '2024',
+  '2024': {
     teaser: '100 Jahre Werkstatt · Hetjens Museum, Düsseldorf · David Nolan Gallery, New York',
-    eintraege: [
-      {
-        titel: '„Weihnachtsausstellung – Editionen“',
-        ort: 'in der Werkstatt',
-        datum: '30. November – 23. Dezember',
-      },
-      {
-        titel: '„Young-Jae Lee – Forms from the Earth“',
-        ort: 'David Nolan Gallery, New York, USA',
-        datum: '1. November – 21. Dezember',
-      },
-      {
-        titel: '„TEE“',
-        ort: 'Galerie Metzger, Johannesberg',
-        datum: '27. Oktober – 17. November',
-      },
-      {
-        titel: '„100 Jahre Keramische Werkstatt Margaretenhöhe – Young-Jae Lee im Hetjens“',
-        ort: 'Hetjens Museum, Düsseldorf',
-        datum: '16. Mai – 1. September',
-      },
-      {
-        titel: 'Bayerischer Kunstgewerbeverein',
-        ort: 'München',
-        datum: '17. Mai – 29. Juni',
-      },
-      {
-        titel: 'Diessener Töpfermarkt',
-        ort: 'Diessen',
-        datum: '9.–12. Mai',
-      },
-      {
-        titel: '„50 Jahre – 50 Schätze“',
-        ort: 'Museum für Ostasiatische Kunst, Köln',
-        datum: '19. Januar – 29. September',
-      },
-    ],
     alle: { href: 'https://kwm-1924.de/neuigkeiten/vergangene/2024-2/', text: 'Alle Angaben zu 2024' },
   },
-  {
-    jahr: '2023',
+  '2023': {
     teaser: 'MKG Hamburg · Raum 49, Zürich · Blaues Haus, Dießen',
-    eintraege: [
-      {
-        titel: '„CONTEMPORARY CRAFT – Young-Jae Lee“',
-        ort: 'Museum für Kunst und Gewerbe Hamburg (MKG)',
-        datum: '23. November 2022 – 23. April 2023',
-      },
-      {
-        titel: '„Gefäße – retrospektiv“ – Young-Jae Lee',
-        ort: '„Blaues Haus“, Dießen am Ammersee',
-        datum: '',
-      },
-      {
-        titel: 'Raum 49',
-        ort: 'Zürich, Vernissage am 30. März 2023',
-        datum: '',
-      },
-      {
-        titel: 'Goldschmiede & Galerie Udo Adam-Pasquale',
-        ort: 'Köln-Sülz',
-        datum: '25. März – 13. Mai',
-      },
-      {
-        titel: 'Gallery Tokyo',
-        ort: 'Tokyo',
-        datum: '1.–5. Mai',
-      },
-    ],
     alle: { href: 'https://kwm-1924.de/neuigkeiten/vergangene/jahr_2023/', text: 'Alle Angaben zu 2023' },
   },
-  {
-    jahr: '2022',
+  '2022': {
     teaser: 'Pucker Gallery, Boston · Galerie Jahn und Jahn · Gallery Nichinichi, Kyoto',
-    eintraege: [
-      {
-        titel: 'Yui Tombana – Zeichnungen',
-        ort: 'eine Ausstellung in unserer Werkstatt',
-        datum: '2.–29. Juli',
-      },
-      {
-        titel: '„HOME! 3/5 Identitäten“',
-        ort: 'Kunsthaus Essen',
-        datum: '4. März – 3. April',
-      },
-      {
-        titel: '„Young-Jae LEE – Spindelvasen und Spinatschalen“',
-        ort: 'Galerie Jahn und Jahn, München',
-        datum: '28. Januar – 12. März',
-      },
-      {
-        titel: '„Hope / Hoffnung – Works by Young-Jae Lee“',
-        ort: 'Pucker Gallery, Boston',
-        datum: '15. Januar – 27. Februar',
-      },
-      {
-        titel: '„Young-Jae LEE – Vessels are Sculpture“',
-        ort: 'Gallery Nichinichi, Kyoto, Japan',
-        datum: '3.–24. Januar',
-      },
-      {
-        titel: '„WIR. Bilder für eine neue Kunst des Zusammenlebens“',
-        ort: 'Große Kunstschau Worpswede',
-        datum: '20. Juni 2021 – 6. März 2022',
-      },
-    ],
     alle: { href: 'https://kwm-1924.de/neuigkeiten/vergangene/jahr_2022/', text: 'Alle Angaben zu 2022' },
   },
-  {
-    jahr: '2021',
+  '2021': {
     teaser: 'Galerie Karsten Greve, St. Moritz · Gallery Damdam, Berlin · Kunsthaus Dresden',
-    eintraege: [
-      {
-        titel: 'Weihnachtsausstellung in der Keramischen Werkstatt',
-        ort: 'mit Schmuck von Karin Kolster-Kelly und Ulrika Mertens',
-        datum: '6. November – 23. Dezember',
-      },
-      {
-        titel: '„Young-Jae Lee – In collaboration with KDK“',
-        ort: 'Gallery Damdam, Berlin',
-        datum: '17. September – 13. November',
-      },
-      {
-        titel: '„Young-Jae Lee – Gefässe“',
-        ort: 'Galerie Karsten Greve, St. Moritz',
-        datum: '10. September – 30. Oktober',
-      },
-      {
-        titel: '„Viereckig“',
-        ort: 'Galerie Banki, Kashiwa, Japan',
-        datum: '11.–25. September',
-      },
-      {
-        titel: 'Gallery Tokyo',
-        ort: 'Tokyo',
-        datum: '2.–6. April',
-      },
-      {
-        titel: '„1000°“',
-        ort: 'Kunsthaus Dresden, Städtische Galerie für Gegenwartskunst',
-        datum: '',
-      },
-    ],
     alle: { href: 'https://kwm-1924.de/neuigkeiten/vergangene/jahr_2021/', text: 'Alle Angaben zu 2021' },
   },
-  {
-    jahr: '2020',
+  '2020': {
     teaser: 'Spinatschalen, Galerie Karsten Greve, Köln · Galerie Handwerk, München',
-    eintraege: [
-      {
-        titel: '„Spinatschalen“',
-        ort: 'Galerie Karsten Greve, Köln',
-        datum: '19. Juni – 29. August',
-      },
-      {
-        titel: 'Buchpräsentation „Das Grün in den Schalen“',
-        ort: 'in Anwesenheit der Künstlerin, Galerie Karsten Greve, Köln',
-        datum: '21. August',
-      },
-      {
-        titel: '„es grünt“',
-        ort: 'Galerie Handwerk, München',
-        datum: '18. Juni – 1. August',
-      },
-      {
-        titel: '„ENTERVENTIONALE #2020“',
-        ort: 'Ausstellungsparcours in Bonn',
-        datum: '14. Januar – 1. März',
-      },
-      {
-        titel: '„Schönheit !?“',
-        ort: 'Galerie Gisela Clement, Bonn',
-        datum: '13. November 2019 – 23. Januar 2020',
-      },
-    ],
     alle: { href: 'https://kwm-1924.de/neuigkeiten/vergangene/jahr_2020/', text: 'Alle Angaben zu 2020' },
   },
-  {
-    jahr: '2019',
+  '2019': {
     teaser: 'Museum Folkwang, Essen · Kokerei Zollverein · Ha Jung-woong Museum of Art',
-    eintraege: [
-      {
-        titel: '„Young-Jae Lee: Emptying, Filling and Emptying“',
-        ort: 'Ha Jung-woong Museum of Art – An Encounter between the Spirit of Bauhaus and Korean Ceramic Art',
-        datum: '16. Oktober – 8. Dezember',
-      },
-      {
-        titel: 'Buchvorstellung und Installation',
-        ort: 'Kunstraum Alexander Bürkle, Freiburg',
-        datum: '30. September',
-      },
-      {
-        titel: '„Fine Choices 2019 Featuring Young-Jae Lee“',
-        ort: 'Pucker Gallery, Boston',
-        datum: '27. Juli – 1. September',
-      },
-      {
-        titel: '„Young-Jae Lee: MATERIAL ZU FORM – Körper zu Körper“',
-        ort: 'Mischanlage Kokerei Zollverein, UNESCO-Welterbe Zollverein',
-        datum: '24. Mai – 14. Juli',
-      },
-      {
-        titel: 'Young-Jae Lee',
-        ort: 'Museum Folkwang, Essen',
-        datum: '23. Mai – 4. August',
-      },
-      {
-        titel: '„WerkKunst – Gefäße von Young-Jae Lee“',
-        ort: 'Dommuseum Hildesheim',
-        datum: '9. März – 24. April',
-      },
-      {
-        titel: '„Who´s afraid of Bauhaus?“',
-        ort: 'Museum Ratingen',
-        datum: '15. Februar – 12. Mai',
-      },
-    ],
     alle: { href: 'https://kwm-1924.de/neuigkeiten/vergangene/jahr_2019/', text: 'Alle Angaben zu 2019' },
   },
-  {
-    jahr: '2018',
+  '2018': {
     teaser: 'Galerie Karsten Greve, Paris und Köln · Korean Cultural Center, Brüssel',
-    eintraege: [
-      {
-        titel: 'Weihnachten',
-        ort: 'in der Keramischen Werkstatt',
-        datum: '3. November – 23. Dezember',
-      },
-      {
-        titel: '„Young-Jae Lee – Ceramics“',
-        ort: 'Korean Cultural Center Brussels',
-        datum: '8. März – 28. April',
-      },
-      {
-        titel: '„Young-Jae Lee – Céramique“',
-        ort: 'Galerie Karsten Greve, Paris',
-        datum: '1. März – 14. April',
-      },
-      {
-        titel: 'Arbeiten in Keramik',
-        ort: 'Galerie Karsten Greve, Köln',
-        datum: '13. Januar – 24. Februar',
-      },
-    ],
     alle: { href: 'https://kwm-1924.de/neuigkeiten/vergangene/jahr_2018/', text: 'Alle Angaben zu 2018' },
   },
-  {
-    jahr: '2017',
+  '2017': {
     teaser: 'Kloster Beuerberg · HfBK Dresden · Shinsegae Gallery, Korea',
-    eintraege: [
-      {
-        titel: 'Shinsegae Gallery',
-        ort: 'Dai-gu, Incheon, Busan, Korea',
-        datum: 'Herbst 2017',
-      },
-      {
-        titel: 'Gallery Kan',
-        ort: 'Fukushima, Japan',
-        datum: '1.–11. September',
-      },
-      {
-        titel: '„HINGABE“ – Gefäße von Young-Jae Lee',
-        ort: 'Gartenpavillon des Kloster Beuerberg, Diözesanmuseum Freising',
-        datum: '27. Mai – 3. Oktober',
-      },
-      {
-        titel: 'Gallery Tokyo',
-        ort: 'Tokyo, Japan',
-        datum: '21.–25. Juli',
-      },
-      {
-        titel: 'Young-Jae Lee „Gefäße“',
-        ort: 'Oktogon der Hochschule für Bildende Künste Dresden',
-        datum: '3. Mai – 25. Juni',
-      },
-    ],
     alle: { href: 'https://kwm-1924.de/neuigkeiten/vergangene/jahr_2017/', text: 'Alle Angaben zu 2017' },
   },
-  {
-    jahr: '2016',
+  '2016': {
     teaser: 'Ehrendoktorwürde in Breslau · MAK, Wien · Manggha, Krakau',
-    eintraege: [
-      {
-        titel: '„Gefäße der Keramischen Werkstatt“',
-        ort: 'LIVING MOTIF, Tokyo',
-        datum: '16. September – 16. Oktober',
-      },
-      {
-        titel: '„WITNESS TO AN ANCIENT TRUTH“',
-        ort: 'Pucker Gallery, Boston',
-        datum: '23. Juli – 4. September',
-      },
-      {
-        titel: '„NICHT SCHÖN“',
-        ort: 'Vasen von und mit Young-Jae Lee, MAK – Österreichisches Museum für angewandte Kunst, Wien',
-        datum: '13. April – 26. Juni',
-      },
-      {
-        titel: '„Young-Jae Lee Schalen“',
-        ort: 'Manggha – Museum der Japanischen Kunst & Technik, Krakau',
-        datum: '9. April – 14. August',
-      },
-      {
-        titel: '„Young-Jae Lee – Gefäße“',
-        ort: 'Architekturmuseum Breslau',
-        datum: '5. April – 9. Mai',
-      },
-      {
-        titel: 'Verleihung der Ehrendoktorwürde an Young-Jae Lee',
-        ort: 'Eugeniusz Geppert Academy of Art and Design, Wrocław',
-        datum: '4. April',
-      },
-      {
-        titel: '„Das Geschirr der KWM“',
-        ort: 'Gallery Nichinichi, Kyoto',
-        datum: '26. Februar – 6. März',
-      },
-    ],
     alle: { href: 'https://kwm-1924.de/neuigkeiten/vergangene/2016-2/', text: 'Alle Angaben zu 2016' },
   },
-];
+};
+
+type Roh = ARCHIV_QUERY_RESULT[number];
+
+/** Einträge der Liste „Vergangene Ausstellungen“, nach Jahr gruppiert (neueste Jahre zuerst) */
+export function baueArchivAuswahl(roh: readonly Roh[]): ArchivJahr[] {
+  const nachJahr = new Map<number, ArchivEintrag[]>();
+  for (const eintrag of roh) {
+    if (eintrag.inListe === false) continue;
+    const { jahr, ortszeile, datum } = eintrag;
+    const titel = eintrag.titel ?? eintrag.haus;
+    if (jahr === null || !titel || !ortszeile) {
+      throw new Error(
+        `Archiv-Eintrag „${eintrag.titel ?? eintrag._id}“: Jahr, Titel oder Haus und Ort in der Liste fehlen.`,
+      );
+    }
+    const liste = nachJahr.get(jahr) ?? [];
+    liste.push({
+      titel,
+      ort: ortszeile,
+      datum: datum ?? '',
+      ...(eintrag.link?.text && eintrag.link.url ? { link: { href: eintrag.link.url, text: eintrag.link.text } } : {}),
+    });
+    nachJahr.set(jahr, liste);
+  }
+  return [...nachJahr.entries()]
+    .sort(([a], [b]) => b - a)
+    .map(([jahr, eintraege]) => {
+      const info = JAHRES_INFO[String(jahr)];
+      if (!info) throw new Error(`Archiv ${jahr}: Teaser und Link der Jahresseite fehlen in src/data/archiv.ts.`);
+      return { jahr: String(jahr), ...info, eintraege };
+    });
+}
+
+export async function ladeArchivAuswahl(): Promise<readonly ArchivJahr[]> {
+  const jahre = baueArchivAuswahl(await abfrage<ARCHIV_QUERY_RESULT>('Archiv', ARCHIV_QUERY));
+  if (jahre.length === 0) throw new Error('Keine Archiv-Einträge gefunden: Die Seite Aktuelles braucht die Liste.');
+  return jahre;
+}
 
 export const ausstellungsarchiv: readonly AusstellungsJahr[] = [
   {
