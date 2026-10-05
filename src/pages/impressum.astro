@@ -4,7 +4,7 @@ import '../styles/seiten/page-text.css';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PageHero from '../components/PageHero.astro';
 import Prose from '../components/Prose.astro';
-import { kontakt, telefonText } from '../data/kontakt';
+import { kontakt } from '../data/kontakt';
 ---
 
 <BaseLayout
@@ -101,7 +101,7 @@ import { kontakt, telefonText } from '../data/kontakt';
         <p>
           {kontakt.firma}, {kontakt.anschrift}
           <br />
-          Telefon {telefonText(kontakt.telefon, 'impressum')}, E-Mail: {kontakt.mail}
+          Telefon {kontakt.telefon}, E-Mail: {kontakt.mail}
           <br />
           Vertreten durch die Geschäftsführung Young-Jae Griepentrog, geb. Lee
           <br />

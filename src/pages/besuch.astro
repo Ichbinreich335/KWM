@@ -13,11 +13,10 @@ import InquiryForm from '../components/InquiryForm.astro';
 import Hours from '../components/Hours.astro';
 import PageHero from '../components/PageHero.astro';
 import Figure from '../components/Figure.astro';
-import { kontakt, oeffnungszeitKurz } from '../data/kontakt';
+import { kontakt } from '../data/kontakt';
 
 const routeGoogle = `https://www.google.com/maps/search/?api=1&query=${`${kontakt.strasse} ${kontakt.plzOrt}`.replaceAll(' ', '+')}`;
 const routeOsm = `https://www.openstreetmap.org/search?query=${encodeURIComponent(kontakt.anschrift)}`;
-const zeitenKurzWort = oeffnungszeitKurz(kontakt.oeffnungszeiten, 'kurzWort').join(', ');
 ---
 
 <BaseLayout
@@ -118,7 +117,7 @@ const zeitenKurzWort = oeffnungszeitKurz(kontakt.oeffnungszeiten, 'kurzWort').jo
             </a>
           </dd>
           <dt>Zeiten</dt>
-          <dd>{zeitenKurzWort}</dd>
+          <dd>{kontakt.zeitenKurz}</dd>
           <dt>E-Mail</dt>
           <dd>
             <a class="tap" href={kontakt.mailHref}>

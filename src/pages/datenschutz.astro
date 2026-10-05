@@ -5,7 +5,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import PageHero from '../components/PageHero.astro';
 import Notice from '../components/Notice.astro';
 import Prose from '../components/Prose.astro';
-import { kontakt, telefonText } from '../data/kontakt';
+import { kontakt } from '../data/kontakt';
 ---
 
 <BaseLayout
@@ -57,7 +57,7 @@ import { kontakt, telefonText } from '../data/kontakt';
           <br />
           {kontakt.anschrift}
           <br />
-          Telefon {telefonText(kontakt.telefon, 'impressum')}
+          Telefon {kontakt.telefon}
           <br />
           E-Mail: <a href={kontakt.mailHref}>{kontakt.mail}</a>
         </p>

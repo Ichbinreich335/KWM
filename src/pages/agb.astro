@@ -5,7 +5,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import InquiryBand from '../components/InquiryBand.astro';
 import PageHero from '../components/PageHero.astro';
 import Prose from '../components/Prose.astro';
-import { kontakt, telefonText } from '../data/kontakt';
+import { kontakt } from '../data/kontakt';
 ---
 
 <BaseLayout
@@ -229,7 +229,7 @@ import { kontakt, telefonText } from '../data/kontakt';
           <br />
           {kontakt.plzOrt}
           <br />
-          Tel.: {telefonText(kontakt.telefon, 'inland')}
+          Tel.: {kontakt.telefon}
           <br />
           Email: {kontakt.mail}
           <br />

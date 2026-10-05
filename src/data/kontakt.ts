@@ -69,8 +69,8 @@ const TAG_KURZ: Record<Wochentag, string> = {
   sonntag: 'So',
 };
 
-/** Schreibweise der Tage: „Montag bis Freitag“, „Mo–Fr“ oder „Mo bis Fr“ */
-export type TagStil = 'lang' | 'kurz' | 'kurzWort';
+/** Schreibweise der Tage: „Montag bis Freitag“ oder „Mo–Fr“ */
+export type TagStil = 'lang' | 'kurz';
 
 export function tageText(zeit: Oeffnungszeit, stil: TagStil): string {
   const namen = stil === 'lang' ? TAG_LANG : TAG_KURZ;
@@ -95,19 +95,9 @@ export function oeffnungszeitZeilen(zeiten: readonly Oeffnungszeit[], stil: TagS
   return zeiten.map((zeit) => ({ tage: tageText(zeit, stil), zeit: zeitText(zeit) }));
 }
 
-/** „Mo–Fr 9–17 Uhr“ je Eintrag (mit `kurzWort` „Mo bis Fr 9–17 Uhr“) */
-export function oeffnungszeitKurz(zeiten: readonly Oeffnungszeit[], stil: 'kurz' | 'kurzWort' = 'kurz'): string[] {
-  return oeffnungszeitZeilen(zeiten, stil).map(({ tage, zeit }) => `${tage} ${zeit}`);
-}
-
-/** Schreibweisen derselben Rufnummer: wie gespeichert, im Impressum („0049 (0)201 – 30 50 80“) oder im Inland („0201 /30 50 80“) */
-export type TelefonStil = 'international' | 'impressum' | 'inland';
-
-export function telefonText(telefon: string, stil: TelefonStil): string {
-  const teile = /^\+(\d+) (\d+) (.+)$/.exec(telefon);
-  if (stil === 'international' || !teile) return telefon;
-  const [, land, vorwahl, nummer] = teile;
-  return stil === 'impressum' ? `00${land} (0)${vorwahl} – ${nummer}` : `0${vorwahl} /${nummer}`;
+/** „Mo–Fr 9–17 Uhr“ je Eintrag */
+export function oeffnungszeitKurz(zeiten: readonly Oeffnungszeit[]): string[] {
+  return oeffnungszeitZeilen(zeiten, 'kurz').map(({ tage, zeit }) => `${tage} ${zeit}`);
 }
 
 /** Ableitungen, die die Seiten und Komponenten gemeinsam brauchen */
