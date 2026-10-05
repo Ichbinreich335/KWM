@@ -187,9 +187,12 @@ const { variante, als: Tag = 'div', ...rest } = Astro.props;
       --sticky-text-from: 1;
       --sticky-text-to: -1;
     }
+    .sticky-bild--portrait {
+      padding: var(--head-gap) var(--m) 0;
+    }
     .sticky-bild--portrait .sticky-bild__media {
       position: relative;
-      aspect-ratio: 4 / 5; /* Porträtformat nach DESIGN.md §3 */
+      aspect-ratio: 1; /* mit Seitenrand und quadratisch: das Porträt steht ruhig, nicht randlos über die ganze Breite */
     }
     .sticky-bild--portrait .sticky-bild__media::after {
       content: none;
@@ -202,6 +205,7 @@ const { variante, als: Tag = 'div', ...rest } = Astro.props;
     }
     .sticky-bild--portrait .sticky-bild__pane {
       position: static;
+      padding-inline: 0;
       padding-block: var(--head-gap);
     }
   }
