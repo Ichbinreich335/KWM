@@ -1,9 +1,18 @@
 import { kontakt } from './kontakt';
 
-/** Wegbeschreibung: Titel mit nummerierten Schritten */
+/** Satz mit einem Link mitten darin: `vor`, Link, `nach` */
+export interface Hinweis {
+  vor: string;
+  linkText: string;
+  href: string;
+  nach: string;
+}
+
+/** Wegbeschreibung: Titel mit nummerierten Schritten, optional mit Hinweis */
 export interface Weg {
   titel: string;
   schritte: readonly string[];
+  hinweis?: Hinweis;
 }
 
 export const anfahrtAuto: readonly Weg[] = [
@@ -42,4 +51,13 @@ export const anfahrtAuto: readonly Weg[] = [
   },
 ];
 
-export const oepnv: Weg = { titel: 'Mit öffentlichen Verkehrsmitteln', schritte: [kontakt.nahverkehr] };
+export const oepnv: Weg = {
+  titel: 'Mit öffentlichen Verkehrsmitteln',
+  schritte: [kontakt.nahverkehr],
+  hinweis: {
+    vor: 'Fahrplanauskünfte erhalten Sie beim ',
+    linkText: 'Verkehrsverbund Rhein-Ruhr',
+    href: 'https://www.vrr.de/de/fahrplanauskunft/',
+    nach: '.',
+  },
+};

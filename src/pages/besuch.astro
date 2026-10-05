@@ -2,6 +2,7 @@
 import '../styles/basis.css';
 import Button from '../components/Button.astro';
 import LinkArrow from '../components/LinkArrow.astro';
+import InfoBlock from '../components/InfoBlock.astro';
 import Steps from '../components/Steps.astro';
 import { anfahrtAuto, oepnv } from '../data/anfahrt';
 import SectionHead from '../components/SectionHead.astro';
@@ -90,19 +91,11 @@ const zeitenKurzWort = oeffnungszeitKurz(kontakt.oeffnungszeiten, 'kurzWort').jo
         Seite.
       </SectionHead>
       <div class="routes">
-        {anfahrtAuto.map((weg) => (
-          <article class="route" data-reveal="fade">
-            <h3 class="route__title">{weg.titel}</h3>
+        {[...anfahrtAuto, oepnv].map((weg) => (
+          <InfoBlock titel={weg.titel} hinweis={weg.hinweis}>
             <Steps typ="folge" schritte={weg.schritte} />
-          </article>
+          </InfoBlock>
         ))}
-        <article class="route" data-reveal="fade">
-          <h3 class="route__title">{oepnv.titel}</h3>
-          <Steps typ="folge" schritte={oepnv.schritte} />
-          {/* Absatz bleibt einzeilig: Umbrüche von Prettier setzen sonst ein Leerzeichen vor das Satzzeichen */}
-          {/* prettier-ignore */}
-          <p class="route__note">Fahrplanauskünfte erhalten Sie beim <a class="tap" href="https://www.vrr.de/de/fahrplanauskunft/">Verkehrsverbund Rhein-Ruhr</a>.</p>
-        </article>
       </div>
     </section>
 

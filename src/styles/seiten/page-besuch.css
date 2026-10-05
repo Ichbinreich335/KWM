@@ -91,28 +91,6 @@
 .route {
   grid-column: span 3;
   grid-row: span 3;
-  display: grid;
-  grid-template-rows: subgrid;
-  align-content: start;
-  padding-bottom: 56px;
-}
-.route__title {
-  font-family: var(--f-display);
-  font-size: var(--t-h3);
-  line-height: var(--t-h3-lh);
-  padding-bottom: 16px;
-  border-bottom: 1px solid var(--ink);
-  margin-bottom: 4px;
-  text-wrap: balance;
-}
-.route__note {
-  font-size: var(--t-small);
-  line-height: var(--t-small-lh);
-  color: var(--ink-2);
-  margin-top: 16px;
-}
-.route__note a {
-  color: var(--ink);
 }
 
 /* Anfrage */
@@ -245,9 +223,6 @@
   }
   .route {
     grid-column: 1 / -1;
-  }
-  .route {
-    padding-bottom: 40px;
   }
   .inquiry__text,
   .inquiry__form {
