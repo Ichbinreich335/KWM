@@ -2,9 +2,9 @@
 import type { Ausstellung } from '../data/ausstellungen';
 import LinkArrow from './LinkArrow.astro';
 import type { Fakt } from '../data/typen';
-import { heuteTag, statusText, tagAusIso } from '../scripts/status';
-import { lesetitel as lesetitelVon } from '../scripts/lesetitel';
-import { zeitraumKurz, zeitraumMitBis } from '../scripts/zeitraum';
+import { heuteTag, statusText, tagAusIso } from '../lib/status';
+import { lesetitel as lesetitelVon } from '../lib/lesetitel';
+import { zeitraumKurz, zeitraumMitBis } from '../lib/zeitraum';
 import Bild from './Bild.astro';
 import FactsList from './FactsList.astro';
 import Flyer from './Flyer.astro';

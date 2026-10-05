@@ -1,4 +1,4 @@
-import { heuteTag, hinweisSichtbar, tagAusIso } from './status';
+import { heuteTag, hinweisSichtbar, tagAusIso } from '../lib/status';
 import { MOBIL_ABFRAGE, random, pickGlaze as pickFrom, reducedMotion, renderBowlSprite, type Schale } from './keramik';
 
 /** Schale im Kosmos: feste Eigenschaften, Lage im Ring und Animationszustand. */

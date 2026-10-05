@@ -1,7 +1,7 @@
 ---
 import type { HTMLAttributes } from 'astro/types';
 import { Image } from 'astro:assets';
-import { bildMetadaten } from '../data/bilder';
+import { bildMetadaten } from '../lib/bilder';
 
 type Props = Omit<HTMLAttributes<'img'>, 'src' | 'srcset' | 'alt' | 'width' | 'height' | 'sizes'> & {
   /** Pfad wie in den Seiten, z. B. `/img/kwm/kannen.webp` (liegt unter `src/assets/img/`). */

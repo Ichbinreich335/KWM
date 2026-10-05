@@ -2,7 +2,7 @@
 // Keine Preise, kein Bestand, keine Lagerorte, keine Verfügbarkeit: nur freigegebene Angaben.
 import { BRENNTEMPERATUR, grad } from './brenntemperatur';
 import type { BildAngabe } from './typen';
-import { SCHMALES_LEERZEICHEN } from './zeichen';
+import { SCHMALES_LEERZEICHEN } from '../lib/zeichen';
 
 /** Eine Zeile der Werkangaben; Maße, Glasur, Brand, Ort und Jahr erscheinen mit ` · ` getrennt */
 export interface Angabe {

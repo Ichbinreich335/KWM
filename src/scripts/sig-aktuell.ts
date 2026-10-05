@@ -1,5 +1,5 @@
 // Signatur: aktuell. Status je Ausstellung aus dem Datum, Details klappen ohne Unterseite auf (immer nur eine offen).
-import { heuteTag, hinweisSichtbar, statusText, tagAusIso } from './status';
+import { heuteTag, hinweisSichtbar, statusText, tagAusIso } from '../lib/status';
 
 export default function init(el: Element) {
   if (!(el instanceof HTMLElement)) return;

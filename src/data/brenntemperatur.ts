@@ -1,4 +1,4 @@
-import { SCHMALES_LEERZEICHEN } from './zeichen';
+import { SCHMALES_LEERZEICHEN } from '../lib/zeichen';
 
 /** Brenntemperaturen in °C: einzige Quelle für Daten, Seiten und Skripte */
 export const BRENNTEMPERATUR = {

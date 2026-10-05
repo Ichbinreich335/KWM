@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { BRENNTEMPERATUR, grad } from './brenntemperatur';
 import { angabeText, katalog, stueckBezeichnung } from './werke';
-import { SCHMALES_LEERZEICHEN } from './zeichen';
+import { SCHMALES_LEERZEICHEN } from '../lib/zeichen';
 
 describe('grad', () => {
   it('hält Zahl und Einheit mit dem schmalen geschützten Leerzeichen zusammen', () => {
