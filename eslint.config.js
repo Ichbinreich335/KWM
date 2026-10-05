@@ -19,6 +19,7 @@ export default [
       '.claude/',
       '.superpowers/',
       '.impeccable/',
+      'worker-configuration.d.ts',
     ],
   },
   ...tseslint.configs.recommended,

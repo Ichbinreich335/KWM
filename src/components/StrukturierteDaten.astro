@@ -1,0 +1,42 @@
+---
+import { kontakt, WOCHENTAGE } from '../data/kontakt';
+
+interface Props {
+  /** Absolute URL eines Fotos der Werkstatt */
+  bild: URL;
+}
+const { bild } = Astro.props;
+
+const SCHEMA_TAGE = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'] as const;
+/** Tage eines Eintrags (ein Tag oder ein Bereich) in schema.org-Schreibweise */
+const schemaTage = ({ tagVon, tagBis = tagVon }: (typeof kontakt.oeffnungszeiten)[number]) =>
+  SCHEMA_TAGE.slice(WOCHENTAGE.indexOf(tagVon), WOCHENTAGE.indexOf(tagBis) + 1);
+
+// Bewusst ohne Preise, Bestand und Verfügbarkeit (kein Offer/Product); sameAs fehlt, solange keine Profile belegt sind.
+const daten = {
+  '@context': 'https://schema.org',
+  '@type': ['LocalBusiness', 'Store'],
+  name: kontakt.firma,
+  url: Astro.site,
+  image: bild,
+  telephone: kontakt.telefon.replace(/\s/g, ''),
+  email: kontakt.mail,
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: kontakt.strasse,
+    postalCode: kontakt.plzOrt.split(' ')[0],
+    addressLocality: kontakt.plzOrt.split(' ').slice(1).join(' '),
+    addressCountry: 'DE',
+  },
+  openingHoursSpecification: kontakt.oeffnungszeiten.map((zeit) => ({
+    '@type': 'OpeningHoursSpecification',
+    dayOfWeek: schemaTage(zeit),
+    opens: zeit.von,
+    closes: zeit.bis,
+  })),
+};
+// "<" als \u003c ausgeben, damit kein "</script>" im Wert das Skript-Element vorzeitig beendet.
+const json = JSON.stringify(daten).replace(/</g, '\\u003c');
+---
+
+<script type="application/ld+json" set:html={json} />

@@ -1,6 +1,6 @@
 # KWM – Website kwm-1924.de
 
-Website der Keramischen Werkstatt Margaretenhöhe. Statisch gebaut mit [Astro](https://docs.astro.build) 7, ausgeliefert als Cloudflare Worker mit Static Assets (`kwm-redesign`). Designsystem: [DESIGN.md](DESIGN.md). Aktuelle Entscheidungen: [konzept/UEBERGABE.md](konzept/UEBERGABE.md), Abschnitt 0. Umbauplan: [konzept/PLAN-ASTRO-UMBAU.md](konzept/PLAN-ASTRO-UMBAU.md).
+Website der Keramischen Werkstatt Margaretenhöhe. Statisch gebaut mit [Astro](https://docs.astro.build) 7, ausgeliefert als Cloudflare Worker mit Static Assets (`kwm-redesign`). Nur `/api/anfrage` (Anfrageformular) läuft durch Worker-Code. Designsystem: [DESIGN.md](DESIGN.md). Aktuelle Entscheidungen: [konzept/UEBERGABE.md](konzept/UEBERGABE.md), Abschnitt 0. Umbauplan: [konzept/PLAN-ASTRO-UMBAU.md](konzept/PLAN-ASTRO-UMBAU.md).
 
 ## Start
 
@@ -16,21 +16,30 @@ npm run preview                   # baut dist/ und startet wrangler dev (wie in 
 ## Prüfen
 
 ```bash
-npm run check                     # Prettier, ESLint, astro check, Unit-Tests (Vitest), Build – muss vor jedem Merge grün sein (CI prüft dasselbe)
+npm run check                     # Prettier, ESLint, astro check, Worker-Typen, Unit-Tests und Worker-Tests (Vitest), Build – muss vor jedem Merge grün sein (CI prüft dasselbe)
 npm run test:ausgangsstand        # Referenz-Screens aus dem Prototyp erzeugen (tests/__screens__/, nicht im Repo)
+npm run test:unit                 # Unit-Tests der Skripte und Daten (Vitest, src/**/*.test.ts)
+npm run test:worker               # nur die Worker-Tests (Vitest in workerd, vitest.worker.config.ts)
+npm run types                     # worker-configuration.d.ts neu erzeugen, nach jeder Änderung an wrangler.jsonc
 npm test                          # alle Playwright-Tests gegen dist/ unter wrangler dev
 BASIS_URL=https://… npm test      # dieselben Tests gegen eine Vorschau- oder Produktions-URL
 OPTIK_TOLERANZ=0.02 npm run test:optik   # höhere Toleranz (Standard 0.002), z. B. wenn Bilder neu berechnet wurden
 ```
 
-| Test                             | Prüft                                                                                                                |
-| -------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
-| `tests/optik.spec.ts`            | Ganzseitige Screens aller 13 Seiten, Desktop 1440 px und Mobil 390 px, gegen den Ausgangsstand; keine Konsolenfehler |
-| `tests/routen.spec.ts`           | 404-Seite, saubere URLs ohne `.html`, `noindex`, Linkprüfung aller Seiten, Weiterleitung alter `/v3/`-Links          |
-| `tests/verhalten.spec.ts`        | Anfrage-Leiste und -Formular, Sonderzeichen, Leerzeichen, datumsabhängige Hinweise                                   |
-| `tests/barrierefreiheit.spec.ts` | axe-core, WCAG 2.2 AA, alle Seiten                                                                                   |
+| Test                             | Prüft                                                                                                                      |
+| -------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `tests/optik.spec.ts`            | Ganzseitige Screens aller 13 Seiten, Desktop 1440 px und Mobil 390 px, gegen den Ausgangsstand; keine Konsolenfehler       |
+| `tests/routen.spec.ts`           | 404-Seite, saubere URLs ohne `.html`, `noindex`, Linkprüfung aller Seiten, Weiterleitung alter `/v3/`-Links                |
+| `tests/verhalten.spec.ts`        | Anfrage-Leiste und -Formular, Sonderzeichen, Leerzeichen, datumsabhängige Hinweise                                         |
+| `tests/barrierefreiheit.spec.ts` | axe-core, WCAG 2.2 AA, alle Seiten                                                                                         |
+| `tests/formular.spec.ts`         | Anfrageformular gegen `wrangler dev` mit Turnstile-Testschlüsseln: Danke-Zustand, Versandfehler, Feldfehler (braucht Netz) |
+| `worker/*.test.ts`               | Vitest in der Workers-Laufzeit: gemeinsame Regeln, Endpunkt `/api/anfrage` (Versand und Turnstile gemockt)                 |
 
 Die Optik-Tests laufen nur lokal (die Schriftdarstellung unter Linux weicht ab), nicht in CI. Läuft schon ein `wrangler dev` auf Port 8787, verwenden die Tests ihn weiter und bauen nicht neu; dann vorher `npm run build`.
+
+## Anfrageformular (Worker)
+
+`POST /api/anfrage` prüft Methode, Ursprung, Rate Limit (5 je Minute und IP), Größe, Felder, Honigtopf und Turnstile und schickt die Anfrage per `send_email`-Binding als Text-Mail. Es wird nichts gespeichert. Die Regeln liegen einmal in `src/lib/anfrage.ts` (Browser und Worker). Lokal: `.dev.vars.example` nach `.dev.vars` kopieren (Turnstile-Testschlüssel), optional `.env.example` nach `.env`; dann `npm run preview`. `wrangler dev` simuliert den Versand und protokolliert die Mail in der Konsole. Echter Betrieb: Schritte in `konzept/GO-LIVE.md` und `konzept/ADMIN-OFFEN.md`.
 
 ## Deploy
 
@@ -45,10 +54,13 @@ Bis zum Go-live liefert die Seite `X-Robots-Tag: noindex, nofollow` aus (`public
 
 ```
 astro.config.mjs      statisch, build.format 'file' (aktuelles.astro → /aktuelles), compressHTML
-wrangler.jsonc        Worker kwm-redesign, Assets aus dist/, 404-Seite, Previews
+wrangler.jsonc        Worker kwm-redesign, Assets aus dist/, 404-Seite, Variablen, send_email, Rate Limit, Previews
+worker/               Worker-Code für /api/anfrage (index, anfrage, turnstile, mail) samt Vitest-Tests, eigene tsconfig
+worker-configuration.d.ts   von `npm run types` erzeugt (Env, Laufzeittypen), nicht von Hand ändern
 src/layouts/          BaseLayout.astro: Kopf, Skripte, Header und Footer (kein CSS-Import)
-src/components/       Komponenten nach DESIGN.md §11 (Gerüst, Köpfe, Statement, Einträge wie ExhibitionCard, WorkCard, WorkTile, WareCard, FactsList, FactsTable, DateList, PubList, PersonCard, Steps, Aufklappen und Archive: Expander, YearArchive, Timeline, Chronicle, PlaceGrid, Kleinteile: LinkArrow, Button, Notice, InfoBlock, Hours, Bild und Signatur: Figure, Plinth, GlazeStage und die Signatur-Hüllen SigLogo, SigFarbskala, SigFeuer, SigSticky, SigAktuell sowie InquiryForm), Bild (jedes Bild, rendert `<Image>` aus `astro:assets`)
-src/data/             Inhalte in der Form des Sanity-Modells: ausstellungen.ts, hinweise.ts, werke.ts, manufaktur.ts, team.ts, texte.ts, vita.ts, werkstatt.ts, anfahrt.ts, arbeitsweise.ts, chronik.ts, lebensweg.ts, orte.ts (Orte und Galerien), glasuren.ts (Farbskala, Glasurbühne, Schalenfarben, Ofenfarben), archiv.ts (vergangene Ausstellungen); dazu kontakt.ts (einzige Quelle für Telefon, E-Mail, Adresse und Öffnungszeiten, Form des Sanity-Dokuments `werkstatt`; Seiten und Formular lesen nur von dort), navigation.ts, bilder.ts (löst Bildpfade auf), typen.ts (gemeinsame Typen)
+src/components/       Komponenten nach DESIGN.md §11 (Gerüst, Köpfe, Statement, Einträge wie ExhibitionCard, WorkCard, WorkTile, WareCard, FactsList, FactsTable, DateList, PubList, PersonCard, Steps, Aufklappen und Archive: Expander, YearArchive, Timeline, Chronicle, PlaceGrid, Kleinteile: LinkArrow, Button, Notice, InfoBlock, Hours, Bild und Signatur: Figure, Plinth, GlazeStage und die Signatur-Hüllen SigLogo, SigFarbskala, SigFeuer, SigSticky, SigAktuell sowie InquiryForm mit dem Anfrage-Formular), InquiryBand (Anfrage-Leiste), StrukturierteDaten (JSON-LD), Bild (jedes Bild, rendert `<Image>` aus `astro:assets`)
+src/lib/              anfrage.ts: Regeln des Anfrageformulars, gemeinsam für Browser und Worker
+src/data/             turnstile.ts (Site-Key), Inhalte in der Form des Sanity-Modells: ausstellungen.ts, hinweise.ts, werke.ts, manufaktur.ts, team.ts, texte.ts, vita.ts, werkstatt.ts, anfahrt.ts, arbeitsweise.ts, chronik.ts, lebensweg.ts, orte.ts (Orte und Galerien), glasuren.ts (Farbskala, Glasurbühne, Schalenfarben, Ofenfarben), archiv.ts (vergangene Ausstellungen); dazu kontakt.ts (einzige Quelle für Telefon, E-Mail, Adresse und Öffnungszeiten, Form des Sanity-Dokuments `werkstatt`; Seiten und Formular lesen nur von dort), navigation.ts, bilder.ts (löst Bildpfade auf), typen.ts (gemeinsame Typen)
 src/pages/            eine .astro-Datei pro Seite
 src/styles/           basis.css (bindet global.css und pages.css ein), seiten/ (Seiten-CSS); die Stile der Signaturen stehen in den Hüllen `Sig*.astro` und in `InquiryForm.astro`
 src/scripts/          Browser-Skripte (TypeScript, Unit-Tests `*.test.ts` mit Vitest: `npm run test:unit`): status (Ausstellungsstatus aus dem Datum), zeitraum, anfrage-link, main, signaturen (lädt die sig-* als eigene Chunks), keramik (gemeinsame Typen und Daten); das Layout bindet sie als ein verarbeitetes Skript ein

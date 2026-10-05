@@ -1,4 +1,5 @@
 // @ts-check
+import sitemap from '@astrojs/sitemap';
 import { defineConfig, fontProviders } from 'astro/config';
 
 // Unicode-Bereiche der beiden Teilmengen: Der Browser lädt nur die Datei, deren Zeichen auf der Seite vorkommen.
@@ -72,9 +73,32 @@ const varianten = (datei, weight, style) => {
 export default defineConfig({
   site: 'https://kwm-1924.de',
   output: 'static',
+  // 404 und Datenschutz (noindex) gehören nicht in die Sitemap
+  integrations: [sitemap({ filter: (seite) => !/\/(404|datenschutz)(\.html)?$/.test(seite) })],
   // aktuelles.astro → dist/aktuelles.html, von Cloudflare als /aktuelles ausgeliefert
   build: { format: 'file', inlineStylesheets: 'never' },
   trailingSlash: 'never',
+  // CSP als <meta> mit Hashes der gebündelten Skripte und Styles (Astro). frame-ancestors steht in public/_headers.
+  security: {
+    csp: {
+      directives: [
+        "default-src 'self'",
+        "img-src 'self' data:",
+        "font-src 'self'",
+        "connect-src 'self'",
+        "base-uri 'self'",
+        "form-action 'self'",
+        // Turnstile-Widget (Phase 3): lädt es erst beim Antippen eines Formularfeldes
+        'frame-src https://challenges.cloudflare.com',
+        "object-src 'none'",
+      ],
+      // Kopf-Skript in BaseLayout.astro (is:inline); tests/sicherheit.spec.ts rechnet den Hash nach
+      scriptDirective: {
+        resources: ["'self'", 'https://challenges.cloudflare.com'],
+        hashes: ['sha256-bzycTj6gg2/wtgss/NQeh2E42eImIs6BuefgIDZCIRI='],
+      },
+    },
+  },
   // Globale Stile für die responsiven Bilder (max-width bei constrained)
   image: { responsiveStyles: true },
   // Verschobene Regeln behalten ihre Spezifität: 'where' erhöht sie nicht (Standard 'attribute' addiert +1)
