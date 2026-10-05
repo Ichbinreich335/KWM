@@ -53,6 +53,27 @@ test('Alle internen Links, Bilder, Skripte und Stylesheets antworten mit 200', a
   }
 });
 
+test('Anker (#…) auf Links zeigen auf ein vorhandenes Element der Zielseite', async ({ page }) => {
+  const fragmente = new Map<string, string>();
+  for (const seite of seiten) {
+    await page.goto(seite.astro);
+    const hrefs = await page.locator('a[href*="#"]').evaluateAll((els) => els.map((e) => e.getAttribute('href') ?? ''));
+    for (const href of hrefs) {
+      const url = new URL(href, page.url());
+      if (url.origin !== new URL(page.url()).origin || url.hash.length < 2) continue;
+      fragmente.set(`${url.pathname}${url.hash}`, `${seite.astro} → ${href}`);
+    }
+  }
+  for (const [ziel, quelle] of fragmente) {
+    const url = new URL(ziel, page.url());
+    await page.goto(url.pathname);
+    const id = decodeURIComponent(url.hash.slice(1));
+    expect(await page.locator(`[id="${id}"]`).count(), `${quelle}: #${id} fehlt auf ${url.pathname}`).toBeGreaterThan(
+      0,
+    );
+  }
+});
+
 test('Geteilte Prototyp-Links unter /v3/ führen auf die neue Seite, mit Parametern', async ({ page }) => {
   await page.goto('/v3/aktuelles.html?praesentation');
   expect(new URL(page.url()).pathname).toBe('/aktuelles');

@@ -192,3 +192,19 @@ test('Mobilmenü: Seite dahinter ist inert, Tab bleibt im Menü, Escape schließ
     await expect(page.locator(sel).first()).toHaveJSProperty('inert', false);
   }
 });
+
+test('99-Schalen-Hinweis verweist auf die Ausstellung und verschwindet nach ihrem Ende', async ({ browser }) => {
+  const davor = await browser.newPage();
+  await davor.clock.setFixedTime(new Date('2026-10-04T10:00:00+02:00'));
+  await davor.goto('/');
+  await expect(davor.locator('#kosmos .cosmos__show[data-end]')).toHaveCount(2);
+  await expect(davor.locator('#kosmos .cosmos__show[data-end]:not([hidden])')).toHaveCount(2);
+  await expect(davor.locator('#kosmos .cosmos__show').first()).toContainText('bis 25. Oktober 2026');
+  await expect(davor.locator('#kosmos a[href="/aktuelles#f-mok"]:not([hidden])')).toHaveCount(2);
+  const danach = await browser.newPage();
+  await danach.clock.setFixedTime(new Date('2026-10-26T10:00:00+01:00'));
+  await danach.goto('/');
+  await expect(danach.locator('#kosmos [data-end][hidden]')).toHaveCount(4);
+  await davor.close();
+  await danach.close();
+});

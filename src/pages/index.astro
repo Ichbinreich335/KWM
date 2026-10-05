@@ -12,6 +12,7 @@ import { stueckBezeichnung, werk, werkschau } from '../data/werke';
 import { anfrageLink } from '../scripts/anfrage-link';
 import SigAktuell from '../components/SigAktuell.astro';
 import { ausstellungen } from '../data/ausstellungen';
+import { tagAusIso, tagFormat } from '../scripts/status';
 import { hinweise } from '../data/hinweise';
 import { kontakt } from '../data/kontakt';
 import Hours from '../components/Hours.astro';
@@ -29,6 +30,13 @@ import Woerter from '../components/Woerter.astro';
 import SigSticky from '../components/SigSticky.astro';
 import SigFarbskala from '../components/SigFarbskala.astro';
 import { glasuren } from '../data/glasuren';
+
+// 99 Schalen: Satz und Link kommen aus der Ausstellung im MOK; vorbei ist sie im Browser ausgeblendet (main.ts)
+const mok = ausstellungen.find((eintrag) => eintrag.schluessel === 'mok');
+if (!mok) throw new Error('Ausstellung „mok“ fehlt in den Daten');
+const mokHaus = mok.haus.replace(/\s*\(.*\)$/, '');
+const zuSehen = `Zu sehen im ${mokHaus}, ${mok.stadt}, bis ${tagFormat(tagAusIso(mok.ende))} ${tagAusIso(mok.ende).getFullYear()}`;
+const mokLink = `/aktuelles#f-${mok.schluessel}`;
 ---
 
 <BaseLayout
@@ -247,13 +255,21 @@ import { glasuren } from '../data/glasuren';
             <p class="cosmos__count" data-cosmos-readout>
               99 Schalen
             </p>
-            <p class="cosmos__show">Zu sehen im Museum für Ostasiatische Kunst, Köln, bis 25. Oktober 2026</p>
-            <LinkArrow href="/aktuelles#kosmos">Zur Ausstellung</LinkArrow>
+            <p class="cosmos__show" data-start={mok.start} data-end={mok.ende}>
+              {zuSehen}
+            </p>
+            <LinkArrow href={mokLink} data-start={mok.start} data-end={mok.ende}>
+              Zur Ausstellung
+            </LinkArrow>
           </div>
         </div>
         <div class="cosmos__caption">
-          <p class="cosmos__show">Zu sehen im Museum für Ostasiatische Kunst, Köln, bis 25. Oktober 2026</p>
-          <LinkArrow href="/aktuelles#kosmos">Zur Ausstellung</LinkArrow>
+          <p class="cosmos__show" data-start={mok.start} data-end={mok.ende}>
+            {zuSehen}
+          </p>
+          <LinkArrow href={mokLink} data-start={mok.start} data-end={mok.ende}>
+            Zur Ausstellung
+          </LinkArrow>
         </div>
       </div>
     </section>

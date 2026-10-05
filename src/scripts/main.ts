@@ -1,3 +1,4 @@
+import { hinweisSichtbar, tagAusIso } from './status';
 import { random, pickGlaze as pickFrom, renderBowlSprite, type Schale } from './keramik';
 
 /** Schale im Kosmos: feste Eigenschaften, Lage im Ring und Animationszustand. */
@@ -47,6 +48,14 @@ interface Bowl extends Schale {
     if (e.key !== 'Escape' || toggle?.getAttribute('aria-expanded') !== 'true') return;
     setMenu(false);
     toggle.focus();
+  });
+
+  /* ---------- Datumsgebundene Angaben ausblenden, sobald sie vorbei sind ---------- */
+  const heute = new Date();
+  heute.setHours(0, 0, 0, 0);
+  $$('#kosmos [data-start]').forEach((el) => {
+    const { start, end } = el.dataset;
+    if (start && end) el.hidden = !hinweisSichtbar(tagAusIso(start), tagAusIso(end), heute);
   });
 
   /* ---------- Wörter für die Zeilen-Einblendung aufteilen ---------- */
