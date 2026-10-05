@@ -75,8 +75,22 @@ const galerien: Variante[] = [
 ];
 
 const gruppen = [
-  { id: 'flyer', titel: 'Flyer einer Ausstellung: Wie zeigen wir ihn?', varianten: flyer, klasse: '' },
-  { id: 'galerien', titel: 'Galerien: Nur in den Orten oder eigene Seite?', varianten: galerien, klasse: ' vergleich__karten--zwei' },
+  {
+    id: 'flyer',
+    titel: 'Flyer einer Ausstellung: Wie zeigen wir ihn?',
+    varianten: flyer,
+    klasse: '',
+    empfehlung:
+      'B. Der Flyer ist zu sehen, ohne den Ausstellungsblock zu beherrschen, und lässt sich am Handy groß lesen. In Sanity lädt man nur ein Bild hoch, die Vorschau entsteht beim Bauen. Pflichtfeld: kurzer Alt-Text mit Titel, Datum und Ort.',
+  },
+  {
+    id: 'galerien',
+    titel: 'Galerien: Nur in den Orten oder eigene Seite?',
+    varianten: galerien,
+    klasse: ' vergleich__karten--zwei',
+    empfehlung:
+      'A. Für zwei Vertretungen trägt eine eigene Seite noch nicht, die Zeile in den Orten reicht. In Sanity wird die Galerie trotzdem ein eigener Eintrag, auf den Ausstellungen verweisen; so lässt sich B später ohne Umbau ergänzen.',
+  },
 ];
 ---
 
@@ -129,7 +143,7 @@ const gruppen = [
               </li>
             ))}
           </ul>
-          <p class="vergleich__empfehlung">Empfehlung: <span></span></p>
+          <p class="vergleich__empfehlung">Empfehlung: <span>{gruppe.empfehlung}</span></p>
         </section>
       ))}
     </div>
