@@ -26,6 +26,12 @@ export interface Veroeffentlichung {
   linkText: string;
 }
 
+const WAGNER = 'Thomas Wagner';
+/** Titel des Katalogtextes laut konzept/CONTENT-FUNDE.md 2.6 (mit Fragezeichen) */
+const AUFGEHOBENE_ZEIT = 'Die aufgehobene Zeit?';
+/** Quellenangabe unter Zitaten aus diesem Text */
+export const wagnerQuelle = `${WAGNER}, »${AUFGEHOBENE_ZEIT}«`;
+
 export const texte: readonly Text[] = [
   {
     titel: 'Gespannte Lebendigkeit',
@@ -60,8 +66,8 @@ export const texte: readonly Text[] = [
     pdf: 'https://kwm-1924.de/wp-content/uploads/2023/08/veit.pdf',
   },
   {
-    titel: 'Die aufgehobene Zeit',
-    autor: 'Thomas Wagner',
+    titel: AUFGEHOBENE_ZEIT,
+    autor: WAGNER,
     untertitel: 'Elf Bemerkungen zu eintausendeinhundertundelf Schalen von Young-Jae Lee',
     auszug: '„Immer sind es Schalen, und doch ist keine wie die andere.“',
     online:

@@ -18,6 +18,7 @@ import { kontakt } from '../data/kontakt';
 import Hours from '../components/Hours.astro';
 import PlaceGrid from '../components/PlaceGrid.astro';
 import { kacheln } from '../data/orte';
+import { wagnerQuelle } from '../data/texte';
 import Timeline from '../components/Timeline.astro';
 import Chronicle from '../components/Chronicle.astro';
 import { chronik } from '../data/chronik';
@@ -234,15 +235,12 @@ const mokLink = `/aktuelles#f-${mok.schluessel}`;
 
     {/* 99 Schalen: keine wie die andere, jede mit eigener Glasur */}
     <section class="rep" id="kosmos" aria-labelledby="kosmos-title">
-      <SectionHead typ="start" titelId="kosmos-title" rechtsKlasse="cosmos__text">
+      <SectionHead typ="start" titelId="kosmos-title">
         <Fragment slot="titel">Ein Ring aus Teilchen um eine leere Mitte.</Fragment>
-        <p data-reveal="fade">
+        <Statement typ="zitat-lang" einblendung="fade" quelle={wagnerQuelle}>
           „Schalen über Schalen, einfach auf den Boden gestellt. Ein Meer aus Schalen, ein Feld aus Kelchen, ein Ring
           aus Teilchen um eine leere Mitte, eine kleine Milchstraße voll schimmernder Gefäße.“
-        </p>
-        <p class="cosmos__source" data-reveal="fade">
-          Thomas Wagner, »Die aufgehobene Zeit?«
-        </p>
+        </Statement>
       </SectionHead>
       <div class="cosmos__floor">
         <div class="cosmos__stage" data-cosmos>

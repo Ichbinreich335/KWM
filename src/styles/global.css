@@ -670,17 +670,6 @@ body::after {
 }
 
 /* Kosmos */
-.cosmos__text p:first-of-type {
-  font-family: var(--f-text);
-  font-size: var(--t-body);
-  line-height: var(--t-body-lh);
-}
-.cosmos__source {
-  font-size: var(--t-meta);
-  line-height: var(--t-meta-lh);
-  color: var(--ink-2);
-  margin-top: 14px;
-}
 .cosmos__floor {
   padding-block: clamp(24px, 4vw, 56px);
   overflow: hidden;

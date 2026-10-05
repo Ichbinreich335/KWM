@@ -10,6 +10,7 @@ import { stimmung, werk } from '../data/werke';
 import Bild from '../components/Bild.astro';
 import Steps from '../components/Steps.astro';
 import { arbeitsschritte } from '../data/arbeitsweise';
+import { wagnerQuelle } from '../data/texte';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import InquiryBand from '../components/InquiryBand.astro';
 import SubNav from '../components/SubNav.astro';
@@ -133,7 +134,7 @@ import PageHero from '../components/PageHero.astro';
       <div class="catalog">
         <WorkCard typ="katalog" breite="halb" werk={werk('kummen-1')} />
         <WorkCard typ="katalog" breite="halb" werk={werk('kumme-1')} />
-        <Statement typ="zitat" class="catalog__quote" quelle="Thomas Wagner, »Die aufgehobene Zeit?«">
+        <Statement typ="zitat" class="catalog__quote" quelle={wagnerQuelle}>
           Bauchige Becher, die ihr Inneres verbergen und es im kecken Schwung ihrer Lippe doch noch anbieten.
         </Statement>
         <WorkCard typ="katalog" breite="halb" werk={werk('bettelmoenchschale-1')} />

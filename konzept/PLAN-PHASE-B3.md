@@ -87,6 +87,8 @@ Admin: Am Desktop ist die Startseite „wie eine Reise“, die Länge bleibt. Am
 | Manufaktur | Farbskala bleibt; zweites Foto (Krüge) am Handy ausblenden; Faktenliste auf Masse, Glasurbrand, Gebrauch | 700 |
 | übrige | große Zitate und Aussagen am Handy eine Stufe kleiner, falls nach den obigen Punkten noch zu wuchtig (am Screen entscheiden, Tokens nur im Medienblock) | 300 |
 
+**Vermerk (Admin 05.10.2026):** Das Wagner-Zitat im Abschnitt „99 Schalen“ bleibt am Handy sichtbar (Ausblenden in der Tabelle oben entfällt). Es steht als `Statement typ="zitat-lang"` in der Kopfzeile des Abschnitts.
+
 **Prüfen (immer visuell, Admin):** Ganzseiten-Screens 390 und 768 vorher/nachher, Höhe je Abschnitt vorher/nachher (Skript `.superpowers/hoehen.mjs <url>`), Tastatur und Screenreader-Reihenfolge der Wischreihen (Fokus sichtbar, kein Inhalt nur per Wischen erreichbar ohne Hinweis), axe grün, Konsole sauber.
 
 **Vergleichsseite:** Der Controller baut eine Vergleichsseite (Artifact) mit beiden Vorschau-Links, Ganzseiten-Screens nebeneinander und den Höhen je Abschnitt.

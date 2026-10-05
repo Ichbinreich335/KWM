@@ -6,7 +6,7 @@ import DateList from '../components/DateList.astro';
 import YearArchive from '../components/YearArchive.astro';
 import { ausstellungsarchiv } from '../data/archiv';
 import PubList from '../components/PubList.astro';
-import { publikationen, texte } from '../data/texte';
+import { publikationen, texte, wagnerQuelle } from '../data/texte';
 import { auszeichnungen, ausstellungsauswahl, biografie } from '../data/vita';
 import Statement from '../components/Statement.astro';
 import ChapterHead from '../components/ChapterHead.astro';
@@ -166,7 +166,7 @@ import Figure from '../components/Figure.astro';
 
     {/* Zitat als Zäsur */}
     <section class="pullquote on-flaeche grid" aria-label="Zitat von Thomas Wagner">
-      <Statement typ="gross" class="pullquote__quote" quelle="Thomas Wagner, »Die aufgehobene Zeit«">
+      <Statement typ="gross" class="pullquote__quote" quelle={wagnerQuelle}>
         „Immer sind es Schalen, und doch ist keine wie die andere.“
       </Statement>
     </section>
