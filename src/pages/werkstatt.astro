@@ -16,6 +16,8 @@ import SubNav from '../components/SubNav.astro';
 import PageHero from '../components/PageHero.astro';
 import Chronicle from '../components/Chronicle.astro';
 import Figure from '../components/Figure.astro';
+import SigFeuer from '../components/SigFeuer.astro';
+import { ofenfarben } from '../data/glasuren';
 import { chronik } from '../data/chronik';
 import '../styles/signaturen/signaturen.css';
 ---
@@ -118,29 +120,11 @@ import '../styles/signaturen/signaturen.css';
             alt="Flache Schalen mit blaugrüner Glasur, die sich in der Mitte sammelt"
           />
         </Figure>
-        <div class="feuer-farben" data-sig="feuer">
-          <h3 class="feuer-farben__title">Dieselbe Glasur, andere Farbe</h3>
-          <p class="feuer-farben__intro">
-            Dasselbe Metalloxid färbt eine Glasur je nach Ofenatmosphäre unterschiedlich. Wählen Sie Oxid und
-            Atmosphäre: Die Schale bleibt gleich, nur die Farbe wechselt.
-          </p>
-          <ul class="feuer-farben__list">
-            <li>
-              <span class="swatch" style="--c: var(--glaze-iron-ox)"></span>Eisenoxid, oxidierend: färbt gelb bis braun
-              – sauerstoffreiche Ofenatmosphäre.
-            </li>
-            <li>
-              <span class="swatch" style="--c: var(--glaze-iron-red)"></span>Eisenoxid, reduzierend: färbt grün –
-              sauerstoffarme Ofenatmosphäre.
-            </li>
-            <li>
-              <span class="swatch" style="--c: var(--glaze-copper-g)"></span>Kupfer, oxidierend: grün.
-            </li>
-            <li>
-              <span class="swatch" style="--c: var(--glaze-copper-r)"></span>Kupfer, reduzierend: rot.
-            </li>
-          </ul>
-        </div>
+        <SigFeuer
+          titel="Dieselbe Glasur, andere Farbe"
+          einleitung="Dasselbe Metalloxid färbt eine Glasur je nach Ofenatmosphäre unterschiedlich. Wählen Sie Oxid und Atmosphäre: Die Schale bleibt gleich, nur die Farbe wechselt."
+          farben={ofenfarben}
+        />
       </div>
     </ChapterHead>
 

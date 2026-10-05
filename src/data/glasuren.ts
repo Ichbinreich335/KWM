@@ -212,3 +212,23 @@ export const glasurproben: readonly Glasurprobe[] = [
     dunkel: true,
   },
 ];
+
+/** Wirkung eines Metalloxids je Ofenatmosphäre (Seite Werkstatt, Abschnitt „Wie die Glasur ihre Farbe bekommt“) */
+export interface Ofenfarbe {
+  /** Bestimmt die Farbprobe (Klasse `swatch--<schluessel>` in der Signatur Feuer) */
+  schluessel: 'eisenoxid-oxidierend' | 'eisenoxid-reduzierend' | 'kupfer-oxidierend' | 'kupfer-reduzierend';
+  text: string;
+}
+
+export const ofenfarben: readonly Ofenfarbe[] = [
+  {
+    schluessel: 'eisenoxid-oxidierend',
+    text: 'Eisenoxid, oxidierend: färbt gelb bis braun – sauerstoffreiche Ofenatmosphäre.',
+  },
+  {
+    schluessel: 'eisenoxid-reduzierend',
+    text: 'Eisenoxid, reduzierend: färbt grün – sauerstoffarme Ofenatmosphäre.',
+  },
+  { schluessel: 'kupfer-oxidierend', text: 'Kupfer, oxidierend: grün.' },
+  { schluessel: 'kupfer-reduzierend', text: 'Kupfer, reduzierend: rot.' },
+];
