@@ -179,9 +179,8 @@ const datum = zeitraumKurz(ausstellung.start, ausstellung.ende);
 )}
 
 <style>
-  /* Kachel und Spotlight der Startseite (Anker, dunkel); Abschnitt, Kopf und Liste stehen in sig-aktuell.css */
+  /* Kachel und Spotlight der Startseite (Anker, dunkel); Abschnitt, Kopf, Liste und Platzierung im Raster stehen in sig-aktuell.css */
   .aktuell__item {
-    grid-column: span 4;
     display: grid;
     grid-template-columns: minmax(0, 1fr);
     align-content: start;
@@ -192,7 +191,6 @@ const datum = zeitraumKurz(ausstellung.start, ausstellung.ende);
     margin-bottom: 0;
   }
   .aktuell__item[data-spotlight] {
-    grid-column: 1 / -1;
     grid-template-columns: subgrid;
     align-items: start;
   }
@@ -461,7 +459,6 @@ const datum = zeitraumKurz(ausstellung.start, ausstellung.ende);
   @media (max-width: 900px) {
     .aktuell__item,
     .aktuell__item[data-spotlight] {
-      grid-column: 1 / -1;
       grid-template-columns: minmax(0, 1fr);
     }
     .aktuell__item[data-spotlight] .aktuell__media,

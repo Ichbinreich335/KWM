@@ -40,6 +40,12 @@
   row-gap: 0;
   align-items: start;
 }
+.aktuell__item {
+  grid-column: span 4;
+}
+.aktuell__item[data-spotlight] {
+  grid-column: 1 / -1;
+}
 .aktuell__note {
   margin: 0 var(--m) var(--head-gap);
   padding-left: 16px;
@@ -57,6 +63,10 @@
   margin-bottom: 28px;
 }
 @media (max-width: 900px) {
+  .aktuell__item,
+  .aktuell__item[data-spotlight] {
+    grid-column: 1 / -1;
+  }
   .aktuell__head .h2 {
     grid-column: 1 / -1;
   }

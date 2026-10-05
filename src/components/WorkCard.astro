@@ -101,16 +101,7 @@ const props = Astro.props;
 )}
 
 <style>
-  /* Katalog: Karten im 12-Spalten-Raster der Seite */
-  .catalog__item {
-    grid-column: span 4;
-  }
-  .catalog__item--band {
-    grid-column: 1 / -1;
-  }
-  .catalog__item--half {
-    grid-column: span 6;
-  }
+  /* Katalog: Die Platzierung der Karten im Seitenraster steht im Seiten-CSS (page-meisterstuecke.css) */
   .catalog__frame {
     overflow: hidden;
     background: var(--ground-2);
@@ -166,7 +157,6 @@ const props = Astro.props;
 
   /* Einzelwerk: Meta-Spalte links (Name, Maße, Anfrage), großes Bild rechts, an derselben Oberkante */
   .catalog__item--wide {
-    grid-column: 1 / -1;
     display: grid;
     grid-template-columns: subgrid;
     align-items: start;
@@ -184,10 +174,7 @@ const props = Astro.props;
     margin-top: 0;
   }
 
-  /* Werkschau der Startseite */
-  .piece {
-    grid-column: span 4;
-  }
+  /* Werkschau der Startseite (Platzierung im Seitenraster: global.css, .works__grid) */
   .piece a {
     display: block;
     text-decoration: none;
@@ -237,21 +224,7 @@ const props = Astro.props;
     margin-top: 0;
   }
 
-  @media (min-width: 901px) and (max-width: 1200px) {
-    .catalog__item {
-      grid-column: span 6;
-    }
-    .catalog__item--wide,
-    .catalog__item--band {
-      grid-column: 1 / -1;
-    }
-  }
   @media (max-width: 900px) {
-    .catalog__item,
-    .catalog__item--wide,
-    .catalog__item--half {
-      grid-column: 1 / -1;
-    }
     .catalog__item--wide {
       display: block;
     }
@@ -263,9 +236,6 @@ const props = Astro.props;
     }
     .catalog__item--band .catalog__frame :global(img) {
       aspect-ratio: 4 / 3;
-    }
-    .piece {
-      grid-column: span 6;
     }
   }
   @media (max-width: 520px) {

@@ -31,7 +31,6 @@ const { person } = Astro.props;
 
 <style>
   .person {
-    grid-column: span 4;
     border-top: 1px solid var(--ink);
     padding-top: 18px;
   }
@@ -71,16 +70,5 @@ const { person } = Astro.props;
   }
   .person .link-arrow {
     margin-top: 8px;
-  }
-
-  @media (max-width: 900px) {
-    .person {
-      grid-column: 1 / -1;
-    }
-  }
-  @media (min-width: 901px) and (max-width: 1200px) {
-    .person {
-      grid-column: span 6;
-    }
   }
 </style>

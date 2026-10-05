@@ -78,6 +78,9 @@
   gap: 56px var(--g);
   padding-inline: var(--m);
 }
+.person {
+  grid-column: span 4;
+}
 
 /* Glasurproben */
 .swatches {
@@ -188,7 +191,8 @@
   .shelf-caps {
     display: none;
   }
-  .catalog__quote {
+  .catalog__quote,
+  .person {
     grid-column: 1 / -1;
   }
   .anfrage-band__text,
@@ -198,4 +202,7 @@
   }
 }
 @media (min-width: 901px) and (max-width: 1200px) {
+  .person {
+    grid-column: span 6;
+  }
 }

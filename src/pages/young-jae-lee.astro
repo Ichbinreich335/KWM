@@ -122,7 +122,7 @@ import '../styles/signaturen/signaturen.css';
       <Fragment slot="titel">Biografie</Fragment>
       <Fragment slot="einleitung">Von Seoul über Wiesbaden, Sandhausen und Kassel nach Essen.</Fragment>
       <div class="grid">
-        <DateList eintraege={biografie} />
+        <DateList eintraege={biografie} class="grid__full" />
       </div>
     </ChapterHead>
 
@@ -133,7 +133,7 @@ import '../styles/signaturen/signaturen.css';
         Essays aus Katalogen und Büchern, vollständig zu lesen auf der bisherigen Website.
       </Fragment>
       <div class="grid">
-        <PubList typ="essays" eintraege={texte} />
+        <PubList typ="essays" eintraege={texte} class="grid__full" />
       </div>
     </ChapterHead>
 
@@ -156,7 +156,7 @@ import '../styles/signaturen/signaturen.css';
         Eine Auswahl der letzten zehn Jahre. Ausstellungen seit 1980 in Europa, Korea, Japan und den USA.
       </Fragment>
       <div class="grid">
-        <DateList eintraege={ausstellungsauswahl} />
+        <DateList eintraege={ausstellungsauswahl} class="grid__full" />
         <YearArchive
           typ="gesamt"
           id="alle-ausstellungen"
@@ -207,7 +207,7 @@ import '../styles/signaturen/signaturen.css';
     <ChapterHead id="auszeichnungen" titelId="awards-title">
       <Fragment slot="titel">Auszeichnungen</Fragment>
       <div class="grid">
-        <DateList eintraege={auszeichnungen} />
+        <DateList eintraege={auszeichnungen} class="grid__full" />
       </div>
     </ChapterHead>
 
@@ -216,7 +216,7 @@ import '../styles/signaturen/signaturen.css';
       <Fragment slot="titel">Publikationen</Fragment>
       <Fragment slot="einleitung">Kataloge, Bücher und Artikel, 1981 bis 2020.</Fragment>
       <div class="grid">
-        <PubList typ="literatur" eintraege={publikationen} />
+        <PubList typ="literatur" eintraege={publikationen} class="grid__full" />
       </div>
     </ChapterHead>
 

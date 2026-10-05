@@ -169,6 +169,10 @@ html {
   column-gap: var(--g);
   padding-inline: var(--m);
 }
+/* Kind des Seitenrasters über die volle Breite (Platzierung durch die Seite, z. B. DateList, PubList) */
+.grid__full {
+  grid-column: 1 / -1;
+}
 
 /* Type */
 .h2 {
@@ -825,6 +829,14 @@ body::after {
 }
 .works__grid {
   row-gap: clamp(40px, 5vw, 72px);
+}
+.piece {
+  grid-column: span 4;
+}
+@media (max-width: 900px) {
+  .piece {
+    grid-column: span 6;
+  }
 }
 .spread {
   padding-bottom: var(--section);

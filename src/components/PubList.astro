@@ -1,7 +1,10 @@
 ---
 import type { Publikation, Text, Veroeffentlichung } from '../data/texte';
 
-type Props =
+type Props = {
+  /** Klassen für die Platzierung im Seitenraster, z. B. `grid__full` */
+  class?: string | undefined;
+} & (
   | {
       /** Berichte und Gespräche, jeder Eintrag ein Link über die ganze Kachel */
       typ: 'artikel';
@@ -16,13 +19,15 @@ type Props =
       /** Essays mit Autor, Titel, Auszug und Links */
       typ: 'essays';
       eintraege: readonly Text[];
-    };
+    }
+);
 
 const props = Astro.props;
+const { class: klasse } = props;
 ---
 
 {props.typ === 'artikel' && (
-  <div class="pubs pubs--artikel">
+  <div class:list={['pubs', 'pubs--artikel', klasse]}>
     {props.eintraege.map((eintrag) => (
       <article class="pub" data-reveal="fade">
         <a href={eintrag.href}>
@@ -35,7 +40,7 @@ const props = Astro.props;
   </div>
 )}
 {props.typ === 'literatur' && (
-  <ul class="pubs pubs--literatur">
+  <ul class:list={['pubs', 'pubs--literatur', klasse]}>
     {props.eintraege.map((eintrag) => (
       <li>
         <span class="pubs__title">{eintrag.titel}</span>
@@ -45,7 +50,7 @@ const props = Astro.props;
   </ul>
 )}
 {props.typ === 'essays' && (
-  <ol class="texts">
+  <ol class:list={['texts', klasse]}>
     {props.eintraege.map((eintrag) => (
       <li class="texts__row">
         <p class="texts__author">{eintrag.autor}</p>
@@ -115,7 +120,6 @@ const props = Astro.props;
 
   /* Literatur (Young-Jae Lee) */
   .pubs--literatur {
-    grid-column: 1 / -1;
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     column-gap: var(--g);
@@ -144,7 +148,6 @@ const props = Astro.props;
 
   /* Texte über Young-Jae Lee */
   .texts {
-    grid-column: 1 / -1;
     border-top: 1px solid var(--ink);
   }
   .texts__row {

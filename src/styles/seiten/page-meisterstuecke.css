@@ -20,6 +20,18 @@
   align-self: center;
 }
 
+/* Platzierung der Werkkarten (WorkCard) im 12-Spalten-Raster; unter 901 px stehen alle Kinder von .catalog volle Breite */
+.catalog__item {
+  grid-column: span 4;
+}
+.catalog__item--half {
+  grid-column: span 6;
+}
+.catalog__item--wide,
+.catalog__item--band {
+  grid-column: 1 / -1;
+}
+
 /* Kummen auf Tonfläche */
 .chapter--flaeche .catalog__frame {
   background: var(--ground-3);
@@ -66,7 +78,11 @@
   }
 }
 @media (min-width: 901px) and (max-width: 1200px) {
-  .catalog--spindle .catalog__item {
+  .catalog__item {
     grid-column: span 6;
+  }
+  .catalog__item--wide,
+  .catalog__item--band {
+    grid-column: 1 / -1;
   }
 }

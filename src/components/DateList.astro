@@ -7,7 +7,7 @@ interface Props {
   art?: 'liste' | 'definition';
   /** Zeilen blenden beim Scrollen ein */
   einblenden?: boolean;
-  /** Zusätzliche Klassen für die Platzierung durch die Seite */
+  /** Klassen für die Platzierung im Seitenraster, z. B. `grid__full` */
   class?: string | undefined;
 }
 
@@ -53,7 +53,6 @@ const zeilen = (text: DatumEintrag['text']) => (typeof text === 'string' ? [text
 <style>
   /* Jahreszahl-Liste (Chronik, Biografie, Ausstellungen, Auszeichnungen) */
   .datelist {
-    grid-column: 1 / -1;
     border-top: 1px solid var(--ink);
   }
   .datelist__row {
