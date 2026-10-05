@@ -3,6 +3,8 @@ import '../styles/basis.css';
 import Statement from '../components/Statement.astro';
 import ChapterHead from '../components/ChapterHead.astro';
 import Bild from '../components/Bild.astro';
+import Steps from '../components/Steps.astro';
+import { arbeitsschritte } from '../data/arbeitsweise';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import InquiryBand from '../components/InquiryBand.astro';
 import SubNav from '../components/SubNav.astro';
@@ -317,76 +319,21 @@ import '../styles/signaturen/signaturen.css';
     <ChapterHead ton="anker" id="arbeitsweise" titelId="aw-title">
       <Fragment slot="titel">Östlich gedreht, westlich abgedreht.</Fragment>
       <Fragment slot="einleitung">Wie ein Meisterstück entsteht – von der Masse bis zum Holzbrand.</Fragment>
-      <div class="steps grid">
-        <figure class="steps__media">
-          <div data-reveal="img">
-            <Bild
-              src="/img/kwm/teeschale.webp"
-              width="1200"
-              height="1200"
-              loading="lazy"
-              alt="Teeschale mit rotbraun geflammter Glasur, hellblauen Pinselzeichen und dunklen Eisensprenkeln"
-            />
-          </div>
-          <figcaption>Young-Jae Lee, Teeschale, ohne Titel, 2023</figcaption>
-        </figure>
-        <dl class="steps__list">
-          <div class="steps__item" data-reveal="fade">
-            <dt>Masse</dt>
-            <dd>
-              Young-Jae Lee verwendet Porzellan- und Steinzeugmassen. Zum Teil mischt sie die Massen, um eine optimale
-              Drehfähigkeit und Tondichte zu erreichen. Porzellan liefert einen weißen oder nahezu weißen Scherben,
-              Steinzeugton einen beigen, eher erdigen Farbton.
-            </dd>
-          </div>
-          <div class="steps__item" data-reveal="fade">
-            <dt>Drehen</dt>
-            <dd>
-              Die Gefäße werden auf der elektrischen Scheibe nach der östlichen Drehweise gegen den Uhrzeigersinn
-              gedreht.
-            </dd>
-          </div>
-          <div class="steps__item" data-reveal="fade">
-            <dt>Abdrehen</dt>
-            <dd>
-              Das Abdrehen erfolgt nach der westlichen Weise im Uhrzeigersinn: Der lederharte – feuchte, aber nicht mehr
-              weiche – Ton wird mit einem Dreheisen spanweise abgetragen.
-            </dd>
-          </div>
-          <div class="steps__item" data-reveal="fade">
-            <dt>Engobe</dt>
-            <dd>
-              Im ungebrannten, noch feuchten Zustand werden die Zylindervasen mit Engoben, dickflüssigem Tonschlicker,
-              bemalt. Sie müssen auf den Schrumpfungsgrad der Tonmasse abgestimmt sein, damit die Bemalung nach dem
-              Trocknen oder dem Brand nicht abplatzt.
-            </dd>
-          </div>
-          <div class="steps__item" data-reveal="fade">
-            <dt>Schrühbrand und Glasur</dt>
-            <dd>
-              Nach dem ersten Brand bei etwa 950&#8239;°C werden die Gefäße glasiert: größere übergossen, kleinere
-              Schalen zumeist in die Glasur getaucht. Bemalungen mit Kobalt-, Eisen- oder Kupferoxiden werden zuvor mit
-              dem Pinsel aufgetragen. Die Glasuren sind Feldspatglasuren, zum Teil mit Asche versetzt; als färbendes
-              Mittel beschränkt sich Young-Jae Lee auf Eisenoxid.
-            </dd>
-          </div>
-          <div class="steps__item" data-reveal="fade">
-            <dt>Ofenatmosphäre</dt>
-            <dd>
-              Eisenoxid färbt in oxidierender Atmosphäre gelb bis braun, in reduzierender grün, während Kupfer von Grün
-              nach Rot umschlägt. Die Glasurbrände erfolgen im Gasofen bei etwa 1300&#8239;°C.
-            </dd>
-          </div>
-          <div class="steps__item" data-reveal="fade">
-            <dt>Holzbrand</dt>
-            <dd>
-              Eine reichere Tönung und oft nicht zu steuernde Verfärbungen ergeben sich im Holzbrand. Über neun bis zehn
-              Stunden wird kontinuierlich bis auf 1300&#8239;°C gefeuert – für einen Brand braucht es etwa 1,5 Festmeter
-              Holz.
-            </dd>
-          </div>
-        </dl>
-      </div>
+      <Steps
+        typ="arbeitsschritte"
+        schritte={arbeitsschritte}
+        bildunterschrift="Young-Jae Lee, Teeschale, ohne Titel, 2023"
+      >
+        <Fragment slot="bild">
+          <Bild
+            src="/img/kwm/teeschale.webp"
+            width="1200"
+            height="1200"
+            loading="lazy"
+            alt="Teeschale mit rotbraun geflammter Glasur, hellblauen Pinselzeichen und dunklen Eisensprenkeln"
+          />
+        </Fragment>
+      </Steps>
     </ChapterHead>
 
     {/* Kummen */}

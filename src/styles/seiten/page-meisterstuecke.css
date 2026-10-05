@@ -95,42 +95,6 @@
   padding-inline: 0;
 }
 
-/* Arbeitsweise: Teeschale bleibt stehen, der Text zieht vorbei */
-.steps {
-  align-items: start;
-  row-gap: 48px;
-}
-.steps__media {
-  grid-column: 1 / 6;
-  position: sticky;
-  top: calc(var(--head) + 72px);
-}
-.steps__media img {
-  width: 100%;
-  aspect-ratio: 1;
-  object-fit: cover;
-}
-.steps__list {
-  grid-column: 7 / 13;
-  border-top: 1px solid var(--ink);
-}
-.steps__item {
-  padding: 22px 0 20px;
-  border-bottom: 1px solid var(--hair);
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
-  gap: 8px var(--g);
-}
-.steps__item dt {
-  font-family: var(--f-display);
-  font-size: var(--t-h3);
-  line-height: var(--t-h3-lh);
-}
-.steps__item dd {
-  font-size: var(--t-small);
-  line-height: var(--t-small-lh);
-}
-
 @media (max-width: 900px) {
   .ms-intro__statement,
   .ms-intro__text {
@@ -154,16 +118,6 @@
   .spindle__title,
   .spindle__text {
     grid-column: 1 / -1;
-  }
-  .steps__media {
-    grid-column: 1 / -1;
-    position: static;
-  }
-  .steps__list {
-    grid-column: 1 / -1;
-  }
-  .steps__item {
-    grid-template-columns: 1fr;
   }
 }
 @media (min-width: 901px) and (max-width: 1200px) {

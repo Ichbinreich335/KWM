@@ -3,3 +3,9 @@ export interface DatumEintrag {
   jahr: string;
   text: string | readonly string[];
 }
+
+/** Arbeitsschritt: Stichwort mit Erklärung */
+export interface Schritt {
+  titel: string;
+  text: string;
+}
