@@ -132,7 +132,7 @@ const { stationen, weiter } = Astro.props;
     display: none;
   }
 
-  /* Lebensweg: Stationen als Wischreihe (Muster der Chronik); die Linie liegt je Station oben, alle Punkte stehen gefüllt */
+  /* Lebensweg: Stationen als Wischreihe (Muster der Chronik); die Linie liegt je Station oben (ohne Lücke, am letzten Punkt endend), alle Punkte stehen gefüllt */
   @media (max-width: 900px) {
     .journey-hint {
       display: block;
@@ -148,6 +148,7 @@ const { stationen, weiter } = Astro.props;
     }
     .journey {
       display: flex;
+      column-gap: 0;
       overflow-x: auto;
       scroll-snap-type: x mandatory;
       scroll-padding-inline: var(--m);
@@ -167,6 +168,10 @@ const { stationen, weiter } = Astro.props;
       padding: 36px var(--g) 0 0;
       scroll-snap-align: start;
       background: linear-gradient(var(--ink), var(--ink)) 0 0 / 100% 1px no-repeat;
+    }
+    /* Die Linie läuft ohne Lücke von Punkt zu Punkt und endet am letzten Punkt */
+    .journey li:last-child {
+      background: none;
     }
     :global(.js) .journey li::after {
       scale: 1;
