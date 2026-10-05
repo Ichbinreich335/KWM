@@ -315,6 +315,7 @@ interface Bowl extends Schale {
 
     let S = 0,
       dpr = 1,
+      looping = false,
       rot = 0,
       startedAt = 0,
       running = false;
@@ -325,8 +326,11 @@ interface Bowl extends Schale {
     const layout = () => {
       const rect = canvas.getBoundingClientRect();
       if (!rect.width) return;
+      const nextDpr = Math.min(window.devicePixelRatio || 1, 2);
+      // Gleiche Größe und Auflösung: nichts neu bauen (iOS meldet resize schon beim Ein- und Ausblenden der Adressleiste)
+      if (rect.width === S && nextDpr === dpr) return;
       S = rect.width;
-      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      dpr = nextDpr;
       canvas.width = Math.round(S * dpr);
       canvas.height = Math.round(S * dpr);
       const R = S / 2;
@@ -380,9 +384,21 @@ interface Bowl extends Schale {
         const rendered = renderBowlSprite(b, dpr);
         if (rendered) ({ sprite: b.sprite, half: b.spriteHalf } = rendered);
       });
+      redraw();
+    };
+
+    // Ohne reduzierte Bewegung läuft die Schleife; sonst und bei verborgenem Tab zeichnet nur ein einzelner Frame auf Anlass
+    const schedule = () => {
+      if (looping) return;
+      looping = true;
+      requestAnimationFrame(frame);
+    };
+    const redraw = () => {
+      if (running) schedule();
     };
 
     const frame = (t: number) => {
+      looping = false;
       if (!running) return;
       const dt = Math.min(64, t - (lastT || t));
       lastT = t;
@@ -434,7 +450,7 @@ interface Bowl extends Schale {
           );
         });
       ctx.globalAlpha = 1;
-      requestAnimationFrame(frame);
+      if (!reduced && !document.hidden) schedule();
     };
 
     const start = () => {
@@ -442,7 +458,7 @@ interface Bowl extends Schale {
       running = true;
       lastT = 0;
       if (!startedAt) startedAt = performance.now();
-      requestAnimationFrame(frame);
+      schedule();
     };
 
     const hit = (x: number, y: number) => {
@@ -462,6 +478,7 @@ interface Bowl extends Schale {
       const bowl = bowls[i];
       if (readout) readout.textContent = bowl ? `Schale ${i + 1} · ${bowl.glaze.name}` : '99 Schalen';
       canvas.style.cursor = i >= 0 ? 'pointer' : 'default';
+      redraw();
     };
     const track = (e: PointerEvent) => {
       const r = canvas.getBoundingClientRect();
@@ -477,14 +494,13 @@ interface Bowl extends Schale {
 
     layout();
     let rz: number | undefined;
-    window.addEventListener(
-      'resize',
-      () => {
-        clearTimeout(rz);
-        rz = window.setTimeout(layout, 150);
-      },
-      { passive: true },
-    );
+    new ResizeObserver(() => {
+      clearTimeout(rz);
+      rz = window.setTimeout(layout, 150);
+    }).observe(canvas);
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) redraw();
+    });
     new IntersectionObserver(
       ([entry]) => {
         if (!entry) return;
