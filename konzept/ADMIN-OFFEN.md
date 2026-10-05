@@ -20,7 +20,9 @@ Stand: 05.10.2026 (vormittags)
 
 ## Tun (nur du kannst das)
 
-Zurzeit nichts.
+| Was | Warum | Wie |
+|---|---|---|
+| Build-Befehl bei der Vorschau `astro-umbau` setzen – **noch leer** (per API geprüft am 05.10.2026, 08:46) | Alle anderen Vorschauen bauen mit `npm run build`, nur `astro-umbau` hat beim Anlegen einen leeren Build-Befehl kopiert; jeder Push darauf scheitert (zuletzt 4458650). Mein API-Token darf nur lesen, deshalb kann ich es nicht selbst ändern. Die Vorschau zeigt trotzdem den aktuellen Website-Stand (letzte Änderungen dort betrafen nur Konzept-Dateien). | Dashboard → Workers → `kwm-redesign` → Previews → **`astro-umbau`** (nicht die Grundeinstellung) → Settings → Build command `npm run build`. Oder die Vorschau löschen; sie entsteht beim nächsten Push mit der richtigen Einstellung neu. |
 
 ## Entscheiden
 
@@ -43,7 +45,6 @@ Zurzeit nichts.
 
 ## Erledigt
 
-- 05.10.2026: Build-Befehl `npm run build` bei der Vorschau `astro-umbau` gesetzt (Admin).
 - 05.10.2026: Porträt im schmalen Fenster: Ausschnitt rückt, Gesicht bleibt frei, hochkant untereinander (Admin-Wunsch, im Feinschliff).
 - 04.10.2026: Build-Befehl für Produktion und für neue Vorschauen gesetzt (Admin).
 - 04.10.2026: Hilfsskripte ohne Funktion in `.shots/` entfernt (Admin-Entscheidung).
