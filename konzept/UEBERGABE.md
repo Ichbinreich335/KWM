@@ -1,6 +1,6 @@
 # Übergabe: Website und Lager-App für die Keramische Werkstatt Margaretenhöhe (KWM)
 
-Stand: 02.10.2026, **v3 nach externer Prüfung**; Website-Stand ergänzt am 04.10.2026. Abschnitt 0 ist maßgeblich und hat Vorrang vor älteren Aussagen weiter unten.
+Stand: 02.10.2026, **v3 nach externer Prüfung**; Website-Stand ergänzt am 04.10. und 05.10.2026. Abschnitt 0 ist maßgeblich und hat Vorrang vor älteren Aussagen weiter unten.
 
 ## 0. Aktueller Stand (v3, nach externer Prüfung) – Entscheidung: Softr-Test, Baserow Reserve
 
@@ -127,6 +127,18 @@ main
   - Galerien: nur bei den Orten auf der Startseite oder auf einer eigenen Unterseite.
 - **Portfolio-Seite** aus der Lager-Datenbank: vorerst nicht bauen.
 - Weiter gilt: keine Preise, kein Bestand, keine Lagerorte, keine Verfügbarkeit auf der Website.
+
+**Entscheidungen und Stand 05.10.2026 (Admin und Opus):**
+- **Branches und PRs** (alle Entwürfe, gemergt wird von oben nach unten): #4 → #5 → #6 → #7–#10 → **#13 Feinschliff** (`phase-b3-feinschliff`) → **#11 Bausteine Teil 1** (`phase-d1-geruest`, auf den Feinschliff rebased; Sicherung `backup/phase-d1-geruest-vor-rebase`) → `phase-d2-eintraege` (läuft). **#12 SEO/Sicherheit** (`phase-e-seo`) baut auf C4 auf und wird vor dem Merge auf die Bausteine rebased.
+- **Vergleichs-Branches** (Merge erst nach Admin-Entscheidung): `phase-b3-mobil-kurz` (Handy −17 %), `konzept-flyer-galerien` (wird nie gemergt), `zitate-angleichen` (5 Rollen statt 8 Darstellungen).
+- **Worktrees und Testports:** `../KWM-phase-b3` 8798, `../KWM-phase-d` 8797, `../KWM-phase-e` 8799, `../KWM-konzept` 8793, `../KWM-mobil` 8792, `../KWM-zitate` 8791, `../KWM-sanity` (Studio). Ledger je Worktree unter `.superpowers/sdd/<PLAN>/progress.md`.
+- **Porträt:** Im schmalen Fenster rückt der Ausschnitt, bis der Kopf ganz im Bild ist (Containereinheiten); hochkant untereinander (Admin-Wunsch, erledigt).
+- **Code-Review:** `/code-review` einmal gebündelt gegen den großen Sammel-PR, nicht pro kleinem PR. Pro Aufgabe sichern Tests und eine kurze Sonnet-Prüfung die Qualität.
+- **Sanity:** Projekt `135lyh9t` (Konto der Werkstatt `verwaltung.kwm@proton.me`, Organisation `ob7rh6bmo`), Dataset `production` öffentlich, Free-Tarif (harte Grenzen, keine Kosten). Studio wird **bei Sanity gehostet**: https://kwm.sanity.studio (Code in `studio/`, Branch `phase-2-sanity`). In Sanity: Ausstellungen (mit Flyer), Orte, Galerien, Hinweise, Seitenköpfe (H1, Einleitung, Beschreibung) aller 7 Seiten, Kontakt und Öffnungszeiten. Plan: `konzept/PLAN-PHASE-2-SANITY.md`.
+- **Klicken und Bearbeiten (Visual Editing):** zurückgestellt. Erst Studio ausprobieren. Der Admin bezweifelt zu Recht, dass dafür eine eigene SSR-Vorschau nötig ist; Recherche zur clientseitigen Vorschau auf der statischen Seite: `konzept/RECHERCHE-VORSCHAU.md`.
+- **Anfrageformular:** Cloudflare Worker (entschieden). Versand kostenlos an eine verifizierte eigene Adresse (Cloudflare Email Routing), Turnstile gegen Spam, Security-Review. Voraussetzung: Domain bei Cloudflare im Werkstatt-Konto.
+- **Konto-Umzug:** Repo in eine GitHub-Organisation der Werkstatt (Admin bleibt mit eigenem Konto Eigentümer), Cloudflare-Konto der Werkstatt. Möglichst vor Sanity-Webhook, Formular-Worker und Go-live. Schritte in `ADMIN-OFFEN.md`.
+- **Cloudflare-API:** Das Token dieser Umgebung darf nur lesen. Der Build-Befehl der Vorschau `astro-umbau` ist laut API noch leer (Admin muss setzen).
 
 **Als Nächstes:** siehe `konzept/STAND.md`, Abschnitt „Als Nächstes“. Kurz:
 1. Porträt im schmalen Fenster
