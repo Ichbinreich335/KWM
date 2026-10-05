@@ -33,13 +33,14 @@ OPTIK_TOLERANZ=0.02 npm run test:optik   # höhere Toleranz (Standard 0.002), z.
 | `tests/verhalten.spec.ts`        | Anfrage-Leiste und -Formular, Sonderzeichen, Leerzeichen, datumsabhängige Hinweise                                         |
 | `tests/barrierefreiheit.spec.ts` | axe-core, WCAG 2.2 AA, alle Seiten                                                                                         |
 | `tests/formular.spec.ts`         | Anfrageformular gegen `wrangler dev` mit Turnstile-Testschlüsseln: Danke-Zustand, Versandfehler, Feldfehler (braucht Netz) |
+| `tests/verhalten.spec.ts`        | u. a. Flyer-Dialog (Aktuelles und Startseite): Öffnen, Esc, Fokus, keine Vergrößerung über die Originalgröße               |
 | `worker/*.test.ts`               | Vitest in der Workers-Laufzeit: gemeinsame Regeln, Endpunkt `/api/anfrage` (Versand und Turnstile gemockt)                 |
 
 Die Optik-Tests laufen nur lokal (die Schriftdarstellung unter Linux weicht ab), nicht in CI. Läuft schon ein `wrangler dev` auf Port 8787, verwenden die Tests ihn weiter und bauen nicht neu; dann vorher `npm run build`.
 
 ## Anfrageformular (Worker)
 
-`POST /api/anfrage` prüft Methode, Ursprung, Rate Limit (5 je Minute und IP), Größe, Felder, Honigtopf und Turnstile und schickt die Anfrage per `send_email`-Binding als Text-Mail. Es wird nichts gespeichert. Die Regeln liegen einmal in `src/lib/anfrage.ts` (Browser und Worker). Lokal: `.dev.vars.example` nach `.dev.vars` kopieren (Turnstile-Testschlüssel), optional `.env.example` nach `.env`; dann `npm run preview`. `wrangler dev` simuliert den Versand und protokolliert die Mail in der Konsole. Echter Betrieb: Schritte in `konzept/GO-LIVE.md` und `konzept/ADMIN-OFFEN.md`.
+`POST /api/anfrage` prüft Methode, Ursprung, Rate Limit (5 je Minute und IP), Größe, Felder, Honigtopf und Turnstile und schickt die Anfrage per `send_email`-Binding als Text-Mail. Es wird nichts gespeichert. Die Regeln liegen einmal in `src/lib/anfrage.ts` (Browser und Worker). Lokal: `.dev.vars.example` nach `.dev.vars` kopieren (Turnstile-Testschlüssel), optional `.env.example` nach `.env`; dann `npm run preview`. `wrangler dev` simuliert den Versand und protokolliert die Mail in der Konsole. Vorschau-Modus: Ein Build in Workers Builds auf einem anderen Branch als `main` (`WORKERS_CI_BRANCH`, siehe `src/data/umgebung.ts`) zeigt kein Turnstile-Widget, sondern den Hinweis „Vorschau – Anfragen werden noch nicht versendet.“; der Worker antwortet in Vorschauen (`ANFRAGE_MODUS=vorschau` im `previews`-Block von `wrangler.jsonc`) nach der Feldprüfung mit Erfolg, ohne Turnstile-Prüfung und Versand. Produktion (`main`) bleibt streng. Lokal und in Tests gilt immer der strenge Modus. Echter Betrieb: Schritte in `konzept/GO-LIVE.md` und `konzept/ADMIN-OFFEN.md`.
 
 ## Deploy
 
