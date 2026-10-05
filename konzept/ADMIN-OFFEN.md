@@ -34,6 +34,23 @@ Stand: 05.10.2026 (mittags)
 | **Statistik: nur Besucherzahlen oder Google Tag Manager?** (Phase 4) | A: Cloudflare Web Analytics (kostenlos, laut Doku keine personenbezogenen Daten, voraussichtlich kein Cookie-Banner nötig). B: Google Tag Manager mit Einwilligungsbanner (nötig für Google Ads/Conversion-Messung; braucht GTM-ID, Banner, ausführlichen Datenschutztext). Plan: `konzept/PLAN-PHASE-4-EINWILLIGUNG.md` | A, solange keine Werbung geschaltet wird |
 | Vorschau-URLs schützen (E6)? | Cloudflare Access an/aus | Für den Prototyp nicht nötig (Seiten sind `noindex`) |
 
+## Vor Produktion aufräumen (Merkliste, 05.10.2026)
+
+Technik (kann ich erledigen, sobald du „aufräumen“ sagst):
+- Einzel-PRs #4–#18 mit Verweis auf #19 schließen; Branches `phase-*`, `zitate-angleichen`, `phase-b3-mobil-kurz`, `konzept-flyer-galerien`, `startseite-bauhaus`, `startseite-mittelweg`, `texte-korrektur`, `backup/*` nach dem Merge löschen (vorher prüfen, dass alles in `main` ist); lokale Worktrees entfernen.
+- Alte Cloudflare-Vorschauen der gelöschten Branches entfernen (Dashboard, mein Token darf nur lesen).
+- „Später“-Punkte aus dem Astro-Review (Bericht `task-G7a-report.md`) entscheiden.
+- Formular-Test mit echtem Turnstile wackelt unter Last (braucht Netz) – für die CI mocken oder als eigenen Lauf führen.
+
+Vor dem Go-live (Inhalt, Recht, Konten):
+- Datenschutzerklärung (Platzhalter „Text folgt“) und AGB juristisch prüfen und ersetzen.
+- Formular einrichten: Domain bei Cloudflare, Email Routing, verifizierte Zieladresse (`ANFRAGE_ZIEL`), Turnstile-Widget (Site-Key als Build-Variable, Secret), `PRODUKTIONS_BRANCH` prüfen – `GO-LIVE.md` 5a.
+- Indexierung öffnen (`noindex`/`robots.txt`), Weiterleitungen der alten Seite, HSTS – `GO-LIVE.md`.
+- Bildrechte klären (MOK-Foto, Teller-Foto, Teeschale, weitere ohne Nachweis); bessere Originale (Startbild, Kummerschalen-Flyer).
+- Fragen an die Werkstatt (oben unter „Entscheiden“).
+- Sanity: Entwürfe prüfen und veröffentlichen, Sanity-Fassung auf den finalen Stand ziehen, Webhook/Deploy Hook nach dem Konto-Umzug.
+- Konto-Umzug (GitHub-Organisation, Cloudflare-Konto der Werkstatt).
+
 ## Aufgefallen (zur Kenntnis)
 
 - **Vor dem Go-live ändern (Admin 05.10.):** Auf `main` ist das Anfrageformular bewusst streng als Produktion eingestellt, solange Domain, verifizierte Zieladresse und echter Turnstile-Schlüssel fehlen: Es zeigt den Turnstile-Testhinweis und endet mit „konnte nicht zugestellt werden“ (mit Telefon/E-Mail als Ausweg). Die Schritte stehen in `konzept/GO-LIVE.md`, Abschnitt 5a.
