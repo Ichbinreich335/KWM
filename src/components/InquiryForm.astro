@@ -115,8 +115,17 @@ import { HONIGTOPF_FELD, MAX_ZEICHEN } from '../lib/anfrage';
     </div>
   </form>
   <div class="anfrage__done" role="status" tabindex="-1" hidden>
-    <p class="anfrage__done-title">Danke, Ihre Anfrage ist bei uns angekommen.</p>
-    <p>Wir antworten Ihnen per E-Mail oder Telefon.</p>
+    {vorschauBuild ? (
+      <>
+        <p class="anfrage__done-title">Danke – so sieht die Bestätigung aus.</p>
+        <p>In dieser Vorschau wurde nichts versendet.</p>
+      </>
+    ) : (
+      <>
+        <p class="anfrage__done-title">Danke, Ihre Anfrage ist bei uns angekommen.</p>
+        <p>Wir antworten Ihnen per E-Mail oder Telefon.</p>
+      </>
+    )}
     <p>
       Noch etwas vergessen? Schreiben Sie an <a href={kontakt.mailHref}>{kontakt.mail}</a> oder rufen Sie an:{' '}
       <a href={kontakt.telefonHref}>{kontakt.telefon}</a>.
