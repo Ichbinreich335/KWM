@@ -93,3 +93,44 @@ test('Expander (lang): Sprung auf ein Jahr im Archiv öffnet die Gesamtliste', a
   await expect(liste.locator('.expander__btn')).toHaveAttribute('aria-expanded', 'true');
   await expect(page.locator('#ausst-1991')).toBeVisible();
 });
+
+test('Orte-Kacheln: Enter öffnet den Detailbereich, Escape schließt ihn und gibt den Fokus zurück', async ({
+  page,
+}) => {
+  await page.goto('/');
+  const orte = page.locator('#orte');
+  await expect(orte).toHaveClass(/is-ready/);
+  const koeln = orte.locator('.orte__toggle', { hasText: 'Köln' });
+  const muenchen = orte.locator('.orte__toggle', { hasText: 'München' });
+  await koeln.focus();
+  await page.keyboard.press('Tab');
+  await expect(muenchen).toBeFocused();
+  await koeln.focus();
+  await page.keyboard.press('Enter');
+  await expect(koeln).toHaveAttribute('aria-expanded', 'true');
+  const detail = orte.locator('.orte__detail');
+  await expect(detail).toHaveCount(1);
+  await expect(detail.locator('.orte__detail-title')).toHaveText('Köln');
+  await expect(detail.locator('.orte__detail-in')).toBeFocused();
+  await page.keyboard.press('Escape');
+  await expect(koeln).toHaveAttribute('aria-expanded', 'false');
+  await expect(koeln).toBeFocused();
+  await expect(detail).toHaveCount(0);
+});
+
+test('Orte-Kacheln: Schließen-Knopf und zweite Kachel tauschen den Detailbereich', async ({ page }) => {
+  await page.goto('/');
+  const orte = page.locator('#orte');
+  const koeln = orte.locator('.orte__toggle', { hasText: 'Köln' });
+  const muenchen = orte.locator('.orte__toggle', { hasText: 'München' });
+  await koeln.focus();
+  await page.keyboard.press('Space');
+  await expect(koeln).toHaveAttribute('aria-expanded', 'true');
+  await muenchen.focus();
+  await page.keyboard.press('Enter');
+  await expect(muenchen).toHaveAttribute('aria-expanded', 'true');
+  await expect(koeln).toHaveAttribute('aria-expanded', 'false');
+  await expect(orte.locator('.orte__detail-title')).toHaveText('München');
+  await orte.locator('.orte__close').press('Enter');
+  await expect(muenchen).toHaveAttribute('aria-expanded', 'false');
+});
