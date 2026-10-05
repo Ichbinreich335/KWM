@@ -134,3 +134,17 @@ Grundlage: Feedback des Admins zu den Screens vom 04.10. und der Skill `impeccab
   - gewählte, gefüllte Chips
   - Trennlinien innerhalb einer Box
 - **Prüfung:** `build.mjs --check`, Einheitlichkeit und Typprüfung grün. Die Render-Tests für alle Blöcke (Handy und Rechner) sind bestanden. Die Prüfsummen aller fünf hochgeladenen Blöcke stimmen. Die Aktionsrechte sind wieder auf angemeldete Nutzer gesetzt.
+
+## Runde 10: Wischzeilen, neue Felder (05.10.)
+
+- **Text ragte aus den Status-Knöpfen (Bestand am Handy).** Ursache: In der Wischzeile durften Knöpfe schrumpfen. Jetzt hat jeder Chip `shrink-0`, die Zeile wischt stattdessen. Der Ansichtsumschalter (Liste/Kacheln) und „Inventur“ stehen am Handy rechts neben dem Titel (neuer Platz `aside` im Seitenkopf). Die Statuszeile hat damit die volle Breite, der dritte Knopf ist angeschnitten sichtbar und zeigt so, dass man wischen kann.
+- **Reiter ließen sich auch nach oben und unten ziehen (Stammdaten).** Ursache: In CSS macht `overflow-x-auto` allein auch die senkrechte Achse scrollbar, und der aktive Unterstrich ragte 1 px über die Zeile. Jetzt gibt es dafür genau eine Konstante: `WISCHEN` sperrt die senkrechte Achse. Reiter, Chipzeilen, Fotoleisten und die Tabellenbox nutzen sie. Die Grundlinie der Reiter liegt hinter der Zeile, nicht mehr darunter.
+- **Systematisch verhindert:** `pruefung/einheitlich.mjs` bricht den Build ab, sobald eine Seite selbst `overflow-auto`/`overflow-x-auto` setzt oder in `ui.tsx` ein Scrollbereich außerhalb von `WISCHEN` entsteht. Mit absichtlichem Verstoß getestet.
+- **Editionsware am Handy:** Plus und Minus stehen unter dem Text, statt Modell und Glasur auf vier bis fünf Zeilen zu quetschen.
+- **Neue Felder bei Unikaten** (Datenbank: `Gedreht von`, `Glasiert von` als Verknüpfung zu Künstler:innen, `Datum`):
+  - Erfassen: „Gedreht von“ und „Glasiert von“ direkt über „Preis / Auf Website zeigen“, jeweils mit „Neue Person“. „Datum“ ersetzt das Feld „Jahr“, ist mit heute vorbelegt, leer gelassen gilt der Tag der Erfassung. Das Jahr wird immer aus dem Datum abgeleitet, damit Filter und Auswertungen nach Jahr weiter stimmen.
+  - Bestand: Anzeige und Bearbeiten in derselben Reihenfolge wie beim Erfassen. Ältere Stücke ohne Datum zeigen ihr Jahr und behalten es beim Speichern.
+  - Tabelle: Spalten „Gedreht von“, „Glasiert von“, „Datum“ (ausblendbar, filterbar), auch im CSV.
+  - Stammdaten: „bei X Unikaten“ zählt jede Person einmal je Stück, egal ob gefertigt, gedreht oder glasiert. Löschen ist gesperrt, solange sie in einem der drei Felder steht.
+- **Prüfung:** Typprüfung und Einheitlichkeit grün. Messung in der Nachbildung (390 px und 1440 px): kein senkrecht scrollbarer Wischbereich, kein Text außerhalb eines Knopfs, kein waagerechtes Seiten-Scrollen, keine Konsolenfehler. Funktionstests: Datum leer → heute, Jahr 2026; Datum 04.03.2019 → Jahr 2019; Bearbeiten ohne Datum lässt das Jahr unverändert; Löschschutz greift bei „gedreht von“. Screens unter `konzept/vergleich/runde10/`. Prüfsummen aller fünf hochgeladenen Blöcke stimmen, Aktionsrechte wieder auf angemeldete Nutzer.
+

@@ -47,7 +47,9 @@ const glasurSelect = q.select({ name: "OuhBi", archiviert: "jxxXN" });
 const modellSelect = q.select({ name: "eXo5w", artikelnr: "BNpSN", programm: "Mrgtb", nameEn: "CyPYU", typ: "gCX7K", masse: "h65qx", vk: "772dM", glasuren: "EazCZ", foto: "GbUfa", archiviert: "3tlrw" });
 const partnerSelect = q.select({ name: "a4yfc", art: "ZS9HU", ort: "RQRec", kontakt: "lnhez", zusammenarbeit: "uEfkz", notiz: "8pLh8", archiviert: "24Tn9" });
 const lagerortSelect = q.select({ name: "AoOjs", bereich: "5h1mS", archiviert: "kMBsy" });
-const unikatLinks = q.select({ kuenstler: "oDNBh", glasur: "ByeH3", lagerort: "EkVC3", galerie: "NfsXv" });
+const unikatLinks = q.select({ kuenstler: "oDNBh", gedreht: "90TmC", glasiert: "2PXtk", glasur: "ByeH3", lagerort: "EkVC3", galerie: "NfsXv" });
+// Felder, in denen ein Unikat auf eine Person (Tabelle Künstler:innen) verweist.
+const PERSONEN_FELDER = ["kuenstler", "gedreht", "glasiert"];
 const editionLinks = q.select({ modell: "jxN6x", glasur: "pbGEk", lagerort: "T5iQe" });
 
 const SEARCH_FROM = 10;
@@ -322,7 +324,10 @@ export default function Block() {
     .map((i) => ({ id: i.id, label: str(i.fields.name) }))
     .sort((a, b) => a.label.localeCompare(b.label, "de"));
   const usage = useMemo(() => {
-    const u = countLinks((unikatQuery.data?.pages.flatMap((p) => p.items) ?? []) as RawItem[], ["kuenstler", "glasur", "lagerort", "galerie"]);
+    const unikate = (unikatQuery.data?.pages.flatMap((p) => p.items) ?? []) as RawItem[];
+    const u = countLinks(unikate, ["glasur", "lagerort", "galerie"]);
+    // Eine Person zählt je Unikat einmal, auch wenn sie es gefertigt, gedreht und glasiert hat.
+    unikate.forEach((i) => new Set(PERSONEN_FELDER.flatMap((k) => asOpts(i.fields[k]).map((o) => o.id))).forEach((id) => u.set(`person:${id}`, (u.get(`person:${id}`) ?? 0) + 1)));
     const e = countLinks((editionQuery.data?.pages.flatMap((p) => p.items) ?? []) as RawItem[], ["modell", "glasur", "lagerort"]);
     const m = countLinks((modellQuery.data?.pages.flatMap((p) => p.items) ?? []) as RawItem[], ["glasuren"]);
     return (key: string, id: string, source: "u" | "e" | "m") => (source === "u" ? u : source === "e" ? e : m).get(`${key}:${id}`) ?? 0;
@@ -358,13 +363,13 @@ export default function Block() {
       key: "kuenstler",
       label: "Künstler:innen",
       singular: "Künstler:in",
-      hint: "Wer ein Unikat gefertigt hat. Erscheint als Auswahl beim Erfassen.",
+      hint: "Wer Unikate fertigt, dreht oder glasiert. Erscheint als Auswahl beim Erfassen.",
       fields: [{ key: "name", label: "Name", kind: "text", required: true, placeholder: "Vor- und Nachname" }],
       entries: items(kuenstlerQuery).map((i) => toEntry(i, ["name"], () => "")),
-      usage: (id) => `${stueck(usage("kuenstler", id, "u"), "Unikat", "Unikaten")}`,
-      usageCount: (id) => usage("kuenstler", id, "u"),
+      usage: (id) => `${stueck(usage("person", id, "u"), "Unikat", "Unikaten")}`,
+      usageCount: (id) => usage("person", id, "u"),
       archive: archiveVia(kuenstlerUpdate, kuenstlerQuery.refetch),
-      remove: removeVia(kuenstlerDelete, kuenstlerQuery.refetch, [{ source: "u", key: "kuenstler" }]),
+      remove: removeVia(kuenstlerDelete, kuenstlerQuery.refetch, PERSONEN_FELDER.map((key) => ({ source: "u" as const, key }))),
       save: (id, v) => run(id ? kuenstlerUpdate : kuenstlerCreate, id ? { recordId: id, fields: { name: v.name } } : { name: v.name }, kuenstlerQuery.refetch),
     },
     {

@@ -15,7 +15,7 @@ import { useCurrentUser } from "@/lib/user";
 import { Check, ChevronDown, Loader2, Minus, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { AUSSER_HAUS_ORT, EDITION_PROGRAMM, MANUFAKTUR_PROGRAMM, PAGE_SIZE, ROHLING, isAusserHaus } from "../shared/konstanten";
-import { type Opt, type RawItem, activeOptions, asOpts, compareNr, freshItems, link, modellLabel, parseNumber, str, useAllPages } from "../shared/daten";
+import { type Opt, type RawItem, activeOptions, asOpts, compareNr, freshItems, link, modellLabel, parseNumber, str, today, useAllPages } from "../shared/daten";
 import { AddNew, ChoiceChips, ErrorText, Feld, FieldLabel, GroupedSelect, Hint, Knopf, OptionSelect, PageHeader, PANEL_CLASS, PhotoPicker, SchalterFeld, SearchPick, STICKY_BOTTOM, Tabs, Textfeld, useIsMobile } from "../shared/ui";
 
 const ds = datasource.define({ unikate: "unikate", edition: "edition", glasuren: "glasuren", kuenstler: "kuenstler", lagerorte: "lagerorte", partner: "partner", modelle: "modelle" });
@@ -32,6 +32,9 @@ const unikatFields = q.select({
   typ: "7g9jI",
   status: "SEUyZ",
   kuenstler: "oDNBh",
+  gedreht: "90TmC",
+  glasiert: "2PXtk",
+  datum: "UfM5S",
   jahr: "ZIHrT",
   glasur: "ByeH3",
   masse: "KDUVZ",
@@ -81,7 +84,9 @@ type UnikatForm = {
   typ: string;
   status: string;
   kuenstler: string;
-  jahr: string;
+  gedreht: string;
+  glasiert: string;
+  datum: string;
   glasur: string[];
   masse: string;
   lagerort: string;
@@ -106,7 +111,9 @@ const emptyUnikat = (): UnikatForm => ({
   typ: "",
   status: "verfügbar",
   kuenstler: "",
-  jahr: String(new Date().getFullYear()),
+  gedreht: "",
+  glasiert: "",
+  datum: today(),
   glasur: [],
   masse: "",
   lagerort: "",
@@ -283,18 +290,19 @@ export default function Block() {
     }
   }
 
-  async function addKuenstler(name: string): Promise<boolean> {
+  // Neue Person (Künstler:in, gedreht oder glasiert von) anlegen und direkt im jeweiligen Feld auswählen.
+  const addPerson = (feld: "kuenstler" | "gedreht" | "glasiert") => async (name: string): Promise<boolean> => {
     try {
       const created = await createKuenstler.mutateAsync({ name } as never);
       await kuenstlerQuery.refetch();
-      setUnikat((s) => ({ ...s, kuenstler: (created as { id: string }).id }));
+      setUnikat((s) => ({ ...s, [feld]: (created as { id: string }).id }));
       toast.success(`„${name}“ angelegt.`);
       return true;
     } catch {
       toast.error("Konnte nicht angelegt werden.");
       return false;
     }
-  }
+  };
 
   // Alle Editionszeilen laden: Nur so findet die Prüfung „Gibt es diese Kombination schon?“
   // jede Zeile und legt keine doppelte an.
@@ -391,12 +399,17 @@ export default function Block() {
       const fotos = await uploadFiles();
       if (art === "unikat") {
         const preis = parseNumber(unikat.preis) ?? undefined;
+        // Ohne Angabe gilt der Tag der Erfassung. Das Jahr folgt immer dem Datum.
+        const datum = unikat.datum || today();
         const created = await createUnikat.mutateAsync({
           name: unikat.name.trim(),
           typ: unikat.typ,
           status: unikat.status,
           kuenstler: link(unikat.kuenstler),
-          jahr: unikat.jahr ? Number(unikat.jahr) : undefined,
+          gedreht: link(unikat.gedreht),
+          glasiert: link(unikat.glasiert),
+          datum,
+          jahr: Number(datum.slice(0, 4)),
           glasur: unikat.glasur,
           masse: unikat.masse.trim(),
           fotos,
@@ -551,7 +564,7 @@ export default function Block() {
                   )}
                 </div>
 
-                <WeitereAngaben inhalt="Künstler:in, Glasur, Maße, Preis …">
+                <WeitereAngaben inhalt="Künstler:in, Datum, Glasur, gedreht und glasiert von, Preis …">
 
                   <div className="grid sm:grid-cols-2 gap-6">
                     <div>
@@ -564,17 +577,13 @@ export default function Block() {
                         placeholder="Bitte wählen"
                       />
                       <div className="mt-2">
-                        <AddNew label="Neue:r Künstler:in" placeholder="Vor- und Nachname" existing={kuenstlerOptions} onAdd={addKuenstler} />
+                        <AddNew label="Neue:r Künstler:in" placeholder="Vor- und Nachname" existing={kuenstlerOptions} onAdd={addPerson("kuenstler")} />
                       </div>
                     </div>
                     <div>
-                      <FieldLabel htmlFor="u-jahr">Jahr</FieldLabel>
-                      <Feld
-                        id="u-jahr"
-                        inputMode="numeric"
-                        value={unikat.jahr}
-                        onChange={(e) => setU("jahr", e.target.value.replace(/\D/g, "").slice(0, 4))}
-                      />
+                      <FieldLabel htmlFor="u-datum">Datum</FieldLabel>
+                      <Feld id="u-datum" type="date" value={unikat.datum} onChange={(e) => setU("datum", e.target.value)} />
+                      <Hint>Vorbelegt mit heute. Leer gelassen gilt der Tag der Erfassung.</Hint>
                     </div>
                   </div>
 
@@ -602,6 +611,23 @@ export default function Block() {
                         onChange={(e) => setU("bildnachweis", e.target.value)}
                         placeholder="z. B. Foto: Name der Fotografin"
                       />
+                    </div>
+                  </div>
+
+                  <div className="grid sm:grid-cols-2 gap-6">
+                    <div>
+                      <FieldLabel htmlFor="u-gedreht">Gedreht von</FieldLabel>
+                      <OptionSelect id="u-gedreht" value={unikat.gedreht} onChange={(v) => setU("gedreht", v)} options={kuenstlerOptions} placeholder="Bitte wählen" />
+                      <div className="mt-2">
+                        <AddNew label="Neue Person" placeholder="Vor- und Nachname" existing={kuenstlerOptions} onAdd={addPerson("gedreht")} />
+                      </div>
+                    </div>
+                    <div>
+                      <FieldLabel htmlFor="u-glasiert">Glasiert von</FieldLabel>
+                      <OptionSelect id="u-glasiert" value={unikat.glasiert} onChange={(v) => setU("glasiert", v)} options={kuenstlerOptions} placeholder="Bitte wählen" />
+                      <div className="mt-2">
+                        <AddNew label="Neue Person" placeholder="Vor- und Nachname" existing={kuenstlerOptions} onAdd={addPerson("glasiert")} />
+                      </div>
                     </div>
                   </div>
 

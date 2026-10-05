@@ -26,8 +26,13 @@ const FIELD_CLASS = `h-12 rounded-md text-base md:text-base ${LINE}`;
 export const PANEL_CLASS = `rounded-lg border ${LINE} bg-card`;
 // Box, deren Inhalt in Felder geteilt ist (z. B. Kennzahlen): Die Trennlinien haben dieselbe Farbe wie der Rahmen.
 export const PANEL_GRID_CLASS = `rounded-lg border ${LINE} bg-neutral-300 gap-px overflow-hidden`;
+// Box um eine breite Tabelle: Die Tabelle wischt nur waagerecht (shadcn legt um <table> einen Scrollbereich).
+export const TABLE_PANEL_CLASS = `${PANEL_CLASS} [&>div]:overflow-y-hidden [&>div]:overscroll-x-contain`;
+// Nur waagerecht wischbar. overflow-x-auto allein macht in CSS auch die senkrechte Achse scrollbar, dann lässt sich der Inhalt nach oben und unten ziehen.
+// Einzige Stelle mit overflow-x-auto (geprüft von pruefung/einheitlich.mjs).
+export const WISCHEN = "overflow-x-auto overflow-y-hidden overscroll-x-contain [scrollbar-width:none] [&::-webkit-scrollbar]:hidden";
 // Am Handy eine Zeile zum seitlich Wischen statt mehrerer umbrochener Reihen, ab Tablet umbrechen.
-export const SCROLL_ROW = "flex gap-2 py-0.5 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:flex-wrap sm:overflow-visible";
+export const SCROLL_ROW = `flex gap-2 py-0.5 ${WISCHEN} sm:flex-wrap sm:overflow-visible`;
 // Klebende Leisten am unteren Rand: am Handy knapp über Softrs Navigationsleiste (ca. 56 px), ab Tablet am Rand.
 export const STICKY_BOTTOM = "bottom-[calc(4.25rem+env(safe-area-inset-bottom))] sm:bottom-4";
 
@@ -128,7 +133,8 @@ export function useIsMobile(): boolean {
 
 // Gewählt = gefüllt. Kein zusätzliches Symbol, damit der Knopf beim Antippen nicht breiter wird und nichts springt.
 // Mindestbreite, damit kurze Wörter (Sieb, Topf) nicht winzig wirken und die Reihen ruhiger aussehen.
-const CHIP_BASE = "inline-flex items-center justify-center gap-2 min-h-11 min-w-[5rem] px-3.5 rounded-md border text-base whitespace-nowrap transition-colors disabled:opacity-60";
+// shrink-0: In einer Wischzeile wird der Knopf nie gestaucht, der Text bleibt in der Box.
+const CHIP_BASE = "inline-flex shrink-0 items-center justify-center gap-2 min-h-11 min-w-[5rem] px-3.5 rounded-md border text-base whitespace-nowrap transition-colors disabled:opacity-60";
 const CHIP_IDLE = `bg-background hover:bg-muted ${LINE}`;
 const CHIP_ACTIVE = "bg-primary text-primary-foreground border-primary";
 
@@ -172,25 +178,29 @@ export function FilterChips<K extends string>({ label, options, value, onChange 
 // Reiter: der einzige Umschalter der App (Erfassen, Bestand, Stammdaten). Unterstrichen, am Handy seitlich wischbar.
 export function Tabs<K extends string>({ label, tabs, value, onChange }: { label: string; tabs: { key: K; label: string; count?: number }[]; value: K; onChange: (key: K) => void }) {
   return (
-    <div role="tablist" aria-label={label} className="flex gap-1 overflow-x-auto border-b">
-      {tabs.map((t) => {
-        const active = value === t.key;
-        return (
-          <button
-            key={t.key}
-            type="button"
-            role="tab"
-            aria-selected={active}
-            onClick={() => onChange(t.key)}
-            className={`inline-flex items-center gap-1.5 min-h-11 px-3 -mb-px border-b-2 text-base whitespace-nowrap transition-colors ${
-              active ? "border-primary text-foreground font-medium" : "border-transparent text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            {t.label}
-            {t.count !== undefined && <span className="tabular-nums text-muted-foreground">{t.count}</span>}
-          </button>
-        );
-      })}
+    // Die Grundlinie liegt hinter der Reiterzeile, damit der Unterstrich des aktiven Reiters sie überdeckt, ohne über den Wischbereich hinauszuragen.
+    <div className="relative">
+      <div className="absolute inset-x-0 bottom-0 border-b" aria-hidden />
+      <div role="tablist" aria-label={label} className={`relative flex gap-1 ${WISCHEN}`}>
+        {tabs.map((t) => {
+          const active = value === t.key;
+          return (
+            <button
+              key={t.key}
+              type="button"
+              role="tab"
+              aria-selected={active}
+              onClick={() => onChange(t.key)}
+              className={`inline-flex shrink-0 items-center gap-1.5 min-h-11 px-3 border-b-2 text-base whitespace-nowrap transition-colors ${
+                active ? "border-primary text-foreground font-medium" : "border-transparent text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              {t.label}
+              {t.count !== undefined && <span className="tabular-nums text-muted-foreground">{t.count}</span>}
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 }
@@ -344,12 +354,16 @@ export function Thumb({ fotos, size = "small", className = "w-12 h-12 rounded-md
   return <img src={thumb(first, size)} alt="" loading="lazy" className={`${className} shrink-0 object-cover`} />;
 }
 
-export function PageHeader({ title, description, actions }: { title: string; description?: string; actions?: React.ReactNode }) {
+// aside: kleines Bedienelement rechts neben dem Titel, auch am Handy (z. B. Ansicht Liste/Kacheln). actions: am Handy volle Breite unter dem Titel.
+export function PageHeader({ title, description, aside, actions }: { title: string; description?: string; aside?: React.ReactNode; actions?: React.ReactNode }) {
   return (
     <div className="flex flex-wrap items-end justify-between gap-x-4 gap-y-3">
-      <div className="min-w-0">
-        <h1 className="text-2xl font-semibold">{title}</h1>
-        {description && <p className="text-base text-muted-foreground mt-0.5">{description}</p>}
+      <div className="flex items-end justify-between gap-4 min-w-0 flex-1 sm:flex-none">
+        <div className="min-w-0">
+          <h1 className="text-2xl font-semibold">{title}</h1>
+          {description && <p className="text-base text-muted-foreground mt-0.5">{description}</p>}
+        </div>
+        {aside}
       </div>
       {actions && <div className="flex flex-wrap gap-2 w-full sm:w-auto">{actions}</div>}
     </div>

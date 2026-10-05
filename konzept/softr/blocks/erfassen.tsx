@@ -73,6 +73,12 @@ function link(id: string | undefined): string[] {
   return id ? [id] : [];
 }
 
+// Heutiges Datum in Ortszeit als JJJJ-MM-TT (nicht UTC, sonst springt das Datum nachts).
+function today(): string {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
 // Deutsche Zahleneingabe: „1.200“ = 1200, „12,50“ = 12.5.
 function parseNumber(s: string): number | null {
   if (!s.trim()) return null;
@@ -95,6 +101,10 @@ const FIELD_CLASS = `h-12 rounded-md text-base md:text-base ${LINE}`;
 
 // Die Box: jede umrandete Fläche (Bereich, Liste, Kachel, Tabelle). Innerhalb einer Box keine zweite Box.
 const PANEL_CLASS = `rounded-lg border ${LINE} bg-card`;
+
+// Nur waagerecht wischbar. overflow-x-auto allein macht in CSS auch die senkrechte Achse scrollbar, dann lässt sich der Inhalt nach oben und unten ziehen.
+// Einzige Stelle mit overflow-x-auto (geprüft von pruefung/einheitlich.mjs).
+const WISCHEN = "overflow-x-auto overflow-y-hidden overscroll-x-contain [scrollbar-width:none] [&::-webkit-scrollbar]:hidden";
 
 // Klebende Leisten am unteren Rand: am Handy knapp über Softrs Navigationsleiste (ca. 56 px), ab Tablet am Rand.
 const STICKY_BOTTOM = "bottom-[calc(4.25rem+env(safe-area-inset-bottom))] sm:bottom-4";
@@ -171,7 +181,8 @@ function useIsMobile(): boolean {
 
 // Gewählt = gefüllt. Kein zusätzliches Symbol, damit der Knopf beim Antippen nicht breiter wird und nichts springt.
 // Mindestbreite, damit kurze Wörter (Sieb, Topf) nicht winzig wirken und die Reihen ruhiger aussehen.
-const CHIP_BASE = "inline-flex items-center justify-center gap-2 min-h-11 min-w-[5rem] px-3.5 rounded-md border text-base whitespace-nowrap transition-colors disabled:opacity-60";
+// shrink-0: In einer Wischzeile wird der Knopf nie gestaucht, der Text bleibt in der Box.
+const CHIP_BASE = "inline-flex shrink-0 items-center justify-center gap-2 min-h-11 min-w-[5rem] px-3.5 rounded-md border text-base whitespace-nowrap transition-colors disabled:opacity-60";
 
 const CHIP_IDLE = `bg-background hover:bg-muted ${LINE}`;
 const CHIP_ACTIVE = "bg-primary text-primary-foreground border-primary";
@@ -202,25 +213,29 @@ function ChoiceChips({ label, options, value, onChange, statusColors, disabled }
 // Reiter: der einzige Umschalter der App (Erfassen, Bestand, Stammdaten). Unterstrichen, am Handy seitlich wischbar.
 function Tabs<K extends string>({ label, tabs, value, onChange }: { label: string; tabs: { key: K; label: string; count?: number }[]; value: K; onChange: (key: K) => void }) {
   return (
-    <div role="tablist" aria-label={label} className="flex gap-1 overflow-x-auto border-b">
-      {tabs.map((t) => {
-        const active = value === t.key;
-        return (
-          <button
-            key={t.key}
-            type="button"
-            role="tab"
-            aria-selected={active}
-            onClick={() => onChange(t.key)}
-            className={`inline-flex items-center gap-1.5 min-h-11 px-3 -mb-px border-b-2 text-base whitespace-nowrap transition-colors ${
-              active ? "border-primary text-foreground font-medium" : "border-transparent text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            {t.label}
-            {t.count !== undefined && <span className="tabular-nums text-muted-foreground">{t.count}</span>}
-          </button>
-        );
-      })}
+    // Die Grundlinie liegt hinter der Reiterzeile, damit der Unterstrich des aktiven Reiters sie überdeckt, ohne über den Wischbereich hinauszuragen.
+    <div className="relative">
+      <div className="absolute inset-x-0 bottom-0 border-b" aria-hidden />
+      <div role="tablist" aria-label={label} className={`relative flex gap-1 ${WISCHEN}`}>
+        {tabs.map((t) => {
+          const active = value === t.key;
+          return (
+            <button
+              key={t.key}
+              type="button"
+              role="tab"
+              aria-selected={active}
+              onClick={() => onChange(t.key)}
+              className={`inline-flex shrink-0 items-center gap-1.5 min-h-11 px-3 border-b-2 text-base whitespace-nowrap transition-colors ${
+                active ? "border-primary text-foreground font-medium" : "border-transparent text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              {t.label}
+              {t.count !== undefined && <span className="tabular-nums text-muted-foreground">{t.count}</span>}
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 }
@@ -353,12 +368,16 @@ function SearchPick({
   );
 }
 
-function PageHeader({ title, description, actions }: { title: string; description?: string; actions?: React.ReactNode }) {
+// aside: kleines Bedienelement rechts neben dem Titel, auch am Handy (z. B. Ansicht Liste/Kacheln). actions: am Handy volle Breite unter dem Titel.
+function PageHeader({ title, description, aside, actions }: { title: string; description?: string; aside?: React.ReactNode; actions?: React.ReactNode }) {
   return (
     <div className="flex flex-wrap items-end justify-between gap-x-4 gap-y-3">
-      <div className="min-w-0">
-        <h1 className="text-2xl font-semibold">{title}</h1>
-        {description && <p className="text-base text-muted-foreground mt-0.5">{description}</p>}
+      <div className="flex items-end justify-between gap-4 min-w-0 flex-1 sm:flex-none">
+        <div className="min-w-0">
+          <h1 className="text-2xl font-semibold">{title}</h1>
+          {description && <p className="text-base text-muted-foreground mt-0.5">{description}</p>}
+        </div>
+        {aside}
       </div>
       {actions && <div className="flex flex-wrap gap-2 w-full sm:w-auto">{actions}</div>}
     </div>
@@ -488,6 +507,9 @@ const unikatFields = q.select({
   typ: "7g9jI",
   status: "SEUyZ",
   kuenstler: "oDNBh",
+  gedreht: "90TmC",
+  glasiert: "2PXtk",
+  datum: "UfM5S",
   jahr: "ZIHrT",
   glasur: "ByeH3",
   masse: "KDUVZ",
@@ -537,7 +559,9 @@ type UnikatForm = {
   typ: string;
   status: string;
   kuenstler: string;
-  jahr: string;
+  gedreht: string;
+  glasiert: string;
+  datum: string;
   glasur: string[];
   masse: string;
   lagerort: string;
@@ -562,7 +586,9 @@ const emptyUnikat = (): UnikatForm => ({
   typ: "",
   status: "verfügbar",
   kuenstler: "",
-  jahr: String(new Date().getFullYear()),
+  gedreht: "",
+  glasiert: "",
+  datum: today(),
   glasur: [],
   masse: "",
   lagerort: "",
@@ -739,18 +765,19 @@ export default function Block() {
     }
   }
 
-  async function addKuenstler(name: string): Promise<boolean> {
+  // Neue Person (Künstler:in, gedreht oder glasiert von) anlegen und direkt im jeweiligen Feld auswählen.
+  const addPerson = (feld: "kuenstler" | "gedreht" | "glasiert") => async (name: string): Promise<boolean> => {
     try {
       const created = await createKuenstler.mutateAsync({ name } as never);
       await kuenstlerQuery.refetch();
-      setUnikat((s) => ({ ...s, kuenstler: (created as { id: string }).id }));
+      setUnikat((s) => ({ ...s, [feld]: (created as { id: string }).id }));
       toast.success(`„${name}“ angelegt.`);
       return true;
     } catch {
       toast.error("Konnte nicht angelegt werden.");
       return false;
     }
-  }
+  };
 
   // Alle Editionszeilen laden: Nur so findet die Prüfung „Gibt es diese Kombination schon?“
   // jede Zeile und legt keine doppelte an.
@@ -847,12 +874,17 @@ export default function Block() {
       const fotos = await uploadFiles();
       if (art === "unikat") {
         const preis = parseNumber(unikat.preis) ?? undefined;
+        // Ohne Angabe gilt der Tag der Erfassung. Das Jahr folgt immer dem Datum.
+        const datum = unikat.datum || today();
         const created = await createUnikat.mutateAsync({
           name: unikat.name.trim(),
           typ: unikat.typ,
           status: unikat.status,
           kuenstler: link(unikat.kuenstler),
-          jahr: unikat.jahr ? Number(unikat.jahr) : undefined,
+          gedreht: link(unikat.gedreht),
+          glasiert: link(unikat.glasiert),
+          datum,
+          jahr: Number(datum.slice(0, 4)),
           glasur: unikat.glasur,
           masse: unikat.masse.trim(),
           fotos,
@@ -1007,7 +1039,7 @@ export default function Block() {
                   )}
                 </div>
 
-                <WeitereAngaben inhalt="Künstler:in, Glasur, Maße, Preis …">
+                <WeitereAngaben inhalt="Künstler:in, Datum, Glasur, gedreht und glasiert von, Preis …">
 
                   <div className="grid sm:grid-cols-2 gap-6">
                     <div>
@@ -1020,17 +1052,13 @@ export default function Block() {
                         placeholder="Bitte wählen"
                       />
                       <div className="mt-2">
-                        <AddNew label="Neue:r Künstler:in" placeholder="Vor- und Nachname" existing={kuenstlerOptions} onAdd={addKuenstler} />
+                        <AddNew label="Neue:r Künstler:in" placeholder="Vor- und Nachname" existing={kuenstlerOptions} onAdd={addPerson("kuenstler")} />
                       </div>
                     </div>
                     <div>
-                      <FieldLabel htmlFor="u-jahr">Jahr</FieldLabel>
-                      <Feld
-                        id="u-jahr"
-                        inputMode="numeric"
-                        value={unikat.jahr}
-                        onChange={(e) => setU("jahr", e.target.value.replace(/\D/g, "").slice(0, 4))}
-                      />
+                      <FieldLabel htmlFor="u-datum">Datum</FieldLabel>
+                      <Feld id="u-datum" type="date" value={unikat.datum} onChange={(e) => setU("datum", e.target.value)} />
+                      <Hint>Vorbelegt mit heute. Leer gelassen gilt der Tag der Erfassung.</Hint>
                     </div>
                   </div>
 
@@ -1058,6 +1086,23 @@ export default function Block() {
                         onChange={(e) => setU("bildnachweis", e.target.value)}
                         placeholder="z. B. Foto: Name der Fotografin"
                       />
+                    </div>
+                  </div>
+
+                  <div className="grid sm:grid-cols-2 gap-6">
+                    <div>
+                      <FieldLabel htmlFor="u-gedreht">Gedreht von</FieldLabel>
+                      <OptionSelect id="u-gedreht" value={unikat.gedreht} onChange={(v) => setU("gedreht", v)} options={kuenstlerOptions} placeholder="Bitte wählen" />
+                      <div className="mt-2">
+                        <AddNew label="Neue Person" placeholder="Vor- und Nachname" existing={kuenstlerOptions} onAdd={addPerson("gedreht")} />
+                      </div>
+                    </div>
+                    <div>
+                      <FieldLabel htmlFor="u-glasiert">Glasiert von</FieldLabel>
+                      <OptionSelect id="u-glasiert" value={unikat.glasiert} onChange={(v) => setU("glasiert", v)} options={kuenstlerOptions} placeholder="Bitte wählen" />
+                      <div className="mt-2">
+                        <AddNew label="Neue Person" placeholder="Vor- und Nachname" existing={kuenstlerOptions} onAdd={addPerson("glasiert")} />
+                      </div>
                     </div>
                   </div>
 

@@ -3,7 +3,7 @@ import { datasource, q, useRecords } from "@/lib/datasource";
 import { AlertTriangle, CalendarClock, ChevronDown, ChevronRight, CircleCheck, ClipboardList, Package, Receipt } from "lucide-react";
 import { AUSGESTELLT, KOMMISSION, PAGE_SIZE, RESERVIERT, ROHLING, VERFUEGBAR, VERKAUFT, isAusserHaus } from "../shared/konstanten";
 import { type Attachment, type RawItem, asAttachments, asOpts, firstLabel, euro, lookupValue, modellLabel, num, str, useAllPages, zahl } from "../shared/daten";
-import { EmptyState, ErrorState, ListRow, LoadingState, PageHeader, PANEL_CLASS, PANEL_GRID_CLASS, Section, Thumb } from "../shared/ui";
+import { EmptyState, ErrorState, ListRow, LoadingState, PageHeader, PANEL_CLASS, PANEL_GRID_CLASS, Section, Thumb, WISCHEN } from "../shared/ui";
 
 const ds = datasource.define({ unikate: "unikate", edition: "edition", partner: "partner", modelle: "modelle" });
 const modellSelect = q.select({ name: "eXo5w", artikelnr: "BNpSN", vk: "772dM", archiviert: "3tlrw" });
@@ -176,7 +176,7 @@ function ZuErledigen({ aufgaben, pflege }: { aufgaben: Aufgabe[]; pflege: Pruefp
 // Zuletzt Bearbeitetes als Bildleiste: am Handy zum Wischen, am Rechner in einer Reihe.
 function Bildleiste({ items }: { items: { key: string; href: string; titel: string; zeile: string; fotos: Attachment[] }[] }) {
   return (
-    <ul className="grid grid-flow-col auto-cols-[8.5rem] gap-3 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:grid-flow-row sm:auto-cols-auto sm:grid-cols-3 lg:grid-cols-6 sm:overflow-visible">
+    <ul className={`grid grid-flow-col auto-cols-[8.5rem] gap-3 pb-1 ${WISCHEN} sm:grid-flow-row sm:auto-cols-auto sm:grid-cols-3 lg:grid-cols-6 sm:overflow-visible`}>
       {items.map((z) => (
         <li key={z.key}>
           <a href={z.href} className="group block">

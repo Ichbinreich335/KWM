@@ -43,6 +43,7 @@ import {
   FilterButton,
   FilterChips,
   FilterSheet,
+  Hint,
   Knopf,
   ListRow,
   LoadingState,
@@ -60,6 +61,7 @@ import {
   Textfeld,
   useAnsicht,
   useIsMobile,
+  WISCHEN,
 } from "../shared/ui";
 
 const ds = datasource.define({ unikate: "unikate", edition: "edition", kuenstler: "kuenstler", glasuren: "glasuren", lagerorte: "lagerorte", partner: "partner" });
@@ -75,6 +77,9 @@ const unikatSelect = q.select({
   typ: "7g9jI",
   status: "SEUyZ",
   kuenstler: "oDNBh",
+  gedreht: "90TmC",
+  glasiert: "2PXtk",
+  datum: "UfM5S",
   jahr: "ZIHrT",
   glasur: "ByeH3",
   masse: "KDUVZ",
@@ -96,6 +101,9 @@ const unikatUpdateFields = q.select({
   typ: "7g9jI",
   status: "SEUyZ",
   kuenstler: "oDNBh",
+  gedreht: "90TmC",
+  glasiert: "2PXtk",
+  datum: "UfM5S",
   jahr: "ZIHrT",
   glasur: "ByeH3",
   masse: "KDUVZ",
@@ -136,6 +144,9 @@ type Unikat = {
   typ: string;
   status: string;
   kuenstler: Opt | undefined;
+  gedreht: Opt | undefined;
+  glasiert: Opt | undefined;
+  datum: string;
   jahr: number | null;
   glasur: Opt[];
   masse: string;
@@ -211,6 +222,9 @@ function toUnikat(item: RawItem): Unikat {
     typ: asOpts(f.typ)[0]?.label ?? "",
     status: asOpts(f.status)[0]?.label ?? "",
     kuenstler: asOpts(f.kuenstler)[0],
+    gedreht: asOpts(f.gedreht)[0],
+    glasiert: asOpts(f.glasiert)[0],
+    datum: str(f.datum),
     jahr: num(f.jahr),
     glasur: asOpts(f.glasur),
     masse: str(f.masse),
@@ -246,13 +260,18 @@ function toEdition(item: RawItem): Edition {
   };
 }
 
+// Ältere Stücke haben nur ein Jahr, neue ein Datum.
+function datumText(u: Unikat): string {
+  return u.datum ? formatDate(u.datum) : u.jahr !== null ? String(u.jahr) : "";
+}
+
 function ortVon(u: Unikat): string {
   return (isAusserHaus(u.status) && u.galerie ? u.galerie.label : u.lagerort?.label) ?? "";
 }
 
 function matchesSearch(u: Unikat, term: string): boolean {
   if (!term) return true;
-  const hay = [u.name, u.inv, u.typ, u.status, u.kuenstler?.label, u.lagerort?.label, u.galerie?.label, u.notiz, u.masse, ...u.glasur.map((g) => g.label)].join(" ").toLowerCase();
+  const hay = [u.name, u.inv, u.typ, u.status, u.kuenstler?.label, u.gedreht?.label, u.glasiert?.label, u.lagerort?.label, u.galerie?.label, u.notiz, u.masse, ...u.glasur.map((g) => g.label)].join(" ").toLowerCase();
   return term
     .toLowerCase()
     .split(/\s+/)
@@ -277,14 +296,16 @@ function compare(a: Unikat, b: Unikat, key: SortKey): number {
 function exportUnikate(list: Unikat[]) {
   downloadCsv(
     `unikate-${today()}.csv`,
-    ["Inventarnummer", "Name", "Typ", "Status", "Künstler:in", "Jahr", "Glasur", "Maße", "Lagerort", "Partner", "Preis intern (€)", "Auf Website zeigen", "Notiz", "Erfasst am", "Verkauft am"],
+    ["Inventarnummer", "Name", "Typ", "Status", "Künstler:in", "Datum", "Gedreht von", "Glasiert von", "Glasur", "Maße", "Lagerort", "Partner", "Preis intern (€)", "Auf Website zeigen", "Notiz", "Erfasst am", "Verkauft am"],
     list.map((u) => [
       u.inv,
       u.name,
       u.typ,
       u.status,
       u.kuenstler?.label ?? "",
-      u.jahr === null ? "" : String(u.jahr),
+      datumText(u),
+      u.gedreht?.label ?? "",
+      u.glasiert?.label ?? "",
       u.glasur.map((g) => g.label).join(", "),
       u.masse,
       u.lagerort?.label ?? "",
@@ -329,7 +350,9 @@ type EditForm = {
   name: string;
   typ: string;
   kuenstlerId: string;
-  jahr: string;
+  gedrehtId: string;
+  glasiertId: string;
+  datum: string;
   glasurIds: string[];
   masse: string;
   bildnachweis: string;
@@ -342,7 +365,7 @@ type EditForm = {
 function UnikatDetail({ u, onClose, onSaved, stamm, typen, statusListe }: { u: Unikat; onClose: () => void; onSaved: () => Promise<unknown>; stamm: Stamm; typen: Opt[]; statusListe: Opt[] }) {
   const lagerorte = activeOptions(stamm.lagerorte, link(u.lagerort?.id));
   const galerien = activeOptions(stamm.partner, link(u.galerie?.id));
-  const kuenstler = activeOptions(stamm.kuenstler, link(u.kuenstler?.id));
+  const personen = activeOptions(stamm.kuenstler, [u.kuenstler?.id, u.gedreht?.id, u.glasiert?.id].filter((id): id is string => !!id));
   const glasuren = activeOptions(
     stamm.glasuren,
     u.glasur.map((g) => g.id),
@@ -351,7 +374,9 @@ function UnikatDetail({ u, onClose, onSaved, stamm, typen, statusListe }: { u: U
     name: u.name,
     typ: u.typ,
     kuenstlerId: u.kuenstler?.id ?? "",
-    jahr: u.jahr !== null ? String(u.jahr) : "",
+    gedrehtId: u.gedreht?.id ?? "",
+    glasiertId: u.glasiert?.id ?? "",
+    datum: u.datum.slice(0, 10),
     glasurIds: u.glasur.map((g) => g.id),
     masse: u.masse,
     bildnachweis: u.bildnachweis,
@@ -431,6 +456,8 @@ function UnikatDetail({ u, onClose, onSaved, stamm, typen, statusListe }: { u: U
     if (form.preis.trim() && (preis === null || preis < 0)) errors.preis = "Bitte einen Betrag in Euro eingeben, z. B. 1.200.";
     setFormError(errors);
     if (Object.keys(errors).length) return;
+    // Leer gelassenes Datum gilt als Tag der Erfassung. Ältere Stücke ohne Datum behalten ihr Jahr.
+    const datum = form.datum || (u.datum ? u.erfasstAm.slice(0, 10) : "");
     setBusy(true);
     try {
       let fotos: { id?: string; url: string; filename?: string }[] | undefined;
@@ -446,7 +473,10 @@ function UnikatDetail({ u, onClose, onSaved, stamm, typen, statusListe }: { u: U
           name: form.name.trim(),
           typ: form.typ,
           kuenstler: link(form.kuenstlerId),
-          jahr: parseNumber(form.jahr),
+          gedreht: link(form.gedrehtId),
+          glasiert: link(form.glasiertId),
+          datum: datum || null,
+          jahr: datum ? Number(datum.slice(0, 4)) : u.jahr,
           glasur: form.glasurIds,
           masse: form.masse.trim(),
           bildnachweis: form.bildnachweis.trim(),
@@ -471,7 +501,9 @@ function UnikatDetail({ u, onClose, onSaved, stamm, typen, statusListe }: { u: U
   const facts: [string, string][] = [
     ["Preis intern", u.preis !== null ? euro.format(u.preis) : ""],
     ["Künstler:in", u.kuenstler?.label ?? ""],
-    ["Jahr", u.jahr !== null ? String(u.jahr) : ""],
+    ["Datum", datumText(u)],
+    ["Gedreht von", u.gedreht?.label ?? ""],
+    ["Glasiert von", u.glasiert?.label ?? ""],
     ["Glasur", u.glasur.map((g) => g.label).join(", ")],
     ["Maße", u.masse],
     ["Außer Haus seit", formatDate(u.seit)],
@@ -577,7 +609,7 @@ function UnikatDetail({ u, onClose, onSaved, stamm, typen, statusListe }: { u: U
                       </Knopf>
                     ))}
                   {u.fotos.length > 1 && (
-                    <div className="flex gap-2 overflow-x-auto">
+                    <div className={`flex gap-2 ${WISCHEN}`}>
                       {u.fotos.map((a, i) => (
                         <button
                           key={a.id ?? a.url}
@@ -638,27 +670,13 @@ function UnikatDetail({ u, onClose, onSaved, stamm, typen, statusListe }: { u: U
               </div>
               <div className="grid sm:grid-cols-2 gap-5">
                 <div>
-                  <FieldLabel htmlFor="d-preis">Preis intern (€)</FieldLabel>
-                  <Feld
-                    id="d-preis"
-                    inputMode="decimal"
-                    value={form.preis}
-                    onChange={(e) => set("preis", e.target.value)}
-                    placeholder="z. B. 480"
-                    aria-invalid={!!formError.preis}
-                  />
-                  <ErrorText>{formError.preis}</ErrorText>
-                </div>
-                <SchalterFeld id="d-website" label="Auf Website zeigen" checked={form.website} onChange={(v) => set("website", v)} lage="self-end" />
-              </div>
-              <div className="grid sm:grid-cols-2 gap-5">
-                <div>
                   <FieldLabel htmlFor="d-kuenstler">Künstler:in</FieldLabel>
-                  <OptionSelect id="d-kuenstler" value={form.kuenstlerId} onChange={(v) => set("kuenstlerId", v)} options={kuenstler} placeholder="Bitte wählen" />
+                  <OptionSelect id="d-kuenstler" value={form.kuenstlerId} onChange={(v) => set("kuenstlerId", v)} options={personen} placeholder="Bitte wählen" />
                 </div>
                 <div>
-                  <FieldLabel htmlFor="d-jahr">Jahr</FieldLabel>
-                  <Feld id="d-jahr" inputMode="numeric" value={form.jahr} onChange={(e) => set("jahr", e.target.value.replace(/\D/g, "").slice(0, 4))} />
+                  <FieldLabel htmlFor="d-datum">Datum</FieldLabel>
+                  <Feld id="d-datum" type="date" value={form.datum} onChange={(e) => set("datum", e.target.value)} />
+                  {!u.datum && u.jahr !== null && <Hint>{`Bisher nur das Jahr ${u.jahr} bekannt.`}</Hint>}
                 </div>
               </div>
               <div>
@@ -678,6 +696,31 @@ function UnikatDetail({ u, onClose, onSaved, stamm, typen, statusListe }: { u: U
               <div>
                 <FieldLabel htmlFor="d-bildnachweis">Bildnachweis</FieldLabel>
                 <Feld id="d-bildnachweis" value={form.bildnachweis} onChange={(e) => set("bildnachweis", e.target.value)} />
+              </div>
+              <div className="grid sm:grid-cols-2 gap-5">
+                <div>
+                  <FieldLabel htmlFor="d-gedreht">Gedreht von</FieldLabel>
+                  <OptionSelect id="d-gedreht" value={form.gedrehtId} onChange={(v) => set("gedrehtId", v)} options={personen} placeholder="Bitte wählen" />
+                </div>
+                <div>
+                  <FieldLabel htmlFor="d-glasiert">Glasiert von</FieldLabel>
+                  <OptionSelect id="d-glasiert" value={form.glasiertId} onChange={(v) => set("glasiertId", v)} options={personen} placeholder="Bitte wählen" />
+                </div>
+              </div>
+              <div className="grid sm:grid-cols-2 gap-5">
+                <div>
+                  <FieldLabel htmlFor="d-preis">Preis intern (€)</FieldLabel>
+                  <Feld
+                    id="d-preis"
+                    inputMode="decimal"
+                    value={form.preis}
+                    onChange={(e) => set("preis", e.target.value)}
+                    placeholder="z. B. 480"
+                    aria-invalid={!!formError.preis}
+                  />
+                  <ErrorText>{formError.preis}</ErrorText>
+                </div>
+                <SchalterFeld id="d-website" label="Auf Website zeigen" checked={form.website} onChange={(v) => set("website", v)} lage="self-end" />
               </div>
               <div>
                 <FieldLabel htmlFor="d-notiz">Notiz</FieldLabel>
@@ -882,11 +925,12 @@ function InventurView({ rows, onApply, onClose }: { rows: Edition[]; onApply: (c
 
 function EditionRow({ e, busy, canEdit, onAdjust, onOpen }: { e: Edition; busy: boolean; canEdit: boolean; onAdjust: (delta: number) => void; onOpen: () => void }) {
   return (
-    <div className="flex items-center gap-2 py-1">
-      <div className="flex-1 min-w-0">
+    // Am Handy stehen Plus und Minus unter dem Text, damit Modell und Glasur nicht in eine schmale Spalte gedrückt werden.
+    <div className="flex flex-wrap sm:flex-nowrap items-center gap-x-2 py-1">
+      <div className="basis-full sm:basis-auto sm:flex-1 min-w-0">
         <ListRow fotos={e.fotos} title={e.modell} sub={[e.zustand, e.glasur, e.lagerort?.label ?? "Kein Lagerort"].filter(Boolean).join(" · ")} onClick={onOpen} />
       </div>
-      <div className="flex items-center gap-1 shrink-0">
+      <div className="flex items-center gap-1 shrink-0 ml-auto pb-1 sm:pb-0">
         {canEdit && (
           <Knopf variant="outline" className="h-11 w-11 p-0" aria-label={`${e.modell}: eins weniger`} disabled={busy || e.anzahl <= 0} onClick={() => onAdjust(-1)}>
             <Minus className="w-5 h-5" aria-hidden />
@@ -1214,10 +1258,10 @@ export default function Block() {
         <PageHeader
           title="Bestand"
           description={isEdition ? `${zahl.format(stueckGesamt)} Stück in ${zahl.format(visibleEdition.length)} Posten` : `${zahl.format(visible.length)} von ${zahl.format(unikate.length)} Unikaten`}
+          // Am Handy steht der Ansichtsumschalter im Kopf, damit die Statuszeile die volle Breite hat.
+          aside={isMobile ? (isEdition ? inventurButton : <AnsichtToggle value={ansicht} onChange={setAnsicht} />) : undefined}
           actions={
-            isMobile ? (
-              inventurButton
-            ) : (
+            isMobile ? undefined : (
               <>
                 <Knopf asChild variant="ghost" className="h-11 text-base">
                   <a href="/tabelle">
@@ -1265,7 +1309,7 @@ export default function Block() {
                 }}
               />
             </div>
-            <AnsichtToggle value={ansicht} onChange={setAnsicht} />
+            {!isMobile && <AnsichtToggle value={ansicht} onChange={setAnsicht} />}
           </div>
         )}
 

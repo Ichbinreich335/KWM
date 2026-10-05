@@ -34,8 +34,15 @@ Rahmen, Höhe und Schrift jedes Elements stehen genau einmal in `ui.tsx`. Seiten
 
 - ein Block `Button`, `Input`, `Textarea`, `Badge`, `Switch`, `Checkbox` oder shadcn-`Select` direkt importiert oder rohes `<select>`, `<input>`, `<textarea>` nutzt,
 - ein Block eine Rahmenfarbe (`border-…`, `divide-…`, `LINE`) oder einen eigenen umrandeten Kasten baut (Ausnahme: Warnfarbe `destructive`),
+- ein Block selbst `overflow-auto` oder `overflow-x-auto` setzt. Wischzeilen laufen nur über `SCROLL_ROW` bzw. `WISCHEN` (sperrt die senkrechte Achse), Tabellen über `TABLE_PANEL_CLASS`,
 - Dialog, Popover, Ausklappmenü oder Blatt ohne `DIALOG_CLASS` bzw. `POPOVER_CLASS` geöffnet werden,
 - in `ui.tsx` ein Rahmen ohne `LINE` steht (Ausnahmen: Status-Farben, Chips, `destructive`, `primary`, `transparent`) oder ein shadcn-Element außerhalb seines Grundbausteins vorkommt.
+
+## Betrieb nach dem Veröffentlichen
+
+- **Code-Änderungen gehen nicht sofort live.** Upload per MCP ändert nur den Stand im Builder. Testen über einen Vorschau-Link (`application_preview`), live erst mit `application_publish` (nur auf Anweisung des Admins). Rückweg: `vibe_coding_block_restore_version` und erneut veröffentlichen.
+- **Datenbank-Änderungen wirken sofort**, auch auf die Live-App, denn Builder und Live-App teilen dieselbe Datenbank. Deshalb nur additiv ändern: neue Felder anlegen, nichts umbenennen oder löschen, solange die Live-App das Feld noch liest. Erst nach dem Veröffentlichen des neuen Codes alte Felder aufräumen.
+- **Softr-Workflows** werden einzeln veröffentlicht und wirken dann sofort.
 
 ## Fallen
 

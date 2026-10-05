@@ -74,6 +74,10 @@ const PANEL_CLASS = `rounded-lg border ${LINE} bg-card`;
 // Box, deren Inhalt in Felder geteilt ist (z. B. Kennzahlen): Die Trennlinien haben dieselbe Farbe wie der Rahmen.
 const PANEL_GRID_CLASS = `rounded-lg border ${LINE} bg-neutral-300 gap-px overflow-hidden`;
 
+// Nur waagerecht wischbar. overflow-x-auto allein macht in CSS auch die senkrechte Achse scrollbar, dann lässt sich der Inhalt nach oben und unten ziehen.
+// Einzige Stelle mit overflow-x-auto (geprüft von pruefung/einheitlich.mjs).
+const WISCHEN = "overflow-x-auto overflow-y-hidden overscroll-x-contain [scrollbar-width:none] [&::-webkit-scrollbar]:hidden";
+
 function Thumb({ fotos, size = "small", className = "w-12 h-12 rounded-md" }: { fotos: Attachment[]; size?: ThumbSize; className?: string }) {
   const first = fotos[0];
   if (!first) {
@@ -86,12 +90,16 @@ function Thumb({ fotos, size = "small", className = "w-12 h-12 rounded-md" }: { 
   return <img src={thumb(first, size)} alt="" loading="lazy" className={`${className} shrink-0 object-cover`} />;
 }
 
-function PageHeader({ title, description, actions }: { title: string; description?: string; actions?: React.ReactNode }) {
+// aside: kleines Bedienelement rechts neben dem Titel, auch am Handy (z. B. Ansicht Liste/Kacheln). actions: am Handy volle Breite unter dem Titel.
+function PageHeader({ title, description, aside, actions }: { title: string; description?: string; aside?: React.ReactNode; actions?: React.ReactNode }) {
   return (
     <div className="flex flex-wrap items-end justify-between gap-x-4 gap-y-3">
-      <div className="min-w-0">
-        <h1 className="text-2xl font-semibold">{title}</h1>
-        {description && <p className="text-base text-muted-foreground mt-0.5">{description}</p>}
+      <div className="flex items-end justify-between gap-4 min-w-0 flex-1 sm:flex-none">
+        <div className="min-w-0">
+          <h1 className="text-2xl font-semibold">{title}</h1>
+          {description && <p className="text-base text-muted-foreground mt-0.5">{description}</p>}
+        </div>
+        {aside}
       </div>
       {actions && <div className="flex flex-wrap gap-2 w-full sm:w-auto">{actions}</div>}
     </div>
@@ -329,7 +337,7 @@ function ZuErledigen({ aufgaben, pflege }: { aufgaben: Aufgabe[]; pflege: Pruefp
 // Zuletzt Bearbeitetes als Bildleiste: am Handy zum Wischen, am Rechner in einer Reihe.
 function Bildleiste({ items }: { items: { key: string; href: string; titel: string; zeile: string; fotos: Attachment[] }[] }) {
   return (
-    <ul className="grid grid-flow-col auto-cols-[8.5rem] gap-3 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:grid-flow-row sm:auto-cols-auto sm:grid-cols-3 lg:grid-cols-6 sm:overflow-visible">
+    <ul className={`grid grid-flow-col auto-cols-[8.5rem] gap-3 pb-1 ${WISCHEN} sm:grid-flow-row sm:auto-cols-auto sm:grid-cols-3 lg:grid-cols-6 sm:overflow-visible`}>
       {items.map((z) => (
         <li key={z.key}>
           <a href={z.href} className="group block">

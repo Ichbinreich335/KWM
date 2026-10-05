@@ -11,6 +11,7 @@ const REGELN = [
   { re: /\bLINE\b|\b(border|divide)-(neutral|gray|zinc|slate|stone|input|border|foreground|muted|black|white)\b/, text: "Rahmenfarbe auf der Seite gesetzt. Rahmen kommen nur aus den Bausteinen bzw. PANEL_CLASS." },
   { re: /["`][^"`]*\bborder(?![-\w])(?![^"`]*border-destructive)[^"`]*["`]/, text: "Rahmen von Hand gebaut. Boxen nur über PANEL_CLASS bzw. PANEL_GRID_CLASS." },
   { re: /<(DialogContent|PopoverContent|DropdownMenuContent|DrawerContent)\b(?![^>]*(DIALOG_CLASS|POPOVER_CLASS))/, text: "Fenster oder Menü ohne gemeinsamen Stil. DIALOG_CLASS bzw. POPOVER_CLASS verwenden." },
+  { re: /\boverflow-(x-)?(auto|scroll)\b/, text: "Eigener Scrollbereich. Wischzeilen nur über SCROLL_ROW bzw. WISCHEN, Tabellen über TABLE_PANEL_CLASS (sonst lässt sich der Inhalt auch senkrecht ziehen)." },
 ];
 
 export function pruefeEinheitlich(root) {
@@ -39,6 +40,14 @@ export function pruefeEinheitlich(root) {
       if (zeile.trimStart().startsWith("//") || !/\bborder(?![-\w])/.test(zeile)) return;
       if (/\$\{LINE\}|LINE\b.*=|STATUS_|CHIP_BASE|destructive|border-(primary|transparent)/.test(zeile)) return;
       fehler.push(`src/shared/ui.tsx:${i + 1}: Rahmen ohne App-Rahmenfarbe (LINE).\n    ${zeile.trim().slice(0, 140)}`);
+    });
+  // In ui.tsx: Waagerechtes Scrollen gibt es nur in WISCHEN, das die senkrechte Achse sperrt.
+  readFileSync(join(root, "src", "shared", "ui.tsx"), "utf8")
+    .split("\n")
+    .forEach((zeile, i) => {
+      if (zeile.trimStart().startsWith("//") || !/\boverflow-x-(auto|scroll)\b/.test(zeile)) return;
+      if (/^export const WISCHEN = ".*overflow-y-hidden/.test(zeile)) return;
+      fehler.push(`src/shared/ui.tsx:${i + 1}: overflow-x-auto außerhalb von WISCHEN. WISCHEN verwenden.\n    ${zeile.trim().slice(0, 140)}`);
     });
   // In ui.tsx darf jeder gekapselte shadcn-Baustein nur einmal vorkommen: in seiner Hülle.
   const ui = readFileSync(join(root, "src", "shared", "ui.tsx"), "utf8")

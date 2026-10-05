@@ -92,6 +92,10 @@ const FIELD_CLASS = `h-12 rounded-md text-base md:text-base ${LINE}`;
 // Die Box: jede umrandete Fläche (Bereich, Liste, Kachel, Tabelle). Innerhalb einer Box keine zweite Box.
 const PANEL_CLASS = `rounded-lg border ${LINE} bg-card`;
 
+// Nur waagerecht wischbar. overflow-x-auto allein macht in CSS auch die senkrechte Achse scrollbar, dann lässt sich der Inhalt nach oben und unten ziehen.
+// Einzige Stelle mit overflow-x-auto (geprüft von pruefung/einheitlich.mjs).
+const WISCHEN = "overflow-x-auto overflow-y-hidden overscroll-x-contain [scrollbar-width:none] [&::-webkit-scrollbar]:hidden";
+
 // Kräftige Variante für den gewählten Status-Knopf. Weiße Schrift nur auf ausreichend dunklen Tönen.
 const STATUS_ACTIVE: Record<string, string> = {
   [VERFUEGBAR]: "bg-emerald-600 text-white border-emerald-600",
@@ -128,7 +132,8 @@ const Textfeld = forwardRef<HTMLTextAreaElement, React.TextareaHTMLAttributes<HT
 
 // Gewählt = gefüllt. Kein zusätzliches Symbol, damit der Knopf beim Antippen nicht breiter wird und nichts springt.
 // Mindestbreite, damit kurze Wörter (Sieb, Topf) nicht winzig wirken und die Reihen ruhiger aussehen.
-const CHIP_BASE = "inline-flex items-center justify-center gap-2 min-h-11 min-w-[5rem] px-3.5 rounded-md border text-base whitespace-nowrap transition-colors disabled:opacity-60";
+// shrink-0: In einer Wischzeile wird der Knopf nie gestaucht, der Text bleibt in der Box.
+const CHIP_BASE = "inline-flex shrink-0 items-center justify-center gap-2 min-h-11 min-w-[5rem] px-3.5 rounded-md border text-base whitespace-nowrap transition-colors disabled:opacity-60";
 
 const CHIP_IDLE = `bg-background hover:bg-muted ${LINE}`;
 const CHIP_ACTIVE = "bg-primary text-primary-foreground border-primary";
@@ -159,25 +164,29 @@ function ChoiceChips({ label, options, value, onChange, statusColors, disabled }
 // Reiter: der einzige Umschalter der App (Erfassen, Bestand, Stammdaten). Unterstrichen, am Handy seitlich wischbar.
 function Tabs<K extends string>({ label, tabs, value, onChange }: { label: string; tabs: { key: K; label: string; count?: number }[]; value: K; onChange: (key: K) => void }) {
   return (
-    <div role="tablist" aria-label={label} className="flex gap-1 overflow-x-auto border-b">
-      {tabs.map((t) => {
-        const active = value === t.key;
-        return (
-          <button
-            key={t.key}
-            type="button"
-            role="tab"
-            aria-selected={active}
-            onClick={() => onChange(t.key)}
-            className={`inline-flex items-center gap-1.5 min-h-11 px-3 -mb-px border-b-2 text-base whitespace-nowrap transition-colors ${
-              active ? "border-primary text-foreground font-medium" : "border-transparent text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            {t.label}
-            {t.count !== undefined && <span className="tabular-nums text-muted-foreground">{t.count}</span>}
-          </button>
-        );
-      })}
+    // Die Grundlinie liegt hinter der Reiterzeile, damit der Unterstrich des aktiven Reiters sie überdeckt, ohne über den Wischbereich hinauszuragen.
+    <div className="relative">
+      <div className="absolute inset-x-0 bottom-0 border-b" aria-hidden />
+      <div role="tablist" aria-label={label} className={`relative flex gap-1 ${WISCHEN}`}>
+        {tabs.map((t) => {
+          const active = value === t.key;
+          return (
+            <button
+              key={t.key}
+              type="button"
+              role="tab"
+              aria-selected={active}
+              onClick={() => onChange(t.key)}
+              className={`inline-flex shrink-0 items-center gap-1.5 min-h-11 px-3 border-b-2 text-base whitespace-nowrap transition-colors ${
+                active ? "border-primary text-foreground font-medium" : "border-transparent text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              {t.label}
+              {t.count !== undefined && <span className="tabular-nums text-muted-foreground">{t.count}</span>}
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 }
@@ -288,12 +297,16 @@ function Thumb({ fotos, size = "small", className = "w-12 h-12 rounded-md" }: { 
   return <img src={thumb(first, size)} alt="" loading="lazy" className={`${className} shrink-0 object-cover`} />;
 }
 
-function PageHeader({ title, description, actions }: { title: string; description?: string; actions?: React.ReactNode }) {
+// aside: kleines Bedienelement rechts neben dem Titel, auch am Handy (z. B. Ansicht Liste/Kacheln). actions: am Handy volle Breite unter dem Titel.
+function PageHeader({ title, description, aside, actions }: { title: string; description?: string; aside?: React.ReactNode; actions?: React.ReactNode }) {
   return (
     <div className="flex flex-wrap items-end justify-between gap-x-4 gap-y-3">
-      <div className="min-w-0">
-        <h1 className="text-2xl font-semibold">{title}</h1>
-        {description && <p className="text-base text-muted-foreground mt-0.5">{description}</p>}
+      <div className="flex items-end justify-between gap-4 min-w-0 flex-1 sm:flex-none">
+        <div className="min-w-0">
+          <h1 className="text-2xl font-semibold">{title}</h1>
+          {description && <p className="text-base text-muted-foreground mt-0.5">{description}</p>}
+        </div>
+        {aside}
       </div>
       {actions && <div className="flex flex-wrap gap-2 w-full sm:w-auto">{actions}</div>}
     </div>
@@ -441,7 +454,9 @@ const glasurSelect = q.select({ name: "OuhBi", archiviert: "jxxXN" });
 const modellSelect = q.select({ name: "eXo5w", artikelnr: "BNpSN", programm: "Mrgtb", nameEn: "CyPYU", typ: "gCX7K", masse: "h65qx", vk: "772dM", glasuren: "EazCZ", foto: "GbUfa", archiviert: "3tlrw" });
 const partnerSelect = q.select({ name: "a4yfc", art: "ZS9HU", ort: "RQRec", kontakt: "lnhez", zusammenarbeit: "uEfkz", notiz: "8pLh8", archiviert: "24Tn9" });
 const lagerortSelect = q.select({ name: "AoOjs", bereich: "5h1mS", archiviert: "kMBsy" });
-const unikatLinks = q.select({ kuenstler: "oDNBh", glasur: "ByeH3", lagerort: "EkVC3", galerie: "NfsXv" });
+const unikatLinks = q.select({ kuenstler: "oDNBh", gedreht: "90TmC", glasiert: "2PXtk", glasur: "ByeH3", lagerort: "EkVC3", galerie: "NfsXv" });
+// Felder, in denen ein Unikat auf eine Person (Tabelle Künstler:innen) verweist.
+const PERSONEN_FELDER = ["kuenstler", "gedreht", "glasiert"];
 const editionLinks = q.select({ modell: "jxN6x", glasur: "pbGEk", lagerort: "T5iQe" });
 
 const SEARCH_FROM = 10;
@@ -716,7 +731,10 @@ export default function Block() {
     .map((i) => ({ id: i.id, label: str(i.fields.name) }))
     .sort((a, b) => a.label.localeCompare(b.label, "de"));
   const usage = useMemo(() => {
-    const u = countLinks((unikatQuery.data?.pages.flatMap((p) => p.items) ?? []) as RawItem[], ["kuenstler", "glasur", "lagerort", "galerie"]);
+    const unikate = (unikatQuery.data?.pages.flatMap((p) => p.items) ?? []) as RawItem[];
+    const u = countLinks(unikate, ["glasur", "lagerort", "galerie"]);
+    // Eine Person zählt je Unikat einmal, auch wenn sie es gefertigt, gedreht und glasiert hat.
+    unikate.forEach((i) => new Set(PERSONEN_FELDER.flatMap((k) => asOpts(i.fields[k]).map((o) => o.id))).forEach((id) => u.set(`person:${id}`, (u.get(`person:${id}`) ?? 0) + 1)));
     const e = countLinks((editionQuery.data?.pages.flatMap((p) => p.items) ?? []) as RawItem[], ["modell", "glasur", "lagerort"]);
     const m = countLinks((modellQuery.data?.pages.flatMap((p) => p.items) ?? []) as RawItem[], ["glasuren"]);
     return (key: string, id: string, source: "u" | "e" | "m") => (source === "u" ? u : source === "e" ? e : m).get(`${key}:${id}`) ?? 0;
@@ -752,13 +770,13 @@ export default function Block() {
       key: "kuenstler",
       label: "Künstler:innen",
       singular: "Künstler:in",
-      hint: "Wer ein Unikat gefertigt hat. Erscheint als Auswahl beim Erfassen.",
+      hint: "Wer Unikate fertigt, dreht oder glasiert. Erscheint als Auswahl beim Erfassen.",
       fields: [{ key: "name", label: "Name", kind: "text", required: true, placeholder: "Vor- und Nachname" }],
       entries: items(kuenstlerQuery).map((i) => toEntry(i, ["name"], () => "")),
-      usage: (id) => `${stueck(usage("kuenstler", id, "u"), "Unikat", "Unikaten")}`,
-      usageCount: (id) => usage("kuenstler", id, "u"),
+      usage: (id) => `${stueck(usage("person", id, "u"), "Unikat", "Unikaten")}`,
+      usageCount: (id) => usage("person", id, "u"),
       archive: archiveVia(kuenstlerUpdate, kuenstlerQuery.refetch),
-      remove: removeVia(kuenstlerDelete, kuenstlerQuery.refetch, [{ source: "u", key: "kuenstler" }]),
+      remove: removeVia(kuenstlerDelete, kuenstlerQuery.refetch, PERSONEN_FELDER.map((key) => ({ source: "u" as const, key }))),
       save: (id, v) => run(id ? kuenstlerUpdate : kuenstlerCreate, id ? { recordId: id, fields: { name: v.name } } : { name: v.name }, kuenstlerQuery.refetch),
     },
     {

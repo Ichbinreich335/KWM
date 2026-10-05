@@ -166,8 +166,15 @@ const FIELD_CLASS = `h-12 rounded-md text-base md:text-base ${LINE}`;
 // Die Box: jede umrandete Fläche (Bereich, Liste, Kachel, Tabelle). Innerhalb einer Box keine zweite Box.
 const PANEL_CLASS = `rounded-lg border ${LINE} bg-card`;
 
+// Box um eine breite Tabelle: Die Tabelle wischt nur waagerecht (shadcn legt um <table> einen Scrollbereich).
+const TABLE_PANEL_CLASS = `${PANEL_CLASS} [&>div]:overflow-y-hidden [&>div]:overscroll-x-contain`;
+
+// Nur waagerecht wischbar. overflow-x-auto allein macht in CSS auch die senkrechte Achse scrollbar, dann lässt sich der Inhalt nach oben und unten ziehen.
+// Einzige Stelle mit overflow-x-auto (geprüft von pruefung/einheitlich.mjs).
+const WISCHEN = "overflow-x-auto overflow-y-hidden overscroll-x-contain [scrollbar-width:none] [&::-webkit-scrollbar]:hidden";
+
 // Am Handy eine Zeile zum seitlich Wischen statt mehrerer umbrochener Reihen, ab Tablet umbrechen.
-const SCROLL_ROW = "flex gap-2 py-0.5 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:flex-wrap sm:overflow-visible";
+const SCROLL_ROW = `flex gap-2 py-0.5 ${WISCHEN} sm:flex-wrap sm:overflow-visible`;
 
 // Farbe trägt nur den Status eines Unikats (farbiger Rand im Ton des Status). Neutrale Werte (verkauft, Rohling, glasiert) haben den App-Rahmen.
 const STATUS_BADGE: Record<string, string> = {
@@ -222,25 +229,29 @@ function Etikett({ children }: { children: React.ReactNode }) {
 // Reiter: der einzige Umschalter der App (Erfassen, Bestand, Stammdaten). Unterstrichen, am Handy seitlich wischbar.
 function Tabs<K extends string>({ label, tabs, value, onChange }: { label: string; tabs: { key: K; label: string; count?: number }[]; value: K; onChange: (key: K) => void }) {
   return (
-    <div role="tablist" aria-label={label} className="flex gap-1 overflow-x-auto border-b">
-      {tabs.map((t) => {
-        const active = value === t.key;
-        return (
-          <button
-            key={t.key}
-            type="button"
-            role="tab"
-            aria-selected={active}
-            onClick={() => onChange(t.key)}
-            className={`inline-flex items-center gap-1.5 min-h-11 px-3 -mb-px border-b-2 text-base whitespace-nowrap transition-colors ${
-              active ? "border-primary text-foreground font-medium" : "border-transparent text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            {t.label}
-            {t.count !== undefined && <span className="tabular-nums text-muted-foreground">{t.count}</span>}
-          </button>
-        );
-      })}
+    // Die Grundlinie liegt hinter der Reiterzeile, damit der Unterstrich des aktiven Reiters sie überdeckt, ohne über den Wischbereich hinauszuragen.
+    <div className="relative">
+      <div className="absolute inset-x-0 bottom-0 border-b" aria-hidden />
+      <div role="tablist" aria-label={label} className={`relative flex gap-1 ${WISCHEN}`}>
+        {tabs.map((t) => {
+          const active = value === t.key;
+          return (
+            <button
+              key={t.key}
+              type="button"
+              role="tab"
+              aria-selected={active}
+              onClick={() => onChange(t.key)}
+              className={`inline-flex shrink-0 items-center gap-1.5 min-h-11 px-3 border-b-2 text-base whitespace-nowrap transition-colors ${
+                active ? "border-primary text-foreground font-medium" : "border-transparent text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              {t.label}
+              {t.count !== undefined && <span className="tabular-nums text-muted-foreground">{t.count}</span>}
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 }
@@ -293,12 +304,16 @@ function Thumb({ fotos, size = "small", className = "w-12 h-12 rounded-md" }: { 
   return <img src={thumb(first, size)} alt="" loading="lazy" className={`${className} shrink-0 object-cover`} />;
 }
 
-function PageHeader({ title, description, actions }: { title: string; description?: string; actions?: React.ReactNode }) {
+// aside: kleines Bedienelement rechts neben dem Titel, auch am Handy (z. B. Ansicht Liste/Kacheln). actions: am Handy volle Breite unter dem Titel.
+function PageHeader({ title, description, aside, actions }: { title: string; description?: string; aside?: React.ReactNode; actions?: React.ReactNode }) {
   return (
     <div className="flex flex-wrap items-end justify-between gap-x-4 gap-y-3">
-      <div className="min-w-0">
-        <h1 className="text-2xl font-semibold">{title}</h1>
-        {description && <p className="text-base text-muted-foreground mt-0.5">{description}</p>}
+      <div className="flex items-end justify-between gap-4 min-w-0 flex-1 sm:flex-none">
+        <div className="min-w-0">
+          <h1 className="text-2xl font-semibold">{title}</h1>
+          {description && <p className="text-base text-muted-foreground mt-0.5">{description}</p>}
+        </div>
+        {aside}
       </div>
       {actions && <div className="flex flex-wrap gap-2 w-full sm:w-auto">{actions}</div>}
     </div>
@@ -408,6 +423,9 @@ const unikatSelect = q.select({
   typ: "7g9jI",
   status: "SEUyZ",
   kuenstler: "oDNBh",
+  gedreht: "90TmC",
+  glasiert: "2PXtk",
+  datum: "UfM5S",
   jahr: "ZIHrT",
   glasur: "ByeH3",
   masse: "KDUVZ",
@@ -462,7 +480,10 @@ type Row = {
   status: string;
   anzahl: number;
   kuenstler: string;
+  gedreht: string;
+  glasiert: string;
   glasur: string[];
+  datum: string;
   jahr: number | null;
   masse: string;
   lagerort: string;
@@ -490,7 +511,10 @@ type ColKey =
   | "status"
   | "anzahl"
   | "kuenstler"
+  | "gedreht"
+  | "glasiert"
   | "glasur"
+  | "datum"
   | "jahr"
   | "masse"
   | "lagerort"
@@ -520,6 +544,9 @@ const COLUMNS: Col[] = [
   { key: "glasur", label: "Glasur", type: "multi", get: (r) => r.glasur, visible: true },
   { key: "lagerort", label: "Lagerort", type: "select", get: (r) => r.lagerort || null, visible: true },
   { key: "kuenstler", label: "Künstler:in", type: "select", get: (r) => r.kuenstler || null, visible: false, only: "unikat" },
+  { key: "gedreht", label: "Gedreht von", type: "select", get: (r) => r.gedreht || null, visible: false, only: "unikat" },
+  { key: "glasiert", label: "Glasiert von", type: "select", get: (r) => r.glasiert || null, visible: false, only: "unikat" },
+  { key: "datum", label: "Datum", type: "date", get: (r) => r.datum.slice(0, 10) || null, visible: false, only: "unikat" },
   { key: "jahr", label: "Jahr", type: "number", get: (r) => r.jahr, visible: false, align: "right", only: "unikat" },
   { key: "masse", label: "Maße", type: "text", get: (r) => r.masse || null, visible: false, only: "unikat" },
   { key: "galerie", label: "Partner", type: "select", get: (r) => r.galerie || null, visible: false, only: "unikat" },
@@ -640,7 +667,10 @@ function toUnikatRow(i: RawItem): Row {
     status: labels(f.status)[0] ?? "",
     anzahl: 1,
     kuenstler: labels(f.kuenstler)[0] ?? "",
+    gedreht: labels(f.gedreht)[0] ?? "",
+    glasiert: labels(f.glasiert)[0] ?? "",
     glasur: labels(f.glasur),
+    datum: str(f.datum),
     jahr: num(f.jahr),
     masse: str(f.masse),
     lagerort: labels(f.lagerort)[0] ?? "",
@@ -672,7 +702,10 @@ function toEditionRow(i: RawItem): Row {
     status: labels(f.zustand)[0] ?? "",
     anzahl: num(f.anzahl) ?? 0,
     kuenstler: "",
+    gedreht: "",
+    glasiert: "",
     glasur: labels(f.glasur),
+    datum: "",
     jahr: null,
     masse: "",
     lagerort: labels(f.lagerort)[0] ?? "",
@@ -733,7 +766,7 @@ function matches(r: Row, c: Condition): boolean {
 
 function matchesSearch(r: Row, term: string): boolean {
   if (!term) return true;
-  const hay = [r.art, r.inv, r.artikelnr, r.programm, r.name, r.typ, r.status, r.kuenstler, r.lagerort, r.galerie, r.masse, r.notiz, ...r.glasur].join(" ").toLowerCase();
+  const hay = [r.art, r.inv, r.artikelnr, r.programm, r.name, r.typ, r.status, r.kuenstler, r.gedreht, r.glasiert, r.lagerort, r.galerie, r.masse, r.notiz, ...r.glasur].join(" ").toLowerCase();
   return term
     .toLowerCase()
     .split(/\s+/)
@@ -787,7 +820,7 @@ function legacyToConditions(def: Record<string, unknown>): Condition[] {
 function exportRows(rows: Row[]) {
   downloadCsv(
     `kwm-tabelle-${today()}.csv`,
-    ["Art", "Programm", "Inventarnummer", "Artikelnr.", "Name / Modell", "Typ", "Status / Zustand", "Anzahl", "Künstler:in", "Glasur", "Jahr", "Maße", "Lagerort", "Partner", "Preis intern (€)", "VK-Preis (€)", "Auf Website", "Notiz", "Erfasst am", "Verkauft am"],
+    ["Art", "Programm", "Inventarnummer", "Artikelnr.", "Name / Modell", "Typ", "Status / Zustand", "Anzahl", "Künstler:in", "Gedreht von", "Glasiert von", "Glasur", "Datum", "Jahr", "Maße", "Lagerort", "Partner", "Preis intern (€)", "VK-Preis (€)", "Auf Website", "Notiz", "Erfasst am", "Verkauft am"],
     rows.map((r) => [
       r.art,
       r.programm,
@@ -798,7 +831,10 @@ function exportRows(rows: Row[]) {
       r.status,
       String(r.anzahl),
       r.kuenstler,
+      r.gedreht,
+      r.glasiert,
       r.glasur.join(", "),
+      formatDate(r.datum),
       r.jahr === null ? "" : String(r.jahr),
       r.masse,
       r.lagerort,
@@ -1477,7 +1513,7 @@ export default function Block() {
                   </Knopf>
                 </div>
               )}
-              <div ref={tableBox} className={PANEL_CLASS}>
+              <div ref={tableBox} className={TABLE_PANEL_CLASS}>
                 <Table className="text-base">
                   <TableHeader>
                     <TableRow className="hover:bg-transparent">
