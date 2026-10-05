@@ -102,6 +102,7 @@ Entscheidung des Admins: Wir nutzen möglichst Softrs fertige Blöcke (Table, It
 1. Vor Code-Änderungen `vibe_coding_block_get_docs` aufrufen.
 2. Erst die Datei hier ändern, dann per MCP hochladen: klein per `vibe_coding_block_update_code_search_replace`, groß per `update_code`. Danach die zurückgegebene `sourceSha256` mit `shasum -a 256 <datei>` vergleichen.
 3. **Nach jedem Hochladen die Aktionsrechte neu setzen** (Tabelle oben), denn Softr setzt sie beim Kompilieren zurück. Für den Admin-Block: UPDATE mit `customGroups: [Admin-ID]`.
+   - **Danach immer frische Preview-Links** (`application_preview` mit `pageId` der geänderten Seiten) direkt in die Antwort an den Admin (Vorgabe Admin 05.10.). Die Links sind Zugangsdaten: nur im Chat an den Admin, nie ins Repo, nie an Kunden.
 4. Daten-Hooks nur mit Objekt-Literal aufrufen (keine Hilfsfunktion, kein `as never` am Argument).
 5. Grids immer mit `grid-cols-1`, Blöcke mit `pb-28 sm:pb-8` (Softr-Leiste unten am Handy).
 6. Vorschau: `application_preview` liefert einen Link, der den Stand zur Zeit des Aufrufs zeigt. Nach Änderungen einen neuen holen. Der Link ist ein Zugangsschlüssel, nicht ins Repo.
