@@ -23,6 +23,7 @@ npm run test:worker               # nur die Worker-Tests (Vitest in workerd, vit
 npm run types                     # worker-configuration.d.ts neu erzeugen, nach jeder Änderung an wrangler.jsonc
 npm test                          # alle Playwright-Tests gegen dist/ unter wrangler dev
 BASIS_URL=https://… npm test      # dieselben Tests gegen eine Vorschau- oder Produktions-URL
+npm run test:vorschau             # Vorschau-Modus: eigener Build (dist-vorschau/, WORKERS_CI_BRANCH gesetzt) und Worker mit ANFRAGE_MODUS=vorschau auf Port 8788
 OPTIK_TOLERANZ=0.02 npm run test:optik   # höhere Toleranz (Standard 0.002), z. B. wenn Bilder neu berechnet wurden
 ```
 
@@ -65,7 +66,7 @@ src/lib/              anfrage.ts: Regeln des Anfrageformulars, gemeinsam für Br
 src/data/             turnstile.ts (Site-Key), Inhalte in der Form des Sanity-Modells: ausstellungen.ts, hinweise.ts, werke.ts, manufaktur.ts, team.ts, texte.ts, vita.ts, werkstatt.ts, anfahrt.ts, arbeitsweise.ts, chronik.ts, lebensweg.ts, orte.ts (Orte und Galerien), glasuren.ts (Farbskala, Glasurbühne, Schalenfarben, Ofenfarben), archiv.ts (vergangene Ausstellungen); dazu kontakt.ts (einzige Quelle für Telefon, E-Mail, Adresse und Öffnungszeiten, Form des Sanity-Dokuments `werkstatt`; Seiten und Formular lesen nur von dort), navigation.ts, bilder.ts (löst Bildpfade auf), typen.ts (gemeinsame Typen)
 src/pages/            eine .astro-Datei pro Seite
 src/styles/           basis.css (bindet global.css und pages.css ein), seiten/ (Seiten-CSS); die Stile der Signaturen stehen in den Hüllen `Sig*.astro` und in `InquiryForm.astro`
-src/scripts/          Browser-Skripte (TypeScript, Unit-Tests `*.test.ts` mit Vitest: `npm run test:unit`): status (Ausstellungsstatus aus dem Datum), zeitraum, anfrage-link, main, signaturen (lädt die sig-* als eigene Chunks), keramik (gemeinsame Typen und Daten); das Layout bindet sie als ein verarbeitetes Skript ein
+src/scripts/          Browser-Skripte (TypeScript, Unit-Tests `*.test.ts` mit Vitest: `npm run test:unit`): status (Ausstellungsstatus aus dem Datum, `heuteTag`), lesetitel, zeitraum, anfrage-link, main, signaturen (lädt die sig-* als eigene Chunks), keramik (gemeinsame Typen und Daten); das Layout bindet sie als ein verarbeitetes Skript ein
 src/assets/fonts/     Selbst gehostete Schriften (woff2, je Teilmenge latin und latin-ext); registriert in `astro.config.mjs` (`fonts`), eingebunden über `<Font>` im Layout
 src/assets/img/       Bilder, nur über `<Bild src="/img/…">` einbinden (Pfad ohne `src/assets`)
 public/               Favicon (`img/kwm/logo.svg`), _headers, _redirects, robots.txt (kein CSS mehr; Rest wird in Phase C gebündelt)

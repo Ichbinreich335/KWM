@@ -189,6 +189,16 @@ describe('POST /api/anfrage', () => {
     expect(senden).not.toHaveBeenCalled();
   });
 
+  it('antwortet 403 mit dem Turnstile-Testschlüssel „immer ungültig“ (Siteverify: success false)', async () => {
+    const IMMER_UNGUELTIG = '2x0000000000000000000000000000000AA';
+    const spy = siteverify({ success: false, 'error-codes': ['invalid-input-response'] });
+    const antwort = await handleAnfrage(anfrage(GUELTIGER_BODY), { ...testEnv(), TURNSTILE_SECRET: IMMER_UNGUELTIG });
+    expect(antwort.status).toBe(403);
+    expect(((spy.mock.calls[0]?.[1] as RequestInit).body as URLSearchParams).get('secret')).toBe(IMMER_UNGUELTIG);
+    expect(await antwort.json()).toMatchObject({ ok: false });
+    expect(senden).not.toHaveBeenCalled();
+  });
+
   it('antwortet 403, wenn das Token von einem fremden Hostnamen stammt', async () => {
     siteverify({ success: true, hostname: 'boese.example' });
     expect((await handleAnfrage(anfrage(GUELTIGER_BODY), testEnv())).status).toBe(403);

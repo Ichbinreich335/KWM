@@ -14,6 +14,7 @@
     "test:ausgangsstand": "ZIEL=prototyp playwright test tests/optik.spec.ts --update-snapshots",
     "test:optik": "playwright test tests/optik.spec.ts",
     "test": "playwright test",
+    "test:vorschau": "playwright test -c playwright.vorschau.config.ts",
     "test:unit": "vitest run",
     "test:worker": "vitest run -c vitest.worker.config.ts",
     "types": "wrangler types --strict-vars=false"

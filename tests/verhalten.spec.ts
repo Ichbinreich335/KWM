@@ -213,7 +213,8 @@ test('99-Schalen-Hinweis verweist auf die Ausstellung und verschwindet nach ihre
   await danach.close();
 });
 
-for (const breite of [360, 375]) {
+// Phone, Tablet hoch, Tablet quer und kleiner Laptop: dort liegen die Layoutwechsel (900 px) und die Randfälle
+for (const breite of [360, 375, 768, 1024, 1100]) {
   test(`Kein waagrechter Überlauf bei ${breite} px auf allen Seiten`, async ({ page }) => {
     await page.setViewportSize({ width: breite, height: 800 });
     for (const seite of seiten) {

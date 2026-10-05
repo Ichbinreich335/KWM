@@ -5,6 +5,7 @@ export default [
   {
     ignores: [
       'dist/',
+      'dist-vorschau/',
       '.astro/',
       'public/',
       'archiv/',

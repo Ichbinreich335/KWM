@@ -3,6 +3,8 @@ import { basisUrl, externeBasis, ziel } from './tests/seiten';
 
 export default defineConfig({
   testDir: 'tests',
+  // Der Vorschau-Modus läuft mit eigenem Server in playwright.vorschau.config.ts
+  testIgnore: /vorschau\//,
   snapshotPathTemplate: '{testDir}/__screens__/{projectName}/{arg}{ext}',
   fullyParallel: true,
   use: {
