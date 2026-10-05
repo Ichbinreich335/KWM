@@ -92,7 +92,7 @@ import Plinth from '../components/Plinth.astro';
           alt="Regal voller ungebrannter Becher, Schalen, Teller und Krüge in hellem Tonbeige"
         />
       </Figure>
-      <Statement typ="aussage" als="p" class="zaesur__text">
+      <Statement typ="aussage" as="p" class="zaesur__text">
         Alle Stücke werden in unserer Werkstatt in Handarbeit gefertigt. Sie sind einzeln oder im Set zu erwerben.
       </Statement>
     </section>
@@ -108,7 +108,7 @@ import Plinth from '../components/Plinth.astro';
     </ChapterHead>
 
     {/* Edition */}
-    <ChapterHead variant="flaeche" id="edition" titelId="edition-title">
+    <ChapterHead grund="flaeche" id="edition" titelId="edition-title">
       <Fragment slot="titel">Edition</Fragment>
       <Fragment slot="einleitung">
         In unserer Edition sind weitere ergänzende Geschirrstücke erhältlich, wie zum Beispiel Sushi- oder
@@ -143,7 +143,7 @@ import Plinth from '../components/Plinth.astro';
         zusätzliche Stücke erweitert, darunter Vasen, Pflanzengefäße und Dosen.
       </Fragment>
       <div class="grid">
-        <DateList eintraege={arbeitsweise} art="definition" einblenden class="grid__full mf-facts" />
+        <DateList eintraege={arbeitsweise} typ="definition" einblenden class="grid__full mf-facts" />
       </div>
     </ChapterHead>
 

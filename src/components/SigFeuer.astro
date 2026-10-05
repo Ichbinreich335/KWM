@@ -17,7 +17,7 @@ const { titel, einleitung, farben } = Astro.props;
   <ul class="feuer-farben__list">
     {farben.map((farbe) => (
       <li>
-        <span class={`swatch swatch--${farbe.schluessel}`} />
+        <span class:list={['swatch', `swatch--${farbe.schluessel}`]} />
         {farbe.text}
       </li>
     ))}

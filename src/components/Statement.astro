@@ -3,9 +3,9 @@ interface Props {
   /** `gross`: Display-Zitat als Zäsur; `aussage`: Aussage in Textgröße Statement; `zitat`: Text-Schnitt in Titelgröße, ruhig; `zitat-lang`: längeres Fremdzitat im Text-Schnitt in Zitatgröße, auf hellem wie dunklem Grund (die Quelle nimmt `--ink-2` des Umfelds) */
   typ: 'gross' | 'aussage' | 'zitat' | 'zitat-lang';
   /** `p`: nackter Absatz ohne `blockquote` (Aussage ohne Zitat, keine Quelle) */
-  als?: 'blockquote' | 'p';
-  /** Einblend-Animation des Satzes; `keine` lässt `data-reveal` weg */
-  einblendung?: 'words' | 'fade' | 'keine';
+  as?: 'blockquote' | 'p';
+  /** Einblend-Animation des Satzes (Wert von `data-reveal`); `false` lässt sie weg */
+  einblenden?: 'words' | 'fade' | false;
   /** Urheber oder Quelle unter dem Satz */
   quelle?: string;
   /** Id des Satzes, wenn ein Abschnitt per `aria-labelledby` darauf zeigt */
@@ -14,11 +14,11 @@ interface Props {
   class?: string | undefined;
 }
 
-const { typ, als = 'blockquote', einblendung = 'words', quelle, textId, class: klasse } = Astro.props;
-const reveal = einblendung === 'keine' ? undefined : einblendung;
+const { typ, as = 'blockquote', einblenden = 'words', quelle, textId, class: klasse } = Astro.props;
+const reveal = einblenden || undefined;
 ---
 
-{als === 'p' ? (
+{as === 'p' ? (
   <p class:list={['statement__text', `statement--${typ}`, klasse]} id={textId} data-reveal={reveal}>
     <slot />
   </p>

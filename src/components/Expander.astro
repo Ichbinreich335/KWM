@@ -1,35 +1,35 @@
 ---
 interface Props {
   id: string;
-  /** `row`: Zeile mit Jahr, Teaser und Plus (Jahresarchiv). `lang`: großer Knopf über die ganze Breite, offen bleibt die Leiste oben stehen. */
-  art: 'row' | 'lang';
-  /** `row`: die Jahreszahl. `lang`: die Beschriftung des Knopfes. */
+  /** `zeile`: Zeile mit Jahr, Teaser und Plus (Jahresarchiv). `lang`: großer Knopf über die ganze Breite, offen bleibt die Leiste oben stehen. */
+  typ: 'zeile' | 'lang';
+  /** `zeile`: die Jahreszahl. `lang`: die Beschriftung des Knopfes. */
   titel: string;
-  /** Nur `row`: Teaser in der geschlossenen Zeile */
+  /** Nur `zeile`: Teaser in der geschlossenen Zeile */
   teaser?: string;
   class?: string | undefined;
 }
 
-const { id, art, titel, teaser, class: klasse } = Astro.props;
+const { id, typ, titel, teaser, class: klasse } = Astro.props;
 const panelId = `${id}-liste`;
 ---
 
 {/* Ohne JavaScript bleibt der Inhalt offen sichtbar, der Knopf ist dann ausgeblendet. */}
-<kwm-expander class:list={['expander', `expander--${art}`, klasse]} id={id}>
+<kwm-expander class:list={['expander', `expander--${typ}`, klasse]} id={id}>
   <h3 class="expander__bar">
     <button type="button" class="expander__btn" aria-expanded="false" aria-controls={panelId}>
-      {art === 'row' ? (
-        <>
+      {typ === 'zeile' ? (
+        <Fragment>
           <span class="expander__num">{titel}</span>
           <span class="expander__teaser">{teaser}</span>
-        </>
+        </Fragment>
       ) : (
-        <>
+        <Fragment>
           <span class="expander__label">{titel}</span>
           <span class="expander__state" aria-hidden="true">
             Schließen
           </span>
-        </>
+        </Fragment>
       )}
       <span class="expander__icon" aria-hidden="true"></span>
     </button>
@@ -176,10 +176,10 @@ const panelId = `${id}-liste`;
   }
 
   /* Zeile: Jahr groß links, Teaser in der Mitte, Plus rechts */
-  .expander--row {
+  .expander--zeile {
     border-bottom: 1px solid var(--hair);
   }
-  .expander--row .expander__btn {
+  .expander--zeile .expander__btn {
     grid-template-columns: repeat(12, minmax(0, 1fr));
     column-gap: var(--g);
     align-items: baseline;
@@ -194,7 +194,7 @@ const panelId = `${id}-liste`;
     font-variant-numeric: lining-nums;
     transition: transform var(--dur-move) var(--ease);
   }
-  .expander--row .expander__btn:hover .expander__num {
+  .expander--zeile .expander__btn:hover .expander__num {
     transform: translateX(10px);
   }
   .expander__teaser {
@@ -203,7 +203,7 @@ const panelId = `${id}-liste`;
     line-height: var(--t-small-lh);
     color: var(--ink-2);
   }
-  .expander--row .expander__icon {
+  .expander--zeile .expander__icon {
     grid-column: 12 / 13;
     justify-self: end;
   }

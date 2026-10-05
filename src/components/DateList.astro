@@ -4,19 +4,19 @@ import type { DatumEintrag } from '../data/typen';
 interface Props {
   eintraege: readonly DatumEintrag[];
   /** `liste`: nummerierte Liste (Lebensdaten); `definition`: Definitionsliste (Stichwort links, Erklärung rechts) */
-  art?: 'liste' | 'definition';
+  typ?: 'liste' | 'definition';
   /** Zeilen blenden beim Scrollen ein */
   einblenden?: boolean;
   /** Klassen für die Platzierung im Seitenraster, z. B. `grid__full` */
   class?: string | undefined;
 }
 
-const { eintraege, art = 'liste', einblenden = false, class: klasse } = Astro.props;
+const { eintraege, typ = 'liste', einblenden = false, class: klasse } = Astro.props;
 const reveal = einblenden ? 'fade' : undefined;
 const zeilen = (text: DatumEintrag['text']) => (typeof text === 'string' ? [text] : text);
 ---
 
-{art === 'liste' ? (
+{typ === 'liste' ? (
   <ol class:list={['datelist', klasse]}>
     {eintraege.map((eintrag) => (
       <li class="datelist__row" data-reveal={reveal}>

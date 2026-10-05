@@ -152,7 +152,7 @@ const datum = zeitraumKurz(ausstellung.start, ausstellung.ende);
       {typ === 'spotlight' ? (
         <div class="aktuell__details">
           <p class="aktuell__text">{ausstellung.beschreibung}</p>
-          <FactsList typ="zeile" variant="anker" fakten={fakten} />
+          <FactsList typ="zeile" grund="anker" fakten={fakten} />
           {ausstellung.link && <LinkArrow href={ausstellung.link.href}>{ausstellung.link.text}</LinkArrow>}
         </div>
       ) : (
@@ -165,7 +165,7 @@ const datum = zeitraumKurz(ausstellung.start, ausstellung.ende);
           <div class="aktuell__panel" id={panelId} role="region" aria-label={`Details zu ${lesetitel}`}>
             <div class="aktuell__panel-in">
               <p class="aktuell__text">{ausstellung.beschreibung}</p>
-              <FactsList typ="zeile" variant="anker" fakten={fakten} />
+              <FactsList typ="zeile" grund="anker" fakten={fakten} />
               {ausstellung.link && <LinkArrow href={ausstellung.link.href}>{ausstellung.link.text}</LinkArrow>}
               {ausstellung.flyer && (
                 <Flyer

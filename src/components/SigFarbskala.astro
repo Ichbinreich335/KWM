@@ -19,7 +19,7 @@ const { glasuren } = Astro.props;
   {glasuren.map((glasur) => (
     <button
       type="button"
-      class={`scale__band scale__band--${glasur.schluessel}`}
+      class:list={['scale__band', `scale__band--${glasur.schluessel}`]}
       aria-pressed="false"
       data-grund={glasur.farbe.grund}
       data-dunkel={glasur.farbe.dunkel}

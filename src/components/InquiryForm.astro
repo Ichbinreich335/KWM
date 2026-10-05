@@ -118,15 +118,15 @@ if (turnstileWarnung) Astro.logger.warn(turnstileWarnung);
   </form>
   <div class="anfrage__done" role="status" tabindex="-1" hidden>
     {vorschauBuild ? (
-      <>
+      <Fragment>
         <p class="anfrage__done-title">Danke – so sieht die Bestätigung aus.</p>
         <p>In dieser Vorschau wurde nichts versendet.</p>
-      </>
+      </Fragment>
     ) : (
-      <>
+      <Fragment>
         <p class="anfrage__done-title">Danke, Ihre Anfrage ist bei uns angekommen.</p>
         <p>Wir antworten Ihnen per E-Mail oder Telefon.</p>
-      </>
+      </Fragment>
     )}
     <p>
       Noch etwas vergessen? Schreiben Sie an <a href={kontakt.mailHref}>{kontakt.mail}</a> oder rufen Sie an:{' '}

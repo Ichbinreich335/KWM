@@ -10,10 +10,10 @@ const woerter = text.trim().split(/\s+/);
 
 <span class="visually-hidden">{text}</span>
 {woerter.map((wort, i) => (
-  <>
+  <Fragment>
     <span class="w" aria-hidden="true">
       <span>{wort}</span>
     </span>
     {i < woerter.length - 1 && ' '}
-  </>
+  </Fragment>
 ))}

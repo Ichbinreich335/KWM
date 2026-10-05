@@ -88,6 +88,13 @@ Komponenten-Stile (`<style>` in `src/components/*.astro`) sind pro Komponente ge
 
 Gesichert durch den Test „Stylesheet-Reihenfolge“ in `tests/routen.spec.ts`: Er prüft auf allen Seiten, dass `basis`, höchstens ein Seiten-Chunk und `signaturen` in dieser Reihenfolge geladen werden und im Head nur die drei Schrift-Stile der Fonts API stehen. Der Test „Chunk basis“ prüft, dass in `basis` alle Komponenten-Stile hinter global und pages stehen. Der Test „Schriften“ stellt sicher, dass genau zwei Dateien vorgeladen werden und beide die latin-Teilmenge sind.
 
+## Konventionen der Komponenten
+
+- Namen der Komponenten wie in DESIGN.md §11 (Bausteine überwiegend englisch, z. B. `ExhibitionCard`); Hilfskomponenten und Eigennamen der Startseite heißen deutsch (`Bild`, `Woerter`, `StrukturierteDaten`, `BauhausStation`, `TellerTafel`, `Kosmos`).
+- Props heißen deutsch wie die Daten (`titel`, `eintraege`, `quelle`). Standardnamen von HTML und Astro bleiben: `class` (in der Komponente als `klasse` umbenannt), `id`, `aria-*` und `as` für Komponenten, die als verschiedene Elemente rendern (`LinkArrow` und `SigSticky` mit dem Typ `Polymorphic` aus `astro/types`, `Statement`).
+- Eine Form-Variante heißt immer `typ`, der Abschnittsgrund `grund` (`hell`, `flaeche`, `anker`), die Einblendung beim Scrollen `einblenden` (`true`/`false` oder der Wert von `data-reveal`).
+- Werte der Varianten sind deutsch (`typ="zeile"`); die Werte von `data-reveal` (`words`, `fade`, `img`) sind die Namen im CSS und bleiben.
+
 ## Skripte und Signaturen
 
 Jede interaktive Komponente trägt ihr Verhalten selbst, nach dem Muster der Astro-Doku („Scripts and event handling“, Web Components): Sie umschließt ihr Markup mit einem Custom Element `kwm-<name>`, und ihr `<script>` definiert es (`customElements.define`, Aufräumen in `disconnectedCallback`). Astro bündelt das Skript und bindet es nur auf Seiten ein, die die Komponente nutzen, auch bei mehrfacher Verwendung nur einmal. Ist die Wurzel ein neutrales `div`, ist das Custom Element selbst die Wurzel (mit `display` im CSS, denn Custom Elements sind sonst `inline`). Trägt die Wurzel Bedeutung oder Layout (`section`, `nav`, `svg`), ist das Custom Element eine Hülle mit `display: contents`: Semantik, Raster und `position: sticky` bleiben unverändert. Kleine Logik steht direkt im `<script>` (Expander, GlazeStage, PlaceGrid, Timeline, Chronicle, SubNav), umfangreiche als Modul in `src/scripts/` (`kosmos.ts`, `sig-*.ts`), das der `<script>` importiert. `src/scripts/main.ts` enthält nur, was jede Seite braucht: Menü, Einblendungen (`data-reveal`) und Kopfzeile.

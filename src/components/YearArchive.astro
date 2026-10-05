@@ -24,7 +24,7 @@ const props = Astro.props;
 {props.typ === 'auswahl' ? (
   <div class="years">
     {props.jahre.map((jahr) => (
-      <Expander art="row" class="year" id={`jahr-${jahr.jahr}`} titel={jahr.jahr} teaser={jahr.teaser}>
+      <Expander typ="zeile" class="year" id={`jahr-${jahr.jahr}`} titel={jahr.jahr} teaser={jahr.teaser}>
         <div class="year__list">
           <ul>
             {jahr.eintraege.map((eintrag) => (
@@ -33,13 +33,13 @@ const props = Astro.props;
                 <span class="p">
                   {eintrag.ort}
                   {eintrag.link && (
-                    <>
+                    <Fragment>
                       {' '}
                       ·{' '}
                       <a class="tap" href={eintrag.link.href}>
                         {eintrag.link.text}
                       </a>
-                    </>
+                    </Fragment>
                   )}
                 </span>
                 <span class="d">{eintrag.datum}</span>
@@ -52,7 +52,7 @@ const props = Astro.props;
     ))}
   </div>
 ) : (
-  <Expander art="lang" id={props.id} titel={props.titel}>
+  <Expander typ="lang" id={props.id} titel={props.titel}>
     <ol class="exh-archive">
       {props.jahre.map((jahr) => (
         <li class="exh-year" id={`ausst-${jahr.jahr}`}>
@@ -69,7 +69,7 @@ const props = Astro.props;
 )}
 
 <style>
-  /* Jahresarchiv: Aufklapper aus expander.css (--row), hier nur der Inhalt */
+  /* Jahresarchiv: Aufklapper aus Expander.astro (typ zeile), hier nur der Inhalt */
   .years {
     padding-inline: var(--m);
   }

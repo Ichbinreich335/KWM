@@ -47,7 +47,7 @@ if (!mok) throw new Error('Ausstellung „mok“ fehlt in den Daten');
     <section class="hero grid" id="top" aria-labelledby="hero-title">
       <Figure
         class="hero__media"
-        einblendung={false}
+        einblenden={false}
         unterschrift="Kummerschalen · Foto: Christopher Clem Franken"
         unterschriftKlasse="hero__credit"
       >
@@ -87,7 +87,7 @@ if (!mok) throw new Error('Ausstellung „mok“ fehlt in den Daten');
         <span data-reveal="words">Young-Jae Lee</span>
       </h2>
       <figure class="sticky-bild-wrap">
-        <SigSticky variant="portrait">
+        <SigSticky typ="portrait">
           {/* sizes: Mobil und hochkant steht das Bild quadratisch mit Seitenrand, cover macht es 2000/1313 x (Breite - 2 x Rand) breit, also etwa 140vw; Desktop folgt die Breite der Kastenhöhe (140svh x 2000/1313, etwa 215vh), mindestens 100vw */}
           <Bild
             slot="bild"
@@ -100,7 +100,7 @@ if (!mok) throw new Error('Ausstellung „mok“ fehlt in den Daten');
           />
           <Statement
             typ="zitat-lang"
-            einblendung="keine"
+            einblenden={false}
             class="sticky-bild__text sticky-bild__quote"
             quelle="Barbara Catoir, »Gespannte Lebendigkeit«"
           >
@@ -114,7 +114,7 @@ if (!mok) throw new Error('Ausstellung „mok“ fehlt in den Daten');
       </figure>
 
       <div class="artist__body grid">
-        <Statement typ="zitat" einblendung="fade" class="artist__quote" quelle="Gisela Jahn">
+        <Statement typ="zitat" einblenden="fade" class="artist__quote" quelle="Gisela Jahn">
           „Die minimale Veränderung ist Young-Jae Lees unbegrenzter Freiraum – in der Form wie in der Farbigkeit der
           Glasur und der Bemalung. Ihr geht es nicht um Formerfindung, sondern um die Individualität des Gefäßes.“
         </Statement>
@@ -148,7 +148,7 @@ if (!mok) throw new Error('Ausstellung „mok“ fehlt in den Daten');
           />
         </Figure>
         <div class="works__single-text">
-          <Statement typ="aussage" als="p" class="works__statement">
+          <Statement typ="aussage" as="p" class="works__statement">
             Alle Meisterstücke stammen aus der Hand Young-Jae Lees – von ihr selbst gedreht, bemalt und glasiert.
           </Statement>
           <div class="works__single-meta">
@@ -172,7 +172,7 @@ if (!mok) throw new Error('Ausstellung „mok“ fehlt in den Daten');
     <section class="rep" id="kosmos" aria-labelledby="kosmos-title">
       <SectionHead typ="start" titelId="kosmos-title">
         <Fragment slot="titel">Ein Ring aus Teilchen um eine leere Mitte.</Fragment>
-        <Statement typ="zitat-lang" einblendung="fade" quelle={wagnerQuelle}>
+        <Statement typ="zitat-lang" einblenden="fade" quelle={wagnerQuelle}>
           „Schalen über Schalen, einfach auf den Boden gestellt. Ein Meer aus Schalen, ein Feld aus Kelchen, ein Ring
           aus Teilchen um eine leere Mitte, eine kleine Milchstraße voll schimmernder Gefäße.“
         </Statement>
@@ -197,7 +197,7 @@ if (!mok) throw new Error('Ausstellung „mok“ fehlt in den Daten');
     </section>
 
     {/* Feuer: Text bleibt beim Scrollen auf dem Glasurfoto stehen */}
-    <SigSticky variant="feuer" als="section" id="feuer" aria-labelledby="feuer-title">
+    <SigSticky typ="feuer" as="section" id="feuer" aria-labelledby="feuer-title">
       {/* sizes: Bildbreite folgt aus der Kastenhöhe (cover), Höhe x 1,5; Desktop 160vh, mobil 150vh */}
       <Bild
         slot="bild"
