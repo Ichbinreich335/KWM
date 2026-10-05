@@ -124,7 +124,7 @@ Nichts geht verloren (Volltextsuche in `src/`):
 | Regal „Vor dem ersten Brand“, Krüge | /manufaktur (Zäsur, Geschirr), /werkstatt |
 | Kurzfakten (Masse, Brände, Programm, Gebrauch) | /manufaktur, Arbeitsweise; /werkstatt |
 
-**Technisch entfallen** (nur von der alten Startseite genutzt): Signatur Farbskala (`SigFarbskala`, `sig-farbskala.ts`, Daten `glasuren` und Test), `FactsTable`, `kurzfakten`, Statement-Typ `lede`, Bilder `01-seladon-gefaess.webp` und `spindelvase-einzeln-1200.webp`. Wiederherstellbar aus `e0330a3`.
+**Technisch entfallen** (nur von der alten Startseite genutzt): `FactsTable`, `kurzfakten`, Statement-Typ `lede`, Bilder `01-seladon-gefaess.webp` und `spindelvase-einzeln-1200.webp`. Wiederherstellbar aus `e0330a3`.
 
 ## 6. Abschlusspolitur und Prüfung (Endstand)
 
