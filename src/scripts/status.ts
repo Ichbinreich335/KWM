@@ -1,5 +1,5 @@
 // Status einer Ausstellung aus Start und Ende. Läuft im Browser, damit er ohne täglichen Neubau stimmt.
-const MONATE = [
+export const MONATE = [
   'Januar',
   'Februar',
   'März',

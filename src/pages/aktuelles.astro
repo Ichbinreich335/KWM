@@ -1,7 +1,8 @@
 ---
 import '../styles/basis.css';
 import ChapterHead from '../components/ChapterHead.astro';
-import Bild from '../components/Bild.astro';
+import ExhibitionCard from '../components/ExhibitionCard.astro';
+import { ausstellung } from '../data/ausstellungen';
 import PubList from '../components/PubList.astro';
 import { veroeffentlichungen } from '../data/texte';
 import BaseLayout from '../layouts/BaseLayout.astro';
@@ -36,153 +37,11 @@ import '../styles/signaturen/signaturen.css';
     />
 
     <div id="ausstellungen">
-      {/* 99 Schalen */}
-      <article class="feature grid" aria-labelledby="f-mok">
-        <figure class="feature__media" data-reveal="img">
-          <Bild
-            src="/img/kwm/schalen-trio.webp"
-            sizes="100vw"
-            width="2000"
-            height="931"
-            alt="Vier Schalen von Young-Jae Lee: ochsenblutrot, weiß mit blauem Tupfen, rosé und hellbraun"
-            loading="lazy"
-          />
-          <figcaption>Schalen von Young-Jae Lee</figcaption>
-        </figure>
-        <div class="feature__text">
-          <p class="feature__date" data-reveal="fade">
-            23. April –<br />
-            25. Oktober 2026
-          </p>
-          <h2 class="h2 feature__title" id="f-mok" data-reveal="words">
-            „99 Schalen – ein Kosmos“
-          </h2>
-          <div class="feature__body" data-reveal="fade">
-            <p class="feature__place">
-              <strong>Museum für Ostasiatische Kunst (MOK)</strong>Universitätsstraße 100
-              <br />
-              50674 Köln
-            </p>
-            <a class="link-arrow" href="https://museum-fuer-ostasiatische-kunst.de/99-Schalen-ein-Kosmos">
-              Zur Ausstellung im MOK
-            </a>
-          </div>
-        </div>
-      </article>
-
-      {/* Kummerschalen */}
-      <article class="feature feature--mirror grid" aria-labelledby="f-wesel">
-        <figure class="feature__media" data-reveal="img">
-          <Bild
-            src="/img/kwm/kummerschalen.webp"
-            width="937"
-            height="1040"
-            alt="Viele flache Schalen in Seladon, Schwarz und Rotbraun, auf dem Boden ausgelegt"
-            loading="lazy"
-          />
-          <figcaption>
-            Schalen von Young-Jae Lee · Fotografie: Christopher Clem Franken, © Kunst-Station Sankt Peter, Köln
-          </figcaption>
-        </figure>
-        <div class="feature__text">
-          <p class="feature__date" data-reveal="fade">
-            16. August –<br />
-            31. Oktober 2026
-          </p>
-          <h2 class="h2 feature__title" id="f-wesel" data-reveal="words">
-            „Kummerschalen“
-          </h2>
-          <p class="feature__lead" data-reveal="fade">
-            Der Niederrheinische Kunstverein zeigt in Kooperation mit der Evangelischen Kirchengemeinde Wesel
-            handgefertigte Schalen der international renommierten Keramikerin Young-Jae Lee.
-          </p>
-          <dl class="feature__facts" data-reveal="fade">
-            <div>
-              <dt>Ort</dt>
-              <dd>
-                Willibrordi-Dom
-                <br />
-                Großer Markt, 46483 Wesel
-              </dd>
-            </div>
-            <div>
-              <dt>Eröffnung</dt>
-              <dd>
-                Sonntag, 16. August 2026, 11 Uhr
-                <br />
-                Gottesdienst zur Ausstellung, 12.15 Uhr Eröffnung der Ausstellung. Die Künstlerin wird anwesend sein.
-              </dd>
-            </div>
-            <div>
-              <dt>Öffnungszeiten Dom</dt>
-              <dd>
-                Di–So 14.30–17.00 Uhr
-                <br />
-                Mi und Sa 10–12 Uhr
-              </dd>
-            </div>
-          </dl>
-        </div>
-      </article>
-
+      <ExhibitionCard typ="eintrag" ausstellung={ausstellung('mok')} />
+      <ExhibitionCard typ="eintrag" gespiegelt ausstellung={ausstellung('wesel')} />
       {/* Pop-up in der Werkstatt */}
       <div class="feature-band on-flaeche">
-        <article class="feature grid" aria-labelledby="f-popup">
-          <figure class="feature__media" data-reveal="img">
-            <Bild
-              src="/img/kwm/regal.webp"
-              width="954"
-              height="905"
-              alt="Regal voller ungebrannter Becher, Schalen, Teller und Kannen in der Werkstatt"
-              loading="lazy"
-            />
-            <figcaption>In der Werkstatt · Foto: Haydar Koyupinar</figcaption>
-          </figure>
-          <div class="feature__text">
-            <p class="feature__date" data-reveal="fade">
-              6.–8. November 2026
-            </p>
-            <h2 class="h2 feature__title" id="f-popup" data-reveal="words">
-              Mode, Taschen, Keramik &amp; Licht im Dialog
-            </h2>
-            <p class="feature__lead" data-reveal="fade">
-              Pop-up-Store in den Räumen der Keramischen Werkstatt Margaretenhöhe.
-            </p>
-            <dl class="feature__facts" data-reveal="fade">
-              <div>
-                <dt>Geöffnet</dt>
-                <dd>
-                  Fr und Sa 11–18 Uhr
-                  <br />
-                  So 11–16 Uhr
-                </dd>
-              </div>
-              <div>
-                <dt>In Kooperation mit</dt>
-                <dd>
-                  Burggraf Burggraf (Taschen)
-                  <br />
-                  Joachim Kern (Mode)
-                  <br />
-                  Christiane Kuntz (Mode)
-                  <br />
-                  Dietrich Pampus (Vintage Leuchten)
-                </dd>
-              </div>
-              <div>
-                <dt>Ort</dt>
-                <dd>
-                  Bullmannaue 19, 45327 Essen
-                  <br />
-                  auf dem Gelände der Zeche Zollverein
-                </dd>
-              </div>
-            </dl>
-            <a class="link-arrow" href="/besuch" data-reveal="fade">
-              Anfahrt zur Werkstatt
-            </a>
-          </div>
-        </article>
+        <ExhibitionCard typ="eintrag" ausstellung={ausstellung('popup')} />
       </div>
     </div>
 

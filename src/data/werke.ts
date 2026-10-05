@@ -1,13 +1,6 @@
 // Meisterstücke: Katalog der Seite Meisterstücke und Werkschau der Startseite (Sanity-Typ `werk`)
 // Keine Preise, kein Bestand, keine Lagerorte, keine Verfügbarkeit: nur freigegebene Angaben.
-
-export interface BildAngabe {
-  /** Pfad unter `src/assets/img/`, wie ihn `Bild.astro` auflöst */
-  src: string;
-  breite: number;
-  hoehe: number;
-  alt: string;
-}
+import type { BildAngabe } from './typen';
 
 /** Eine Zeile der Werkangaben; Maße, Glasur, Brand, Ort und Jahr erscheinen mit ` · ` getrennt */
 export interface Angabe {

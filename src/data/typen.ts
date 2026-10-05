@@ -16,3 +16,14 @@ export interface Fakt {
   wert?: string | readonly string[];
   links?: readonly { href: string; text: string }[];
 }
+
+export interface BildAngabe {
+  /** Pfad unter `src/assets/img/`, wie ihn `Bild.astro` auflöst */
+  src: string;
+  breite: number;
+  hoehe: number;
+  alt: string;
+  /** Breiten der srcset-Kandidaten; gehört mit `sizes` zusammen */
+  widths?: readonly number[];
+  sizes?: string;
+}

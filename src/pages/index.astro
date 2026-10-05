@@ -7,6 +7,9 @@ import { kurzfakten } from '../data/manufaktur';
 import WorkCard from '../components/WorkCard.astro';
 import { stueckBezeichnung, werk, werkschau } from '../data/werke';
 import { anfrageLink } from '../scripts/anfrage-link';
+import ExhibitionCard from '../components/ExhibitionCard.astro';
+import { ausstellungen } from '../data/ausstellungen';
+import { hinweise } from '../data/hinweise';
 import Bild from '../components/Bild.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import InquiryForm from '../components/InquiryForm.astro';
@@ -65,249 +68,16 @@ import '../styles/signaturen/signaturen.css';
         </a>
       </div>
 
-      <p class="aktuell__note" data-start="2026-10-01" data-end="2026-10-04">
-        Am Samstag, 3. Oktober 2026 bleibt die Werkstatt geschlossen. Ab Montag, 5. Oktober sind wir wieder wie gewohnt
-        für Sie da.
-      </p>
+      {hinweise.map((hinweis) => (
+        <p class="aktuell__note" data-start={hinweis.von} data-end={hinweis.bis}>
+          {hinweis.text}
+        </p>
+      ))}
 
       <ol class="aktuell__list">
-        <li class="aktuell__item" data-spotlight data-start="2026-04-23" data-end="2026-10-25">
-          <figure class="aktuell__media">
-            <span class="aktuell__frame">
-              <Bild
-                src="/img/kwm/aktuell/mok-2000.webp"
-                widths={[960, 1400, 2000]}
-                sizes="(min-width: 900px) 64vw, 100vw"
-                width="1400"
-                height="652"
-                alt="Vier Schalen von Young-Jae Lee: ochsenblutrot, weiß mit blauem Tupfen, rosé und hellbraun"
-                loading="lazy"
-                decoding="async"
-              />
-            </span>
-            <figcaption>Schalen von Young-Jae Lee</figcaption>
-          </figure>
-          <div class="aktuell__body">
-            <p class="aktuell__status" data-status>
-              Läuft · bis 25. Oktober
-            </p>
-            <h3 class="aktuell__title">„99 Schalen – ein Kosmos“</h3>
-            <p class="aktuell__place">Museum für Ostasiatische Kunst (MOK), Köln</p>
-            <div class="aktuell__details">
-              <p class="aktuell__text">Schalen von Young-Jae Lee im Museum für Ostasiatische Kunst in Köln.</p>
-              <dl class="aktuell__facts">
-                <div>
-                  <dt>Zeitraum</dt>
-                  <dd>23. April bis 25. Oktober 2026</dd>
-                </div>
-                <div>
-                  <dt>Adresse</dt>
-                  <dd>
-                    Universitätsstraße 100
-                    <br />
-                    50674 Köln
-                  </dd>
-                </div>
-              </dl>
-              <a class="link-arrow" href="https://museum-fuer-ostasiatische-kunst.de/99-Schalen-ein-Kosmos">
-                Zur Ausstellung im MOK
-              </a>
-            </div>
-          </div>
-        </li>
-
-        <li class="aktuell__item" data-start="2026-08-16" data-end="2026-10-31">
-          <figure class="aktuell__media">
-            <span class="aktuell__frame">
-              <Bild
-                src="/img/kwm/aktuell/wesel-seladon-800.webp"
-                widths={[640, 800]}
-                sizes="(min-width: 900px) 31vw, 100vw"
-                width="640"
-                height="480"
-                alt="Flache Schalen von Young-Jae Lee mit seladonfarbener Glasur, die sich in der Mitte sammelt"
-                loading="lazy"
-                decoding="async"
-              />
-            </span>
-            <figcaption>Foto: Christopher Clem Franken</figcaption>
-          </figure>
-          <div class="aktuell__body">
-            <p class="aktuell__status" data-status>
-              Läuft · bis 31. Oktober
-            </p>
-            <h3 class="aktuell__title">„Kummerschalen“</h3>
-            <p class="aktuell__place">Willibrordi-Dom, Wesel</p>
-            <button class="aktuell__more" type="button" aria-expanded="false" aria-controls="aktuell-wesel" data-more>
-              <span class="aktuell__more-label" data-label="Mehr zur Ausstellung">
-                Mehr zur Ausstellung
-              </span>
-            </button>
-            <div class="aktuell__panel" id="aktuell-wesel" role="region" aria-label="Details zu „Kummerschalen“">
-              <div class="aktuell__panel-in">
-                <p class="aktuell__text">
-                  Der Niederrheinische Kunstverein zeigt in Kooperation mit der Evangelischen Kirchengemeinde Wesel
-                  handgefertigte Schalen der international renommierten Keramikerin Young-Jae Lee.
-                </p>
-                <dl class="aktuell__facts">
-                  <div>
-                    <dt>Zeitraum</dt>
-                    <dd>16. August bis 31. Oktober 2026</dd>
-                  </div>
-                  <div>
-                    <dt>Eröffnung</dt>
-                    <dd>
-                      Sonntag, 16. August 2026, 11 Uhr Gottesdienst zur Ausstellung, 12.15 Uhr Eröffnung der
-                      Ausstellung.
-                    </dd>
-                  </div>
-                  <div>
-                    <dt>Öffnungszeiten</dt>
-                    <dd>
-                      Di–So 14.30–17.00 Uhr
-                      <br />
-                      Mi und Sa 10–12 Uhr
-                    </dd>
-                  </div>
-                  <div>
-                    <dt>Adresse</dt>
-                    <dd>
-                      Großer Markt
-                      <br />
-                      46483 Wesel
-                    </dd>
-                  </div>
-                </dl>
-              </div>
-            </div>
-          </div>
-        </li>
-
-        <li class="aktuell__item" data-start="2026-10-03" data-end="2026-12-12">
-          <figure class="aktuell__media">
-            <span class="aktuell__frame">
-              <Bild
-                src="/img/kwm/aktuell/greve-533.webp"
-                width="533"
-                height="400"
-                alt="Türkisfarbene Kumme von Young-Jae Lee mit feinem Craquelé"
-                loading="lazy"
-                decoding="async"
-              />
-            </span>
-            <figcaption>Kumme von Young-Jae Lee</figcaption>
-          </figure>
-          <div class="aktuell__body">
-            <p class="aktuell__status" data-status>
-              Ab 3. Oktober
-            </p>
-            <h3 class="aktuell__title">„Kathleen Jacobs / Young&#8209;Jae Lee“</h3>
-            <p class="aktuell__place">Galerie Karsten Greve, St. Moritz, Schweiz</p>
-            <button class="aktuell__more" type="button" aria-expanded="false" aria-controls="aktuell-greve" data-more>
-              <span class="aktuell__more-label" data-label="Mehr zur Ausstellung">
-                Mehr zur Ausstellung
-              </span>
-            </button>
-            <div
-              class="aktuell__panel"
-              id="aktuell-greve"
-              role="region"
-              aria-label="Details zu „Kathleen Jacobs / Young-Jae Lee“"
-            >
-              <div class="aktuell__panel-in">
-                <p class="aktuell__text">
-                  Malerei von Kathleen Jacobs (Öl auf Leinen) und Keramik von Young&#8209;Jae Lee.
-                </p>
-                <dl class="aktuell__facts">
-                  <div>
-                    <dt>Zeitraum</dt>
-                    <dd>3. Oktober bis 12. Dezember 2026</dd>
-                  </div>
-                </dl>
-                <a class="link-arrow" href="https://galerie-karsten-greve.com/">
-                  Galerie Karsten Greve
-                </a>
-              </div>
-            </div>
-          </div>
-        </li>
-
-        <li class="aktuell__item" data-start="2026-11-06" data-end="2026-11-08">
-          <figure class="aktuell__media">
-            <span class="aktuell__frame">
-              <Bild
-                src="/img/kwm/aktuell/popup-954.webp"
-                widths={[640, 954]}
-                sizes="(min-width: 900px) 31vw, 100vw"
-                width="640"
-                height="480"
-                alt="Regal voller ungebrannter Becher, Schalen, Teller und Kannen in der Werkstatt"
-                loading="lazy"
-                decoding="async"
-              />
-            </span>
-            <figcaption>In der Werkstatt · Foto: Haydar Koyupinar</figcaption>
-          </figure>
-          <div class="aktuell__body">
-            <p class="aktuell__status" data-status>
-              Ab 6. November
-            </p>
-            <h3 class="aktuell__title">Mode, Taschen, Keramik &amp; Licht im Dialog</h3>
-            <p class="aktuell__place">Pop-up-Store Vol. 2 in der Werkstatt, Zeche Zollverein</p>
-            <button class="aktuell__more" type="button" aria-expanded="false" aria-controls="aktuell-popup" data-more>
-              <span class="aktuell__more-label" data-label="Mehr erfahren">
-                Mehr erfahren
-              </span>
-            </button>
-            <div
-              class="aktuell__panel"
-              id="aktuell-popup"
-              role="region"
-              aria-label="Details zu Mode, Taschen, Keramik und Licht im Dialog"
-            >
-              <div class="aktuell__panel-in">
-                <p class="aktuell__text">Pop-up-Store in den Räumen der Keramischen Werkstatt Margaretenhöhe.</p>
-                <dl class="aktuell__facts">
-                  <div>
-                    <dt>Zeitraum</dt>
-                    <dd>6. bis 8. November 2026</dd>
-                  </div>
-                  <div>
-                    <dt>Geöffnet</dt>
-                    <dd>
-                      Fr und Sa 11–18 Uhr
-                      <br />
-                      So 11–16 Uhr
-                    </dd>
-                  </div>
-                  <div>
-                    <dt>In Kooperation mit</dt>
-                    <dd>
-                      Burggraf Burggraf (Taschen)
-                      <br />
-                      Joachim Kern (Mode)
-                      <br />
-                      Christiane Kuntz (Mode)
-                      <br />
-                      Dietrich Pampus (Vintage Leuchten)
-                    </dd>
-                  </div>
-                  <div>
-                    <dt>Adresse</dt>
-                    <dd>
-                      Bullmannaue 19
-                      <br />
-                      45327 Essen, Gelände der Zeche Zollverein
-                    </dd>
-                  </div>
-                </dl>
-                <a class="link-arrow" href="/besuch">
-                  Anfahrt zur Werkstatt
-                </a>
-              </div>
-            </div>
-          </div>
-        </li>
+        {ausstellungen.map((eintrag) => (
+          <ExhibitionCard typ={eintrag.spotlight ? 'spotlight' : 'kachel'} ausstellung={eintrag} />
+        ))}
       </ol>
     </section>
 

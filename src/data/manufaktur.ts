@@ -1,7 +1,6 @@
 // Manufakturprogramm: Geschirr und Edition in Warengruppen, jede mit Sätzen aus Foto und Teileliste
 // (Sanity-Typ `manufakturteil`; Vorschlag: Foto je Satz, Teile als Liste). Keine Preise, kein Bestand.
-import type { DatumEintrag, Fakt } from './typen';
-import type { BildAngabe } from './werke';
+import type { BildAngabe, DatumEintrag, Fakt } from './typen';
 
 export interface Teil {
   name: string;
