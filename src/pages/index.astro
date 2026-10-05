@@ -1,12 +1,9 @@
 ---
 import '../styles/basis.css';
-import Button from '../components/Button.astro';
 import LinkArrow from '../components/LinkArrow.astro';
-import { BRENNTEMPERATUR, grad } from '../data/brenntemperatur';
 import Statement from '../components/Statement.astro';
 import SectionHead from '../components/SectionHead.astro';
-import FactsTable from '../components/FactsTable.astro';
-import { kurzfakten } from '../data/manufaktur';
+import { grundformen } from '../data/manufaktur';
 import WorkTile from '../components/WorkTile.astro';
 import { stueckBezeichnung, werk, werkschau } from '../data/werke';
 import { anfrageLink } from '../scripts/anfrage-link';
@@ -60,8 +57,7 @@ import { glasuren } from '../data/glasuren';
           Thomas Wagner über die Schalen von Young-Jae Lee
         </p>
         <p class="hero__intro" data-reveal="fade">
-          Keramische Werkstatt Margaretenhöhe. Gedrehte Gefäße und Gebrauchsgeschirr aus Essen – seit 1924, heute auf
-          dem Gelände der Zeche Zollverein.
+          Gedrehte Gefäße und Gebrauchsgeschirr aus Essen, seit 1924. Heute auf der Zeche Zollverein.
         </p>
         <p class="hero__actions" data-reveal="fade">
           <LinkArrow href="/meisterstuecke">Meisterstücke ansehen</LinkArrow>
@@ -73,30 +69,39 @@ import { glasuren } from '../data/glasuren';
     {/* Aktuell: laufende und kommende Ausstellungen mit Flyer und Angaben, aufklappbar ohne Unterseite */}
     <SigAktuell {ausstellungen} {hinweise} />
 
-    {/* Lede */}
-    <section class="lede grid" aria-label="Über die Werkstatt">
-      <Statement typ="lede" als="p" class="lede__text">
-        Aus der ständigen Wiederholung einer handwerklichen Technik, dem Drehen auf der Töpferscheibe, erwächst die
-        vollkommene Schönheit einer Form.
-      </Statement>
-      <p class="lede__col lede__col--a" data-reveal="fade">
-        1924 auf Initiative von Margarete Krupp für die Siedlung Margaretenhöhe gegründet. Seit 1927 den Formprinzipien
-        des Bauhauses verpflichtet – über Otto Lindigs Schüler Johannes Leßmann.
-      </p>
-      <p class="lede__col lede__col--b" data-reveal="fade">
-        Seit 1986 geprägt von Young-Jae Lee: Meisterstücke aus ihrer eigenen Hand und ein Geschirr, das seitdem nahezu
-        unverändert in der Werkstatt gedreht wird.
-      </p>
-      <nav class="lines" aria-label="Zwei Linien der Werkstatt">
-        <a class="lines__item" href="/meisterstuecke" data-reveal="fade">
-          <span class="lines__name">Meisterstücke</span>
-          <span class="lines__what">Unikate aus der Hand von Young-Jae Lee: Schalen, Kummen, Vasen</span>
-        </a>
-        <a class="lines__item" href="/manufaktur" data-reveal="fade">
-          <span class="lines__name">Manufaktur</span>
-          <span class="lines__what">Geschirr nach Bauhaus-Formprinzipien, in der Werkstatt gedreht und glasiert</span>
-        </a>
-      </nav>
+    {/* Bauhaus: das Prinzip als Bild – Grundformen und Farbskala im selben Raster */}
+    <section class="principle" id="bauhaus" aria-labelledby="principle-title">
+      <SectionHead typ="start" titelId="principle-title">
+        <Fragment slot="titel">Seit 1927 in der Tradition des Bauhauses.</Fragment>
+        <Statement typ="zitat-klein" einblendung="fade" quelle="Young-Jae Lee">
+          „Wir gehen immer von geometrischen Grundformen aus.“
+        </Statement>
+      </SectionHead>
+      <ul class="principle__forms grid" aria-label="Grundformen des Manufakturprogramms">
+        {grundformen.map((form) => (
+          <li>
+            <Figure class="principle__form" unterschrift={form.beschriftung} unterschriftKlasse="principle__name">
+              <Bild
+                src={form.bild.src}
+                width={form.bild.breite}
+                height={form.bild.hoehe}
+                loading="lazy"
+                sizes="(min-width: 900px) 33vw, 100vw"
+                alt={form.bild.alt}
+              />
+            </Figure>
+          </li>
+        ))}
+      </ul>
+      <SigFarbskala glasuren={glasuren} />
+      <div class="principle__foot grid">
+        <p class="principle__rule" data-reveal="fade">
+          „Alle Teile eines Geschirrs, gleich welcher Farbe, sollten miteinander kombinierbar sein.“
+        </p>
+        <LinkArrow href="/manufaktur" data-reveal="fade">
+          Zum Manufakturprogramm
+        </LinkArrow>
+      </div>
     </section>
 
     {/* Young-Jae Lee */}
@@ -124,26 +129,11 @@ import { glasuren } from '../data/glasuren';
             class="sticky-bild__text sticky-bild__quote"
             quelle="Barbara Catoir, »Gespannte Lebendigkeit«"
           >
-            „Sie erzählte von den Zeremonien in den Tempeln, dem Ritual eines hundertfachen Niederkniens, Niederfallens
-            vor den Buddha-Statuen. Sie erzählte von ihrer Großmutter, die sich diesen geistig-körperlichen Übungen bis
-            ins hohe Alter unterzog. Daran habe sie sich immer wieder erinnert, während sie ihre Schalen drehte, eine
-            nach der anderen, ohne je darüber müde zu werden.“
+            „… eine nach der anderen, ohne je darüber müde zu werden.“
           </Statement>
         </SigSticky>
         <figcaption class="sticky-bild__caption">Young-Jae Lee in der Keramischen Werkstatt Margaretenhöhe</figcaption>
       </figure>
-
-      <div class="artist__body grid">
-        <Statement typ="zitat" einblendung="fade" class="artist__quote" quelle="Gisela Jahn">
-          „Die minimale Veränderung ist Young-Jae Lees unbegrenzter Freiraum – in der Form wie in der Farbigkeit der
-          Glasur und der Bemalung. Ihr geht es nicht um Formerfindung, sondern um die Individualität des Gefäßes.“
-        </Statement>
-        <p class="artist__heritage" data-reveal="fade">
-          Zwei Traditionen treffen sich in ihren Gefäßen: die Ideen des Bauhauses, denen sie sich verpflichtet fühlt –
-          und ihr koreanisches Erbe, „das heitere, schwerelose Empfinden für die Form und die subtilen Farben“.
-          <span class="artist__cite">Gisela Jahn, »Gefäße drehen, Gefäße betrachten, Gefäße benutzen«</span>
-        </p>
-      </div>
 
       <Timeline stationen={lebensweg} weiter={{ href: '/young-jae-lee#biografie', text: 'Zum ganzen Werdegang' }} />
     </section>
@@ -166,9 +156,6 @@ import { glasuren } from '../data/glasuren';
           />
         </Figure>
         <div class="works__single-text">
-          <Statement typ="aussage" als="p" class="works__statement">
-            Alle Meisterstücke stammen aus der Hand Young-Jae Lees – von ihr selbst gedreht, bemalt und glasiert.
-          </Statement>
           <div class="works__single-meta">
             <p class="works__single-name" data-reveal="fade">
               Spindelvase <span>2006/07</span>
@@ -195,44 +182,11 @@ import { glasuren } from '../data/glasuren';
       fussnote="Städte und Zahlen nach der Ausstellungsliste 2016 bis 2026."
     />
 
-    {/* Meditation: Haltung und Arbeitsweise */}
-    <section class="med" id="haltung-meditation" aria-labelledby="med-title">
-      <div class="med__grid grid">
-        <Statement typ="aussage" class="med__quote" textId="med-title">
-          Die Herstellung jedes neuen Gefäßes gleicht einer Meditation.
-        </Statement>
-        <div class="med__body">
-          <p data-reveal="fade">
-            Für Young-Jae Lee ist – in Anlehnung an die koreanische Tradition – nicht die ständige Neuerfindung von
-            Formen entscheidend, sondern die vollkommene Beherrschung des vorhandenen Repertoires. Erst mit der
-            Verinnerlichung der Formen wird die tägliche Arbeit an der Drehscheibe jenseits aller Routine zu einer Art
-            Exerzitium. Die Persönlichkeit beginnt einzufließen, das Individuelle drückt sich im Handwerklichen aus.
-          </p>
-        </div>
-        <Figure class="med__media">
-          <Bild
-            src="/img/01-seladon-gefaess.webp"
-            sizes="(min-width: 900px) 40vw, 100vw"
-            width="1600"
-            height="1067"
-            loading="lazy"
-            alt="Bauchiges Gefäß mit seladongrüner bis taubenblauer Glasur"
-          />
-        </Figure>
-      </div>
-    </section>
-
     {/* 99 Schalen: keine wie die andere, jede mit eigener Glasur */}
     <section class="rep" id="kosmos" aria-labelledby="kosmos-title">
-      <SectionHead typ="start" titelId="kosmos-title" rechtsKlasse="cosmos__text">
+      <SectionHead typ="start" titelId="kosmos-title">
         <Fragment slot="titel">Ein Ring aus Teilchen um eine leere Mitte.</Fragment>
-        <p data-reveal="fade">
-          „Schalen über Schalen, einfach auf den Boden gestellt. Ein Meer aus Schalen, ein Feld aus Kelchen, ein Ring
-          aus Teilchen um eine leere Mitte, eine kleine Milchstraße voll schimmernder Gefäße.“
-        </p>
-        <p class="cosmos__source" data-reveal="fade">
-          Thomas Wagner, »Die aufgehobene Zeit?«
-        </p>
+        <p data-reveal="fade">Thomas Wagner, »Die aufgehobene Zeit?«</p>
       </SectionHead>
       <div class="cosmos__floor">
         <div class="cosmos__stage" data-cosmos>
@@ -256,55 +210,6 @@ import { glasuren } from '../data/glasuren';
       </div>
     </section>
 
-    {/* Manufaktur */}
-    <section class="craft" id="manufaktur" aria-labelledby="craft-title">
-      <SectionHead typ="start" titelId="craft-title">
-        <Fragment slot="titel">Keiner Mode, keinem Zeitgeist unterworfen.</Fragment>
-        <p data-reveal="fade">
-          Unter Rückbesinnung auf die Grundprinzipien des Bauhauses entwickelte Young-Jae Lee mit Hildegard Eggemann,
-          Michael Schmandt und Claudia Neumann die Formensprache des Manufakturprogramms: zuerst 25 Grundelemente eines
-          Geschirrs – Teller, Schalen, Krüge.
-        </p>
-        <p class="craft__rule" data-reveal="fade">
-          „Jedes Stück muss gut zu drehen sein und auch zu benutzen. Alle Teile eines Geschirrs, gleich welcher Farbe,
-          sollten miteinander kombinierbar sein.“
-        </p>
-      </SectionHead>
-
-      <SigFarbskala glasuren={glasuren} />
-      <p class="scale__note grid">
-        <span>
-          In monatelangen Experimenten entstand die sechstonige Farbskala – von Schattierungen des Jadegrün über ein
-          gebrochenes Weiß bis zu Rostbraun.
-        </span>
-      </p>
-
-      <div class="craft__detail craft__detail--wide grid">
-        <Figure class="craft__media" unterschrift="Vor dem ersten Brand · Foto: Haydar Koyupinar">
-          <Bild
-            src="/img/kwm/regal.webp"
-            width="954"
-            height="905"
-            loading="lazy"
-            alt="Regal voller ungebrannter Tassen, Schalen, Teller und Krüge aus dem Manufakturprogramm"
-          />
-        </Figure>
-        <FactsTable fakten={kurzfakten}>
-          <Button href="/manufaktur">Zum Programm</Button>
-        </FactsTable>
-        <Figure class="craft__media3">
-          <Bild
-            src="/img/kwm/kannen.webp"
-            width="600"
-            height="400"
-            loading="lazy"
-            sizes="(min-width: 900px) 33vw, 100vw"
-            alt="Zwei Krüge und eine Tasse aus dem Manufakturprogramm in Hellgrün, Weiß und Dunkelgrün"
-          />
-        </Figure>
-      </div>
-    </section>
-
     {/* Feuer: Text bleibt beim Scrollen auf dem Glasurfoto stehen */}
     <SigSticky variante="feuer" als="section" id="feuer" aria-labelledby="feuer-title">
       {/* sizes: Bildbreite folgt aus der Kastenhöhe (cover), Höhe x 1,12 (Überstand) x 1,5; Desktop 160vh, mobil 150vh */}
@@ -324,9 +229,7 @@ import { glasuren } from '../data/glasuren';
           Neun bis zehn Stunden Feuer.
         </h2>
         <p class="sticky-bild__lede">
-          Im Holzofen wird über neun bis zehn Stunden kontinuierlich bis auf {grad(BRENNTEMPERATUR.holzbrandMax)}{' '}
-          gefeuert – für einen Brand braucht es etwa 1,5 Festmeter Holz. Die Tönung wird reicher, manche Verfärbung
-          lässt sich nicht steuern.
+          Im Holzbrand wird die Tönung reicher, manche Verfärbung lässt sich nicht steuern.
         </p>
         <LinkArrow href="/werkstatt#feuer">Wie die Glasur ihre Farbe bekommt</LinkArrow>
       </div>
@@ -339,7 +242,7 @@ import { glasuren } from '../data/glasuren';
       id="werkstatt"
       titelId="chron-title"
       titel="Hundert Jahre an der Scheibe."
-      lede="Von der Siedlungswerkstatt in Essen zur Manufaktur auf Zollverein: neun Stationen in 82 Jahren."
+      lede="Von der Siedlungswerkstatt in Essen zur Manufaktur auf Zollverein."
       link={{ href: '/werkstatt', text: 'Werkstatt, Team und Chronik' }}
     />
 
@@ -347,10 +250,6 @@ import { glasuren } from '../data/glasuren';
     <section class="visit" id="besuch" aria-labelledby="visit-title">
       <SectionHead typ="start" titelId="visit-title">
         <Fragment slot="titel">Die Werkstatt ist offen.</Fragment>
-        <p data-reveal="fade">
-          Wenn Sie Stücke aus unserem Programm erwerben möchten, senden wir Ihnen gerne weitere Informationen oder ein
-          Angebot zu. Oder Sie kommen vorbei.
-        </p>
       </SectionHead>
       <div class="visit__body grid">
         <div class="visit__info">

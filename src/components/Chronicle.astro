@@ -9,18 +9,18 @@ interface Props {
   lede: string;
   id?: string;
   titelId: string;
-  /** Kurzfassung: nur Einträge mit Kurztext, mit deren kürzerem Wortlaut (Startseite) */
+  /** Kurzfassung der Startseite: nur Einträge mit `startseite`, nur Jahr und Titel */
   kurz?: boolean;
   /** Link unter dem Zeitraum */
   link?: { href: string; text: string };
 }
 
 const { eintraege, titel, lede, id, titelId, kurz = false, link } = Astro.props;
-const gezeigt = kurz ? eintraege.filter((eintrag) => eintrag.kurztext) : eintraege;
+const gezeigt = kurz ? eintraege.filter((eintrag) => eintrag.startseite) : eintraege;
 const zeitraum = `${gezeigt[0]?.jahr} bis ${gezeigt.at(-1)?.jahr}`;
 ---
 
-<section class="chronicle" id={id} aria-labelledby={titelId}>
+<section class:list={['chronicle', { 'chronicle--kurz': kurz }]} id={id} aria-labelledby={titelId}>
   <div class="chronicle__body grid">
     <div class="chronicle__intro">
       <h2 class="h2" id={titelId} data-reveal="words">
@@ -43,7 +43,7 @@ const zeitraum = `${gezeigt[0]?.jahr} bis ${gezeigt.at(-1)?.jahr}`;
           <span class="chronicle__year">{eintrag.jahr}</span>
           <div class="chronicle__what">
             <h3 class="chronicle__title">{eintrag.titel}</h3>
-            <p>{kurz ? eintrag.kurztext : eintrag.text}</p>
+            {!kurz && <p>{eintrag.text}</p>}
           </div>
         </li>
       ))}
@@ -170,6 +170,10 @@ const zeitraum = `${gezeigt[0]?.jahr} bis ${gezeigt.at(-1)?.jahr}`;
     line-height: var(--t-h3-lh);
     margin: 0 0 10px;
   }
+  /* Kurzfassung (Startseite): nur Jahr und Titel */
+  .chronicle--kurz .chronicle__title {
+    margin: 0;
+  }
   .chronicle__what p {
     font-size: var(--t-small);
     line-height: var(--t-small-lh);
@@ -254,6 +258,9 @@ const zeitraum = `${gezeigt[0]?.jahr} bis ${gezeigt.at(-1)?.jahr}`;
     }
     .chronicle__what {
       padding-top: 10px;
+    }
+    .chronicle--kurz .chronicle__list li {
+      flex-basis: 52vw;
     }
   }
 
