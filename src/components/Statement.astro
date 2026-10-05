@@ -1,7 +1,7 @@
 ---
 interface Props {
-  /** `gross`: Display-Zitat als Zäsur; `aussage`: Aussage in Textgröße Statement; `zitat`: Text-Schnitt in Titelgröße, ruhig; `lede`: einleitender Satz der Startseite in Lede-Größe; `zitat-klein`: längeres Zitat im Text-Schnitt in Zitatgröße; `zitat-bild`: längeres Zitat auf dunklem Bild in Lede-Größe, Quelle in `--on-coal`, ohne Einblendung (Abstand zur Quelle setzt die Seite) */
-  typ: 'gross' | 'aussage' | 'zitat' | 'lede' | 'zitat-klein' | 'zitat-bild';
+  /** `gross`: Display-Zitat als Zäsur; `aussage`: Aussage in Textgröße Statement; `zitat`: Text-Schnitt in Titelgröße, ruhig; `lede`: einleitender Satz der Startseite in Lede-Größe; `zitat-lang`: längeres Fremdzitat im Text-Schnitt in Zitatgröße, auf hellem wie dunklem Grund (die Quelle nimmt `--ink-2` des Umfelds) */
+  typ: 'gross' | 'aussage' | 'zitat' | 'lede' | 'zitat-lang';
   /** `p`: nackter Absatz ohne `blockquote` (Aussage ohne Zitat, keine Quelle) */
   als?: 'blockquote' | 'p';
   /** Einblend-Animation des Satzes; `keine` lässt `data-reveal` weg */
@@ -68,19 +68,8 @@ const reveal = einblendung === 'keine' ? undefined : einblendung;
     text-wrap: pretty;
   }
   .statement--zitat:has(+ footer),
-  .statement--zitat-klein:has(+ footer) {
+  .statement--zitat-lang:has(+ footer) {
     margin-bottom: 1em;
-  }
-  .statement--zitat-bild {
-    font-family: var(--f-text);
-    font-size: var(--t-lede);
-    line-height: var(--t-lede-lh);
-    text-wrap: pretty;
-  }
-  .statement:has(.statement--zitat-bild) footer {
-    font-size: var(--t-small);
-    line-height: var(--t-small-lh);
-    color: var(--on-coal);
   }
   .statement--lede {
     font-family: var(--f-text);
@@ -88,7 +77,7 @@ const reveal = einblendung === 'keine' ? undefined : einblendung;
     line-height: var(--t-lede-lh);
     letter-spacing: -0.01em;
   }
-  .statement--zitat-klein {
+  .statement--zitat-lang {
     font-family: var(--f-text);
     font-size: var(--t-quote);
     line-height: var(--t-quote-lh);
