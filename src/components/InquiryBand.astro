@@ -1,5 +1,6 @@
 ---
 import { kontakt } from '../data/kontakt';
+import { anfrageLink } from '../scripts/anfrage-link';
 
 interface Props {
   text: string;
@@ -7,7 +8,7 @@ interface Props {
   stueck?: string;
 }
 const { text, stueck } = Astro.props;
-const href = stueck ? `/besuch?stueck=${encodeURIComponent(stueck)}#anfrage` : '/besuch#anfrage';
+const href = anfrageLink(stueck);
 const hatHinweis = Astro.slots.has('default');
 ---
 
