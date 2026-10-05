@@ -28,6 +28,7 @@ const vorgeladeneSchriften = (['--font-caslon-display', '--font-jost'] as const)
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
+    <link rel="sitemap" href="/sitemap-index.xml" />
     <link rel="icon" href="/img/kwm/logo.svg" type="image/svg+xml" />
     {vorgeladeneSchriften.map((url) => (
       <link rel="preload" href={url} as="font" type="font/woff2" crossorigin />

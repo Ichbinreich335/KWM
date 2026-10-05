@@ -101,3 +101,15 @@ test('Schriften: genau zwei Preloads, Libre Caslon Display und Jost, jeweils die
     expect(familien.filter((f) => /^"?Jost/.test(f)).length, `${seite.name}: ${familien}`).toBe(1);
   }
 });
+
+test('Sitemap: Index antwortet, alle Seiten ohne .html, ohne 404 und Datenschutz', async ({ request }) => {
+  const index = await request.get('/sitemap-index.xml');
+  expect(index.status()).toBe(200);
+  const sitemap = await (await request.get('/sitemap-0.xml')).text();
+  const urls = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((treffer) => treffer[1]);
+  const erwartet = seiten
+    .filter((s) => s.name !== '404' && s.name !== 'datenschutz')
+    .map((s) => new URL(s.astro, 'https://kwm-1924.de').href);
+  expect([...urls].sort()).toEqual([...erwartet].sort());
+  expect(urls.filter((url) => url.endsWith('.html'))).toEqual([]);
+});

@@ -1,4 +1,5 @@
 // @ts-check
+import sitemap from '@astrojs/sitemap';
 import { defineConfig, fontProviders } from 'astro/config';
 
 // Unicode-Bereiche der beiden Teilmengen: Der Browser lädt nur die Datei, deren Zeichen auf der Seite vorkommen.
@@ -72,6 +73,8 @@ const varianten = (datei, weight, style) => {
 export default defineConfig({
   site: 'https://kwm-1924.de',
   output: 'static',
+  // 404 und Datenschutz (noindex) gehören nicht in die Sitemap
+  integrations: [sitemap({ filter: (seite) => !/\/(404|datenschutz)(\.html)?$/.test(seite) })],
   // aktuelles.astro → dist/aktuelles.html, von Cloudflare als /aktuelles ausgeliefert
   build: { format: 'file', inlineStylesheets: 'never' },
   trailingSlash: 'never',
