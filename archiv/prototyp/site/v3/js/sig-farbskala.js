@@ -1,0 +1,440 @@
+// Signatur: farbskala
+// Jedes Band ist eine Glasur-Testkachel: oben der rohe Scherben, darunter die Glasur mit Tauchkante.
+// Wird ein Band geöffnet, steigt die Glasur ein Stück höher, wie beim Tauchen.
+// Gerechnet wird in „Kachel-Koordinaten“: y läuft vom Scherben (0) zur dicken Glasur (L).
+// Mobil liegt die Kachel quer, dann werden die Achsen beim Zeichnen getauscht.
+import { CLAY, random, reducedMotion } from './keramik.js';
+
+const MAX_DPR = 2;
+const OPEN_GROW = 2.6;
+const OTHER_GROW = 0.8;
+const BAND_COUNT = 6;
+const INTRO_STAGGER = 130;
+const SPRING = 5.5;
+const REST_EDGE = 0.34;
+const OPEN_EDGE = 0.2;
+
+const flat = () => document.documentElement.dataset.farbskala === 'flaeche';
+const rgb = (hex) => { const n = parseInt(hex.slice(1), 16); return [n >> 16, (n >> 8) & 255, n & 255]; };
+const rgba = (c, a) => `rgba(${c[0]},${c[1]},${c[2]},${a})`;
+const mix = (a, b, t) => a.map((v, i) => Math.round(v + (b[i] - v) * t));
+
+// feines Korn, einmal erzeugt und überall als Muster verwendet
+function grainTile() {
+  const c = document.createElement('canvas');
+  c.width = c.height = 128;
+  const x = c.getContext('2d');
+  const img = x.createImageData(128, 128);
+  const r = random(41);
+  for (let i = 0; i < 128 * 128; i++) {
+    const v = r() < 0.5 ? 0 : 255;
+    img.data[i * 4] = img.data[i * 4 + 1] = img.data[i * 4 + 2] = v;
+    img.data[i * 4 + 3] = r() * 70;
+  }
+  x.putImageData(img, 0, 0);
+  return c;
+}
+
+function offscreen(w, h, dpr) {
+  const c = document.createElement('canvas');
+  c.width = Math.ceil(w * dpr);
+  c.height = Math.ceil(h * dpr);
+  const x = c.getContext('2d');
+  x.scale(dpr, dpr);
+  return { c, x };
+}
+
+function fillGrain(x, w, h, grain, alpha) {
+  x.save();
+  x.globalAlpha = alpha;
+  x.fillStyle = x.createPattern(grain, 'repeat');
+  x.fillRect(0, 0, w, h);
+  x.restore();
+}
+
+function soft(x, cx, cy, rx, ry, color, alpha) {
+  x.save();
+  x.translate(cx, cy);
+  x.scale(rx, ry);
+  const g = x.createRadialGradient(0, 0, 0, 0, 0, 1);
+  g.addColorStop(0, rgba(color, alpha));
+  g.addColorStop(1, rgba(color, 0));
+  x.fillStyle = g;
+  x.fillRect(-1, -1, 2, 2);
+  x.restore();
+}
+
+// Geschichteter Scherben: Ton mit Poren, Licht von links
+function paintBiscuit(x, T, L, grain, rand) {
+  const base = rgb(CLAY.bisque);
+  const g = x.createLinearGradient(0, 0, T, 0);
+  g.addColorStop(0, rgba(mix(base, [255, 250, 240], 0.28), 1));
+  g.addColorStop(1, rgba(mix(base, rgb(CLAY.raw), 0.35), 1));
+  x.fillStyle = g;
+  x.fillRect(0, 0, T, L);
+  for (let i = 0; i < 26; i++) {
+    soft(x, rand() * T, rand() * L, T * (0.2 + rand() * 0.4), L * (0.04 + rand() * 0.1), rgb(CLAY.raw), 0.05 + rand() * 0.05);
+  }
+  fillGrain(x, T, L, grain, 0.55);
+  const pores = Math.round((T * L) / 900);
+  for (let i = 0; i < pores; i++) {
+    x.fillStyle = rgba(rgb(CLAY.raw), 0.18 + rand() * 0.22);
+    const s = 0.5 + rand() * 1.1;
+    x.fillRect(rand() * T, rand() * L, s, s);
+  }
+}
+
+// Glasurkörper: nach unten dichter und dunkler, mit Flecken, Korn und Sprenkeln
+function paintBody(x, T, L, glaze, grain, rand) {
+  const { grund, dunkel, hell, finish, speckle } = glaze;
+  const g = x.createLinearGradient(0, 0, 0, L);
+  g.addColorStop(0, rgba(grund, 1));
+  g.addColorStop(0.45, rgba(grund, 1));
+  g.addColorStop(1, rgba(dunkel, 1));
+  x.fillStyle = g;
+  x.fillRect(0, 0, T, L);
+
+  if (glaze.layers) {
+    for (let i = 0; i < 7; i++) {
+      const y = (i + rand() * 0.7) * (L / 7);
+      const h = L * (0.05 + rand() * 0.06);
+      const sg = x.createLinearGradient(0, y, 0, y + h);
+      const c = i % 2 ? hell : dunkel;
+      sg.addColorStop(0, rgba(c, 0));
+      sg.addColorStop(0.5, rgba(c, 0.22));
+      sg.addColorStop(1, rgba(c, 0));
+      x.fillStyle = sg;
+      x.fillRect(0, y, T, h);
+    }
+  }
+
+  const blobs = finish === 'matt' ? 44 : 30;
+  const lumBase = (grund[0] + grund[1] + grund[2]) / 3;
+  for (let i = 0; i < blobs; i++) {
+    const c = rand() < (lumBase < 110 ? 0.25 : 0.5) ? hell : dunkel;
+    soft(x, rand() * T, rand() * L, T * (0.15 + rand() * 0.35), L * (0.03 + rand() * 0.08), c, 0.07 + rand() * 0.08);
+  }
+
+  fillGrain(x, T, L, grain, (finish === 'matt' ? 0.5 : finish === 'satin' ? 0.32 : 0.14) * (grund[0] + grund[1] + grund[2] < 330 ? 0.6 : 1));
+
+  if (speckle) {
+    // Weiß: vereinzelte Eisenpunkte; Rostbraun: dichte dunkle Sprenkel; matt: helle Flecken im Korn
+    const spots = glaze.speckleKind !== 'korn';
+    const n = spots ? Math.round((T * L) / (glaze.speckleKind === 'eisen' ? 1500 : 6500)) : 0;
+    for (let i = 0; i < n; i++) {
+      const r = glaze.speckleKind === 'eisen' ? 0.6 + rand() * 1.3 : 0.7 + Math.pow(rand(), 2.2) * 2.4;
+      const px = rand() * T;
+      const py = rand() * L;
+      soft(x, px, py, r * 2.2, r * 2.2, speckle, 0.18);
+      x.fillStyle = rgba(speckle, 0.55 + rand() * 0.4);
+      x.beginPath();
+      x.arc(px, py, r, 0, Math.PI * 2);
+      x.fill();
+    }
+    if (glaze.speckleKind === 'korn') {
+      for (let i = Math.round((T * L) / 220); i > 0; i--) {
+        x.fillStyle = rgba(speckle, 0.18 + rand() * 0.3);
+        x.fillRect(rand() * T, rand() * L, 0.9, 0.9);
+      }
+    }
+  }
+}
+
+class Tile {
+  constructor(el, index, grain) {
+    this.el = el;
+    this.index = index;
+    this.grain = grain;
+    const d = el.dataset;
+    const glaze = {
+      grund: rgb(d.grund),
+      dunkel: rgb(d.dunkel),
+      hell: rgb(d.hell),
+      finish: d.finish,
+      layers: 'schichten' in d,
+      seed: Number(d.seed),
+    };
+    if (d.speckle) {
+      glaze.speckle = rgb(d.speckle);
+      glaze.speckleKind = d.finish === 'matt' ? 'korn' : d.finish === 'satin' && d.grund !== '#e2ddcd' ? 'eisen' : 'punkte';
+    }
+    this.glaze = glaze;
+    this.canvas = document.createElement('canvas');
+    this.canvas.className = 'scale__cv';
+    this.canvas.setAttribute('aria-hidden', 'true');
+    el.prepend(this.canvas);
+    this.ctx = this.canvas.getContext('2d');
+    this.p = 0;
+    this.target = 0;
+    this.mx = 0.3;
+    this.mxTarget = 0.3;
+    this.dirty = true;
+    this.visible = 0;
+  }
+
+  // Maße neu aufnehmen: T = Dicke der Kachel (fest auf die größte Weite), L = Länge
+  layout(horizontal, box, dpr) {
+    this.painted = false;
+    const share = OPEN_GROW / (OPEN_GROW + OTHER_GROW * (BAND_COUNT - 1));
+    this.horizontal = horizontal;
+    this.dpr = dpr;
+    this.L = Math.round(horizontal ? box.width : box.height);
+    const slots = horizontal ? box.height : box.width;
+    this.T = Math.ceil(slots * share) + 4;
+    const css = horizontal ? [this.L, this.T] : [this.T, this.L];
+    this.canvas.style.width = `${css[0]}px`;
+    this.canvas.style.height = `${css[1]}px`;
+    this.canvas.width = Math.ceil(css[0] * dpr);
+    this.canvas.height = Math.ceil(css[1] * dpr);
+    this.hi = Math.max(this.L * OPEN_EDGE, horizontal ? 112 : 132);
+    this.rest = Math.max(this.L * REST_EDGE, horizontal ? 104 : 148);
+    this.p0 = (this.L - this.rest) / (this.L - this.hi);
+
+    if (flat()) { this.dirty = true; return; }
+    this.painted = true;
+    const rand = random(this.glaze.seed * 977 + 13);
+    this.bisc = offscreen(this.T, this.L, dpr);
+    paintBiscuit(this.bisc.x, this.T, this.L, this.grain, rand);
+    this.body = offscreen(this.T, this.L, dpr);
+    paintBody(this.body.x, this.T, this.L, this.glaze, this.grain, rand);
+
+    const r = random(this.glaze.seed * 31 + 5);
+    this.wave = [0, 1, 2].map(() => ({ a: 1 + r() * 2.2, f: 0.012 + r() * 0.03, ph: r() * 6.28 }));
+    this.bumps = [0, 1].map(() => ({ x: r() * this.T, w: 8 + r() * 14, h: 3 + r() * 5 }));
+    this.dirty = true;
+  }
+
+  edgeAt(x, e) {
+    let y = e;
+    for (const w of this.wave) y += w.a * Math.sin(x * w.f * 6.28 + w.ph);
+    for (const b of this.bumps) y -= b.h * Math.exp(-((x - b.x) ** 2) / (2 * b.w * b.w));
+    return y;
+  }
+
+  edgePath(ctx, e) {
+    ctx.beginPath();
+    ctx.moveTo(0, this.edgeAt(0, e));
+    for (let x = 3; x < this.T; x += 3) ctx.lineTo(x, this.edgeAt(x, e));
+    ctx.lineTo(this.T, this.edgeAt(this.T, e));
+    ctx.lineTo(this.T, this.L + 4);
+    ctx.lineTo(0, this.L + 4);
+    ctx.closePath();
+  }
+
+  draw() {
+    if (!this.painted) { this.dirty = false; return; }
+    const { ctx, T, L, glaze, dpr } = this;
+    this.visible = this.horizontal ? this.el.clientHeight : this.el.clientWidth;
+    const e = this.L - this.p * (this.L - this.hi);
+    const swap = this.horizontal;
+    ctx.setTransform(swap ? 0 : dpr, swap ? dpr : 0, swap ? dpr : 0, swap ? 0 : dpr, 0, 0);
+    ctx.clearRect(0, 0, T, L);
+    ctx.drawImage(this.bisc.c, 0, 0, T, L);
+    if (this.p <= 0.001) { this.dirty = false; return; }
+
+    const light = glaze.finish === 'glanz';
+    const lum = (glaze.grund[0] + glaze.grund[1] + glaze.grund[2]) / 3;
+    const dark = lum < 110;
+
+    // Der Scherben saugt, direkt über der Kante wird er feucht und dunkler
+    ctx.save();
+    ctx.shadowColor = 'rgba(78, 52, 24, 0.4)';
+    ctx.shadowBlur = 9 * dpr;
+    ctx.fillStyle = rgba(glaze.grund, 1);
+    this.edgePath(ctx, e);
+    ctx.fill();
+    ctx.restore();
+
+    ctx.save();
+    this.edgePath(ctx, e);
+    ctx.clip();
+    ctx.drawImage(this.body.c, 0, 0, T, L);
+
+    // Dünn an der Kante: der Scherben scheint durch, die Glasur wird heller
+    const span = Math.min(60, (L - e) * 0.5);
+    if (span > 4) {
+      const g = ctx.createLinearGradient(0, e - 6, 0, e + span);
+      g.addColorStop(0, rgba(mix(glaze.hell, rgb(CLAY.bisque), glaze.finish === 'matt' ? 0.3 : 0.14), dark ? 0.3 : 0.75));
+      g.addColorStop(1, rgba(glaze.hell, 0));
+      ctx.fillStyle = g;
+      ctx.fillRect(0, e - 8, T, span + 8);
+    }
+
+    // Weicher Glanz: breites Band plus Fenster-Reflex, folgt dem Zeiger
+    const sheen = light ? (dark ? 0.16 : 0.3) : glaze.finish === 'satin' ? 0.1 : 0.05;
+    const reach = L - e;
+    const vis = Math.min(T, this.visible);
+    if (reach > 20) {
+      const gx = vis * (0.12 + this.mx * 0.4);
+      const g = ctx.createLinearGradient(gx - vis * 0.45, e, gx + vis * 0.45, e + reach * 0.9);
+      g.addColorStop(0, 'rgba(255,255,255,0)');
+      g.addColorStop(0.5, `rgba(255,255,255,${sheen * (dark ? 0.3 : 0.55)})`);
+      g.addColorStop(1, 'rgba(255,255,255,0)');
+      ctx.fillStyle = g;
+      ctx.fillRect(0, e, T, reach);
+      if (light) {
+        const cx = vis * (0.2 + this.mx * 0.3);
+        soft(ctx, cx, e + reach * 0.3, Math.max(8, vis * 0.07), reach * 0.24, [255, 255, 255], sheen * 1.3);
+        soft(ctx, cx - 1, e + reach * 0.22, Math.max(3, vis * 0.022), reach * 0.1, [255, 255, 255], Math.min(0.85, sheen * 2.2));
+      }
+    }
+    ctx.restore();
+
+    // Wulst an der Tauchkante: oben hell, darunter ein weicher Schatten
+    ctx.save();
+    ctx.lineJoin = 'round';
+    ctx.beginPath();
+    ctx.moveTo(0, this.edgeAt(0, e));
+    for (let x = 3; x <= T; x += 3) ctx.lineTo(x, this.edgeAt(x, e));
+    ctx.lineWidth = 3.2;
+    ctx.strokeStyle = 'rgba(30, 22, 12, 0.14)';
+    ctx.translate(0, 2.4);
+    ctx.stroke();
+    ctx.translate(0, -2.4);
+    ctx.lineWidth = 1.5;
+    ctx.strokeStyle = `rgba(255,255,255,${light ? 0.5 : 0.26})`;
+    ctx.stroke();
+    ctx.restore();
+
+    // Dunkle Glasuren sammeln sich unten: das trägt die helle Beschriftung
+    if (dark) {
+      const sg = ctx.createLinearGradient(0, L - 120, 0, L);
+      sg.addColorStop(0, 'rgba(20, 12, 4, 0)');
+      sg.addColorStop(1, 'rgba(20, 12, 4, 0.2)');
+      ctx.fillStyle = sg;
+      ctx.fillRect(0, L - 120, T, 120);
+    }
+
+    // Licht von links oben über die ganze Kachel
+    const lg = ctx.createLinearGradient(0, 0, T, 0);
+    lg.addColorStop(0, `rgba(255,255,255,${dark ? 0.04 : 0.1})`);
+    lg.addColorStop(0.5, 'rgba(255,255,255,0)');
+    lg.addColorStop(1, 'rgba(0,0,0,0.09)');
+    ctx.fillStyle = lg;
+    ctx.fillRect(0, 0, T, L);
+    this.dirty = false;
+  }
+
+  step(dt) {
+    const k = 1 - Math.exp(-dt * SPRING);
+    const pPrev = this.p;
+    this.p += (this.target - this.p) * k;
+    if (Math.abs(this.target - this.p) < 0.0008) this.p = this.target;
+    const mxPrev = this.mx;
+    this.mx += (this.mxTarget - this.mx) * (1 - Math.exp(-dt * 8));
+    if (Math.abs(this.mxTarget - this.mx) < 0.001) this.mx = this.mxTarget;
+    if (this.p !== pPrev || (this.mx !== mxPrev && this.glaze.finish === 'glanz')) this.dirty = true;
+    return this.p !== this.target || this.mx !== this.mxTarget;
+  }
+}
+
+export default function init(el) {
+  const bands = [...el.querySelectorAll('.scale__band')];
+  if (!bands.length) return;
+  const reduced = reducedMotion();
+  const grain = grainTile();
+  const tiles = bands.map((b, i) => new Tile(b, i, grain));
+  const narrow = window.matchMedia('(max-width: 900px)');
+  let pinned = -1;
+  let hovered = -1;
+  let focused = -1;
+  let raf = 0;
+  let last = 0;
+  let introDone = false;
+
+  const active = () => (hovered >= 0 ? hovered : focused >= 0 ? focused : pinned);
+
+  const frame = (now) => {
+    const dt = Math.min(0.05, (now - last) / 1000 || 0.016);
+    last = now;
+    let moving = false;
+    for (const t of tiles) {
+      if (t.step(dt)) moving = true;
+      if (t.dirty) t.draw();
+    }
+    raf = moving ? requestAnimationFrame(frame) : 0;
+  };
+  const wake = () => {
+    if (raf) return;
+    last = performance.now();
+    raf = requestAnimationFrame(frame);
+  };
+
+  const apply = () => {
+    const a = active();
+    el.classList.toggle('has-open', a >= 0);
+    tiles.forEach((t, i) => {
+      t.el.classList.toggle('is-open', i === a);
+      t.el.setAttribute('aria-pressed', String(i === pinned));
+      t.target = i === a ? 1 : t.p0;
+      if (!introDone) return;
+      if (reduced) { t.p = t.target; t.dirty = true; }
+    });
+    wake();
+  };
+
+  const build = () => {
+    const box = el.getBoundingClientRect();
+    const first = bands[0].getBoundingClientRect();
+    const horizontal = narrow.matches;
+    const dpr = Math.min(window.devicePixelRatio || 1, MAX_DPR);
+    const slot = horizontal ? { width: first.width, height: box.height } : { width: box.width - 2 * parseFloat(getComputedStyle(el).paddingLeft), height: first.height };
+    tiles.forEach((t) => {
+      t.layout(horizontal, slot, dpr);
+      if (introDone) { t.p = t.target = t.p0; }
+    });
+    if (introDone) apply();
+    wake();
+  };
+
+  el.classList.add('is-live');
+  let flatNow = flat();
+  build();
+  tiles.forEach((t) => { t.target = 0; t.p = 0; });
+  tiles.forEach((t) => t.draw());
+
+  bands.forEach((b, i) => {
+    b.addEventListener('pointerenter', (e) => { if (e.pointerType === 'mouse') { hovered = i; apply(); } });
+    b.addEventListener('pointerleave', (e) => { if (e.pointerType === 'mouse' && hovered === i) { hovered = -1; apply(); } });
+    b.addEventListener('focus', () => { if (b.matches(':focus-visible')) { focused = i; apply(); } });
+    b.addEventListener('blur', () => { if (focused === i) { focused = -1; apply(); } });
+    b.addEventListener('click', () => { pinned = pinned === i ? -1 : i; apply(); });
+  });
+
+  // Einstieg: die Proben werden nacheinander getaucht, sobald die Skala im Bild ist
+  const start = () => {
+    introDone = true;
+    tiles.forEach((t, i) => {
+      const go = () => { t.target = t.p0; wake(); if (i === tiles.length - 1) setTimeout(() => el.classList.add('is-ready'), 700); };
+      if (reduced) { t.p = t.p0; t.target = t.p0; t.dirty = true; el.classList.add('is-ready'); } else setTimeout(go, i * INTRO_STAGGER);
+    });
+    if (reduced) wake();
+  };
+  const io = new IntersectionObserver((entries) => {
+    if (!entries.some((e) => e.isIntersecting)) return;
+    io.disconnect();
+    start();
+  }, { threshold: 0.25 });
+  io.observe(el);
+
+  // Umschalten im Entwurf-Panel: Kacheln erst beim Wechsel zurück zeichnen, in „Fläche“ nichts rechnen
+  document.addEventListener('kwm:varianten', () => {
+    if (flat() === flatNow) return;
+    flatNow = flat();
+    build();
+    tiles.forEach((t) => { t.dirty = true; });
+    wake();
+  });
+
+  const size = { w: el.clientWidth, h: el.clientHeight };
+  let resizeFrame = 0;
+  new ResizeObserver(() => {
+    cancelAnimationFrame(resizeFrame);
+    resizeFrame = requestAnimationFrame(() => {
+      if (el.clientWidth === size.w && el.clientHeight === size.h) return;
+      size.w = el.clientWidth;
+      size.h = el.clientHeight;
+      build();
+    });
+  }).observe(el);
+}

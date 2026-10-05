@@ -1,0 +1,72 @@
+---
+import '../styles/basis.css';
+import '../styles/seiten/page-text.css';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import Notice from '../components/Notice.astro';
+import Prose from '../components/Prose.astro';
+import { kontakt } from '../data/kontakt';
+---
+
+<BaseLayout
+  title="Datenschutz · Keramische Werkstatt Margaretenhöhe"
+  description="Datenschutzerklärung der Keramischen Werkstatt Margaretenhöhe GmbH. Der Text folgt."
+  bodyClass="page-text"
+>
+  <Fragment slot="head">
+    <meta name="robots" content="noindex" />
+  </Fragment>
+  <main id="inhalt">
+    <PageHero typ="name" textseite>
+      <Fragment slot="titel">Datenschutz</Fragment>
+      <Fragment slot="lede">Hier steht die Datenschutzerklärung dieser Website.</Fragment>
+    </PageHero>
+
+    <div class="legal grid">
+      <aside class="legal__aside ts-small">
+        <nav aria-label="Rechtliches und Service">
+          <p class="legal__label ts-meta">Rechtliches</p>
+          <ul>
+            <li>
+              <a href="/impressum">Impressum</a>
+            </li>
+            <li>
+              <a href="/datenschutz" aria-current="page">
+                Datenschutz
+              </a>
+            </li>
+            <li>
+              <a href="/agb">AGB</a>
+            </li>
+            <li>
+              <a href="/versand">Verpackung und Transport</a>
+            </li>
+            <li>
+              <a href="/zahlung">Zahlung</a>
+            </li>
+          </ul>
+        </nav>
+      </aside>
+      <Prose>
+        <Notice titel="Text folgt">
+          <p>Die Datenschutzerklärung wird von der Werkstatt geliefert und hier veröffentlicht, sobald sie vorliegt.</p>
+        </Notice>
+        <h2 id="verantwortlich">Verantwortliche Stelle</h2>
+        <p>
+          {kontakt.firma}
+          <br />
+          {kontakt.anschrift}
+          <br />
+          Telefon {kontakt.telefon}
+          <br />
+          E-Mail: <a href={kontakt.mailHref}>{kontakt.mail}</a>
+        </p>
+        <h2 id="bisherige-hinweise">Bisherige Hinweise</h2>
+        <p>
+          Bis zur neuen Erklärung gelten die bisherigen Datenschutzhinweise im{' '}
+          <a href="/impressum#datenschutz-ihr-gutes-recht-unsere-verpflichtung">Impressum</a>.
+        </p>
+      </Prose>
+    </div>
+  </main>
+</BaseLayout>

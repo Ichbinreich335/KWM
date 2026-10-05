@@ -1,0 +1,78 @@
+---
+import { kontakt } from '../data/kontakt';
+import Button from './Button.astro';
+import LinkArrow from './LinkArrow.astro';
+import { anfrageLink } from '../lib/anfrage-link';
+
+interface Props {
+  text: string;
+  /** Vorbelegung für das Feld „Stück“ im Anfrageformular */
+  stueck?: string;
+}
+const { text, stueck } = Astro.props;
+const href = anfrageLink(stueck);
+const hatHinweis = Astro.slots.has('default');
+---
+
+<section class="anfrage-band on-flaeche grid" aria-label="Anfrage">
+  <p class="anfrage-band__text" data-reveal="fade">
+    {text}
+  </p>
+  <div class="anfrage-band__actions" data-reveal="fade">
+    <Button href={href}>Anfrage schreiben</Button>
+    <LinkArrow href={kontakt.telefonHref}>{kontakt.telefon}</LinkArrow>
+  </div>
+  {hatHinweis && (
+    <p class="anfrage-band__hint" data-reveal="fade">
+      <slot />
+    </p>
+  )}
+</section>
+
+<style>
+  /* Abschlussband mit Anfrage: Fläche, damit es nicht an den Anker des Footers stößt */
+  .anfrage-band {
+    background: var(--ground-2);
+    padding-block: clamp(48px, 6vw, 88px);
+    row-gap: 16px;
+    align-items: center;
+    --cover: var(--ground-2);
+  }
+  .anfrage-band__text {
+    grid-column: 1 / 8;
+    margin: 0;
+    font-family: var(--f-text);
+    font-size: var(--t-h3);
+    line-height: var(--t-h3-lh);
+    text-wrap: balance;
+  }
+  .anfrage-band__actions {
+    grid-column: 9 / 13;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 28px;
+    align-items: center;
+  }
+  .anfrage-band__hint {
+    grid-column: 1 / 8;
+    margin: 0;
+    font-size: var(--t-small);
+    line-height: var(--t-small-lh);
+    color: var(--ink-2);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 20px;
+    align-items: center;
+  }
+  .anfrage-band__hint:empty {
+    display: none;
+  }
+
+  @media (max-width: 900px) {
+    .anfrage-band__text,
+    .anfrage-band__actions,
+    .anfrage-band__hint {
+      grid-column: 1 / -1;
+    }
+  }
+</style>

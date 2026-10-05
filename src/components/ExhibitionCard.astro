@@ -1,0 +1,496 @@
+---
+import type { Ausstellung } from '../data/ausstellungen';
+import LinkArrow from './LinkArrow.astro';
+import type { Fakt } from '../data/typen';
+import { heuteTag, statusText, tagAusIso } from '../lib/status';
+import { lesetitel as lesetitelVon } from '../lib/lesetitel';
+import { zeitraumKurz, zeitraumMitBis } from '../lib/zeitraum';
+import { bildMetadaten } from '../lib/bilder';
+import Bild from './Bild.astro';
+import FactsList from './FactsList.astro';
+import Flyer from './Flyer.astro';
+
+interface Props {
+  ausstellung: Ausstellung;
+  /** `spotlight`: groß mit offenen Details; `kachel`: Karte der Startseite mit aufklappbaren Details; `eintrag`: Feature der Seite Aktuelles */
+  typ: 'spotlight' | 'kachel' | 'eintrag';
+  /** Nur `eintrag`: Bild rechts, Text links */
+  gespiegelt?: boolean;
+  /** Nur `eintrag`: Bild im ersten Bildschirm (größtes Element beim Laden), lädt mit hoher Priorität */
+  prioritaet?: boolean;
+}
+
+const { ausstellung, typ, gespiegelt = false, prioritaet = false } = Astro.props;
+const { fotos } = ausstellung;
+// Kachelbild: groß (spotlight, zwei Drittel der Breite) oder als Karte (ein Drittel); kleinere Quellen in Eigengröße
+const quelle = bildMetadaten(fotos.kachel.src).width;
+const kachelBild =
+  typ === 'spotlight'
+    ? {
+        width: Math.min(quelle, 1400),
+        widths: [960, 1400, quelle].filter((b) => b <= quelle),
+        sizes: '(min-width: 900px) 64vw, 100vw',
+      }
+    : quelle > 640
+      ? { width: 640, widths: [640, quelle], sizes: '(min-width: 900px) 31vw, 100vw' }
+      : {};
+// Der Browser berechnet den Status beim Laden neu (sig-aktuell.ts); das hier ist der Stand zum Bauzeitpunkt
+const status = statusText(tagAusIso(ausstellung.start), tagAusIso(ausstellung.ende), heuteTag());
+const zeitraum = zeitraumMitBis(ausstellung.start, ausstellung.ende);
+const aktuellesFakten = ausstellung.aktuelles?.fakten;
+
+// Angaben der Startseite aus den Feldern der Ausstellung
+const fakten: Fakt[] = [
+  { label: 'Zeitraum', wert: zeitraum },
+  ...(ausstellung.eroeffnung ? [{ label: 'Eröffnung', wert: ausstellung.eroeffnung.join(' ') }] : []),
+  ...(ausstellung.oeffnungszeiten
+    ? [{ label: ausstellung.oeffnungszeitenLabel ?? 'Öffnungszeiten', wert: ausstellung.oeffnungszeiten }]
+    : []),
+  ...(ausstellung.kooperation ? [{ label: 'In Kooperation mit', wert: ausstellung.kooperation }] : []),
+  ...(ausstellung.adresse ? [{ label: 'Adresse', wert: ausstellung.adresse }] : []),
+];
+
+const panelId = `aktuell-${ausstellung.schluessel}`;
+const ausloeser = ausstellung.art === 'Werkstatt' ? 'Mehr erfahren' : 'Mehr zur Ausstellung';
+// Für Screenreader: geschützter Bindestrich und „&“ ausgeschrieben
+const lesetitel = lesetitelVon(ausstellung.titel);
+const datum = zeitraumKurz(ausstellung.start, ausstellung.ende);
+---
+
+{typ === 'eintrag' ? (
+  <article
+    class:list={['feature', gespiegelt && 'feature--mirror', 'grid']}
+    aria-labelledby={`f-${ausstellung.schluessel}`}
+  >
+    {fotos.haupt && (
+      <figure class="feature__media" data-reveal="img">
+        <Bild bild={fotos.haupt} sizes="100vw" priority={prioritaet} />
+        <figcaption>{fotos.haupt.unterschrift}</figcaption>
+      </figure>
+    )}
+    <div class="feature__text">
+      <p class="feature__date" data-reveal="fade">
+        {datum.map((zeile, i) => (
+          <Fragment>
+            {i > 0 && <br />}
+            {zeile}
+          </Fragment>
+        ))}
+      </p>
+      <h2 class="h2 feature__title" id={`f-${ausstellung.schluessel}`} data-reveal="words">
+        {ausstellung.titel}
+      </h2>
+      {aktuellesFakten ? (
+        <Fragment>
+          <p class="feature__lead" data-reveal="fade">
+            {ausstellung.beschreibung}
+          </p>
+          <FactsList typ="zeile" fakten={aktuellesFakten} einblenden />
+          {ausstellung.flyer && (
+            <Flyer
+              flyer={ausstellung.flyer}
+              titel={ausstellung.titel}
+              schluessel={ausstellung.schluessel}
+              modus="vorschau"
+            />
+          )}
+          {ausstellung.link && (
+            <LinkArrow href={ausstellung.link.href} data-reveal="fade">
+              {ausstellung.link.text}
+            </LinkArrow>
+          )}
+        </Fragment>
+      ) : (
+        <div class="feature__body" data-reveal="fade">
+          <p class="feature__place">
+            <strong>{ausstellung.haus}</strong>
+            {ausstellung.adresse?.map((zeile, i) => (
+              <Fragment>
+                {i > 0 && <br />}
+                {zeile}
+              </Fragment>
+            ))}
+          </p>
+          {ausstellung.link && <LinkArrow href={ausstellung.link.href}>{ausstellung.link.text}</LinkArrow>}
+        </div>
+      )}
+    </div>
+  </article>
+) : (
+  <li
+    class="aktuell__item"
+    data-spotlight={typ === 'spotlight' ? '' : undefined}
+    data-start={ausstellung.start}
+    data-end={ausstellung.ende}
+  >
+    <figure class="aktuell__media">
+      <span class="aktuell__frame">
+        <Bild bild={fotos.kachel} {...kachelBild} />
+      </span>
+      <figcaption>{fotos.kachel.unterschrift}</figcaption>
+    </figure>
+    <div class="aktuell__body">
+      <p class="aktuell__status" data-status>
+        {status}
+      </p>
+      <h3 class="aktuell__title">{ausstellung.titel}</h3>
+      <p class="aktuell__place">
+        {ausstellung.haus}, {ausstellung.stadt}
+      </p>
+      {typ === 'spotlight' ? (
+        <div class="aktuell__details">
+          <p class="aktuell__text">{ausstellung.beschreibung}</p>
+          <FactsList typ="zeile" grund="anker" fakten={fakten} />
+          {ausstellung.link && <LinkArrow href={ausstellung.link.href}>{ausstellung.link.text}</LinkArrow>}
+        </div>
+      ) : (
+        <Fragment>
+          <button class="aktuell__more" type="button" aria-expanded="false" aria-controls={panelId} data-more>
+            <span class="aktuell__more-label" data-label={ausloeser}>
+              {ausloeser}
+            </span>
+          </button>
+          <div class="aktuell__panel" id={panelId} role="region" aria-label={`Details zu ${lesetitel}`}>
+            <div class="aktuell__panel-in">
+              <p class="aktuell__text">{ausstellung.beschreibung}</p>
+              <FactsList typ="zeile" grund="anker" fakten={fakten} />
+              {ausstellung.link && <LinkArrow href={ausstellung.link.href}>{ausstellung.link.text}</LinkArrow>}
+              {ausstellung.flyer && (
+                <Flyer
+                  flyer={ausstellung.flyer}
+                  titel={ausstellung.titel}
+                  schluessel={ausstellung.schluessel}
+                  modus="link"
+                />
+              )}
+            </div>
+          </div>
+        </Fragment>
+      )}
+    </div>
+  </li>
+)}
+
+<style>
+  /* Kachel und Spotlight der Startseite (Anker, dunkel); Abschnitt, Kopf, Liste und Platzierung im Raster stehen in sig-aktuell.css */
+  .aktuell__item {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-content: start;
+    row-gap: 20px;
+    margin-bottom: var(--aktuell-reihe);
+  }
+  .aktuell__item:last-child {
+    margin-bottom: 0;
+  }
+  .aktuell__item[data-spotlight] {
+    grid-template-columns: subgrid;
+    align-items: start;
+  }
+
+  /* Karten ohne Spotlight teilen sich sechs Zeilen (Bild, Status, Titel, Ort, Auslöser, Details):
+     Die Auslöser einer Reihe stehen auf einer Linie, aufgeklappte Details verschieben keine Nachbarn. */
+  @media (min-width: 901px) {
+    .aktuell__item:not([data-spotlight]) {
+      grid-row: span 6;
+      grid-template-rows: subgrid;
+      row-gap: 0;
+      margin-bottom: 0;
+    }
+    /* Ab der zweiten Kartenreihe: Abstand oben, damit keine leere Detailzeile unten Platz frisst */
+    .aktuell__item:nth-child(n + 4 of :not([data-spotlight])) {
+      margin-top: var(--aktuell-reihe);
+    }
+    .aktuell__item:not([data-spotlight]) .aktuell__body {
+      display: contents;
+    }
+    .aktuell__item:not([data-spotlight]) .aktuell__media {
+      margin-bottom: 20px;
+    }
+    .aktuell__item:not([data-spotlight]) .aktuell__status,
+    .aktuell__item:not([data-spotlight]) .aktuell__title {
+      margin-bottom: 8px;
+    }
+    .aktuell__item:not([data-spotlight]) .aktuell__more,
+    .aktuell__item:not([data-spotlight]) .aktuell__panel {
+      align-self: start;
+      justify-self: start;
+    }
+  }
+
+  .aktuell__media {
+    margin: 0;
+  }
+  .aktuell__frame {
+    display: block;
+    overflow: hidden;
+    background: var(--coal-2);
+  }
+  .aktuell__media :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    transition: transform var(--dur-zoom) var(--ease);
+  }
+  .aktuell__media:hover :global(img),
+  .aktuell__item:has(:focus-visible) .aktuell__media :global(img) {
+    transform: scale(1.035);
+  }
+  .aktuell__item[data-spotlight] .aktuell__media {
+    grid-column: 1 / 9;
+  }
+  .aktuell__item[data-spotlight] .aktuell__media :global(img) {
+    aspect-ratio: 1400 / 652;
+  }
+  .aktuell__item[data-spotlight] .aktuell__body {
+    grid-column: 9 / 13;
+  }
+
+  .aktuell__body {
+    display: grid;
+    justify-items: start;
+    align-content: start;
+    row-gap: 8px;
+    min-width: 0;
+  }
+  .aktuell__status {
+    margin: 0;
+    font-size: var(--t-meta);
+    line-height: var(--t-meta-lh);
+    letter-spacing: 0.02em;
+    font-variant-numeric: tabular-nums;
+    color: var(--accent-on-coal);
+  }
+  .aktuell__title {
+    margin: 0;
+    font-family: var(--f-display);
+    font-weight: 400;
+    font-size: var(--t-h3);
+    line-height: var(--t-h3-lh);
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+  .aktuell__item[data-spotlight] .aktuell__title {
+    font-size: var(--t-statement);
+    line-height: var(--t-statement-lh);
+  }
+  .aktuell__place {
+    margin: 0;
+    font-size: var(--t-small);
+    line-height: var(--t-small-lh);
+    color: var(--on-coal-2);
+    text-wrap: pretty;
+  }
+
+  /* Auslöser: mindestens 44 px hoch, Plus-Zeichen dreht sich zum Minus */
+  .aktuell__more {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 44px;
+    margin-top: 8px;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--on-coal);
+    font: inherit;
+    font-size: var(--t-small);
+    line-height: var(--t-small-lh);
+    cursor: pointer;
+  }
+  .aktuell__more::before {
+    content: '';
+    width: 14px;
+    height: 14px;
+    flex: none;
+    background:
+      linear-gradient(currentColor, currentColor) center / 100% 1px no-repeat,
+      linear-gradient(currentColor, currentColor) center / 1px 100% no-repeat;
+    transition: transform var(--dur-open) var(--ease);
+  }
+  .aktuell__more[aria-expanded='true']::before {
+    transform: rotate(135deg);
+  }
+  .aktuell__more-label {
+    background: linear-gradient(currentColor, currentColor) 0 100% / 100% 1px no-repeat;
+    padding-bottom: 2px;
+    transition: background-size var(--dur-hover) var(--ease);
+  }
+  .aktuell__more:hover .aktuell__more-label {
+    background-size: 0% 1px;
+    background-position: 100% 100%;
+  }
+  .aktuell__more:focus-visible {
+    outline: var(--focus-ring) solid var(--on-coal);
+    outline-offset: var(--focus-offset);
+  }
+
+  /* Aufklappen: Höhe über grid-template-rows, nur beim Schließen verzögert unsichtbar */
+  .aktuell__panel {
+    display: grid;
+    grid-template-rows: 0fr;
+    visibility: hidden;
+    width: 100%;
+  }
+  .aktuell__panel-in {
+    min-height: 0;
+    overflow: hidden;
+    opacity: 0;
+  }
+  /* Übergänge erst, wenn das Skript die Details zugeklappt hat (sig-aktuell.ts setzt is-animiert einen Frame
+     nach is-ready); sonst schrumpft die Seite beim Laden um Hunderte px und verschiebt die Höhe beim Scrollen. */
+  :global(.aktuell.is-animiert) .aktuell__panel {
+    transition:
+      grid-template-rows var(--dur-open) var(--ease),
+      visibility 0s linear var(--dur-open);
+  }
+  :global(.aktuell.is-animiert) .aktuell__panel-in {
+    transition: opacity var(--dur-open) var(--ease);
+  }
+  .aktuell__item.is-open .aktuell__panel {
+    grid-template-rows: 1fr;
+    visibility: visible;
+    transition-delay: 0s;
+  }
+  .aktuell__item.is-open .aktuell__panel-in {
+    opacity: 1;
+  }
+  .aktuell__panel-in > :global(:first-child) {
+    margin-top: 16px;
+  }
+  .aktuell__panel-in > :global(:last-child) {
+    margin-bottom: 4px;
+  }
+  .aktuell__panel-in :global(.link-arrow) {
+    margin-top: 4px;
+  }
+
+  .aktuell__text {
+    margin: 0 0 16px;
+    font-size: var(--t-small);
+    line-height: var(--t-small-lh);
+    max-width: 52ch;
+    text-wrap: pretty;
+  }
+  .aktuell__details {
+    width: 100%;
+    margin-top: 8px;
+  }
+
+  /* Ohne JS: Details stehen offen, der Auslöser entfällt */
+  :global(.aktuell:not(.is-ready)) .aktuell__more {
+    display: none;
+  }
+  :global(.aktuell:not(.is-ready)) .aktuell__panel {
+    grid-template-rows: 1fr;
+    visibility: visible;
+  }
+  :global(.aktuell:not(.is-ready)) .aktuell__panel-in {
+    opacity: 1;
+  }
+
+  /* Feature der Seite Aktuelles: Bild randlos links, Text rechts. Alle Einträge gleich, 4:3 wie die Kacheln. */
+  .feature {
+    padding-top: var(--section);
+    align-items: start;
+    row-gap: 32px;
+  }
+  .feature__media {
+    grid-column: 1 / 8;
+    margin-left: calc(var(--m) * -1);
+  }
+  .feature__media :global(img) {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+  }
+  .feature__media figcaption {
+    padding-left: var(--m);
+  }
+  .feature__text {
+    grid-column: 9 / 13;
+    padding-top: clamp(24px, 6vw, 80px);
+  }
+  .feature__date {
+    display: block;
+    font-size: var(--t-meta);
+    line-height: var(--t-meta-lh);
+    color: var(--ink-2);
+    margin-bottom: 14px;
+    font-variant-numeric: tabular-nums;
+  }
+  .feature__title {
+    margin-bottom: 28px;
+  }
+  .feature__place {
+    font-size: var(--t-small);
+    line-height: var(--t-small-lh);
+    margin-bottom: 20px;
+  }
+  .feature__place strong {
+    font-weight: 500;
+    display: block;
+  }
+  .feature__lead {
+    font-family: var(--f-text);
+    font-size: var(--t-body);
+    line-height: var(--t-body-lh);
+  }
+
+  /* Gespiegelter Eintrag: Bild randlos rechts, Text links */
+  .feature--mirror .feature__media {
+    grid-column: 6 / 13;
+    grid-row: 1;
+    margin-left: 0;
+    margin-right: calc(var(--m) * -1);
+  }
+  .feature--mirror .feature__media figcaption {
+    padding-left: 0;
+    padding-right: var(--m);
+  }
+  .feature--mirror .feature__text {
+    grid-column: 1 / 5;
+    grid-row: 1;
+  }
+
+  @media (max-width: 900px) {
+    .aktuell__item,
+    .aktuell__item[data-spotlight] {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .aktuell__item[data-spotlight] .aktuell__media,
+    .aktuell__item[data-spotlight] .aktuell__body {
+      grid-column: auto;
+    }
+    .feature__media,
+    .feature--mirror .feature__media {
+      grid-column: 1 / -1;
+      grid-row: auto;
+      margin-inline: calc(var(--m) * -1);
+    }
+    .feature__media figcaption,
+    .feature--mirror .feature__media figcaption {
+      padding-inline: var(--m);
+    }
+    .feature__text,
+    .feature--mirror .feature__text {
+      grid-column: 1 / -1;
+      grid-row: auto;
+      padding-top: 8px;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .aktuell__media :global(img) {
+      transition: none;
+    }
+    .aktuell__media:hover :global(img),
+    .aktuell__item:has(:focus-visible) .aktuell__media :global(img) {
+      transform: none;
+    }
+    .aktuell__more::before {
+      transition: none;
+    }
+  }
+</style>

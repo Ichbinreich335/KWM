@@ -1,0 +1,140 @@
+/* Young-Jae Lee: Seiten-spezifische Kompositionen */
+.yjl-hero .page-hero__media img {
+  object-position: 30% 40%;
+}
+
+/* Zitat als Zäsur: ein Satz auf Fläche */
+.pullquote {
+  margin-top: var(--section);
+  padding-block: var(--section);
+}
+.pullquote__quote {
+  grid-column: 2 / 12;
+}
+@media (max-width: 900px) {
+  .pullquote__quote {
+    grid-column: 1 / -1;
+  }
+}
+
+/* Haltung: Zitat, dann Bild und Text versetzt */
+.stance {
+  padding-top: var(--section);
+  row-gap: clamp(56px, 8vw, 120px);
+  align-items: start;
+}
+.stance__quote {
+  grid-column: 1 / 9;
+}
+.stance__media {
+  grid-column: 1 / 6;
+}
+.stance__media img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  mix-blend-mode: multiply;
+}
+.stance__text {
+  grid-column: 7 / 12;
+  padding-top: clamp(24px, 10svh, 120px);
+}
+.stance__text .h2 {
+  margin-bottom: 32px;
+}
+.stance__text p {
+  max-width: 48ch;
+  text-wrap: pretty;
+}
+.stance__text .prose__source {
+  display: block;
+  margin-top: -6px;
+  margin-bottom: 28px;
+}
+
+/* Erinnerung: Tonfläche mit Catoir-Passage und Schalen am Boden */
+.memory {
+  padding-block: var(--section);
+  margin-top: var(--section);
+  row-gap: 48px;
+  align-items: center;
+}
+.memory__text {
+  grid-column: 1 / 7;
+}
+.memory__text .h2 {
+  margin-bottom: 36px;
+}
+.memory__media {
+  grid-column: 8 / -1;
+  margin-right: calc(var(--m) * -1);
+}
+.memory__media img {
+  width: 100%;
+  aspect-ratio: 937 / 1040;
+  object-fit: cover;
+}
+
+/* Wandbild zwischen den Kapiteln */
+.plate {
+  margin-top: var(--section);
+}
+.plate img {
+  width: 100%;
+  height: min(80svh, 820px);
+  object-fit: cover;
+}
+.plate figcaption {
+  padding-inline: var(--m);
+}
+
+/* Sammlungen */
+.museums {
+  grid-column: 1 / -1;
+  columns: 3;
+  column-gap: var(--g);
+}
+.museums li {
+  break-inside: avoid;
+  padding: 9px 0;
+  border-top: 1px solid var(--hair);
+}
+
+/* Alle Ausstellungen seit 1980: Aufklapper und Liste in YearArchive, hier nur die Platzierung im Raster */
+#alle-ausstellungen {
+  grid-column: 1 / -1;
+  margin-top: var(--head-gap);
+}
+.page-yjl #publikationen {
+  padding-bottom: var(--section);
+}
+.page-yjl .datelist__year {
+  white-space: nowrap;
+}
+
+@media (max-width: 900px) {
+  .stance__quote,
+  .stance__media,
+  .stance__text {
+    grid-column: 1 / -1;
+  }
+  .stance__text {
+    padding-top: 0;
+  }
+  .memory__text,
+  .memory__media {
+    grid-column: 1 / -1;
+  }
+  .memory__media {
+    margin-inline: calc(var(--m) * -1);
+  }
+  .memory__media figcaption {
+    padding-inline: var(--m);
+  }
+  .museums {
+    columns: 1;
+  }
+  .plate img {
+    height: 60svh;
+  }
+}

@@ -1,0 +1,82 @@
+/* Bausteine der Unterseiten. Tokens, Raster, Typografie und Motion kommen aus global.css. */
+
+/* Die Linie des Kopfes ersetzt die obere Linie der folgenden Liste */
+.chapter__head + .grid > :is(.datelist, .texts, .pubs) {
+  border-top: 0;
+}
+.chapter__head + .pubs .pub {
+  border-top: 0;
+  padding-top: 0;
+}
+
+/* Quelle unter einem Zitat */
+.prose__source {
+  font-family: var(--f-sans);
+  font-size: var(--t-meta);
+  line-height: var(--t-meta-lh);
+  color: var(--ink-2);
+}
+
+/* Anker: dunkler Abschnitt im Rhythmus der Seite, genau einer pro Unterseite (DESIGN.md, Abschnittstypen) */
+.on-anker {
+  --ink: var(--on-coal);
+  --ink-2: var(--on-coal-2);
+  --hair: var(--hair-on-coal);
+  --cover: var(--coal);
+  background: var(--coal);
+  color: var(--on-coal);
+}
+.on-anker ::selection {
+  background: var(--on-coal);
+  color: var(--coal);
+}
+
+/* Fehlerseite: Wege zurück in Fließtextgröße */
+.not-found {
+  min-height: 70svh;
+  align-content: center;
+}
+.not-found__links {
+  margin-top: 20px;
+}
+.not-found__links .link-arrow {
+  font-family: var(--f-text);
+  font-size: inherit;
+}
+
+/* Fläche: ruhiger Zwischenabschnitt, Kapitel mit eigenem Abstand nach oben und unten */
+.on-flaeche {
+  background: var(--ground-2);
+  color: var(--ink);
+  --cover: var(--ground-2);
+}
+
+/* Textstile als Klassen (DESIGN §3): Seiten setzen keine Schriftgrößen, Schriften oder Zeilenhöhen selbst, sie wählen einen Stil */
+.ts-statement {
+  font-family: var(--f-display);
+  font-size: var(--t-statement);
+  line-height: var(--t-statement-lh);
+}
+.ts-h3 {
+  font-family: var(--f-display);
+  font-size: var(--t-h3);
+  line-height: var(--t-h3-lh);
+}
+.ts-quote {
+  font-family: var(--f-text);
+  font-size: var(--t-quote);
+  line-height: var(--t-quote-lh);
+}
+.ts-body {
+  font-family: var(--f-text);
+  font-size: var(--t-body);
+  line-height: var(--t-body-lh);
+}
+.ts-small {
+  font-size: var(--t-small);
+  line-height: var(--t-small-lh);
+}
+.ts-meta {
+  font-size: var(--t-meta);
+  line-height: var(--t-meta-lh);
+}

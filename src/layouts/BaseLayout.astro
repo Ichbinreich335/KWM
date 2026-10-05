@@ -1,0 +1,98 @@
+---
+import type { ImageMetadata } from 'astro';
+import { Font, fontData, getImage } from 'astro:assets';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import StrukturierteDaten from '../components/StrukturierteDaten.astro';
+import { bildMetadaten } from '../lib/bilder';
+import type { NavKey } from '../data/navigation';
+
+interface Props {
+  title: string;
+  description: string;
+  bodyClass: string;
+  nav?: NavKey;
+  /** Strukturierte Daten (JSON-LD) der Werkstatt ausgeben; nur auf der Startseite. */
+  strukturiert?: boolean;
+  /** Vorschaubild für Link-Vorschauen (Open Graph); Standard: das Einstiegsbild der Startseite. */
+  bild?: ImageMetadata;
+  /** Alt-Text zum Vorschaubild; gilt für das Standardbild, bei eigenem `bild` mitgeben. */
+  bildAlt?: string;
+  /** Canonical und og:url ausgeben; auf der 404-Seite aus. */
+  canonicalAusgeben?: boolean;
+}
+const {
+  title,
+  description,
+  bodyClass,
+  nav,
+  strukturiert = false,
+  bild = bildMetadaten('/img/kwm/kummerschalen.webp'),
+  bildAlt = 'Viele flache Schalen von Young-Jae Lee auf einem Steinboden, seladonblau, schwarz gesprenkelt und rotbraun glasiert',
+  canonicalAusgeben = true,
+} = Astro.props;
+
+// build.format 'file' liefert pathname mit .html; die öffentliche URL hat keins (Cloudflare entfernt es)
+const canonical = new URL(Astro.url.pathname.replace(/\.html$/, '').replace(/\/index$/, '/'), Astro.site);
+const vorschaubild = new URL((await getImage({ src: bild })).src, Astro.site);
+
+// Die Fonts API kann lokale Schriften nicht nach Teilmenge vorladen. Darum die zwei Dateien über fontData wählen:
+// Die latin-Variante steht in astro.config.mjs (varianten) immer vor latin-ext. Ob es wirklich die latin-Datei ist, prüft tests/routen.spec.ts.
+const vorgeladeneSchriften = (['--font-caslon-display', '--font-jost'] as const).map((cssVariable) => {
+  const url = fontData[cssVariable]?.find((schnitt) => schnitt.style === 'normal')?.src[0]?.url;
+  if (url === undefined) throw new Error(`Keine Schriftdatei für ${cssVariable} gefunden (siehe astro.config.mjs).`);
+  return url;
+});
+---
+
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    {canonicalAusgeben && <link rel="canonical" href={canonical} />}
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Keramische Werkstatt Margaretenhöhe" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    {canonicalAusgeben && <meta property="og:url" content={canonical} />}
+    <meta property="og:locale" content="de_DE" />
+    <meta property="og:image" content={vorschaubild} />
+    <meta property="og:image:width" content={String(bild.width)} />
+    <meta property="og:image:height" content={String(bild.height)} />
+    <meta property="og:image:alt" content={bildAlt} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <link rel="icon" href="/img/kwm/logo.svg" type="image/svg+xml" />
+    {vorgeladeneSchriften.map((url) => (
+      <link rel="preload" href={url} as="font" type="font/woff2" crossorigin />
+    ))}
+    <Font cssVariable="--font-caslon-display" />
+    <Font cssVariable="--font-caslon-text" />
+    <Font cssVariable="--font-jost" />
+    {strukturiert && <StrukturierteDaten bild={vorschaubild} />}
+    <slot name="head" />
+    {/* Muss vor dem ersten Rendern laufen (Logo-Zeichnung einmal pro Sitzung), daher inline */}
+    <script is:inline>
+      document.documentElement.classList.add('js');
+      try {
+        if (!sessionStorage.getItem('kwm-logo')) {
+          sessionStorage.setItem('kwm-logo', '1');
+          document.documentElement.classList.add('logo-draw');
+        }
+      } catch {
+        document.documentElement.classList.add('logo-draw');
+      }
+    </script>
+  </head>
+  <body class={bodyClass}>
+    <Header current={nav} />
+    <slot />
+    <Footer />
+    <script>
+      import '../scripts/main';
+    </script>
+  </body>
+</html>

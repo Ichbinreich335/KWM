@@ -1,0 +1,164 @@
+---
+import '../styles/basis.css';
+import '../styles/seiten/page-manufaktur.css';
+import LinkArrow from '../components/LinkArrow.astro';
+import WareGroup from '../components/WareGroup.astro';
+import DateList from '../components/DateList.astro';
+import { arbeitsweise, gruppe, regal } from '../data/manufaktur';
+import Statement from '../components/Statement.astro';
+import ChapterHead from '../components/ChapterHead.astro';
+import Bild from '../components/Bild.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import InquiryBand from '../components/InquiryBand.astro';
+import SubNav from '../components/SubNav.astro';
+import PageHero from '../components/PageHero.astro';
+import Figure from '../components/Figure.astro';
+import GlazeStage from '../components/GlazeStage.astro';
+import { glasurproben } from '../data/glasuren';
+import Plinth from '../components/Plinth.astro';
+---
+
+<BaseLayout
+  title="Manufakturprogramm · Keramische Werkstatt Margaretenhöhe"
+  description="Geschirr und Edition der Keramischen Werkstatt Margaretenhöhe: auf der Scheibe gedreht, nach den Formprinzipien des Bauhauses, in einer sechstonigen Farbskala."
+  bodyClass="page-manufaktur"
+  nav="manufaktur"
+>
+  <main id="inhalt">
+    <PageHero typ="flaeche" titelId="mf-title" class="mf-hero">
+      <Fragment slot="titel">Manufaktur&shy;programm</Fragment>
+      <Fragment slot="lede">
+        Vom Teller bis zur Schüssel, von der Tasse bis zum Krug, bis hin zu Salz-, Pfeffer-, Milch- und Zuckergefäßen –
+        unsere Geschirr-Serie umfasst alle Bestandteile eines Speisegeschirrs.
+      </Fragment>
+      <Plinth faecher={regal} />
+    </PageHero>
+
+    <section class="mf-intro on-anker grid" aria-label="Über das Manufakturprogramm">
+      <Statement typ="aussage" class="mf-intro__rule" quelle="Die wichtigsten Vorgaben für das Manufakturprogramm">
+        Jedes Stück muss gut zu drehen sein und auch zu benutzen. Alle Teile eines Geschirrs, gleich welcher Farbe,
+        sollten miteinander kombinierbar sein.
+      </Statement>
+      <Figure class="mf-intro__aside" unterschrift="Teekanne, Teeschale und Plattenteller">
+        <Bild
+          src="/img/kwm/teekanne.webp"
+          alt="Weiße Teekanne und dunkle Teeschale auf einem hellen, rechteckigen Plattenteller"
+          loading="eager"
+        />
+      </Figure>
+      <div class="mf-intro__text">
+        <p data-reveal="fade">
+          Unter Rückbesinnung auf die formalen Grundprinzipien des Bauhauses hat Young-Jae Lee mit Hildegard Eggemann,
+          Michael Schmandt und Claudia Neumann die charakteristische Formensprache des Manufakturprogramms entwickelt.
+        </p>
+        <p data-reveal="fade">
+          Zunächst wurden die 25 Grundelemente eines Geschirrs entworfen: Teller, Schalen, Krüge. In monatelangen
+          Experimenten entstand die sechstonige Farbskala, von Schattierungen des Jadegrün über ein gebrochenes Weiß bis
+          zu Rostbraun.
+        </p>
+      </div>
+    </section>
+
+    <SubNav
+      beschriftung="Kapitel dieser Seite"
+      eintraege={[
+        { href: '#geschirr', text: 'Geschirr' },
+        { href: '#edition', text: 'Edition' },
+        { href: '#farben', text: 'Farben' },
+        { href: '#arbeitsweise', text: 'Arbeitsweise' },
+      ]}
+    />
+
+    {/* Geschirr */}
+    <ChapterHead id="geschirr" titelId="geschirr-title">
+      <Fragment slot="titel">Geschirr</Fragment>
+      <Fragment slot="einleitung">
+        Alle Teile eines Geschirrs, gleich welcher Farbe, lassen sich miteinander kombinieren – einzeln oder im Set.
+      </Fragment>
+
+      <WareGroup gruppe={gruppe('teller')} />
+
+      <WareGroup gruppe={gruppe('viereckteller')} />
+
+      <WareGroup gruppe={gruppe('schalen-und-schuesseln')} />
+    </ChapterHead>
+
+    {/* Zäsur: Regal der Werkstatt */}
+    <section class="zaesur on-flaeche grid" aria-label="Handarbeit in der Werkstatt">
+      <Figure class="zaesur__media" unterschrift="Im Regal der Werkstatt · Foto: Haydar Koyupinar">
+        <Bild
+          src="/img/kwm/regal.webp"
+          loading="lazy"
+          alt="Regal voller ungebrannter Becher, Schalen, Teller und Krüge in hellem Tonbeige"
+        />
+      </Figure>
+      <Statement typ="aussage" as="p" class="zaesur__text">
+        Alle Stücke werden in unserer Werkstatt in Handarbeit gefertigt. Sie sind einzeln oder im Set zu erwerben.
+      </Statement>
+    </section>
+
+    <ChapterHead class="chapter--cont" beschriftung="Geschirr, Fortsetzung">
+      <WareGroup gruppe={gruppe('becher-und-tassen')} />
+
+      <WareGroup gruppe={gruppe('toepfe-und-dosen')} />
+
+      <WareGroup gruppe={gruppe('flaschen-kruege-kannen')} />
+
+      <WareGroup gruppe={gruppe('weitere-stuecke')} />
+    </ChapterHead>
+
+    {/* Edition */}
+    <ChapterHead grund="flaeche" id="edition" titelId="edition-title">
+      <Fragment slot="titel">Edition</Fragment>
+      <Fragment slot="einleitung">
+        In unserer Edition sind weitere ergänzende Geschirrstücke erhältlich, wie zum Beispiel Sushi- oder Plattenteller
+        sowie Pflanzgefäße und Vasen. Sie unterscheiden sich in der Farbgebung von unserem Geschirr.
+      </Fragment>
+
+      <WareGroup gruppe={gruppe('vasen-edition')} />
+
+      <WareGroup gruppe={gruppe('plattenteller-edition')} />
+
+      <WareGroup gruppe={gruppe('pflanzgefaesse-edition')} />
+
+      <WareGroup gruppe={gruppe('schalen-und-dosen-edition')} />
+    </ChapterHead>
+
+    {/* Farben */}
+    <ChapterHead id="farben" titelId="farben-title">
+      <Fragment slot="titel">Sechs Töne für das Geschirr.</Fragment>
+      <Fragment slot="einleitung">
+        Die Farben der Edition unterscheiden sich vom Geschirr und können je nach Brand unterschiedlich ausfallen.
+        Wählen Sie eine Glasurprobe.
+      </Fragment>
+
+      <GlazeStage proben={glasurproben} />
+    </ChapterHead>
+
+    {/* Arbeitsweise */}
+    <ChapterHead id="arbeitsweise" titelId="mf-aw-title">
+      <Fragment slot="titel">Keiner Mode, keinem Zeitgeist unterworfen.</Fragment>
+      <Fragment slot="einleitung">
+        Die Grundzüge des Manufakturprogramms haben sich bis heute nicht verändert. Mit der Edition wurde es um
+        zusätzliche Stücke erweitert, darunter Vasen, Pflanzgefäße und Dosen.
+      </Fragment>
+      <div class="grid">
+        <DateList eintraege={arbeitsweise} typ="definition" einblenden class="grid__full mf-facts" />
+      </div>
+    </ChapterHead>
+
+    <InquiryBand
+      text="Bei Interesse senden wir Ihnen gerne weitere Informationen oder ein Angebot zu."
+      stueck="Anfrage Manufakturprogramm"
+    >
+      Nennen Sie uns gern das Geschirr oder die Edition, die Sie interessiert. Für eine Bestellung gibt es
+      Anfrageformulare:{' '}
+      <LinkArrow href="https://kwm-1924.de/wp-content/uploads/2026/07/2026_04_Anfrage_inquiry_Geschirr_tableware.pdf">
+        Geschirr (PDF)
+      </LinkArrow>{' '}
+      <LinkArrow href="https://kwm-1924.de/wp-content/uploads/2023/09/anfrage_inquiry_editionen_editions.pdf">
+        Edition (PDF)
+      </LinkArrow>
+    </InquiryBand>
+  </main>
+</BaseLayout>

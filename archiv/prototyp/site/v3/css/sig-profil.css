@@ -1,0 +1,83 @@
+/* Signatur: profil – Profilzeichnung einer Schale in der freien Fläche über der Überschrift */
+.hero .hero__profile {
+  grid-column: 1 / 6;
+  grid-row: 1;
+  align-self: start;
+  display: flex;
+  align-items: flex-end;
+  gap: clamp(16px, 2vw, 32px);
+  padding-top: clamp(20px, 3.4vh, 40px);
+  height: calc(var(--profil-h, 0px) + clamp(20px, 3.4vh, 40px));
+  min-width: 0;
+  position: relative;
+  z-index: 1;
+  color: var(--ink);
+}
+.hero__profile[data-fit="none"] { visibility: hidden; }
+
+.profil__stage {
+  flex: none;
+  height: 100%;
+  aspect-ratio: 220 / 160;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.profil__svg { display: block; width: 100%; height: 100%; overflow: visible; }
+
+.profil__svg path { vector-effect: none; }
+.pf-ground, .pf-contour, .pf-section { fill: none; stroke: currentColor; stroke-dasharray: 1 1; stroke-dashoffset: 1; stroke-linejoin: round; }
+.pf-contour, .pf-section { stroke-width: calc(var(--px, 0.6) * 1.5); }
+.pf-ground { stroke-width: calc(var(--px, 0.6) * 0.8); }
+.pf-axis {
+  fill: none; stroke: currentColor;
+  stroke-width: calc(var(--px, 0.6) * 0.8);
+  stroke-dasharray: calc(var(--px, 0.6) * 14) calc(var(--px, 0.6) * 3) calc(var(--px, 0.6) * 2) calc(var(--px, 0.6) * 3);
+}
+.pf-dims { fill: none; stroke: var(--ink-2); stroke-width: calc(var(--px, 0.6) * 0.7); opacity: 0; }
+.pf-fill { fill: currentColor; opacity: 0; }
+.pf-shadow { fill: var(--ink); opacity: 0; }
+.pf-clay, .pf-light { opacity: 0; }
+.pf-spec { stroke: #fff; stroke-opacity: 0.6; stroke-width: calc(var(--px, 0.6) * 2.2); stroke-linecap: round; }
+.pf-bead { stroke-opacity: 0.85; stroke-width: calc(var(--px, 0.6) * 1.8); }
+.pf-glaze-edge { stroke-width: calc(var(--px, 0.6) * 1.4); }
+.pf-crack { stroke-width: calc(var(--px, 0.6) * 0.45); }
+
+.profil__cap { display: flex; flex-direction: column; align-items: flex-start; min-width: 0; padding-bottom: calc(var(--profil-h, 0px) * 0.09 - 12px); }
+.profil__name { margin: 0; text-wrap: balance; font-size: var(--t-small); line-height: var(--t-small-lh); letter-spacing: 0.02em; color: var(--ink); }
+.profil__dim { margin: 2px 0 10px; font-size: var(--t-meta); line-height: var(--t-meta-lh); letter-spacing: 0.02em; color: var(--ink-2); }
+.profil__more {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ink);
+  font: inherit;
+  font-size: var(--t-small); line-height: var(--t-small-lh);
+  white-space: nowrap;
+  cursor: pointer;
+}
+.profil__more::before {
+  content: "";
+  order: 2;
+  width: 0.85em; height: 0.85em;
+  background: currentColor;
+  -webkit-mask: var(--arrow) center / contain no-repeat;
+  mask: var(--arrow) center / contain no-repeat;
+  transition: transform 0.5s var(--ease);
+}
+.profil__more:hover::before { transform: translateX(4px); }
+
+@media (max-width: 900px) {
+  /* Mobil: schmale Karte zwischen Foto und Überschrift, Zeichnung links, Beschriftung rechts */
+  .hero .hero__profile { grid-column: 1 / -1; grid-row: 2; align-self: stretch; height: auto; padding-top: 28px; align-items: center; }
+  .hero .hero__text { grid-row: 3; padding-top: 20px; }
+  .profil__stage { height: clamp(6.5rem, 30vw, 8.5rem); }
+  .profil__cap { padding-bottom: 0; }
+}

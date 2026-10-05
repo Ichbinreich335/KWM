@@ -1,0 +1,9 @@
+{
+  "extends": "astro/tsconfigs/strictest",
+  "compilerOptions": {
+    "lib": ["ES2023"],
+    "types": ["../worker-configuration.d.ts"],
+    "noEmit": true
+  },
+  "include": ["./*.ts", "../src/lib/anfrage.ts"]
+}

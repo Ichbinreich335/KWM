@@ -1,0 +1,717 @@
+---
+import Bild from './Bild.astro';
+import LinkArrow from './LinkArrow.astro';
+import { hausName, ortZahlen, type Ort } from '../data/orte';
+import type { Foto } from '../data/typen';
+import { bildMetadaten } from '../lib/bilder';
+
+interface Props {
+  /** Orte mit Kachel, in der Reihenfolge der Seite (`kacheln` aus `orte.ts`) */
+  orte: readonly (Ort & { bild: Foto })[];
+  titel: string;
+  einleitung: string;
+  link: { href: string; text: string };
+  fussnote: string;
+}
+
+const { orte, titel, einleitung, link, fussnote } = Astro.props;
+const kachelKlasse = { gross: 'xl', mittel: 'm', klein: 's' } as const;
+// Größere Quellen rechnet Astro für die Kacheln auf diese Breite herunter
+const KACHEL_MAX = 1400;
+---
+
+{/* Host ist ein Custom Element mit Rolle region statt section, damit Klassen und Rolle des Abschnitts bleiben */}
+<kwm-places class="orte on-anker" id="orte" role="region" aria-labelledby="orte-title">
+  <div class="orte__head grid">
+    <h2 class="h2" id="orte-title" data-reveal="words">
+      {titel}
+    </h2>
+    <div class="orte__aside">
+      <p data-reveal="fade">{einleitung}</p>
+      <LinkArrow href={link.href}>{link.text}</LinkArrow>
+    </div>
+  </div>
+  <p class="orte__tip" data-orte-tip>
+    {/* Komma in den Wörtern: so bleibt kein Leerzeichen vor dem Komma, wenn eines der beiden ausgeblendet ist */}
+    Auf eine Stadt <span class="orte__tip-fine">klicken,</span>
+    <span class="orte__tip-coarse">tippen,</span> um die Ausstellungen dort zu sehen.
+  </p>
+  <ul class="orte__grid">
+    {orte.map((ort) => {
+      const zahlen = ortZahlen(ort);
+      return (
+        <li
+          class:list={[
+            'orte__tile',
+            `orte__tile--${kachelKlasse[ort.gewicht ?? 'klein']}`,
+            { 'orte__tile--full': ort.breitAmHandy },
+          ]}
+        >
+          <Bild class="orte__img" bild={ort.bild} width={Math.min(bildMetadaten(ort.bild.src).width, KACHEL_MAX)} />
+          <h3 class="orte__name">{ort.stadt}</h3>
+          <p class="orte__meta">
+            <span>{zahlen.zeitraum}</span>
+            <span>{zahlen.anzahl}</span>
+          </p>
+          <ul class="orte__houses" aria-label={`Häuser in ${ort.stadt}`}>
+            {ort.haeuser.map((haus) => (
+              <li>{hausName(haus)}</li>
+            ))}
+          </ul>
+          <ol class="orte__shows" aria-label={`Ausstellungen in ${ort.stadt}`} hidden>
+            {ort.auftritte.map((auftritt) => (
+              <li>
+                <span class="orte__y">{auftritt.jahr}</span>
+                <span class="orte__h">{auftritt.haus}</span>
+                {auftritt.titel && <span class="orte__t">{auftritt.titel}</span>}
+              </li>
+            ))}
+          </ol>
+        </li>
+      );
+    })}
+  </ul>
+  <p class="orte__note">{fussnote}</p>
+</kwm-places>
+
+<script>
+  // Ohne Skript zeigt jede Kachel ihre Häuser. Mit Skript klappt ein Klick auf die Kachel einen Detailbereich in voller Breite
+  // direkt unter der Reihe der Kachel auf (Akkordeon). Die Kacheln behalten ihre Reihenfolge, nur die Reihen darunter rutschen nach unten.
+  import { reducedMotion } from '../scripts/keramik';
+
+  const DURATION = 500;
+  const ROW_TOLERANCE = 2;
+  const REVEAL_MARGIN = 16;
+  const REVEAL_HEAD = 170;
+
+  let serial = 0;
+
+  function bind(el: HTMLElement, signal: AbortSignal) {
+    const grid = el.querySelector('.orte__grid');
+    if (!grid) return;
+    const tiles = [...grid.querySelectorAll<HTMLElement>('.orte__tile')];
+    let active: HTMLElement | null = null;
+    let current: HTMLElement | null = null;
+    let holdFrame = 0;
+
+    const tip = el.querySelector('[data-orte-tip]');
+    if (tip) {
+      const seen = new IntersectionObserver(
+        ([entry]) => {
+          if (!entry?.isIntersecting) return;
+          tip.classList.add('is-in');
+          seen.disconnect();
+        },
+        { threshold: 0.15 },
+      );
+      seen.observe(grid);
+    }
+
+    const buttons = new Map<HTMLElement, HTMLButtonElement>();
+    tiles.forEach((tile) => {
+      const name = tile.querySelector('.orte__name');
+      if (!name) return;
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'orte__toggle';
+      button.textContent = name.textContent;
+      button.setAttribute('aria-expanded', 'false');
+      name.replaceChildren(button);
+      button.addEventListener('click', () => (active === tile ? closeDetail() : openDetail(tile)));
+      buttons.set(tile, button);
+    });
+
+    function createPanel(tile: HTMLElement) {
+      serial += 1;
+      const id = `orte-detail-${serial}`;
+      const panel = document.createElement('li');
+      panel.className = 'orte__detail';
+      panel.id = id;
+      panel.innerHTML = `
+      <div class="orte__detail-clip">
+        <section class="orte__detail-in" aria-labelledby="${id}-title" tabindex="-1">
+          <header class="orte__detail-head">
+            <div>
+              <h3 class="orte__detail-title" id="${id}-title"></h3>
+              <p class="orte__detail-meta"></p>
+            </div>
+            <button type="button" class="orte__close">Schließen</button>
+          </header>
+          <ol class="orte__list"></ol>
+        </section>
+      </div>`;
+      const title = panel.querySelector('.orte__detail-title');
+      const meta = panel.querySelector('.orte__detail-meta');
+      const list = panel.querySelector('.orte__list');
+      const shows = tile.querySelector('.orte__shows');
+      if (title) title.textContent = buttons.get(tile)?.textContent ?? '';
+      if (meta) meta.textContent = [...tile.querySelectorAll('.orte__meta span')].map((s) => s.textContent).join(' · ');
+      if (list && shows) list.innerHTML = shows.innerHTML;
+      panel.querySelector('.orte__close')?.addEventListener('click', () => closeDetail());
+      return panel;
+    }
+
+    // Letzte Kachel der Reihe, in der die gewählte Kachel steht. Der Detailbereich wird dahinter eingefügt.
+    function lastOfRow(tile: HTMLElement) {
+      const top = tile.getBoundingClientRect().top;
+      const row = tiles.filter((t) => Math.abs(t.getBoundingClientRect().top - top) < ROW_TOLERANCE);
+      return row[row.length - 1] ?? tile;
+    }
+
+    function place(panel: HTMLElement, tile: HTMLElement) {
+      panel.remove();
+      const anchor = lastOfRow(tile);
+      anchor.after(panel);
+    }
+
+    function retire(panel: HTMLElement) {
+      if (!panel.isConnected) return;
+      panel.inert = true;
+      panel.setAttribute('aria-hidden', 'true');
+      if (reducedMotion()) {
+        panel.remove();
+        return;
+      }
+      const done = () => panel.remove();
+      panel.addEventListener('transitionend', (e) => {
+        if (e.target === panel && e.propertyName === 'grid-template-rows') done();
+      });
+      setTimeout(done, DURATION + 150);
+      panel.classList.remove('is-open');
+    }
+
+    // Hält die Kachel an ihrer Stelle im Fenster, während ein Detailbereich darüber zuklappt.
+    function hold(tile: HTMLElement) {
+      cancelAnimationFrame(holdFrame);
+      const top = tile.getBoundingClientRect().top;
+      const end = performance.now() + DURATION + 100;
+      const stop = () => {
+        cancelAnimationFrame(holdFrame);
+        holdFrame = 0;
+      };
+      const step = (now: number) => {
+        const delta = tile.getBoundingClientRect().top - top;
+        if (Math.abs(delta) > 0.25) window.scrollBy({ top: delta, behavior: 'instant' });
+        holdFrame = now < end ? requestAnimationFrame(step) : 0;
+      };
+      ['wheel', 'touchmove'].forEach((type) => addEventListener(type, stop, { once: true, passive: true, signal }));
+      holdFrame = requestAnimationFrame(step);
+    }
+
+    // Scrollt nur so weit sanft nach, dass der Kopf des neuen Detailbereichs sichtbar ist; sonst bleibt die Seite stehen.
+    function reveal(panel: HTMLElement, tile: HTMLElement) {
+      const bottom = panel.getBoundingClientRect().top + REVEAL_HEAD;
+      const need = bottom - (innerHeight - REVEAL_MARGIN);
+      const room = tile.getBoundingClientRect().top - REVEAL_MARGIN;
+      const by = Math.min(need, room);
+      if (by > 1) window.scrollBy({ top: by, behavior: reducedMotion() ? 'instant' : 'smooth' });
+    }
+
+    function settle(tile: HTMLElement | null) {
+      tiles.forEach((t) => {
+        const on = t === tile;
+        const button = buttons.get(t);
+        if (!button) return;
+        t.classList.toggle('is-active', on);
+        button.setAttribute('aria-expanded', String(on));
+        if (on && current) button.setAttribute('aria-controls', current.id);
+        else button.removeAttribute('aria-controls');
+      });
+    }
+
+    function openDetail(tile: HTMLElement) {
+      const previous = current;
+      const above = Boolean(previous && previous.compareDocumentPosition(tile) & Node.DOCUMENT_POSITION_FOLLOWING);
+      const top = tile.getBoundingClientRect().top;
+      active = tile;
+      tip?.classList.add('is-done');
+      const panel = createPanel(tile);
+      current = panel;
+      place(panel, tile);
+      settle(tile);
+      if (previous) retire(previous);
+      if (above && !reducedMotion()) hold(tile);
+      else if (above) window.scrollBy({ top: tile.getBoundingClientRect().top - top, behavior: 'instant' });
+      void panel.offsetHeight;
+      panel.classList.add('is-open');
+      panel.querySelector<HTMLElement>('.orte__detail-in')?.focus({ preventScroll: true });
+      if (!above) reveal(panel, tile);
+    }
+
+    function closeDetail(returnFocus = true) {
+      if (!active) return;
+      const tile = active;
+      active = null;
+      if (current) retire(current);
+      current = null;
+      settle(null);
+      if (returnFocus) buttons.get(tile)?.focus({ preventScroll: true });
+    }
+
+    let resizeFrame = 0;
+    addEventListener(
+      'resize',
+      () => {
+        cancelAnimationFrame(resizeFrame);
+        resizeFrame = requestAnimationFrame(() => {
+          if (!active || !current) return;
+          place(current, active);
+        });
+      },
+      { signal },
+    );
+
+    el.addEventListener(
+      'keydown',
+      (e) => {
+        if (e.key === 'Escape' && active) {
+          e.preventDefault();
+          closeDetail();
+        }
+      },
+      { signal },
+    );
+
+    // Fokusring im Detailbereich nur, wenn zuletzt die Tastatur bedient wurde.
+    addEventListener('keydown', () => el.classList.add('is-keys'), { capture: true, signal });
+    addEventListener('pointerdown', () => el.classList.remove('is-keys'), { capture: true, signal });
+
+    el.classList.add('is-ready');
+  }
+
+  class KwmPlaces extends HTMLElement {
+    private abort: AbortController | null = null;
+
+    connectedCallback() {
+      this.abort = new AbortController();
+      bind(this, this.abort.signal);
+    }
+
+    disconnectedCallback() {
+      this.abort?.abort();
+    }
+  }
+
+  if (!customElements.get('kwm-places')) customElements.define('kwm-places', KwmPlaces);
+</script>
+
+<style is:global>
+  .orte {
+    display: block;
+    padding-block: var(--section);
+    --orte-pad: clamp(14px, 1.6vw, 24px);
+  }
+  .orte ::selection {
+    background: var(--on-coal);
+    color: var(--coal);
+  }
+  .orte__head {
+    align-items: end;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--on-coal);
+    margin-inline: var(--m);
+    padding-inline: 0;
+    margin-bottom: 18px;
+  }
+  .orte__head .h2 {
+    grid-column: 1 / 9;
+  }
+  .orte__aside {
+    grid-column: 9 / 13;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+  .orte__aside p {
+    margin: 0;
+    font-size: var(--t-small);
+    line-height: var(--t-small-lh);
+    color: var(--on-coal-2);
+  }
+
+  .orte__grid {
+    list-style: none;
+    margin: 0 var(--m);
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: 2px;
+    position: relative;
+    overflow-anchor: none;
+  }
+  .orte {
+    overflow-anchor: none;
+  }
+  .orte__tile {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+    background: var(--coal-2);
+    grid-column: span 3;
+    min-height: clamp(200px, 17vw, 270px);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: var(--orte-pad);
+  }
+  .orte__tile--xl {
+    grid-column: span 6;
+    min-height: clamp(260px, 32vw, 500px);
+  }
+  .orte__tile--m {
+    grid-column: span 4;
+    min-height: clamp(220px, 22vw, 340px);
+  }
+
+  .orte__img {
+    position: absolute;
+    inset: 0;
+    z-index: -2;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: grayscale(1) brightness(0.42) contrast(1.05);
+    transition:
+      transform var(--dur-zoom) var(--ease),
+      filter var(--dur-zoom) var(--ease);
+  }
+  .orte__tile::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background: linear-gradient(to top, rgb(var(--shade) / 0.7), rgb(var(--shade) / 0) 60%), rgb(var(--shade) / 0.12);
+  }
+  .orte.is-ready .orte__tile:hover .orte__img {
+    filter: grayscale(0.7) brightness(0.5) contrast(1.05);
+  }
+  .orte__tile.is-active .orte__img {
+    transform: scale(1.04);
+    filter: grayscale(0.3) brightness(0.7) contrast(1.05);
+  }
+
+  .orte__name {
+    margin: 0 0 6px;
+    font-family: var(--f-display);
+    font-weight: 400;
+    font-size: var(--t-h3);
+    line-height: var(--t-h3-lh);
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+  .orte__tile--m .orte__name,
+  .orte__tile--xl .orte__name {
+    font-size: var(--t-statement);
+    line-height: var(--t-statement-lh);
+  }
+  .orte__tile {
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .orte__tile,
+  .orte__toggle,
+  .orte__detail-head,
+  .orte__list {
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+  }
+  .orte__list {
+    -webkit-user-select: text;
+    user-select: text;
+  }
+  .orte__toggle {
+    font: inherit;
+    color: inherit;
+    letter-spacing: inherit;
+    text-align: left;
+    background: none;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+  }
+  .orte__toggle::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+  }
+  .orte__toggle:focus-visible {
+    outline: none;
+  }
+  .orte__tile:has(.orte__toggle:focus-visible) {
+    outline: var(--focus-ring) solid var(--on-coal);
+    outline-offset: -4px;
+  }
+
+  .orte__meta {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    font-size: var(--t-meta);
+    line-height: var(--t-meta-lh);
+    font-variant-numeric: tabular-nums;
+  }
+  .orte__meta span:first-child {
+    color: var(--on-coal-2);
+  }
+
+  .orte__houses {
+    position: absolute;
+    top: var(--orte-pad);
+    left: var(--orte-pad);
+    right: var(--orte-pad);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: var(--t-meta);
+    line-height: var(--t-meta-lh);
+  }
+  .orte__houses li + li {
+    margin-top: 2px;
+  }
+  .orte__shows {
+    display: none;
+  }
+  .orte.is-ready .orte__houses {
+    display: none;
+  }
+
+  /* Detailbereich: volle Breite direkt unter der Reihe der gewählten Kachel, die Höhe öffnet über grid-template-rows. */
+  .orte__detail {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-rows: 0fr;
+    margin-top: -2px;
+    background: var(--coal-2);
+    container-type: inline-size;
+    min-width: 0;
+    transition:
+      grid-template-rows var(--dur-open) var(--ease),
+      margin-top var(--dur-open) var(--ease);
+  }
+  .orte__detail.is-open {
+    grid-template-rows: 1fr;
+    margin-top: 0;
+  }
+  .orte__detail-clip {
+    min-height: 0;
+    overflow: hidden;
+  }
+  .orte__detail-in {
+    position: relative;
+    padding: var(--orte-pad) calc(var(--orte-pad) * 1.4) calc(var(--orte-pad) * 1.4);
+    display: flex;
+    flex-direction: column;
+    gap: clamp(14px, 1.6vw, 22px);
+  }
+  .orte__detail-in::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: var(--hair);
+  }
+  .orte__detail-in:focus {
+    outline: none;
+  }
+  .orte.is-keys .orte__detail-in:focus-visible {
+    outline: var(--focus-ring) solid var(--on-coal);
+    outline-offset: -4px;
+  }
+  .orte__detail-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  .orte__detail-title {
+    margin: 0;
+    font-family: var(--f-display);
+    font-weight: 400;
+    font-size: var(--t-statement);
+    line-height: var(--t-statement-lh);
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+  .orte__detail-meta {
+    margin: 6px 0 0;
+    font-size: var(--t-meta);
+    line-height: var(--t-meta-lh);
+    color: var(--on-coal-2);
+    font-variant-numeric: tabular-nums;
+  }
+  .orte__close {
+    flex: none;
+    min-height: 44px;
+    margin: -8px -10px 0 0;
+    padding: 0 10px;
+    font: inherit;
+    font-size: var(--t-small);
+    line-height: var(--t-small-lh);
+    color: inherit;
+    background: linear-gradient(currentColor, currentColor) 10px calc(100% - 10px) / calc(100% - 20px) 1px no-repeat;
+    border: 0;
+    cursor: pointer;
+    transition: background-size var(--dur-hover) var(--ease);
+  }
+  .orte__close:hover {
+    background-size: 0% 1px;
+  }
+  .orte__close:focus-visible {
+    outline: var(--focus-ring) solid var(--on-coal);
+    outline-offset: 0;
+  }
+
+  .orte__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid var(--hair);
+  }
+  .orte__list li {
+    display: grid;
+    grid-template-columns: 4rem minmax(0, 1fr);
+    column-gap: 12px;
+    padding: 9px 0;
+    border-bottom: 1px solid var(--hair);
+    font-size: var(--t-small);
+    line-height: var(--t-small-lh);
+    break-inside: avoid;
+  }
+  .orte__y {
+    grid-row: span 2;
+    color: var(--on-coal-2);
+    font-variant-numeric: tabular-nums;
+  }
+  .orte__t {
+    grid-column: 2;
+    color: var(--on-coal-2);
+    font-size: var(--t-meta);
+    line-height: var(--t-meta-lh);
+    text-wrap: pretty;
+  }
+  @container (min-width: 560px) {
+    .orte__list li {
+      grid-template-columns: 4rem minmax(0, 1fr) minmax(0, 1.25fr);
+    }
+    .orte__y {
+      grid-row: auto;
+    }
+    .orte__t {
+      grid-column: 3;
+      grid-row: 1;
+    }
+  }
+  @container (min-width: 800px) {
+    .orte__list {
+      columns: 2;
+      column-gap: clamp(24px, 3vw, 48px);
+    }
+  }
+
+  .orte__tip {
+    margin: 0 var(--m) clamp(24px, 3vw, 40px);
+    font-size: var(--t-meta);
+    line-height: var(--t-meta-lh);
+    color: var(--on-coal-2);
+    opacity: 0;
+    transform: translateY(8px);
+    transition:
+      opacity 1s var(--ease),
+      transform 1s var(--ease);
+  }
+  .orte__tip.is-in {
+    opacity: 1;
+    transform: none;
+  }
+  .orte__tip.is-done {
+    opacity: 0;
+    transform: none;
+  }
+  .orte__tip-coarse {
+    display: none;
+  }
+  @media (pointer: coarse) {
+    .orte__tip-fine {
+      display: none;
+    }
+    .orte__tip-coarse {
+      display: inline;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .orte__tip {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
+  .orte__note {
+    margin: 20px var(--m) 0;
+    font-size: var(--t-meta);
+    line-height: var(--t-meta-lh);
+    color: var(--on-coal-2);
+  }
+
+  @media (max-width: 900px) {
+    .orte {
+      --orte-kachel: 140px; /* kleine Kacheln: Name und Zählung passen gerade noch hinein */
+      --orte-kachel-breit: 160px;
+      --orte-kachel-gross: 240px;
+    }
+    .orte__head .h2,
+    .orte__aside {
+      grid-column: 1 / -1;
+    }
+    .orte__aside {
+      margin-top: 12px;
+    }
+    .orte__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .orte__tile,
+    .orte__tile--m,
+    .orte__tile--xl {
+      grid-column: span 1;
+      min-height: var(--orte-kachel);
+    }
+    .orte__tile--xl,
+    .orte__tile--full {
+      grid-column: 1 / -1;
+    }
+    .orte__tile--xl {
+      min-height: var(--orte-kachel-gross);
+    }
+    .orte__tile--full {
+      min-height: var(--orte-kachel-breit);
+    }
+    .orte__detail-in {
+      padding-bottom: 20px;
+    }
+    .orte__name,
+    .orte__tile--m .orte__name {
+      font-size: var(--t-h3);
+      line-height: var(--t-h3-lh);
+    }
+    .orte__tile--xl .orte__name {
+      font-size: var(--t-statement);
+      line-height: var(--t-statement-lh);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .orte__img,
+    .orte__close,
+    .orte__detail {
+      transition: none;
+    }
+    .orte__tile.is-active .orte__img {
+      transform: none;
+    }
+  }
+</style>

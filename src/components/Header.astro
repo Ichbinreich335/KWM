@@ -1,0 +1,69 @@
+---
+import { kontakt } from '../data/kontakt';
+import { navigation, type NavKey } from '../data/navigation';
+
+interface Props {
+  current?: NavKey | undefined;
+}
+const { current } = Astro.props;
+---
+
+<a class="skip" href="#inhalt">
+  Zum Inhalt springen
+</a>
+<header class="masthead" data-masthead>
+  <a class="brand" href="/" aria-label="Keramische Werkstatt Margaretenhöhe, zur Startseite">
+    <svg class="logo" viewBox="0 0 236.88 128" aria-hidden="true" focusable="false">
+      <line x1="2.13" y1="110.25" x2="234.76" y2="110.25" pathLength="1"></line>
+      <line x1="2.13" y1="126.47" x2="234.76" y2="126.47" pathLength="1"></line>
+      <path d="M40.77,110.25c0-42.89,34.77-77.66,77.66-77.66s77.66,34.77,77.66,77.66" pathLength="1"></path>
+      <line x1="118.44" y1="1.53" x2="118.44" y2="110.25" pathLength="1"></line>
+      <line x1="80.47" y1="1.53" x2="157.1" y2="1.53" pathLength="1"></line>
+      <polyline points="72.88,110.25 80.47,42.59 118.44,101.46 157.1,42.59 164.35,110.25" pathLength="1"></polyline>
+    </svg>
+    <span class="brand__name">
+      Keramische Werkstatt
+      <br />
+      Margaretenhöhe
+    </span>
+  </a>
+  <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="nav" data-menu-toggle>
+    <span class="menu-toggle__label">Menü</span>
+    <span class="menu-toggle__bars" aria-hidden="true"></span>
+  </button>
+  <nav class="nav" id="nav" aria-label="Hauptnavigation">
+    <ul class="nav__list" id="nav-list">
+      {navigation.map((item) => (
+        <li>
+          <a href={item.href} data-nav={item.key} aria-current={item.key === current ? 'page' : undefined}>
+            <span class="nav__name">{item.name}</span>
+            <span class="nav__desc">{item.desc}</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+    <div class="nav__contact">
+      <a class="nav__phone" href={kontakt.telefonHref}>
+        {kontakt.telefon}
+      </a>
+      <p class="nav__hours">{kontakt.zeitenKurz}</p>
+      <a class="nav__mail" href={kontakt.mailHref}>
+        Anfrage per E-Mail <span class="nav__mail-addr">{kontakt.mail}</span>
+      </a>
+      <div class="lang lang--menu" role="group" aria-label="Sprache">
+        <span aria-current="true">DE</span>
+        <span aria-hidden="true">/</span>
+        <a href={kontakt.englischUrl} lang="en">
+          EN
+        </a>
+      </div>
+    </div>
+  </nav>
+  <div class="lang" role="group" aria-label="Sprache">
+    <span aria-current="true">DE</span>
+    <span aria-hidden="true">/</span>
+    <a href={kontakt.englischUrl} lang="en">
+      EN
+    </a>
+  </div>
+</header>

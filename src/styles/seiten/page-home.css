@@ -1,0 +1,318 @@
+/* Startseite: Einstieg, Meisterstücke, Young-Jae Lee, Kosmos, Farben und Besuch. Nur index.astro importiert diese Datei. */
+
+@media (max-width: 900px) {
+  /* Startseite: große Aussagen eine Stufe kleiner, damit sie am Handy nicht wuchtig stehen */
+  .page-home {
+    --t-statement: clamp(1.75rem, 7vw, 2rem);
+  }
+}
+
+/* Hero: das Startbild wird nicht abgedeckt, es blendet nur kurz ein (LCP) */
+@keyframes hero-ein {
+  from {
+    opacity: 0;
+  }
+}
+.hero {
+  min-height: 100svh;
+  padding-top: var(--head);
+  grid-template-rows: 1fr;
+}
+.hero__media {
+  animation: hero-ein 0.5s var(--ease) both;
+  grid-column: 6 / -1;
+  grid-row: 1;
+  margin-right: calc(var(--m) * -1);
+  overflow: hidden;
+  min-height: 560px;
+  position: relative;
+}
+.hero__media img {
+  position: absolute;
+  inset: -4% 0 0 0;
+  width: 100%;
+  height: 104%;
+  object-fit: cover;
+  object-position: 50% 40%;
+}
+.hero__credit {
+  position: absolute;
+  z-index: 2;
+  right: 0;
+  bottom: 0;
+  margin: 0;
+  padding: 10px var(--m) 10px 16px;
+  background: var(--ground);
+  color: var(--ink-2);
+  font-size: var(--t-meta);
+  line-height: var(--t-meta-lh);
+}
+.hero__text {
+  grid-column: 1 / 6;
+  grid-row: 1;
+  align-self: end;
+  padding: 48px clamp(0px, 2vw, 32px) 64px 0;
+}
+.hero__title {
+  font-family: var(--f-display);
+  font-size: var(--t-h2);
+  line-height: var(--t-h2-lh);
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+  margin-bottom: 22px;
+}
+.hero__source {
+  font-size: var(--t-meta);
+  line-height: var(--t-meta-lh);
+  letter-spacing: 0.02em;
+  color: var(--ink-2);
+  margin-bottom: 40px;
+}
+.hero__intro {
+  max-width: 36ch;
+  font-size: var(--t-body);
+  line-height: var(--t-body-lh);
+  margin-bottom: 28px;
+}
+.hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px 32px;
+  margin: 0;
+}
+
+/* Zwei helle Abschnitte hintereinander: der Abstand zählt nur einmal */
+.bauhaus + .artist,
+.works + .rep {
+  padding-top: 0;
+}
+
+/* Meisterstücke: ein Einzelwerk groß vor der Werkschau, Werkangaben in der Meta-Spalte */
+.works__feature {
+  align-items: stretch;
+  row-gap: var(--head-gap);
+  padding-bottom: var(--section);
+}
+.works__single {
+  grid-column: 1 / 7;
+}
+.works__single img {
+  width: 100%;
+  aspect-ratio: 5 / 4;
+  max-height: var(--werk-max);
+  object-fit: cover;
+}
+.works__single-text {
+  grid-column: 7 / 13;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 40px;
+  padding-left: clamp(0px, 3vw, 48px);
+}
+.works__single-meta {
+  display: grid;
+  gap: 20px;
+  justify-items: start;
+  padding-top: 20px;
+  border-top: 1px solid var(--ink);
+}
+.works__single-name {
+  font-family: var(--f-display);
+  font-size: var(--t-h3);
+  line-height: var(--t-h3-lh);
+  margin: 0;
+}
+.works__single-name span {
+  font-family: var(--f-sans);
+  font-size: var(--t-meta);
+  line-height: var(--t-meta-lh);
+  color: var(--ink-2);
+  margin-left: 10px;
+  font-variant-numeric: tabular-nums;
+}
+@media (max-width: 900px) {
+  .works__single,
+  .works__single-text {
+    grid-column: 1 / -1;
+  }
+  .works__single-text {
+    padding-left: 0;
+    gap: 28px;
+  }
+}
+
+/* Young-Jae Lee */
+.artist {
+  padding-block: var(--section);
+}
+.artist__name {
+  font-family: var(--f-display);
+  font-size: var(--t-mega);
+  line-height: var(--t-mega-lh);
+  letter-spacing: -0.035em;
+  padding-bottom: var(--head-gap);
+  white-space: nowrap;
+}
+.artist__name > span {
+  grid-column: 1 / -1;
+}
+.artist__body {
+  row-gap: 48px;
+  align-items: start;
+  padding-top: var(--section);
+}
+.artist__quote {
+  grid-column: 1 / 9;
+}
+.works {
+  padding-block: var(--section);
+}
+.works__grid {
+  row-gap: clamp(40px, 5vw, 72px);
+}
+
+/* 99 Schalen */
+.rep {
+  padding-top: var(--section);
+}
+
+/* Kosmos */
+.cosmos__floor {
+  display: block;
+  padding-block: clamp(24px, 4vw, 56px);
+  overflow: hidden;
+}
+.cosmos__stage {
+  position: relative;
+  width: min(100%, 96svh, 1060px);
+  aspect-ratio: 1;
+  margin-inline: auto;
+  touch-action: pan-y;
+}
+.cosmos__canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+}
+.cosmos__center {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 34%;
+  text-align: center;
+  pointer-events: none;
+}
+.cosmos__center a {
+  pointer-events: auto;
+  font-size: var(--t-small);
+  line-height: var(--t-small-lh);
+  min-height: 44px;
+}
+.cosmos__count {
+  font-family: var(--f-display);
+  font-size: var(--t-statement);
+  line-height: var(--t-statement-lh);
+  margin-bottom: 14px;
+  min-height: 1em;
+  transition: opacity 0.3s;
+}
+.cosmos__show {
+  font-size: var(--t-meta);
+  line-height: var(--t-meta-lh);
+  color: var(--ink-2);
+  margin-bottom: 8px;
+}
+.cosmos__caption {
+  display: none;
+}
+
+/* Farben: Farbskala des Geschirrs (Signatur SigFarbskala), Grundstil der Bänder */
+.farben {
+  padding-block: var(--section);
+}
+.farben__note {
+  padding-top: 16px;
+}
+.farben__note span {
+  grid-column: 1 / 8;
+  font-size: var(--t-small);
+  line-height: var(--t-small-lh);
+  color: var(--ink-2);
+  max-width: 70ch;
+}
+
+/* Besuch */
+.visit {
+  padding-block: var(--section);
+}
+.visit__body {
+  row-gap: 40px;
+  align-items: start;
+}
+.visit__actions {
+  grid-column: 7 / 13;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 18px 32px;
+  margin: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero__media {
+    animation: none;
+  }
+}
+
+@media (max-width: 900px) {
+  .hero {
+    min-height: 0;
+    grid-template-rows: auto auto;
+  }
+  .hero__media {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    margin-inline: calc(var(--m) * -1);
+    min-height: 0;
+    height: 64svh;
+  }
+  .hero__text {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    padding: 20px 0 16px;
+  }
+  .artist__name {
+    white-space: normal;
+  }
+  .artist__quote {
+    grid-column: 1 / -1;
+  }
+  .visit__actions {
+    grid-column: 1 / -1;
+  }
+  .cosmos__stage {
+    width: 100%;
+  }
+  .cosmos__center {
+    width: 44%;
+  }
+  .cosmos__center .cosmos__show,
+  .cosmos__center a {
+    display: none;
+  }
+  .cosmos__caption {
+    display: block;
+    text-align: center;
+    padding: 24px var(--m) 0;
+  }
+  .farben__note span {
+    grid-column: 1 / -1;
+  }
+  .works__statement {
+    display: none;
+  }
+}

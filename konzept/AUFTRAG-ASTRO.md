@@ -64,7 +64,7 @@ Ist ein MCP nicht erreichbar, z. B. in Cloud-Sessions ohne Netzwerkfreigabe: das
 
 ## Phase 5: SEO und Go-live
 - Sitemap, Meta- und OG-Tags, JSON-LD (Organization/LocalBusiness), Skill `seo-aeo-best-practices`.
-- **301-Weiterleitungen von alten WordPress-URLs** auf neue Seiten, z. B. `/neuigkeiten/...` (siehe `src/data/figures.json`), über `_redirects` bzw. die Cloudflare-Doku.
+- **301-Weiterleitungen von alten WordPress-URLs** auf neue Seiten, z. B. `/neuigkeiten/...` (siehe `konzept/figures.json`), über `_redirects` bzw. die Cloudflare-Doku.
 - DNS-Umzug: **MX- und Mail-Einträge unverändert übernehmen.**
 
 ## Was diese Session vom Admin braucht

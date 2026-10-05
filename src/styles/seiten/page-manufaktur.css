@@ -1,0 +1,87 @@
+/* Manufakturprogramm */
+
+/* Zäsur: Regal der Werkstatt mit einem Satz, Fläche mitten im langen Geschirr-Kapitel */
+.zaesur {
+  margin-top: var(--section);
+  padding-block: var(--section);
+  row-gap: 40px;
+  align-items: center;
+}
+.zaesur__media {
+  grid-column: 1 / 6;
+}
+.zaesur__media img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+}
+.zaesur__text {
+  grid-column: 7 / 12;
+}
+.chapter--cont {
+  padding-top: calc(var(--section) * 0.5);
+}
+.chapter--cont > .ware:first-child {
+  border-top: 0;
+}
+@media (max-width: 900px) {
+  .zaesur__media,
+  .zaesur__text {
+    grid-column: 1 / -1;
+  }
+}
+
+.mf-intro {
+  padding-block: var(--section) 0;
+  row-gap: 40px;
+  align-items: start;
+}
+.mf-intro.on-anker {
+  padding-bottom: var(--section);
+}
+.mf-intro__rule {
+  grid-column: 1 / 8;
+}
+.mf-intro__aside {
+  grid-column: 1 / 6;
+  grid-row: 2;
+}
+.mf-intro__aside img {
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
+}
+.mf-intro__text {
+  grid-column: 9 / 13;
+  grid-row: 1 / span 2;
+}
+.mf-intro__text p {
+  max-width: 44ch;
+}
+
+.chapter__head + .ware {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.chapter--flaeche .ware {
+  border-top-color: var(--hair);
+}
+.chapter--flaeche .set__frame {
+  background: var(--ground-3);
+}
+.chapter--flaeche .set__list {
+  border-top-color: var(--ink);
+}
+
+@media (max-width: 900px) {
+  .mf-intro__aside,
+  .mf-intro__text {
+    grid-column: 1 / -1;
+    grid-row: auto;
+  }
+  .mf-intro__rule,
+  .mf-intro__text {
+    grid-column: 1 / -1;
+  }
+}

@@ -1,0 +1,220 @@
+---
+import '../styles/basis.css';
+import '../styles/seiten/page-young-jae-lee.css';
+import LinkArrow from '../components/LinkArrow.astro';
+import DateList from '../components/DateList.astro';
+import YearArchive from '../components/YearArchive.astro';
+import { ausstellungsarchiv } from '../data/archiv';
+import PubList from '../components/PubList.astro';
+import { catoirQuelle, jahnQuelle, publikationen, texte, wagnerQuelle } from '../data/texte';
+import { auszeichnungen, ausstellungsauswahl, biografie } from '../data/vita';
+import Statement from '../components/Statement.astro';
+import ChapterHead from '../components/ChapterHead.astro';
+import Bild from '../components/Bild.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import InquiryBand from '../components/InquiryBand.astro';
+import SubNav from '../components/SubNav.astro';
+import PageHero from '../components/PageHero.astro';
+import Figure from '../components/Figure.astro';
+---
+
+<BaseLayout
+  title="Young-Jae Lee · Keramische Werkstatt Margaretenhöhe"
+  description="Young-Jae Lee, geboren 1951 in Seoul, leitet seit 1987 die Keramische Werkstatt Margaretenhöhe in Essen. Biografie, Texte, Ausstellungen, Sammlungen."
+  bodyClass="page-yjl"
+  nav="young-jae-lee"
+>
+  <main id="inhalt">
+    <PageHero typ="name" class="yjl-hero" bildunterschrift="Young-Jae Lee in der Werkstatt">
+      <Fragment slot="titel">Young-Jae Lee</Fragment>
+      <Fragment slot="lede">
+        Geboren 1951 in Seoul, Studium in Seoul und Wiesbaden. Seit 1987 leitet sie die Keramische Werkstatt
+        Margaretenhöhe in Essen – alle Meisterstücke stammen aus ihrer Hand.
+      </Fragment>
+      <Bild
+        slot="bild"
+        priority
+        src="/img/kwm/portrait-yjl.webp"
+        sizes="100vw"
+        width="2000"
+        height="1312"
+        alt="Young-Jae Lee arbeitet an einem Tisch voller ungebrannter Gefäße, hinter ihr Regale mit Vasen und Schalen"
+      />
+    </PageHero>
+
+    <SubNav
+      beschriftung="Kapitel dieser Seite"
+      eintraege={[
+        { href: '#haltung', text: 'Haltung' },
+        { href: '#biografie', text: 'Biografie' },
+        { href: '#texte', text: 'Texte' },
+        { href: '#ausstellungen', text: 'Ausstellungen' },
+        { href: '#sammlungen', text: 'Sammlungen' },
+        { href: '#auszeichnungen', text: 'Auszeichnungen' },
+        { href: '#publikationen', text: 'Publikationen' },
+      ]}
+    />
+
+    {/* Haltung */}
+    <section class="stance grid" id="haltung" aria-labelledby="stance-title">
+      <Statement typ="zitat" class="stance__quote" quelle="Gisela Jahn">
+        „Die minimale Veränderung ist Young-Jae Lees unbegrenzter Freiraum – in der Form wie in der Farbigkeit der
+        Glasur und der Bemalung. Ihr geht es nicht um Formerfindung, sondern um die Individualität des Gefäßes.“
+      </Statement>
+      <Figure class="stance__media" unterschrift="Ohne Titel (Teeschale), 2023 · Foto: Edi Baumann">
+        <Bild
+          src="/img/kwm/teeschale.webp"
+          loading="lazy"
+          alt="Teeschale von Young-Jae Lee mit rötlich-brauner Glasur und hellen Pinselzügen"
+        />
+      </Figure>
+      <div class="stance__text">
+        <h2 class="h2" id="stance-title" data-reveal="words">
+          Bauhaus und koreanisches Erbe.
+        </h2>
+        <p class="ts-body" data-reveal="fade">
+          „Die Schönheit in den Dienst des Funktionalen zu stellen, geometrische Formen wie den Kubus, Quader, Kegel und
+          Kugel als Gestaltungsgrundlage zu nehmen ist eine der Ideen des Bauhauses. Eine Tradition, der sich Young-Jae
+          Lee verpflichtet fühlt. Da ist aber noch ihr koreanisches Erbe, das heitere, schwerelose Empfinden für die
+          Form und die subtilen Farben.“
+        </p>
+        <p class="ts-body" data-reveal="fade">
+          „Das sinnliche Gespür reifte in der frühen Essener Zeit mit der Wiederannäherung an die koreanische Keramik,
+          vor allem an die anscheinend unerreichbare Schönheit jener zweiteiligen Vasen. Für Young-Jae Lee war das eine
+          existenzielle Auseinandersetzung.“
+        </p>
+        <span class="prose__source" data-reveal="fade">
+          {jahnQuelle}
+        </span>
+      </div>
+    </section>
+
+    {/* Erinnerung */}
+    <section class="memory on-anker grid" aria-labelledby="memory-title">
+      <div class="memory__text">
+        <h2 class="h2" id="memory-title" data-reveal="words">
+          Eine nach der anderen.
+        </h2>
+        <Statement typ="zitat-lang" einblenden="fade" quelle={catoirQuelle}>
+          „Sie erzählte von den Zeremonien in den Tempeln, dem Ritual eines hundertfachen Niederkniens, Niederfallens
+          vor den Buddha-Statuen. Sie erzählte von ihrer Großmutter, die sich diesen geistig-körperlichen Übungen bis
+          ins hohe Alter unterzog. Daran habe sie sich immer wieder erinnert, während sie ihre Schalen drehte, eine nach
+          der anderen, ohne je darüber müde zu werden, ohne je das Gefühl gehabt zu haben, dass sie ins Monotone
+          verfalle.“
+        </Statement>
+      </div>
+      <Figure class="memory__media" unterschrift="Schalen von Young-Jae Lee · Foto: Christopher Clem Franken">
+        <Bild
+          src="/img/kwm/kummerschalen.webp"
+          loading="lazy"
+          alt="Viele flache Schalen in Seladon, Schwarz und Rotbraun stehen dicht nebeneinander auf dem Boden"
+        />
+      </Figure>
+    </section>
+
+    {/* Biografie */}
+    <ChapterHead id="biografie" titelId="bio-title">
+      <Fragment slot="titel">Biografie</Fragment>
+      <Fragment slot="einleitung">Von Seoul über Wiesbaden, Sandhausen und Kassel nach Essen.</Fragment>
+      <div class="grid">
+        <DateList eintraege={biografie} class="grid__full" />
+      </div>
+    </ChapterHead>
+
+    {/* Texte */}
+    <ChapterHead id="texte" titelId="texts-title">
+      <Fragment slot="titel">Texte über Young-Jae Lee</Fragment>
+      <Fragment slot="einleitung">
+        Essays aus Katalogen und Büchern, vollständig zu lesen auf der bisherigen Website.
+      </Fragment>
+      <div class="grid">
+        <PubList typ="essays" eintraege={texte} class="grid__full" />
+      </div>
+    </ChapterHead>
+
+    <Figure class="plate" unterschrift="Schalen von Young-Jae Lee">
+      <Bild
+        src="/img/kwm/schalen-trio.webp"
+        sizes="100vw"
+        loading="lazy"
+        alt="Vier Schalen von Young-Jae Lee in Rotbraun, Weiß mit blauem Tupfen, Rosé und Grau"
+      />
+    </Figure>
+
+    {/* Ausstellungen */}
+    <ChapterHead id="ausstellungen" titelId="exh-title">
+      <Fragment slot="titel">Ausstellungen</Fragment>
+      <Fragment slot="einleitung">
+        Eine Auswahl der letzten zehn Jahre. Ausstellungen seit 1980 in Europa, Korea, Japan und den USA.
+      </Fragment>
+      <div class="grid">
+        <DateList eintraege={ausstellungsauswahl} class="grid__full" />
+        <YearArchive
+          typ="gesamt"
+          id="alle-ausstellungen"
+          titel="Alle Ausstellungen seit 1980"
+          jahre={ausstellungsarchiv}
+        />
+      </div>
+    </ChapterHead>
+
+    {/* Zitat als Zäsur */}
+    <section class="pullquote on-flaeche grid" aria-label="Zitat von Thomas Wagner">
+      <Statement typ="gross" class="pullquote__quote" quelle={wagnerQuelle}>
+        „Immer sind es Schalen, und doch ist keine wie die andere.“
+      </Statement>
+    </section>
+
+    {/* Sammlungen */}
+    <ChapterHead id="sammlungen" titelId="coll-title">
+      <Fragment slot="titel">Werke in Sammlungen</Fragment>
+      <Fragment slot="einleitung">
+        Gefäße von Young-Jae Lee befinden sich in Museen und Sammlungen in Deutschland, Österreich, Israel und den USA.
+      </Fragment>
+      <div class="grid">
+        <ul class="museums ts-small">
+          <li>Museum für Asiatische Kunst, Berlin</li>
+          <li>Museum of Fine Arts, Boston</li>
+          <li>Art Institute of Chicago, Chicago</li>
+          <li>Hetjens-Museum, Düsseldorf</li>
+          <li>Museum für Angewandte Kunst, Frankfurt am Main</li>
+          <li>Keramion, Frechen</li>
+          <li>Sammlung von Ingrid und Werner Welle im Museum für Angewandte Kunst, Gera</li>
+          <li>Museum für Kunst und Gewerbe, Hamburg</li>
+          <li>Israel Museum, Jerusalem</li>
+          <li>Badisches Landesmuseum, Karlsruhe</li>
+          <li>Museum für Ostasiatische Kunst, Köln</li>
+          <li>Kunst-Station Sankt Peter, Köln</li>
+          <li>Grassi Museum / Museum für Kunsthandwerk, Leipzig</li>
+          <li>Pinakothek der Moderne, München</li>
+          <li>Offene Kirche St. Klara, Nürnberg</li>
+          <li>Philadelphia Museum of Art, Philadelphia</li>
+          <li>Peabody Essex Museum, Salem, Massachusetts</li>
+          <li>Österreichisches Museum für angewandte Kunst, Wien</li>
+        </ul>
+      </div>
+    </ChapterHead>
+
+    {/* Auszeichnungen */}
+    <ChapterHead id="auszeichnungen" titelId="awards-title">
+      <Fragment slot="titel">Auszeichnungen</Fragment>
+      <div class="grid">
+        <DateList eintraege={auszeichnungen} class="grid__full" />
+      </div>
+    </ChapterHead>
+
+    {/* Publikationen */}
+    <ChapterHead id="publikationen" titelId="pubs-title">
+      <Fragment slot="titel">Publikationen</Fragment>
+      <Fragment slot="einleitung">Kataloge, Bücher und Artikel, 1981 bis 2020.</Fragment>
+      <div class="grid">
+        <PubList typ="literatur" eintraege={publikationen} class="grid__full" />
+      </div>
+    </ChapterHead>
+
+    <InquiryBand text="Die Meisterstücke stammen alle aus der Hand Young‑Jae Lees, von ihr selbst gedreht, bemalt und glasiert.">
+      <LinkArrow href="/meisterstuecke">Meisterstücke ansehen</LinkArrow>{' '}
+      <LinkArrow href="/aktuelles">Ausstellungen 2026</LinkArrow>
+    </InquiryBand>
+  </main>
+</BaseLayout>

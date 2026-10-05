@@ -1,0 +1,58 @@
+---
+import type { Polymorphic } from 'astro/types';
+
+/**
+ * Link mit Pfeil. `as="span"`, wenn der Pfeil innerhalb eines schon verlinkten Blocks steht (kein verschachtelter Link);
+ * `as="button"` für Auslöser ohne Ziel (z. B. Dialog öffnen), dann mit Standardtyp `button`.
+ */
+type Props<Tag extends 'a' | 'span' | 'button' = 'a'> = Polymorphic<{ as: Tag }>;
+
+const { as: Tag = 'a', class: klasse, ...attribute } = Astro.props;
+---
+
+<Tag class:list={['link-arrow', klasse]} {...attribute} {...(Tag === 'button' ? { type: 'button' } : {})}>
+  <slot />
+</Tag>
+
+<style>
+  .link-arrow {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.5em;
+    font-size: var(--t-small);
+    line-height: var(--t-small-lh);
+    text-decoration: none;
+    background: linear-gradient(currentColor, currentColor) 0 calc(100% - 8px) / 100% 1px no-repeat;
+    padding-block: 10px 11px;
+    margin-block: -10px -8px;
+    transition: background-size var(--dur-hover) var(--ease);
+  }
+  button.link-arrow {
+    border: 0;
+    border-radius: 0;
+    padding-inline: 0;
+    color: inherit;
+    font-family: inherit;
+    cursor: pointer;
+    text-align: left;
+  }
+  .link-arrow::after {
+    content: '';
+    display: inline-block;
+    width: 0.85em;
+    height: 0.85em;
+    flex: none;
+    background: currentColor;
+    -webkit-mask: var(--arrow) center / contain no-repeat;
+    mask: var(--arrow) center / contain no-repeat;
+    transition: transform var(--dur-hover) var(--ease);
+    align-self: center;
+  }
+  .link-arrow:hover {
+    background-size: 0% 1px;
+    background-position: 100% calc(100% - 8px);
+  }
+  .link-arrow:hover::after {
+    transform: translateX(4px);
+  }
+</style>

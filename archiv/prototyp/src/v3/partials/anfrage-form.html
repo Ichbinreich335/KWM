@@ -1,0 +1,43 @@
+<!-- Anfrage-Formular (wiederverwendbar, Modul sig-anfrage).
+     Später: action="/api/anfrage" method="post" an einen Cloudflare-Worker mit Mail-Dienst und Turnstile.
+     Bis dahin fängt das Modul das Absenden ab, prüft die Felder und öffnet eine vorbereitete E-Mail. -->
+<div class="anfrage" data-sig="anfrage">
+  <p class="anfrage__nojs">Bitte schreiben Sie uns an <a href="mailto:kontakt@kwm1924.de?subject=Anfrage">kontakt@kwm1924.de</a> oder rufen Sie an: <a href="tel:+49201305080">+49 201 30 50 80</a>.</p>
+  <form class="anfrage__form" novalidate>
+    <div class="anfrage__field">
+      <label for="anfrage-name">Name</label>
+      <input id="anfrage-name" name="name" type="text" autocomplete="name" required aria-describedby="anfrage-name-fehler">
+      <p class="anfrage__error" id="anfrage-name-fehler" hidden></p>
+    </div>
+    <div class="anfrage__field">
+      <label for="anfrage-email">E-Mail</label>
+      <input id="anfrage-email" name="email" type="email" inputmode="email" autocomplete="email" required aria-describedby="anfrage-email-fehler">
+      <p class="anfrage__error" id="anfrage-email-fehler" hidden></p>
+    </div>
+    <div class="anfrage__field">
+      <label for="anfrage-telefon">Telefon <span>(freiwillig)</span></label>
+      <input id="anfrage-telefon" name="telefon" type="tel" inputmode="tel" autocomplete="tel" aria-describedby="anfrage-telefon-fehler">
+      <p class="anfrage__error" id="anfrage-telefon-fehler" hidden></p>
+    </div>
+    <div class="anfrage__field">
+      <label for="anfrage-stueck">Anliegen oder Stück <span>(freiwillig)</span></label>
+      <input id="anfrage-stueck" name="stueck" type="text" autocomplete="off" maxlength="400" placeholder="z. B. Geschirr, Edition oder ein Meisterstück">
+    </div>
+    <div class="anfrage__field">
+      <label for="anfrage-nachricht">Nachricht</label>
+      <textarea id="anfrage-nachricht" name="nachricht" rows="5" required aria-describedby="anfrage-nachricht-fehler"></textarea>
+      <p class="anfrage__error" id="anfrage-nachricht-fehler" hidden></p>
+    </div>
+    <p class="anfrage__privacy">Ihre Angaben verwenden wir nur, um Ihre Anfrage zu beantworten. Verantwortlich ist die Keramische Werkstatt Margaretenhöhe, siehe <a href="datenschutz.html">Datenschutz</a>.</p>
+    <div class="anfrage__submit">
+      <button class="button" type="submit">Anfrage senden</button>
+      <p class="anfrage__summary" role="alert" hidden></p>
+    </div>
+  </form>
+  <div class="anfrage__done" role="status" tabindex="-1" hidden>
+    <p class="anfrage__done-title">Danke, Ihre Anfrage ist vorbereitet.</p>
+    <p>Ihr E-Mail-Programm öffnet sich mit der vorbereiteten Anfrage. Bitte senden Sie die Nachricht dort ab.</p>
+    <p>Es öffnet sich nichts? Schreiben Sie an <a href="mailto:kontakt@kwm1924.de">kontakt@kwm1924.de</a> oder rufen Sie an: <a href="tel:+49201305080">+49 201 30 50 80</a>.</p>
+    <button class="anfrage__again" type="button">Angaben ändern</button>
+  </div>
+</div>

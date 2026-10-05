@@ -1,0 +1,12 @@
+/* Entwurf-Panel: nur im Prototyp, eingeklappt ein kleiner Knopf unten links */
+.entwurf { position: fixed; left: 12px; bottom: 12px; z-index: 60; display: flex; flex-direction: column; align-items: flex-start; gap: 6px; font-family: var(--f-sans); font-size: 13px; color: var(--ink); }
+.entwurf__toggle, .entwurf__body { background: var(--ground); border: 1px solid var(--ink); }
+.entwurf__toggle { min-height: 44px; padding: 0 16px; font: inherit; color: inherit; cursor: pointer; opacity: 0.88; }
+.entwurf__toggle:hover, .entwurf__toggle[aria-expanded="true"] { opacity: 1; }
+.entwurf__body { display: grid; gap: 10px; padding: 14px 16px; max-width: calc(100vw - 24px); max-height: 70vh; overflow: auto; }
+.entwurf__body[hidden] { display: none; }
+.entwurf__group { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; }
+.entwurf__label { width: 100%; color: var(--ink-2); font-size: 12.5px; }
+.entwurf__opt { min-height: 44px; padding: 0 14px; border: 1px solid var(--hair); background: none; font: inherit; color: inherit; cursor: pointer; }
+.entwurf__opt { display: inline-flex; align-items: center; text-decoration: none; }
+.entwurf__opt[aria-pressed="true"], .entwurf__opt[aria-current="true"] { background: var(--ink); color: var(--ground); border-color: var(--ink); }

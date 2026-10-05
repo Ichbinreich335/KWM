@@ -7,3 +7,9 @@ node_modules/
 .claude/settings.local.json
 .env
 .dev.vars
+tests/__screens__/
+test-results/
+playwright-report/
+dist/
+.astro/
+dist-vorschau/

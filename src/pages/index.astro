@@ -1,0 +1,258 @@
+---
+import '../styles/basis.css';
+import '../styles/seiten/page-home.css';
+import LinkArrow from '../components/LinkArrow.astro';
+import { BRENNTEMPERATUR, grad } from '../data/brenntemperatur';
+import Statement from '../components/Statement.astro';
+import SectionHead from '../components/SectionHead.astro';
+import WorkTile from '../components/WorkTile.astro';
+import { einzelwerk, stueckBezeichnung, werkschau } from '../data/werke';
+import { anfrageLink } from '../lib/anfrage-link';
+import SigAktuell from '../components/SigAktuell.astro';
+import { ausstellungen } from '../data/ausstellungen';
+import { hinweise } from '../data/hinweise';
+import { kontakt } from '../data/kontakt';
+import Hours from '../components/Hours.astro';
+import Kosmos from '../components/Kosmos.astro';
+import PlaceGrid from '../components/PlaceGrid.astro';
+import { kacheln } from '../data/orte';
+import { catoirQuelle, jahnQuelle, wagnerQuelle } from '../data/texte';
+import Timeline from '../components/Timeline.astro';
+import Chronicle from '../components/Chronicle.astro';
+import { chronik } from '../data/chronik';
+import { lebensweg } from '../data/lebensweg';
+import Bild from '../components/Bild.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import InquiryForm from '../components/InquiryForm.astro';
+import Figure from '../components/Figure.astro';
+import Woerter from '../components/Woerter.astro';
+import SigSticky from '../components/SigSticky.astro';
+import BauhausStation from '../components/BauhausStation.astro';
+import SigFarbskala from '../components/SigFarbskala.astro';
+import { glasuren } from '../data/glasuren';
+
+// 99 Schalen: Satz und Link kommen aus der Ausstellung im MOK (Kosmos.astro)
+const mok = ausstellungen.find((eintrag) => eintrag.schluessel === 'mok');
+if (!mok) throw new Error('Ausstellung „mok“ fehlt in den Daten');
+---
+
+<BaseLayout
+  title="Keramische Werkstatt Margaretenhöhe · seit 1924"
+  description="Gedrehte Gefäße von Young-Jae Lee und ein Manufakturprogramm nach den Formprinzipien des Bauhauses. Keramische Werkstatt Margaretenhöhe, Zeche Zollverein, Essen."
+  bodyClass="page-home"
+  strukturiert
+>
+  <main id="inhalt">
+    {/* Einstieg: Zitat links, Kummerschalen rechts (hell) */}
+    <section class="hero grid" id="top" aria-labelledby="hero-title">
+      <Figure
+        class="hero__media"
+        einblenden={false}
+        unterschrift="Kummerschalen · Foto: Christopher Clem Franken"
+        unterschriftKlasse="hero__credit"
+      >
+        <Bild
+          priority
+          src="/img/kwm/kummerschalen.webp"
+          alt="Viele flache Schalen von Young-Jae Lee auf einem Steinboden, seladonblau, schwarz gesprenkelt und rotbraun glasiert"
+        />
+      </Figure>
+      <div class="hero__text">
+        <h1 class="hero__title" id="hero-title" data-reveal="words">
+          <Woerter text="Immer sind es Schalen, und doch ist keine wie die andere." />
+        </h1>
+        <p class="hero__source" data-reveal="fade">
+          Thomas Wagner über die Schalen von Young-Jae Lee
+        </p>
+        <p class="hero__intro" data-reveal="fade">
+          Keramische Werkstatt Margaretenhöhe. Gedrehte Gefäße und Gebrauchsgeschirr aus Essen – seit 1924, heute auf
+          dem Gelände der Zeche Zollverein.
+        </p>
+        <p class="hero__actions" data-reveal="fade">
+          <LinkArrow href="/meisterstuecke">Meisterstücke ansehen</LinkArrow>
+          <LinkArrow href="/manufaktur">Manufakturprogramm</LinkArrow>
+        </p>
+      </div>
+    </section>
+
+    {/* Aktuell: laufende und kommende Ausstellungen mit Flyer und Angaben, aufklappbar ohne Unterseite */}
+    <SigAktuell {ausstellungen} {hinweise} />
+
+    {/* Bauhaus: Herkunft und Gebrauch – 1927 als Marke, darunter die Tafel mit vier Tellern */}
+    <BauhausStation />
+
+    {/* Young-Jae Lee */}
+    <section class="artist" id="young-jae-lee" aria-labelledby="artist-title">
+      <h2 class="artist__name grid" id="artist-title">
+        <span data-reveal="words">Young-Jae Lee</span>
+      </h2>
+      <figure class="sticky-bild-wrap">
+        <SigSticky typ="portrait">
+          {/* sizes: Mobil und hochkant steht das Bild quadratisch mit Seitenrand, cover macht es 2000/1313 x (Breite - 2 x Rand) breit, also etwa 140vw; Desktop folgt die Breite der Kastenhöhe (140svh x 2000/1313, etwa 215vh), mindestens 100vw */}
+          <Bild
+            slot="bild"
+            class="sticky-bild__img"
+            src="/img/kwm/portrait-yjl.webp"
+            sizes="(max-width: 900px) 140vw, (orientation: portrait) 140vw, max(100vw, 215vh)"
+            loading="lazy"
+            decoding="async"
+            alt="Young-Jae Lee in der Werkstatt, vor ihr ungebrannte Schalen und Vasen, hinter ihr Regale voller Gefäße"
+          />
+          <Statement
+            typ="zitat-lang"
+            einblenden={false}
+            class="sticky-bild__text sticky-bild__quote"
+            quelle={catoirQuelle}
+          >
+            „Sie erzählte von den Zeremonien in den Tempeln, dem Ritual eines hundertfachen Niederkniens, Niederfallens
+            vor den Buddha-Statuen. Sie erzählte von ihrer Großmutter, die sich diesen geistig-körperlichen Übungen bis
+            ins hohe Alter unterzog. Daran habe sie sich immer wieder erinnert, während sie ihre Schalen drehte, eine
+            nach der anderen, ohne je darüber müde zu werden […].“
+          </Statement>
+        </SigSticky>
+        <figcaption class="sticky-bild__caption">Young-Jae Lee in der Keramischen Werkstatt Margaretenhöhe</figcaption>
+      </figure>
+
+      <div class="artist__body grid">
+        <Statement typ="zitat" einblenden="fade" class="artist__quote" quelle={jahnQuelle}>
+          „Die minimale Veränderung ist Young-Jae Lees unbegrenzter Freiraum – in der Form wie in der Farbigkeit der
+          Glasur und der Bemalung. Ihr geht es nicht um Formerfindung, sondern um die Individualität des Gefäßes.“
+        </Statement>
+      </div>
+
+      <Timeline stationen={lebensweg} weiter={{ href: '/young-jae-lee#biografie', text: 'Zum ganzen Werdegang' }} />
+    </section>
+
+    {/* Orte: Ausstellungsorte im Bildraster */}
+    <PlaceGrid
+      orte={kacheln}
+      titel="Ausstellungsorte"
+      einleitung="Ausstellungen seit 1980 in Europa, Korea, Japan und den USA."
+      link={{ href: '/young-jae-lee#ausstellungen', text: 'Alle Ausstellungen' }}
+      fussnote="Städte und Zahlen nach der Ausstellungsliste 2016 bis 2026."
+    />
+
+    {/* Meisterstücke */}
+    <section class="works" id="meisterstuecke" aria-labelledby="works-title">
+      <SectionHead typ="start" titelId="works-title">
+        <Fragment slot="titel">Meisterstücke</Fragment>
+        <LinkArrow href="/meisterstuecke">Alle Meisterstücke</LinkArrow>
+      </SectionHead>
+      <div class="works__feature grid">
+        <Figure class="works__single" unterschrift={einzelwerk.unterschrift}>
+          <Bild
+            src={einzelwerk.bild.src}
+            loading="lazy"
+            sizes="(min-width: 900px) 50vw, 100vw"
+            alt={einzelwerk.bild.alt}
+          />
+        </Figure>
+        <div class="works__single-text">
+          <Statement typ="aussage" as="p" class="works__statement">
+            Alle Meisterstücke stammen aus der Hand Young-Jae Lees – von ihr selbst gedreht, bemalt und glasiert.
+          </Statement>
+          <div class="works__single-meta">
+            <p class="works__single-name" data-reveal="fade">
+              {einzelwerk.titel}
+            </p>
+            <LinkArrow href={anfrageLink(stueckBezeichnung(einzelwerk))} data-reveal="fade">
+              Zu diesen Stücken anfragen
+            </LinkArrow>
+          </div>
+        </div>
+      </div>
+      <ol class="works__grid grid">
+        {werkschau.map((werk) => (
+          <WorkTile werk={werk} />
+        ))}
+      </ol>
+    </section>
+
+    {/* 99 Schalen: keine wie die andere, jede mit eigener Glasur */}
+    <section class="rep" id="kosmos" aria-labelledby="kosmos-title">
+      <SectionHead typ="start" titelId="kosmos-title">
+        <Fragment slot="titel">Ein Ring aus Teilchen um eine leere Mitte.</Fragment>
+        <Statement typ="zitat-lang" einblenden="fade" quelle={wagnerQuelle}>
+          „Schalen über Schalen, einfach auf den Boden gestellt. Ein Meer aus Schalen, ein Feld aus Kelchen, ein Ring
+          aus Teilchen um eine leere Mitte, eine kleine Milchstraße voll schimmernder Gefäße.“
+        </Statement>
+      </SectionHead>
+      <Kosmos ausstellung={mok} />
+    </section>
+
+    {/* Farben: die sechs Glasuren des Geschirrs, alle Teile untereinander kombinierbar */}
+    <section class="farben" id="farben" aria-labelledby="farben-title">
+      <SectionHead typ="start" titelId="farben-title">
+        <Fragment slot="titel">Sechs Glasuren, ein Geschirr.</Fragment>
+        <p data-reveal="fade">Alle Teile eines Geschirrs, gleich welcher Farbe, sind miteinander kombinierbar.</p>
+        <LinkArrow href="/manufaktur#farben">Die Farben des Geschirrs</LinkArrow>
+      </SectionHead>
+      <SigFarbskala glasuren={glasuren} />
+      <p class="farben__note grid">
+        <span>
+          In monatelangen Experimenten entstand die sechstonige Farbskala – von Schattierungen des Jadegrün über ein
+          gebrochenes Weiß bis zu Rostbraun.
+        </span>
+      </p>
+    </section>
+
+    {/* Feuer: Text bleibt beim Scrollen auf dem Glasurfoto stehen */}
+    <SigSticky typ="feuer" as="section" id="feuer" aria-labelledby="feuer-title">
+      {/* sizes: Bildbreite folgt aus der Kastenhöhe (cover), Höhe x 1,5; Desktop 160vh, mobil 150vh */}
+      <Bild
+        slot="bild"
+        class="sticky-bild__img"
+        src="/img/kwm/glasur-detail.webp"
+        sizes="(max-width: 900px) max(100vw, 252vh), max(100vw, 269vh)"
+        loading="lazy"
+        decoding="async"
+        alt="Nahaufnahme eines Schalenrands mit tintenblauer bis seladonfarbener Glasur, Nadelstichen und Eisensprenkeln"
+      />
+      <div class="sticky-bild__text">
+        <h2 class="h2" id="feuer-title">
+          Neun bis zehn Stunden Feuer.
+        </h2>
+        <p class="sticky-bild__lede">
+          Im Holzofen wird über neun bis zehn Stunden kontinuierlich bis auf {grad(BRENNTEMPERATUR.holzbrandMax)}{' '}
+          gefeuert – für einen Brand braucht es etwa 1,5 Festmeter Holz. Die Tönung wird reicher, manche Verfärbung
+          lässt sich nicht steuern.
+        </p>
+        <LinkArrow href="/werkstatt#feuer">Wie die Glasur ihre Farbe bekommt</LinkArrow>
+      </div>
+    </SigSticky>
+
+    {/* Werkstatt / Chronik */}
+    <Chronicle
+      eintraege={chronik}
+      kurz
+      id="werkstatt"
+      titelId="chron-title"
+      titel="Hundert Jahre an der Scheibe."
+      lede="Von der Siedlungswerkstatt in Essen zur Manufaktur auf Zollverein: neun Stationen in 82 Jahren."
+      link={{ href: '/werkstatt', text: 'Werkstatt, Team und Chronik' }}
+    />
+
+    {/* Besuch */}
+    <section class="visit" id="besuch" aria-labelledby="visit-title">
+      <SectionHead typ="start" titelId="visit-title">
+        <Fragment slot="titel">Die Werkstatt ist offen.</Fragment>
+        <p data-reveal="fade">
+          Wenn Sie Stücke aus unserem Programm erwerben möchten, senden wir Ihnen gerne weitere Informationen oder ein
+          Angebot zu. Oder Sie kommen vorbei.
+        </p>
+      </SectionHead>
+      <div class="visit__body grid">
+        <div class="visit__info">
+          <Hours typ="tabelle" />
+          <p class="visit__actions">
+            <LinkArrow href={kontakt.telefonHref}>Lieber anrufen: {kontakt.telefon}</LinkArrow>
+            <LinkArrow href="/besuch">Anfahrt und Besuch</LinkArrow>
+          </p>
+        </div>
+        <div class="visit__form" id="anfrage">
+          <InquiryForm />
+        </div>
+      </div>
+    </section>
+  </main>
+</BaseLayout>

@@ -1,0 +1,382 @@
+---
+import { kontakt } from '../data/kontakt';
+import Button from './Button.astro';
+import { turnstileSitekey, turnstileWarnung, vorschauBuild } from '../lib/umgebung';
+import { HONIGTOPF_FELD, MAX_ZEICHEN } from '../lib/anfrage';
+
+// Produktions-Build ohne echten Site-Key: kein Abbruch (bis zum Go-live gewollt), aber deutlich im Build-Log
+if (turnstileWarnung) Astro.logger.warn(turnstileWarnung);
+---
+
+{/* Anfrage-Formular (wiederverwendbar, Modul sig-anfrage).
+     Das Modul prüft die Felder mit den Regeln aus src/lib/anfrage.ts und schickt sie per POST an /api/anfrage (Worker).
+     Das Turnstile-Widget wird erst beim ersten Antippen eines Feldes geladen.
+     Vorschau-Build (Branch ungleich main): kein Widget, der Worker versendet nichts und meldet Erfolg; ein Hinweis sagt das. */}
+<kwm-anfrage class="anfrage" data-sitekey={turnstileSitekey} data-vorschau={vorschauBuild ? '' : undefined}>
+  <p class="anfrage__nojs">
+    Bitte schreiben Sie uns an <a href={`${kontakt.mailHref}?subject=Anfrage`}>{kontakt.mail}</a> oder rufen Sie an:{' '}
+    <a href={kontakt.telefonHref}>{kontakt.telefon}</a>.
+  </p>
+  <form class="anfrage__form" novalidate>
+    <div class="anfrage__field">
+      <label for="anfrage-name">Name</label>
+      <input
+        id="anfrage-name"
+        name="name"
+        type="text"
+        autocomplete="name"
+        maxlength={MAX_ZEICHEN.name}
+        required
+        aria-describedby="anfrage-name-fehler"
+      />
+      <p class="anfrage__error" id="anfrage-name-fehler" hidden></p>
+    </div>
+    <div class="anfrage__field">
+      <label for="anfrage-email">E-Mail</label>
+      <input
+        id="anfrage-email"
+        name="email"
+        type="email"
+        inputmode="email"
+        autocomplete="email"
+        maxlength={MAX_ZEICHEN.email}
+        required
+        aria-describedby="anfrage-email-fehler"
+      />
+      <p class="anfrage__error" id="anfrage-email-fehler" hidden></p>
+    </div>
+    <div class="anfrage__field">
+      <label for="anfrage-telefon">
+        Telefon <span>(freiwillig)</span>
+      </label>
+      <input
+        id="anfrage-telefon"
+        name="telefon"
+        type="tel"
+        inputmode="tel"
+        autocomplete="tel"
+        maxlength={MAX_ZEICHEN.telefon}
+        aria-describedby="anfrage-telefon-fehler"
+      />
+      <p class="anfrage__error" id="anfrage-telefon-fehler" hidden></p>
+    </div>
+    <div class="anfrage__field">
+      <label for="anfrage-stueck">
+        Anliegen oder Stück <span>(freiwillig)</span>
+      </label>
+      <input
+        id="anfrage-stueck"
+        name="stueck"
+        type="text"
+        autocomplete="off"
+        maxlength={MAX_ZEICHEN.stueck}
+        placeholder="z. B. Geschirr, Edition oder ein Meisterstück"
+        aria-describedby="anfrage-stueck-fehler"
+      />
+      <p class="anfrage__error" id="anfrage-stueck-fehler" hidden></p>
+    </div>
+    <div class="anfrage__field">
+      <label for="anfrage-nachricht">Nachricht</label>
+      <textarea
+        id="anfrage-nachricht"
+        name="nachricht"
+        rows="5"
+        maxlength={MAX_ZEICHEN.nachricht}
+        required
+        aria-describedby="anfrage-nachricht-fehler"
+      ></textarea>
+      <p class="anfrage__error" id="anfrage-nachricht-fehler" hidden></p>
+    </div>
+    <div class="anfrage__trap" aria-hidden="true">
+      <label for="anfrage-website">Bitte leer lassen</label>
+      <input id="anfrage-website" name={HONIGTOPF_FELD} type="text" tabindex="-1" autocomplete="off" />
+    </div>
+    <p class="anfrage__privacy">
+      Ihre Angaben verwenden wir nur, um Ihre Anfrage zu beantworten. Verantwortlich ist die Keramische Werkstatt
+      Margaretenhöhe. Zum Schutz vor automatischem Missbrauch prüft Cloudflare Turnstile den Versand, siehe
+      <a href="/datenschutz">Datenschutz</a>.
+    </p>
+    {vorschauBuild ? (
+      <p class="anfrage__vorschau">Vorschau – Anfragen werden noch nicht versendet.</p>
+    ) : (
+      <div class="anfrage__turnstile" data-turnstile>
+        <p class="anfrage__turnstile-hinweis">Die Sicherheitsprüfung erscheint hier, sobald Sie ein Feld ausfüllen.</p>
+      </div>
+    )}
+    <div class="anfrage__submit">
+      <Button type="submit">Anfrage senden</Button>
+      <p class="anfrage__summary" role="alert" hidden></p>
+      <p class="anfrage__status" role="status"></p>
+    </div>
+    <div class="anfrage__fail" role="alert" hidden>
+      <p class="anfrage__fail-text"></p>
+      <p>
+        Sie erreichen uns auch direkt: <a href={kontakt.telefonHref}>{kontakt.telefon}</a> oder
+        <a href={kontakt.mailHref}>{kontakt.mail}</a>.
+      </p>
+    </div>
+  </form>
+  <div class="anfrage__done" role="status" tabindex="-1" hidden>
+    {vorschauBuild ? (
+      <Fragment>
+        <p class="anfrage__done-title">Danke – so sieht die Bestätigung aus.</p>
+        <p>In dieser Vorschau wurde nichts versendet.</p>
+      </Fragment>
+    ) : (
+      <Fragment>
+        <p class="anfrage__done-title">Danke, Ihre Anfrage ist bei uns angekommen.</p>
+        <p>Wir antworten Ihnen per E-Mail oder Telefon.</p>
+      </Fragment>
+    )}
+    <p>
+      Noch etwas vergessen? Schreiben Sie an <a href={kontakt.mailHref}>{kontakt.mail}</a> oder rufen Sie an:{' '}
+      <a href={kontakt.telefonHref}>{kontakt.telefon}</a>.
+    </p>
+    <button class="anfrage__again" type="button">
+      Weitere Anfrage senden
+    </button>
+  </div>
+</kwm-anfrage>
+
+<script>
+  // Anfrage: Felder prüfen, Turnstile beim ersten Antippen laden, per POST an /api/anfrage senden (Modul sig-anfrage)
+  import init from '../scripts/sig-anfrage';
+
+  class KwmAnfrage extends HTMLElement {
+    connectedCallback() {
+      init(this);
+    }
+  }
+
+  if (!customElements.get('kwm-anfrage')) customElements.define('kwm-anfrage', KwmAnfrage);
+</script>
+
+<style is:global>
+  /* Anfrage-Formular: Felder mit Unterstrich, 0 Radius, Labels über dem Feld */
+  .anfrage {
+    display: block;
+    max-width: 560px;
+  }
+  .anfrage__nojs {
+    margin: 0;
+    padding-top: 16px;
+    border-top: 1px solid var(--ink);
+  }
+  .js .anfrage__nojs {
+    display: none;
+  }
+  .anfrage__form {
+    display: none;
+  }
+  .js .anfrage__form:not([hidden]) {
+    display: grid;
+    gap: 28px;
+    padding-top: 4px;
+  }
+
+  .anfrage__field {
+    display: grid;
+    gap: 6px;
+  }
+  .anfrage label {
+    font-size: var(--t-meta);
+    line-height: var(--t-meta-lh);
+    letter-spacing: 0.04em;
+    color: var(--ink-2);
+  }
+  .anfrage label span {
+    letter-spacing: 0;
+  }
+  .anfrage input,
+  .anfrage textarea {
+    width: 100%;
+    min-height: 48px;
+    padding: 10px 0 9px;
+    font: inherit;
+    font-size: var(--t-body);
+    line-height: var(--t-body-lh);
+    color: var(--ink);
+    background: transparent;
+    border: 0;
+    border-bottom: 1px solid var(--ink);
+    border-radius: 0;
+    transition:
+      border-color var(--dur-hover) var(--ease),
+      box-shadow var(--dur-hover) var(--ease);
+  }
+  .anfrage textarea {
+    min-height: 140px;
+    resize: vertical;
+    line-height: 1.5;
+  }
+  .anfrage input::placeholder {
+    color: var(--ink-2);
+    opacity: 0.8;
+  }
+  .anfrage input:hover,
+  .anfrage textarea:hover {
+    background: var(--ground-2);
+  }
+  .anfrage input:focus-visible,
+  .anfrage textarea:focus-visible {
+    outline: var(--focus-ring) solid var(--accent);
+    outline-offset: 2px;
+    border-bottom-color: var(--accent);
+    box-shadow: 0 1px 0 var(--accent);
+  }
+  .anfrage [aria-invalid] {
+    border-bottom-color: var(--ink);
+    box-shadow: 0 1px 0 var(--ink);
+  }
+  .anfrage__error {
+    margin: 0;
+    font-size: var(--t-small);
+    line-height: var(--t-small-lh);
+    color: var(--ink);
+  }
+  .anfrage__error::before {
+    content: '';
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    margin-right: 8px;
+    background: var(--ink);
+  }
+
+  .anfrage__privacy {
+    margin: 0;
+    font-size: var(--t-small);
+    line-height: var(--t-small-lh);
+    color: var(--ink-2);
+  }
+  .anfrage__privacy a,
+  .anfrage__done a,
+  .anfrage__nojs a {
+    text-underline-offset: 0.2em;
+  }
+  .anfrage__submit {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px 24px;
+  }
+  .anfrage .button {
+    min-height: 48px;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .anfrage__summary {
+    margin: 0;
+    font-size: var(--t-small);
+    line-height: var(--t-small-lh);
+  }
+
+  .anfrage__done {
+    padding-top: 20px;
+    border-top: 1px solid var(--ink);
+  }
+  .anfrage__done:focus {
+    outline: 0;
+  }
+  .anfrage__done p {
+    margin: 0 0 16px;
+    max-width: 46ch;
+  }
+  .anfrage__done-title {
+    font-family: var(--f-display);
+    font-size: var(--t-h3);
+    line-height: var(--t-h3-lh);
+  }
+  .anfrage__again {
+    min-height: 44px;
+    padding: 0;
+    font: inherit;
+    font-size: var(--t-small);
+    line-height: var(--t-small-lh);
+    color: var(--ink);
+    background: none;
+    border: 0;
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+    cursor: pointer;
+  }
+
+  /* Honigtopf: für Menschen unsichtbar, außerhalb des Bildschirms (kein display:none, damit Bots es ausfüllen) */
+  .anfrage__trap {
+    position: absolute;
+    left: -10000px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+
+  /* Turnstile-Widget (normal: 300 x 65 px): Platz ist reserviert, damit die Knöpfe beim Laden des Widgets nicht springen; bis dahin steht ein Hinweis darin */
+  .anfrage__turnstile {
+    min-height: 65px;
+  }
+  .anfrage__turnstile-hinweis {
+    margin: 0;
+    padding-top: 8px;
+    font-size: var(--t-small);
+    line-height: var(--t-small-lh);
+    color: var(--ink-2);
+  }
+  .anfrage__vorschau {
+    margin: 0;
+    padding-left: 12px;
+    border-left: 2px solid var(--accent);
+    font-size: var(--t-small);
+    line-height: var(--t-small-lh);
+    color: var(--ink-2);
+  }
+  .anfrage__status {
+    margin: 0;
+    font-size: var(--t-small);
+    line-height: var(--t-small-lh);
+    color: var(--ink-2);
+  }
+  .anfrage__status:empty {
+    display: none;
+  }
+  .anfrage .button:disabled {
+    cursor: progress;
+    opacity: 0.6;
+  }
+
+  /* Versandfehler: Meldung mit Ausweg über Telefon und E-Mail */
+  .anfrage__fail {
+    padding: 16px 0 0;
+    border-top: 1px solid var(--ink);
+  }
+  .anfrage__fail p {
+    margin: 0 0 8px;
+    max-width: 46ch;
+  }
+  .anfrage__fail a {
+    text-underline-offset: 0.2em;
+  }
+
+  /* Einsatz im Abschnitt Besuch der Startseite: Öffnungszeiten links, Formular rechts */
+  .visit__info {
+    grid-column: 1 / 6;
+  }
+  .visit__info .visit__actions {
+    margin-top: 28px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .visit__form {
+    grid-column: 7 / 13;
+    scroll-margin-top: calc(var(--head) + 24px);
+  }
+  .inquiry {
+    scroll-margin-top: var(--head);
+  }
+  @media (max-width: 900px) {
+    .visit__info,
+    .visit__form {
+      grid-column: 1 / -1;
+    }
+  }
+</style>

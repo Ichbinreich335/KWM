@@ -1,0 +1,50 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+import { Image } from 'astro:assets';
+import type { Foto } from '../data/typen';
+import { bildMetadaten } from '../lib/bilder';
+
+type Props = Omit<HTMLAttributes<'img'>, 'src' | 'srcset' | 'alt' | 'width' | 'height' | 'sizes'> & {
+  /** Eigengröße in Pixeln; ohne Angabe gelten die Maße des Bildes selbst (ImageMetadata). */
+  width?: number | `${number}` | undefined;
+  height?: number | `${number}` | undefined;
+  layout?: 'constrained' | 'full-width';
+  /** Bild im ersten Bildschirm: setzt loading="eager", decoding="sync" und fetchpriority="high". */
+  priority?: boolean;
+} & (
+    | {
+        /** Foto aus den Daten (Pfad und Alt-Text); `alt` überschreibt den Alt-Text. */
+        bild: Foto;
+        src?: never;
+        alt?: string;
+      }
+    | {
+        bild?: never;
+        /** Pfad wie in den Seiten, z. B. `/img/kwm/kannen.webp` (liegt unter `src/assets/img/`). */
+        src: string;
+        alt: string;
+      }
+  ) &
+  (
+    | {
+        /** Breiten der srcset-Kandidaten, wenn die Quelle größer ist als die angezeigte Eigengröße. */
+        widths: readonly number[];
+        /** Pflicht, sobald `widths` gesetzt ist (Doku). */
+        sizes: string;
+      }
+    | { widths?: never; sizes?: string }
+  );
+
+const { bild, src, alt, width, height, widths, sizes, layout = 'constrained', ...rest } = Astro.props;
+const pfad = src ?? bild?.src;
+const altText = alt ?? bild?.alt;
+if (pfad === undefined || altText === undefined) throw new Error('Bild braucht `src` und `alt` oder `bild`.');
+// Maße nur weitergeben, wenn sie angegeben sind; sonst nimmt Astro sie aus den ImageMetadata
+const masse = { ...(width !== undefined && { width }), ...(height !== undefined && { height }) };
+// Doku zu `widths`: „A `sizes` property must also be provided.“ (der Typ oben erzwingt das)
+const srcset = widths && sizes ? { widths: [...widths], sizes } : { ...(sizes && { sizes }) };
+
+// fit="fill": kein Zuschnitt durch Astro; das Seitenverhältnis kommt aus den Maßen (angegeben oder aus dem Bild) und CSS.
+---
+
+<Image src={bildMetadaten(pfad)} alt={altText} layout={layout} fit="fill" {...masse} {...srcset} {...rest} />

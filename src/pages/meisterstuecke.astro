@@ -1,0 +1,184 @@
+---
+import '../styles/basis.css';
+import '../styles/seiten/page-meisterstuecke.css';
+import LinkArrow from '../components/LinkArrow.astro';
+import { BRENNTEMPERATUR, grad } from '../data/brenntemperatur';
+import Statement from '../components/Statement.astro';
+import ChapterHead from '../components/ChapterHead.astro';
+import WorkCard from '../components/WorkCard.astro';
+import { stimmung, werk } from '../data/werke';
+import Bild from '../components/Bild.astro';
+import Steps from '../components/Steps.astro';
+import { arbeitsschritte } from '../data/arbeitsweise';
+import { jahnQuelle, wagnerQuelle } from '../data/texte';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import InquiryBand from '../components/InquiryBand.astro';
+import SubNav from '../components/SubNav.astro';
+import PageHero from '../components/PageHero.astro';
+---
+
+<BaseLayout
+  title="Meisterstücke · Keramische Werkstatt Margaretenhöhe"
+  description="Schalen, Kummen und Vasen aus der Hand von Young-Jae Lee – gedreht, bemalt und glasiert in der Keramischen Werkstatt Margaretenhöhe, Essen."
+  bodyClass="page-meisterstuecke"
+  nav="meisterstuecke"
+>
+  <main id="inhalt">
+    <PageHero typ="meta" titelId="ms-title" bildunterschrift="Schalen von Young-Jae Lee">
+      <Fragment slot="titel">Meisterstücke</Fragment>
+      <Fragment slot="lede">
+        Alle hier gezeigten Meisterstücke stammen aus der Hand Young-Jae Lees und wurden von ihr selbst gedreht, bemalt
+        und glasiert.
+      </Fragment>
+      <Bild
+        slot="bild"
+        priority
+        src="/img/kwm/schalen-trio.webp"
+        sizes="100vw"
+        alt="Vier Schalen von Young-Jae Lee nebeneinander: tiefrot, weiß mit blauem Pinselpunkt, rosé-violett und hellbraun"
+      />
+    </PageHero>
+
+    <section class="ms-intro on-flaeche grid" aria-label="Über die Meisterstücke">
+      <Statement typ="aussage" as="p" class="ms-intro__statement">
+        In Anlehnung an die koreanische Tradition: nicht die ständige Neuerfindung von Formen, sondern die vollkommene
+        Beherrschung des vorhandenen Repertoires.
+      </Statement>
+      <div class="ms-intro__text">
+        <p data-reveal="fade">
+          Young-Jae Lee ist eine international anerkannte, mehrfach ausgezeichnete Künstlerin und leitet als
+          Geschäftsführerin die Keramische Werkstatt Margaretenhöhe in Essen. Zusammen mit Hildegard Eggemann
+          entwickelte sie ab 1986 den Formen- und Farbkanon des Manufakturprogramms, das seitdem nahezu unverändert von
+          den Mitarbeitern der Werkstatt hergestellt wird.
+        </p>
+        <p data-reveal="fade">
+          Die Herstellung jedes neuen Gefäßes gleicht einer Meditation. Erst mit der Verinnerlichung der Formen kann die
+          tägliche Arbeit an der Drehscheibe jenseits aller Routine zu einer Art Exerzitium werden. Die Persönlichkeit
+          beginnt einzufließen, das Individuelle drückt sich im Handwerklichen aus.
+        </p>
+      </div>
+    </section>
+
+    <SubNav
+      beschriftung="Kapitel dieser Seite"
+      eintraege={[
+        { href: '#schalen', text: 'Schalen' },
+        { href: '#arbeitsweise', text: 'Arbeitsweise' },
+        { href: '#kummen', text: 'Kummen' },
+        { href: '#vasen', text: 'Vasen' },
+      ]}
+    />
+
+    {/* Schalen */}
+    <ChapterHead id="schalen" titelId="schalen-title">
+      <Fragment slot="titel">Schalen</Fragment>
+      <Fragment slot="einleitung">
+        Spitz zulaufende Schalen in fünf Größen, gedreht zwischen 2003 und 2005, dazu eine große, weite Schale von 1994.
+        Glasiert mit Feldspatglasuren, zum Teil mit Eichenasche.
+      </Fragment>
+      <div class="catalog">
+        <WorkCard typ="katalog" breite="halb" werk={werk('schale-spitz-xxl-1')} />
+        <WorkCard typ="katalog" breite="halb" werk={werk('schale-spitz-xxl-2')} />
+        <Statement typ="zitat" class="catalog__quote" quelle={jahnQuelle}>
+          Vom Volumen bezieht die Schale ihre Kraft, ihre Präsenz.
+        </Statement>
+        <WorkCard typ="katalog" breite="halb" werk={werk('schale-spitz-xxl-3')} />
+
+        <WorkCard typ="katalog" breite="standard" werk={werk('schale-spitz-xl-1')} />
+        <WorkCard typ="katalog" breite="standard" werk={werk('schale-spitz-xl-2')} />
+        <WorkCard typ="katalog" breite="standard" werk={werk('schale-spitz-xl-3')} />
+
+        <WorkCard typ="stimmung" breite="breit" stimmung={stimmung('seladon-schalen')} />
+
+        <WorkCard typ="katalog" breite="standard" werk={werk('schale-spitz-gross-1')} />
+        <WorkCard typ="katalog" breite="standard" werk={werk('schale-spitz-mittel-1')} />
+        <WorkCard typ="katalog" breite="standard" werk={werk('schalen-spitz-klein-1')} />
+
+        <WorkCard typ="katalog" breite="breit" werk={werk('grosse-schale-1')} />
+      </div>
+    </ChapterHead>
+
+    {/* Arbeitsweise */}
+    <ChapterHead grund="anker" id="arbeitsweise" titelId="aw-title">
+      <Fragment slot="titel">Östlich gedreht, westlich abgedreht.</Fragment>
+      <Fragment slot="einleitung">Wie ein Meisterstück entsteht – von der Masse bis zum Holzbrand.</Fragment>
+      <Steps
+        typ="arbeitsschritte"
+        schritte={arbeitsschritte}
+        bildunterschrift="Ohne Titel (Teeschale), 2023 · Foto: Edi Baumann"
+      >
+        <Fragment slot="bild">
+          <Bild
+            src="/img/kwm/teeschale.webp"
+            loading="lazy"
+            alt="Teeschale mit rotbraun geflammter Glasur, hellblauen Pinselzeichen und dunklen Eisensprenkeln"
+          />
+        </Fragment>
+      </Steps>
+    </ChapterHead>
+
+    {/* Kummen */}
+    <ChapterHead grund="flaeche" id="kummen" titelId="kummen-title">
+      <Fragment slot="titel">Kummen</Fragment>
+      <Fragment slot="einleitung">
+        Drei Gefäße aus den Jahren 1987 bis 1995 – im Gasofen und im Holzofen gebrannt, eines auf weißer Engobe.
+      </Fragment>
+      <div class="catalog">
+        <WorkCard typ="katalog" breite="halb" werk={werk('kummen-1')} />
+        <WorkCard typ="katalog" breite="halb" werk={werk('kumme-1')} />
+        <Statement typ="zitat" class="catalog__quote" quelle={wagnerQuelle}>
+          Bauchige Becher, die ihr Inneres verbergen und es im kecken Schwung ihrer Lippe doch noch anbieten.
+        </Statement>
+        <WorkCard typ="katalog" breite="halb" werk={werk('bettelmoenchschale-1')} />
+      </div>
+    </ChapterHead>
+
+    {/* Vasen */}
+    <ChapterHead id="vasen" titelId="vasen-title">
+      <Fragment slot="titel">Vasen</Fragment>
+      <Fragment slot="einleitung">
+        Zylindervasen, im feuchten Zustand mit Engoben bemalt, eine Kugelvase aus dem Holzofen und die Serie der
+        Spindelvasen von 2006/07.
+      </Fragment>
+      <div class="catalog">
+        <WorkCard typ="stimmung" breite="band" stimmung={stimmung('vasen-chemnitz')} />
+
+        <WorkCard typ="katalog" breite="halb" werk={werk('zylindervasen-xl-1')} />
+        <WorkCard typ="katalog" breite="halb" werk={werk('zylindervasen-gross-1')} />
+        <WorkCard typ="katalog" breite="halb" werk={werk('zylindervasen-mittel-1')} />
+        <WorkCard typ="katalog" breite="halb" werk={werk('kleines-zylindervasenpaar-1')} />
+
+        <Statement typ="zitat" class="catalog__quote" quelle={jahnQuelle}>
+          Das sinnliche Gespür […] reifte in der frühen Essener Zeit mit der Wiederannäherung an die koreanische
+          Keramik.
+        </Statement>
+        <WorkCard typ="katalog" breite="halb" werk={werk('kugelvase-1')} />
+      </div>
+
+      <div class="spindle grid">
+        <h3 class="spindle__title ts-statement" data-reveal="words">
+          Spindelvasen, 2006/07
+        </h3>
+        <p class="spindle__text" data-reveal="fade">
+          Gebrannt im Holzofen bei {grad(BRENNTEMPERATUR.holzofen)} oder im Gasofen bei rund{' '}
+          {grad(BRENNTEMPERATUR.gasofen)}, jeweils in reduzierender Atmosphäre.
+        </p>
+      </div>
+      <div class="catalog catalog--spindle">
+        <WorkCard typ="katalog" breite="standard" werk={werk('spindelvase-1')} />
+        <WorkCard typ="katalog" breite="standard" werk={werk('spindelvase-2')} />
+        <WorkCard typ="katalog" breite="standard" werk={werk('spindelvase-3')} />
+        <WorkCard typ="katalog" breite="standard" werk={werk('spindelvasen-1')} />
+        <WorkCard typ="katalog" breite="standard" werk={werk('spindelvasen-2')} />
+        <WorkCard typ="katalog" breite="standard" werk={werk('spindelvasen-3')} />
+      </div>
+    </ChapterHead>
+
+    <InquiryBand
+      text="Fragen zu einem Meisterstück oder Interesse an einem Erwerb? Wir senden Ihnen gerne weitere Informationen oder ein Angebot zu."
+      stueck="Anfrage Meisterstücke"
+    >
+      Nennen Sie uns gern das Stück, das Sie interessiert. <LinkArrow href="/besuch">Besuch in der Werkstatt</LinkArrow>
+    </InquiryBand>
+  </main>
+</BaseLayout>

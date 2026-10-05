@@ -1,0 +1,101 @@
+/* Meisterstücke */
+
+/* Werkkatalog */
+.catalog {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: clamp(40px, 5vw, 72px) var(--g);
+  padding-inline: var(--m);
+}
+.catalog__quote {
+  grid-column: span 6;
+}
+@media (max-width: 900px) {
+  .catalog__quote {
+    grid-column: 1 / -1;
+  }
+}
+
+.ms-intro {
+  padding-block: var(--section);
+  row-gap: 40px;
+  align-items: start;
+}
+.ms-intro__statement {
+  grid-column: 1 / 8;
+}
+.ms-intro__text {
+  grid-column: 9 / 13;
+  padding-top: 10px;
+}
+.ms-intro__text p {
+  max-width: 44ch;
+}
+
+.catalog__quote {
+  align-self: center;
+}
+
+/* Platzierung der Werkkarten (WorkCard) im 12-Spalten-Raster; unter 901 px stehen alle Kinder von .catalog volle Breite */
+.catalog__item {
+  grid-column: span 4;
+}
+.catalog__item--half {
+  grid-column: span 6;
+}
+.catalog__item--wide,
+.catalog__item--band {
+  grid-column: 1 / -1;
+}
+
+/* Kummen auf Tonfläche */
+.chapter--flaeche .catalog__frame {
+  background: var(--ground-3);
+}
+
+/* Spindelvasen: ruhige Dreierreihe */
+.spindle {
+  margin-top: var(--section);
+  padding-bottom: 36px;
+  row-gap: 16px;
+  align-items: baseline;
+  border-top: 0;
+}
+.spindle__title {
+  grid-column: 1 / 7;
+}
+.spindle__text {
+  grid-column: 8 / 13;
+  margin: 0;
+  color: var(--ink-2);
+  max-width: 46ch;
+}
+.catalog--spindle {
+  padding-top: 28px;
+  border-top: 1px solid var(--hair);
+  margin-inline: var(--m);
+  padding-inline: 0;
+}
+
+@media (max-width: 900px) {
+  .ms-intro__statement,
+  .ms-intro__text {
+    grid-column: 1 / -1;
+  }
+  .catalog > * {
+    grid-column: 1 / -1 !important;
+  }
+  .spindle__title,
+  .spindle__text {
+    grid-column: 1 / -1;
+  }
+}
+@media (min-width: 901px) and (max-width: 1200px) {
+  .catalog__item {
+    grid-column: span 6;
+  }
+  .catalog__item--wide,
+  .catalog__item--band {
+    grid-column: 1 / -1;
+  }
+}

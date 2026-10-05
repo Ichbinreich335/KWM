@@ -1,11 +1,48 @@
 {
   "$schema": "./node_modules/wrangler/config-schema.json",
-  // Statische Website aus site/ als Cloudflare Worker (Static Assets), kein eigener Worker-Code nötig.
+  // Statische Astro-Website (dist/) als Cloudflare Worker mit Static Assets.
+  // Worker-Code läuft nur für /api/*, alle anderen Pfade gehen unverändert an die Assets.
   "name": "kwm-redesign",
+  "main": "./worker/index.ts",
   "compatibility_date": "2026-09-24",
   "assets": {
-    "directory": "./site",
+    "directory": "./dist",
+    "binding": "ASSETS",
     "not_found_handling": "404-page",
-    "html_handling": "auto-trailing-slash"
-  }
+    "html_handling": "auto-trailing-slash",
+    "run_worker_first": ["/api/*"],
+  },
+  // Workers Logs: Fehler des Anfrage-Endpunkts (ohne Nachrichtentext)
+  "observability": { "enabled": true },
+  // Keine Geheimnisse hier. TURNSTILE_SECRET kommt als Secret (`wrangler secret put`), lokal aus .dev.vars.
+  // ANFRAGE_ZIEL ist ein Platzhalter bis zur Freigabe der Werkstatt-Adresse (siehe konzept/GO-LIVE.md).
+  "vars": {
+    "ANFRAGE_ZIEL": "ziel@example.invalid",
+    "ANFRAGE_ABSENDER": "anfrage@kwm-1924.de",
+    "ERLAUBTE_ORIGINS": "https://kwm-1924.de,https://www.kwm-1924.de",
+    "TURNSTILE_HOSTNAMES": "kwm-1924.de,www.kwm-1924.de",
+    // "vorschau" schaltet Prüfung und Versand ab (nur im previews-Block); Produktion bleibt streng
+    "ANFRAGE_MODUS": "produktion",
+  },
+  // Ziel-Adresse und Absender stehen in den Variablen; der Versand geht nur an bei Cloudflare verifizierte Adressen.
+  "send_email": [{ "name": "ANFRAGE_MAIL" }],
+  // Höchstens 5 Anfragen je Minute und IP-Adresse
+  "ratelimits": [{ "name": "ANFRAGE_LIMIT", "namespace_id": "1001", "simple": { "limit": 5, "period": 60 } }],
+  // Vorschau-URL pro Branch (Worker Previews); laut Doku explizit setzen
+  "preview_urls": true,
+  // Vorschauen erben nichts aus der Produktion: Turnstile-Testschlüssel (Hostname example.com), kein echtes Ziel
+  "previews": {
+    "vars": {
+      "ANFRAGE_ZIEL": "ziel@example.invalid",
+      "ANFRAGE_ABSENDER": "anfrage@kwm-1924.de",
+      // Nur Vorschauen dieses Kontos (Subdomain ändert sich beim Konto-Umzug)
+      "ERLAUBTE_ORIGINS": "https://*.entwicklung-7f3.workers.dev",
+      "TURNSTILE_HOSTNAMES": "example.com",
+      // Vorschau für die Werkstatt: kein Turnstile, kein Versand, Antwort „Danke“ (siehe worker/anfrage.ts)
+      "ANFRAGE_MODUS": "vorschau",
+    },
+    "send_email": [{ "name": "ANFRAGE_MAIL" }],
+    // Eigener Zähler, damit Tests in Vorschauen das Limit der Produktion nicht verbrauchen
+    "ratelimits": [{ "name": "ANFRAGE_LIMIT", "namespace_id": "1002", "simple": { "limit": 5, "period": 60 } }],
+  },
 }

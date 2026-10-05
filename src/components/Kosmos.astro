@@ -1,0 +1,74 @@
+---
+import type { Ausstellung } from '../data/ausstellungen';
+import { tagAusIso, tagFormat } from '../lib/status';
+import LinkArrow from './LinkArrow.astro';
+
+interface Props {
+  /** Ausstellung der 99 Schalen: Satz und Link stehen in der Mitte, vorbei blendet das Skript beides aus */
+  ausstellung: Ausstellung;
+}
+
+const { ausstellung } = Astro.props;
+const haus = ausstellung.haus.replace(/\s*\(.*\)$/, '');
+const ende = tagAusIso(ausstellung.ende);
+const zuSehen = `Zu sehen im ${haus}, ${ausstellung.stadt}, bis ${tagFormat(ende)} ${ende.getFullYear()}`;
+const link = `/aktuelles#f-${ausstellung.schluessel}`;
+---
+
+{/* 99 Schalen von oben, im Ring um eine leere Mitte (Canvas); ohne Skript bleiben Zahl, Satz und Link */}
+<kwm-kosmos class="cosmos__floor">
+  <div class="cosmos__stage">
+    <canvas
+      class="cosmos__canvas"
+      role="img"
+      aria-label="Neunundneunzig Schalen von oben gesehen, in einem Ring um eine leere Mitte angeordnet, jede mit eigener Glasur"
+    ></canvas>
+    <div class="cosmos__center">
+      <p class="cosmos__count" data-cosmos-readout>
+        99 Schalen
+      </p>
+      <p class="cosmos__show" data-start={ausstellung.start} data-end={ausstellung.ende}>
+        {zuSehen}
+      </p>
+      <LinkArrow href={link} data-start={ausstellung.start} data-end={ausstellung.ende}>
+        Zur Ausstellung
+      </LinkArrow>
+    </div>
+  </div>
+  <div class="cosmos__caption">
+    <p class="cosmos__show" data-start={ausstellung.start} data-end={ausstellung.ende}>
+      {zuSehen}
+    </p>
+    <LinkArrow href={link} data-start={ausstellung.start} data-end={ausstellung.ende}>
+      Zur Ausstellung
+    </LinkArrow>
+  </div>
+</kwm-kosmos>
+
+<script>
+  import { heuteTag, hinweisSichtbar, tagAusIso } from '../lib/status';
+  import { zeichneKosmos } from '../scripts/kosmos';
+
+  class KwmKosmos extends HTMLElement {
+    private abort: AbortController | null = null;
+
+    connectedCallback() {
+      // Satz und Link zur Ausstellung nur, solange sie läuft
+      const heute = heuteTag();
+      this.querySelectorAll<HTMLElement>('[data-start]').forEach((el) => {
+        const { start, end } = el.dataset;
+        if (start && end) el.hidden = !hinweisSichtbar(tagAusIso(start), tagAusIso(end), heute);
+      });
+      const stage = this.querySelector<HTMLElement>('.cosmos__stage');
+      if (!stage) return;
+      this.abort = new AbortController();
+      zeichneKosmos(stage, this.abort.signal);
+    }
+
+    disconnectedCallback() {
+      this.abort?.abort();
+    }
+  }
+
+  if (!customElements.get('kwm-kosmos')) customElements.define('kwm-kosmos', KwmKosmos);
+</script>

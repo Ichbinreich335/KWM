@@ -1,0 +1,10 @@
+/* Aktuelles: Abschnittsabstände (Jahresarchiv und Features sind Komponenten) */
+#veroeffentlichungen {
+  padding-bottom: var(--section);
+}
+
+/* Pop-up in der Werkstatt auf Tonfläche */
+.feature-band {
+  margin-top: var(--section);
+  padding-bottom: var(--section);
+}

@@ -1,0 +1,186 @@
+/* Besuch: Öffnungszeiten groß, Anfahrt auf Tonfläche, Anfrage, Zahlung */
+
+/* Öffnungszeiten und Adresse */
+.visit-hours {
+  padding-top: var(--head-gap);
+}
+.visit-hours__media {
+  margin: 0;
+}
+.visit-hours__media img {
+  width: 100%;
+  aspect-ratio: 2560 / 398;
+  min-height: 180px;
+  object-fit: cover;
+  object-position: 40% 50%;
+}
+.visit-hours__media figcaption {
+  padding: 10px var(--m) 0;
+}
+.visit-hours__body {
+  padding-top: var(--head-gap);
+  row-gap: 32px;
+  align-items: start;
+}
+.visit-hours__place {
+  grid-column: 1 / 6;
+}
+.visit-hours__address {
+  margin-bottom: 20px;
+}
+.visit-hours__note {
+  color: var(--ink-2);
+  max-width: 36ch;
+  margin-bottom: 28px;
+}
+.visit-hours__actions {
+  grid-column: 7 / 13;
+  margin: 0;
+  padding-top: 6px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px 28px;
+  align-items: center;
+}
+
+/* Anfahrt */
+.routes-band {
+  margin-top: var(--section);
+  padding-block: var(--section);
+}
+/* Titel und Schritte liegen auf gemeinsamen Zeilen, damit die Linien trotz ungleich langer Überschriften auf einer Höhe laufen */
+.routes {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--g);
+  padding-inline: var(--m);
+}
+.route {
+  grid-column: span 3;
+  grid-row: span 3;
+}
+
+/* Anfrage */
+.inquiry {
+  padding-top: var(--section);
+  row-gap: 40px;
+  align-items: start;
+}
+.inquiry__text {
+  grid-column: 1 / 6;
+  padding-bottom: 12px;
+}
+.inquiry__form {
+  grid-column: 7 / 13;
+}
+.inquiry__text .h2 {
+  margin-bottom: 28px;
+}
+.inquiry__lead {
+  margin-bottom: 20px;
+}
+.inquiry__text > p {
+  max-width: 46ch;
+}
+.inquiry__forms {
+  border-top: 1px solid var(--ink);
+  margin: 32px 0;
+}
+.inquiry__forms a {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: baseline;
+  gap: 16px;
+  padding: 16px 0 15px;
+  border-bottom: 1px solid var(--hair);
+  text-decoration: none;
+  transition: background-color var(--dur-hover) var(--ease);
+}
+.inquiry__forms a:hover {
+  background: var(--ground-2);
+}
+.inquiry__forms a > span {
+  transition: transform var(--dur-hover) var(--ease);
+}
+.inquiry__forms a:hover > span:first-child {
+  transform: translateX(10px);
+}
+.inquiry__form-meta {
+  color: var(--ink-2);
+}
+.inquiry__contact {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 6px 20px;
+  margin-bottom: 28px;
+}
+.inquiry__contact dt {
+  color: var(--ink-2);
+  letter-spacing: 0.04em;
+  padding-top: 2px;
+}
+.inquiry__contact a {
+  text-decoration: none;
+}
+.inquiry__contact a:hover {
+  text-decoration: underline;
+}
+
+/* Zahlung und rechtliche Seiten */
+.pay {
+  padding-block: var(--section);
+  row-gap: 40px;
+}
+.pay__head {
+  grid-column: 1 / 5;
+}
+.pay__list {
+  grid-column: 5 / 10;
+  border-top: 1px solid var(--ink);
+}
+.pay__list > div {
+  display: grid;
+  grid-template-columns: 11em 1fr;
+  gap: 16px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--hair);
+}
+.pay__list dd {
+  font-variant-numeric: tabular-nums;
+}
+.pay__links {
+  grid-column: 10 / 13;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  align-items: flex-start;
+  padding-top: 18px;
+}
+
+@media (max-width: 1100px) {
+  .route {
+    grid-column: span 6;
+  }
+}
+@media (max-width: 900px) {
+  .visit-hours__place,
+  .visit-hours__actions {
+    grid-column: 1 / -1;
+  }
+  .route {
+    grid-column: 1 / -1;
+  }
+  .inquiry__text,
+  .inquiry__form {
+    grid-column: 1 / -1;
+  }
+  .pay__head,
+  .pay__list,
+  .pay__links {
+    grid-column: 1 / -1;
+  }
+  .pay__list > div {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+}

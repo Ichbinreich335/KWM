@@ -1,0 +1,196 @@
+---
+import type { Ofenfarbe } from '../data/glasuren';
+
+interface Props {
+  titel: string;
+  einleitung: string;
+  farben: readonly Ofenfarbe[];
+}
+
+const { titel, einleitung, farben } = Astro.props;
+---
+
+{/* Ohne Skript bleibt die Liste stehen; mit Skript ersetzt die Schale mit Auswahl Titel, Einleitung und Liste (sig-feuer.ts) */}
+<kwm-feuer class="feuer-farben">
+  <h3 class="feuer-farben__title">{titel}</h3>
+  <p class="feuer-farben__intro">{einleitung}</p>
+  <ul class="feuer-farben__list">
+    {farben.map((farbe) => (
+      <li>
+        <span class:list={['swatch', `swatch--${farbe.schluessel}`]} />
+        {farbe.text}
+      </li>
+    ))}
+  </ul>
+</kwm-feuer>
+
+<script>
+  // Feuer: eine Schale, vier Glasuren nach Metall und Atmosphäre (Modul sig-feuer)
+  import init from '../scripts/sig-feuer';
+
+  class KwmFeuer extends HTMLElement {
+    connectedCallback() {
+      init(this);
+    }
+  }
+
+  if (!customElements.get('kwm-feuer')) customElements.define('kwm-feuer', KwmFeuer);
+</script>
+
+<style is:global>
+  /* Signatur: feuer – Ein Feuer, zwei Farben */
+  .feuer-farben {
+    grid-column: 8 / 13;
+    display: grid;
+    gap: 28px;
+  }
+  .feuer-farben__title {
+    font-family: var(--f-display);
+    font-weight: 400;
+    font-size: var(--t-h3);
+    line-height: var(--t-h3-lh);
+    margin: 0;
+  }
+  .feuer-farben__intro {
+    margin: -12px 0 0;
+    color: var(--on-coal-2);
+    font-size: var(--t-small);
+    line-height: var(--t-small-lh);
+    max-width: 46ch;
+    text-wrap: pretty;
+  }
+  .feuer-farben__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 14px;
+    color: var(--on-coal-2);
+    font-size: var(--t-small);
+    line-height: var(--t-small-lh);
+  }
+  .feuer-farben__list li {
+    display: flex;
+    gap: 12px;
+    align-items: baseline;
+  }
+  /* Farbpunkt je Ofenfarbe */
+  .swatch {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--c);
+    flex: none;
+  }
+  .feuer-farben__list .swatch {
+    width: 14px;
+    height: 14px;
+    transform: translateY(2px);
+  }
+  .swatch--eisenoxid-oxidierend {
+    --c: var(--glaze-iron-ox);
+  }
+  .swatch--eisenoxid-reduzierend {
+    --c: var(--glaze-iron-red);
+  }
+  .swatch--kupfer-oxidierend {
+    --c: var(--glaze-copper-g);
+  }
+  .swatch--kupfer-reduzierend {
+    --c: var(--glaze-copper-r);
+  }
+
+  .feuer-farben__stage {
+    background: var(--coal-2);
+    aspect-ratio: 1;
+    position: relative;
+    overflow: hidden;
+  }
+  .feuer-farben__canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  .feuer-farben__controls {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--g);
+  }
+  .feuer-farben__group {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    border: 1px solid var(--line-on-coal);
+  }
+  .feuer-farben__btn {
+    min-height: 48px;
+    padding: 0 12px;
+    font: 400 var(--t-meta) / var(--t-meta-lh) var(--f-sans);
+    color: var(--on-coal);
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+    transition:
+      background-color var(--dur-hover) var(--ease),
+      color var(--dur-hover) var(--ease);
+  }
+  .feuer-farben__btn + .feuer-farben__btn {
+    border-left: 1px solid var(--line-on-coal);
+  }
+  .feuer-farben__btn:hover {
+    background: var(--veil-on-coal);
+  }
+  .feuer-farben__btn[aria-pressed='true'] {
+    background: var(--on-coal);
+    color: var(--coal);
+  }
+  .feuer-farben__btn:focus-visible {
+    outline: var(--focus-ring) solid var(--accent-on-coal);
+    outline-offset: var(--focus-offset);
+    position: relative;
+    z-index: 1;
+  }
+
+  .feuer-farben__result {
+    margin: 0;
+    display: grid;
+    gap: 8px;
+    min-height: 7.5em;
+    align-content: start;
+  }
+  .feuer-farben__color {
+    font-family: var(--f-display);
+    font-size: var(--t-h3);
+    line-height: var(--t-h3-lh);
+  }
+  .feuer-farben__why {
+    color: var(--on-coal-2);
+    font-size: var(--t-small);
+    line-height: var(--t-small-lh);
+    max-width: 46ch;
+  }
+  .feuer-farben__note {
+    margin: 0;
+    color: var(--on-coal-2);
+    font-size: var(--t-meta);
+    line-height: var(--t-meta-lh);
+    font-variant-numeric: tabular-nums;
+  }
+
+  @media (max-width: 900px) {
+    .feuer-farben {
+      grid-column: 1 / -1;
+    }
+  }
+  @media (max-width: 520px) {
+    .feuer-farben__controls {
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+    .feuer-farben__result {
+      min-height: 9em;
+    }
+  }
+</style>

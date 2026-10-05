@@ -1,0 +1,3 @@
+/* Grundstile in fester Reihenfolge: global und Seitenmuster */
+@import './global.css';
+@import './pages.css';

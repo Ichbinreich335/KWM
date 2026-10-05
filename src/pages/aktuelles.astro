@@ -1,0 +1,75 @@
+---
+import '../styles/basis.css';
+import '../styles/seiten/page-aktuelles.css';
+import LinkArrow from '../components/LinkArrow.astro';
+import ChapterHead from '../components/ChapterHead.astro';
+import ExhibitionCard from '../components/ExhibitionCard.astro';
+import { ausstellungen } from '../data/ausstellungen';
+import YearArchive from '../components/YearArchive.astro';
+import { vergangene } from '../data/archiv';
+import PubList from '../components/PubList.astro';
+import { veroeffentlichungen } from '../data/texte';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import InquiryBand from '../components/InquiryBand.astro';
+import SubNav from '../components/SubNav.astro';
+import PageHero from '../components/PageHero.astro';
+---
+
+<BaseLayout
+  title="Aktuelles · Keramische Werkstatt Margaretenhöhe"
+  description="Ausstellungen 2026 mit Werken von Young-Jae Lee und der Keramischen Werkstatt Margaretenhöhe: Köln, Wesel, St. Moritz und ein Pop-up in der Werkstatt auf Zollverein."
+  bodyClass="page-aktuelles"
+  nav="aktuelles"
+>
+  <main id="inhalt">
+    <PageHero typ="name">
+      <Fragment slot="titel">Aktuelles</Fragment>
+      <Fragment slot="lede">
+        Liebe Freunde der Keramischen Werkstatt, wir freuen uns auf Ihren Besuch in den folgenden Ausstellungen.
+      </Fragment>
+    </PageHero>
+
+    <SubNav
+      beschriftung="Auf dieser Seite"
+      eintraege={[
+        { href: '#ausstellungen', text: 'Ausstellungen 2026' },
+        { href: '#vergangene', text: 'Vergangene Ausstellungen' },
+        { href: '#veroeffentlichungen', text: 'Veröffentlichungen' },
+      ]}
+    />
+
+    <div id="ausstellungen">
+      {ausstellungen.map((eintrag, i) =>
+        eintrag.art === 'Werkstatt' ? (
+          <div class="feature-band on-flaeche">
+            <ExhibitionCard typ="eintrag" ausstellung={eintrag} />
+          </div>
+        ) : (
+          <ExhibitionCard typ="eintrag" gespiegelt={i % 2 === 1} ausstellung={eintrag} />
+        ),
+      )}
+    </div>
+
+    {/* Vergangene Ausstellungen */}
+    <ChapterHead id="vergangene" titelId="past-title">
+      <Fragment slot="titel">Vergangene Ausstellungen</Fragment>
+      <Fragment slot="einleitung">
+        Von Kyoto bis Boston, von Breslau bis in die eigene Werkstatt: eine Auswahl der Ausstellungen seit 2016. Ein
+        Jahr öffnen, um die Stationen zu sehen.
+      </Fragment>
+
+      <YearArchive typ="auswahl" jahre={vergangene} />
+    </ChapterHead>
+
+    {/* Veröffentlichungen */}
+    <ChapterHead id="veroeffentlichungen" titelId="pub-title">
+      <Fragment slot="titel">Veröffentlichungen</Fragment>
+      <Fragment slot="einleitung">Berichte und Gespräche über die Werkstatt.</Fragment>
+      <PubList typ="artikel" eintraege={veroeffentlichungen} />
+    </ChapterHead>
+
+    <InquiryBand text="Die Werkstatt ist offen. Besuchen Sie uns oder schreiben Sie uns.">
+      <LinkArrow href="/besuch">Öffnungszeiten und Anfahrt</LinkArrow>
+    </InquiryBand>
+  </main>
+</BaseLayout>

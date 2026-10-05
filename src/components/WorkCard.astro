@@ -1,0 +1,159 @@
+---
+import type { Stimmung, Werk } from '../data/werke';
+import { angabeText, stueckBezeichnung } from '../data/werke';
+import { anfrageLink } from '../lib/anfrage-link';
+import Bild from './Bild.astro';
+
+type Props =
+  | {
+      /** Katalogkarte: Bild, Name, Angaben und Anfrage-Link */
+      typ: 'katalog';
+      werk: Werk;
+      /** Breite im 12-Spalten-Katalog: `standard` ein Drittel, `halb`, `breit` (Angaben links, Bild rechts) */
+      breite?: 'standard' | 'halb' | 'breit';
+    }
+  | {
+      /** Bild ohne Werk, nur mit Unterschrift */
+      typ: 'stimmung';
+      stimmung: Stimmung;
+      /** `band` über die ganze Breite im Querformat */
+      breite?: 'breit' | 'band';
+    };
+
+const props = Astro.props;
+---
+
+{props.typ === 'katalog' && (
+  <figure
+    class:list={[
+      'catalog__item',
+      props.breite === 'halb' && 'catalog__item--half',
+      props.breite === 'breit' && 'catalog__item--wide',
+    ]}
+  >
+    <div class="catalog__frame" data-reveal="img">
+      <Bild bild={props.werk.bild} />
+    </div>
+    <figcaption data-reveal="fade">
+      <span class="catalog__name">{props.werk.titel}</span>
+      {props.werk.angaben.map((angabe) => (
+        <span class="catalog__spec">{angabeText(angabe)}</span>
+      ))}
+      <a class="catalog__ask" href={anfrageLink(stueckBezeichnung(props.werk))}>
+        Zu diesem Stück anfragen
+      </a>
+    </figcaption>
+  </figure>
+)}
+{props.typ === 'stimmung' && (
+  <figure
+    class:list={[
+      'catalog__item',
+      props.breite === 'band' ? 'catalog__item--band' : 'catalog__item--wide catalog__item--mood',
+    ]}
+  >
+    <div class="catalog__frame" data-reveal="img">
+      <Bild bild={props.stimmung.bild} />
+    </div>
+    <figcaption data-reveal="fade">
+      <span class="catalog__spec">{props.stimmung.unterschrift}</span>
+    </figcaption>
+  </figure>
+)}
+
+<style>
+  /* Katalog: Die Platzierung der Karten im Seitenraster steht im Seiten-CSS (page-meisterstuecke.css) */
+  .catalog__frame {
+    overflow: hidden;
+    background: var(--ground-2);
+  }
+  .catalog__frame :global(img) {
+    width: 100%;
+    aspect-ratio: 3 / 2;
+    object-fit: cover;
+    transition: transform var(--dur-zoom) var(--ease);
+  }
+  .catalog__item:hover .catalog__frame :global(img) {
+    transform: scale(1.04);
+  }
+  .catalog__item--mood .catalog__frame :global(img) {
+    aspect-ratio: 3 / 2;
+  }
+  .catalog__item--band .catalog__frame :global(img) {
+    aspect-ratio: 16 / 7;
+  }
+  .catalog__name {
+    display: block;
+    font-family: var(--f-text);
+    font-size: var(--t-body);
+    line-height: var(--t-body-lh);
+    margin-top: 14px;
+    color: var(--ink);
+  }
+  .catalog__spec {
+    display: block;
+    font-size: var(--t-meta);
+    line-height: var(--t-meta-lh);
+    color: var(--ink-2);
+    margin-top: 4px;
+  }
+  .catalog__item figcaption {
+    margin-top: 0;
+  }
+  .catalog__ask {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    box-sizing: border-box;
+    padding-block: 12px;
+    margin-block: -7px -12px;
+    font-size: var(--t-meta);
+    line-height: var(--t-meta-lh);
+    color: var(--ink-2);
+    text-underline-offset: 0.28em;
+  }
+  .catalog__ask:hover {
+    color: var(--ink);
+  }
+
+  /* Einzelwerk: Meta-Spalte links (Name, Maße, Anfrage), großes Bild rechts, an derselben Oberkante */
+  .catalog__item--wide {
+    display: grid;
+    grid-template-columns: subgrid;
+    align-items: start;
+  }
+  .catalog__item--wide .catalog__frame {
+    grid-column: 4 / -1;
+    grid-row: 1;
+  }
+  .catalog__item--wide figcaption {
+    grid-column: 1 / 4;
+    grid-row: 1;
+    padding-right: var(--g);
+  }
+  .catalog__item--wide .catalog__name {
+    margin-top: 0;
+  }
+  /* Werkbild höchstens zwei Drittel der Bildschirmhöhe (--werk-max, Format 3:2); Stimmungsbilder bleiben breit */
+  .catalog__item--wide:not(.catalog__item--mood) .catalog__frame {
+    width: min(100%, calc(var(--werk-max) * 3 / 2));
+  }
+
+  @media (max-width: 900px) {
+    .catalog__item--wide {
+      display: block;
+    }
+    .catalog__item--wide:not(.catalog__item--mood) .catalog__frame {
+      width: auto;
+    }
+    .catalog__item--wide figcaption {
+      padding: 0;
+    }
+    .catalog__item--wide .catalog__name {
+      margin-top: 14px;
+    }
+    .catalog__item--band .catalog__frame :global(img) {
+      aspect-ratio: 4 / 3;
+    }
+  }
+</style>

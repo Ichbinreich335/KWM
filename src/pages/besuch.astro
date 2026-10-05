@@ -1,0 +1,164 @@
+---
+import '../styles/basis.css';
+import '../styles/seiten/page-besuch.css';
+import Button from '../components/Button.astro';
+import LinkArrow from '../components/LinkArrow.astro';
+import InfoBlock from '../components/InfoBlock.astro';
+import Steps from '../components/Steps.astro';
+import { anfahrtAuto, oepnv } from '../data/anfahrt';
+import SectionHead from '../components/SectionHead.astro';
+import Bild from '../components/Bild.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import InquiryForm from '../components/InquiryForm.astro';
+import Hours from '../components/Hours.astro';
+import PageHero from '../components/PageHero.astro';
+import Figure from '../components/Figure.astro';
+import { kontakt } from '../data/kontakt';
+
+// Routenlinks über URL und searchParams: kodiert die Adresse einheitlich
+const routeGoogle = new URL('https://www.google.com/maps/search/');
+routeGoogle.searchParams.set('api', '1');
+routeGoogle.searchParams.set('query', `${kontakt.strasse} ${kontakt.plzOrt}`);
+const routeOsm = new URL('https://www.openstreetmap.org/search');
+routeOsm.searchParams.set('query', kontakt.anschrift);
+---
+
+<BaseLayout
+  title="Besuch & Anfahrt · Keramische Werkstatt Margaretenhöhe"
+  description={`Öffnungszeiten, Anfahrt und Anfrage: Keramische Werkstatt Margaretenhöhe, ${kontakt.adresse.join(', ')}.`}
+  bodyClass="page-besuch"
+  nav="besuch"
+>
+  <main id="inhalt">
+    <PageHero typ="meta">
+      <Fragment slot="titel">Besuchen Sie die Werkstatt.</Fragment>
+      <Fragment slot="lede">
+        Wir danken Ihnen für Ihr Interesse. Wenn Sie Fragen haben oder Stücke aus unserem Programm erwerben möchten,
+        senden wir Ihnen natürlich gerne weitere Informationen oder ein Angebot zu. Selbstverständlich können Sie unsere
+        Werkstatt auch besuchen.
+      </Fragment>
+      <Hours typ="liste" />
+    </PageHero>
+
+    {/* Adresse */}
+    <section class="visit-hours" aria-labelledby="hours-title">
+      <h2 class="visually-hidden" id="hours-title">
+        Adresse
+      </h2>
+      <Figure class="visit-hours__media" unterschrift="In der Werkstatt">
+        <Bild
+          src="/img/kwm/werkstatt-panorama.webp"
+          alt="Young-Jae Lee am Arbeitstisch vor langen Regalen mit ungebrannten Gefäßen"
+          priority
+        />
+      </Figure>
+      <div class="visit-hours__body grid">
+        <div class="visit-hours__place" data-reveal="fade">
+          <p class="visit-hours__address ts-quote">
+            {kontakt.firma}
+            <br />
+            {kontakt.strasse}
+            <br />
+            {kontakt.plzOrt}
+          </p>
+          <p class="visit-hours__note ts-small">Seit 1987 im Baulager der Zeche Zollverein, heute Weltkulturerbe.</p>
+        </div>
+        <p class="visit-hours__actions" data-reveal="fade">
+          <Button href={routeGoogle.href}>Route planen</Button>
+          <LinkArrow href={routeOsm.href}>Route in OpenStreetMap öffnen</LinkArrow>
+          <LinkArrow href={kontakt.telefonHref}>{kontakt.telefon}</LinkArrow>
+        </p>
+      </div>
+    </section>
+
+    {/* Anfahrt */}
+    <section class="routes-band on-flaeche" aria-labelledby="routes-title">
+      <SectionHead titelId="routes-title">
+        <Fragment slot="titel">So erreichen Sie uns.</Fragment>
+        Die Werkstatt liegt auf dem Zechengelände. Nach der Einfahrt links abbiegen, nach etwa 100 Metern auf der linken
+        Seite.
+      </SectionHead>
+      <div class="routes">
+        {[...anfahrtAuto, oepnv].map((weg) => (
+          <InfoBlock titel={weg.titel} hinweis={weg.hinweis}>
+            <Steps typ="folge" schritte={weg.schritte} />
+          </InfoBlock>
+        ))}
+      </div>
+    </section>
+
+    {/* Anfrage */}
+    <section class="inquiry grid" id="anfrage" aria-labelledby="inquiry-title">
+      <div class="inquiry__text">
+        <h2 class="h2" id="inquiry-title" data-reveal="words">
+          Anfrage
+        </h2>
+        <p class="inquiry__lead ts-quote" data-reveal="fade">
+          Schreiben Sie uns, welches Stück oder welches Programm Sie interessiert. Wir melden uns mit weiteren
+          Informationen oder einem Angebot.
+        </p>
+        <p data-reveal="fade">
+          Für Geschirr und Edition gibt es zusätzlich ein Formular zum Ausdrucken. Zu den Meisterstücken von Young-Jae
+          Lee antworten wir gern auf Ihre Nachricht.
+        </p>
+        <div class="inquiry__forms" data-reveal="fade">
+          <a href="https://kwm-1924.de/wp-content/uploads/2026/07/2026_04_Anfrage_inquiry_Geschirr_tableware.pdf">
+            <span class="inquiry__form-name ts-body">Anfrage – Geschirr</span>
+            <span class="inquiry__form-meta ts-meta">Formular, PDF</span>
+          </a>
+          <a href="https://kwm-1924.de/wp-content/uploads/2023/09/anfrage_inquiry_editionen_editions.pdf">
+            <span class="inquiry__form-name ts-body">Anfrage – Edition</span>
+            <span class="inquiry__form-meta ts-meta">Formular, PDF</span>
+          </a>
+        </div>
+        <dl class="inquiry__contact ts-small" data-reveal="fade">
+          <dt class="ts-meta">Telefon</dt>
+          <dd>
+            <a class="tap" href={kontakt.telefonHref}>
+              {kontakt.telefon}
+            </a>
+          </dd>
+          <dt class="ts-meta">Zeiten</dt>
+          <dd>{kontakt.zeitenKurz}</dd>
+          <dt class="ts-meta">E-Mail</dt>
+          <dd>
+            <a class="tap" href={kontakt.mailHref}>
+              {kontakt.mail}
+            </a>
+          </dd>
+          <dt class="ts-meta">Fax</dt>
+          <dd>{kontakt.fax}</dd>
+        </dl>
+      </div>
+      <div class="inquiry__form">
+        <InquiryForm />
+      </div>
+    </section>
+
+    {/* Zahlung */}
+    <section class="pay grid" aria-labelledby="pay-title">
+      <h2 class="h2 pay__head" id="pay-title" data-reveal="words">
+        Zahlung
+      </h2>
+      <dl class="pay__list ts-small" data-reveal="fade">
+        <div>
+          <dt class="ts-body">Banküberweisung</dt>
+          <dd>
+            Sparkasse Essen
+            <br />
+            IBAN DE84 3605 0105 0000 2649 37
+          </dd>
+        </div>
+        <div>
+          <dt class="ts-body">PayPal</dt>
+          <dd>{kontakt.mail}</dd>
+        </div>
+      </dl>
+      <p class="pay__links" data-reveal="fade">
+        <LinkArrow href="/versand">Verpackung und Transport</LinkArrow>
+        <LinkArrow href="/agb">AGB</LinkArrow>
+        <LinkArrow href="/impressum">Impressum</LinkArrow>
+      </p>
+    </section>
+  </main>
+</BaseLayout>

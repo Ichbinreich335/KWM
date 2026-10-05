@@ -1,0 +1,55 @@
+---
+import type { Hinweis } from '../data/anfahrt';
+
+interface Props {
+  titel: string;
+  /** Kleingedruckter Satz unter dem Inhalt, mit einem Link mitten im Satz (Satzzeichen direkt hinter dem Link) */
+  hinweis?: Hinweis | undefined;
+}
+
+const { titel, hinweis } = Astro.props;
+---
+
+<article class="route" data-reveal="fade">
+  <h3 class="route__title">{titel}</h3>
+  <slot />
+  {hinweis && (
+    <p class="route__note">
+      {[hinweis.vor, <a class="tap" href={hinweis.href} set:text={hinweis.linkText} />, hinweis.nach]}
+    </p>
+  )}
+</article>
+
+<style>
+  /* Platz im Raster (grid-column, grid-row) legt die Seite fest; hier steht, was der Block in sich selbst tut */
+  .route {
+    display: grid;
+    grid-template-rows: subgrid;
+    align-content: start;
+    padding-bottom: 56px;
+  }
+  .route__title {
+    font-family: var(--f-display);
+    font-size: var(--t-h3);
+    line-height: var(--t-h3-lh);
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--ink);
+    margin-bottom: 4px;
+    text-wrap: balance;
+  }
+  .route__note {
+    font-size: var(--t-small);
+    line-height: var(--t-small-lh);
+    color: var(--ink-2);
+    margin-top: 16px;
+  }
+  .route__note a {
+    color: var(--ink);
+  }
+
+  @media (max-width: 900px) {
+    .route {
+      padding-bottom: 40px;
+    }
+  }
+</style>

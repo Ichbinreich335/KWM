@@ -1,0 +1,126 @@
+/* Signatur: sticky – Text bleibt beim Scrollen oben im Foto stehen, bis das Bild durch ist (Porträt und Feuer; Feuer-Variante: wandert).
+   Abschnitt ist höher als der Bildschirm, die Textebene klebt oben (100svh) und zieht am Ende mit dem Abschnitt weiter.
+   Das Foto läuft normal mit; js/sig-sticky.js verschiebt es nur minimal gegenläufig (Parallax, ≤ 5 %). */
+.sticky-bild {
+  --sticky-h: 150svh;
+  --sticky-over: 6%;          /* Bild ragt oben und unten über, Platz für den Parallax */
+  --sticky-shift: 0%;         /* setzt sig-sticky.js, Wertebereich ±5 % der Bildhöhe */
+  --sticky-text-from: 1;
+  --sticky-text-to: 9;
+  position: relative;
+  height: var(--sticky-h);
+  overflow: clip;
+  background: var(--coal);
+  color: var(--on-coal);
+  --ink-2: var(--on-coal-2);
+  --cover: var(--coal);
+}
+.sticky-bild ::selection { background: var(--on-coal); color: var(--coal); }
+
+.sticky-bild__media { position: absolute; inset: 0; overflow: hidden; }
+.sticky-bild__img {
+  position: absolute;
+  inset-inline: 0;
+  top: calc(var(--sticky-over) * -1);
+  width: 100%;
+  height: calc(100% + var(--sticky-over) * 2);
+  object-fit: cover;
+  transform: translate3d(0, var(--sticky-shift), 0);
+  will-change: transform;
+}
+/* Abdunklung: so viel wie für 4,5:1 nötig, stärker auf der Textseite, Foto bleibt rechts lesbar */
+.sticky-bild__media::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgb(10 10 10 / 0.78) 0%, rgb(10 10 10 / 0.6) 55%, rgb(10 10 10 / 0.2) 100%);
+}
+
+.sticky-bild__pane {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  height: 100svh;
+  align-content: center;
+  pointer-events: none;
+}
+.sticky-bild__text {
+  grid-column: var(--sticky-text-from) / var(--sticky-text-to);
+  display: grid;
+  gap: clamp(20px, 2.4vw, 36px);
+  justify-items: start;
+  pointer-events: auto;
+}
+.sticky-bild__lede { font-family: var(--f-text); font-size: var(--t-quote); line-height: var(--t-quote-lh); max-width: 40ch; margin: 0; text-wrap: pretty; }
+.sticky-bild__quote { margin: 0; display: grid; gap: 18px; }
+.sticky-bild__quote p { font-family: var(--f-text); font-size: var(--t-quote); line-height: var(--t-quote-lh); margin: 0; text-wrap: pretty; }
+.sticky-bild__quote footer { font-size: var(--t-small); line-height: var(--t-small-lh); color: var(--on-coal); }
+
+/* Porträt: Text rechts, Foto läuft links weiter; Bildunterschrift auf dem Papier darunter */
+.sticky-bild--portrait {
+  --sticky-h: 140svh;
+  --sticky-text-from: 7;
+  --sticky-text-to: 13;
+}
+.sticky-bild--portrait .sticky-bild__img { object-position: 55% 50%; }
+/* Wie beim Feuer: Der Text steht oben im Bild fest (sticky), das Bild läuft darunter durch, am Ende zieht er mit */
+/* Höhe nur so hoch wie der Text: er haftet, bis er unten am Bild angekommen ist */
+.sticky-bild--portrait .sticky-bild__pane { align-content: start; height: auto; padding-block: calc(var(--head) + var(--head-gap)) var(--head-gap); box-sizing: border-box; }
+.sticky-bild--portrait .sticky-bild__quote p { font-size: var(--t-lede); line-height: var(--t-lede-lh); }
+.sticky-bild--portrait .sticky-bild__media::after {
+  background: linear-gradient(270deg, rgb(10 10 10 / 0.78) 0%, rgb(10 10 10 / 0.6) 45%, rgb(10 10 10 / 0.12) 100%);
+}
+.sticky-bild__caption { margin: 0; padding: 10px var(--m) 0; font-size: var(--t-meta); line-height: var(--t-meta-lh); color: var(--ink-2); }
+.sticky-bild-wrap { margin: 0; }
+/* Feuer, Standard „haftend“: Der Text steht oben links im Bild fest (sticky), bis das Bild durch ist, und zieht dann mit.
+   Haltestrecke = Abschnittshöhe minus Bildschirmhöhe. */
+.sticky-bild--feuer {
+  --sticky-h: 160svh;
+  --sticky-text-to: 8;
+}
+.sticky-bild--feuer .sticky-bild__pane { align-content: start; padding-top: calc(var(--head) + var(--head-gap)); box-sizing: border-box; }
+.sticky-bild--feuer .sticky-bild__lede { max-width: 46ch; }
+.sticky-bild--feuer .sticky-bild__media::after {
+  background:
+    radial-gradient(ellipse 80% 70% at 0% 0%, rgb(10 10 10 / 0.78) 0%, rgb(10 10 10 / 0) 100%),
+    linear-gradient(90deg, rgb(10 10 10 / 0.66) 0%, rgb(10 10 10 / 0.56) 58%, rgb(10 10 10 / 0.2) 100%);
+}
+/* Variante „wandernd“: Textblock im Fluss, Mitte wandert gleichmäßig über das Bild (js/sig-sticky.js). Ohne JS steht er mittig. */
+[data-feuertext="wandernd"] .sticky-bild--feuer {
+  --sticky-h: 82svh;
+  --feuer-pad: clamp(24px, 6svh, 56px);
+  --feuer-y: 0px;
+  height: auto;
+}
+[data-feuertext="wandernd"] .sticky-bild--feuer .sticky-bild__pane {
+  position: relative;
+  height: auto;
+  min-height: var(--sticky-h);
+  padding-block: var(--feuer-pad);
+  align-content: center;
+}
+[data-feuertext="wandernd"] .sticky-bild--feuer.is-travel .sticky-bild__pane { align-content: start; }
+.sticky-bild--feuer.is-travel .sticky-bild__text { transform: translate3d(0, var(--feuer-y), 0); will-change: transform; }
+[data-feuertext="wandernd"] .sticky-bild--feuer .sticky-bild__media::after {
+  background: linear-gradient(90deg, rgb(10 10 10 / 0.74) 0%, rgb(10 10 10 / 0.64) 58%, rgb(10 10 10 / 0.2) 100%);
+}
+
+@media (max-width: 900px) {
+  .sticky-bild { --sticky-h: 130svh; --sticky-text-from: 1; --sticky-text-to: -1; }
+  .sticky-bild--feuer { --sticky-h: 150svh; --sticky-text-to: -1; }
+  .sticky-bild--feuer .sticky-bild__media::after { background: rgb(10 10 10 / 0.66); }
+  [data-feuertext="wandernd"] .sticky-bild--feuer { --sticky-h: 78svh; }
+  [data-feuertext="wandernd"] .sticky-bild--feuer .sticky-bild__pane { padding-bottom: var(--feuer-pad); }
+  [data-feuertext="wandernd"] .sticky-bild--feuer .sticky-bild__media::after { background: rgb(10 10 10 / 0.66); }
+  .sticky-bild--portrait { --sticky-h: 135svh; --sticky-text-from: 1; --sticky-text-to: -1; }
+  .sticky-bild__media::after,
+  .sticky-bild--portrait .sticky-bild__media::after { background: rgb(10 10 10 / 0.66); }
+  .sticky-bild__pane { align-content: end; padding-bottom: clamp(48px, 12svh, 96px); }
+  .sticky-bild--feuer .sticky-bild__pane { align-content: start; padding-bottom: 0; }
+  .sticky-bild--portrait .sticky-bild__pane { align-content: start; padding-bottom: var(--head-gap); }
+  .sticky-bild--portrait .sticky-bild__img { object-position: 22% 50%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sticky-bild__img, .sticky-bild--feuer.is-travel .sticky-bild__text { will-change: auto; }
+}

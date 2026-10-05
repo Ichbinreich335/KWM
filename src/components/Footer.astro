@@ -1,0 +1,44 @@
+---
+import { kontakt } from '../data/kontakt';
+import { fussLinks } from '../data/navigation';
+import SigLogo from './SigLogo.astro';
+---
+
+<footer class="footer">
+  <div class="footer__grid grid">
+    <SigLogo class="footer__logo" />
+    <div class="footer__col">
+      <p class="footer__label">Werkstatt</p>
+      <p>
+        {kontakt.firma}
+        <br />
+        {kontakt.adresse[0]}
+        <br />
+        {kontakt.adresse[1]}
+      </p>
+    </div>
+    <div class="footer__col">
+      <p class="footer__label">Geöffnet</p>
+      <p>{kontakt.zeiten.map((zeile, i) => (i === 0 ? zeile : [<br />, zeile]))}</p>
+    </div>
+    <div class="footer__col">
+      <p class="footer__label">Kontakt</p>
+      <p>
+        <a href={kontakt.telefonHref}>{kontakt.telefon}</a>
+        <br />
+        <a href={kontakt.mailHref}>{kontakt.mail}</a>
+      </p>
+    </div>
+    <div class="footer__col">
+      <p class="footer__label">Seiten</p>
+      <p class="footer__links">
+        {fussLinks.map((l) => (
+          <a href={l.href}>{l.name}</a>
+        ))}
+      </p>
+    </div>
+  </div>
+  <p class="footer__mark" aria-hidden="true">
+    Margaretenhöhe
+  </p>
+</footer>

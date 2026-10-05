@@ -1,0 +1,54 @@
+---
+import SectionHead from './SectionHead.astro';
+
+interface Props {
+  id?: string;
+  /** Id der Überschrift, auf die `aria-labelledby` zeigt; Pflicht, sobald der Slot `titel` gefüllt ist */
+  titelId?: string;
+  /** Zugänglicher Name für Kapitel ohne eigene Überschrift */
+  beschriftung?: string;
+  /** Abschnittstyp (DESIGN.md): hell, Fläche oder dunkler Anker */
+  grund?: 'hell' | 'flaeche' | 'anker';
+  /** Zusätzliche Klassen für die Platzierung durch die Seite */
+  class?: string | undefined;
+}
+
+const { id, titelId, beschriftung, grund = 'hell', class: klasse } = Astro.props;
+const hatKopf = titelId !== undefined && Astro.slots.has('titel');
+---
+
+<section
+  class:list={[
+    'chapter',
+    { 'chapter--flaeche on-flaeche': grund === 'flaeche', 'chapter--anker on-anker': grund === 'anker' },
+    klasse,
+  ]}
+  id={id}
+  aria-labelledby={titelId}
+  aria-label={beschriftung}
+>
+  {hatKopf && (
+    <SectionHead titelId={titelId}>
+      <Fragment slot="titel">
+        <slot name="titel" />
+      </Fragment>
+      {Astro.slots.has('einleitung') && <slot name="einleitung" />}
+    </SectionHead>
+  )}
+  <slot />
+</section>
+
+<style>
+  .chapter {
+    padding-block: var(--section) 0;
+  }
+  .chapter:last-of-type,
+  .chapter:has(+ :global(.anfrage-band)) {
+    padding-bottom: var(--section);
+  }
+  .chapter--anker,
+  .chapter--flaeche {
+    margin-top: var(--section);
+    padding-bottom: var(--section);
+  }
+</style>

@@ -1,0 +1,149 @@
+/* Werkstatt: Seiten-spezifische Kompositionen */
+
+/* Personen (PersonCard) */
+.people {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 56px var(--g);
+  padding-inline: var(--m);
+}
+
+/* Panorama-Band im Seitenkopf */
+.page-hero__media--strip img {
+  object-position: 30% 50%;
+}
+
+/* Arbeitsweise: Regal links, Text rechts, Fakten */
+.method {
+  row-gap: 56px;
+  align-items: start;
+}
+.method__media {
+  grid-column: 1 / 7;
+  margin-left: calc(var(--m) * -1);
+}
+.method__media img {
+  width: 100%;
+  aspect-ratio: 954 / 905;
+  object-fit: cover;
+}
+.method__media figcaption {
+  padding-left: var(--m);
+}
+.method__text {
+  grid-column: 8 / 13;
+}
+.method__rule {
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+  margin-bottom: 32px;
+}
+.method__text p {
+  max-width: 46ch;
+}
+.method__facts {
+  grid-column: 1 / -1;
+}
+
+/* Chronik: Komponente .chronicle aus global.css, hier nur Abstand zum Kapitel davor und der stille Schlusseintrag */
+.page-werkstatt .chronicle {
+  margin-top: var(--section);
+}
+
+/* Team */
+.team-strip {
+  margin: 0 var(--m) clamp(40px, 5vw, 64px);
+  max-width: 1000px;
+}
+.team-strip img {
+  width: 100%;
+  aspect-ratio: 900 / 140;
+  object-fit: cover;
+}
+
+/* Zollverein */
+.page-werkstatt #zollverein {
+  padding-bottom: var(--section);
+}
+.place {
+  row-gap: 40px;
+  align-items: end;
+}
+.place__text {
+  grid-column: 1 / 7;
+}
+.place__text .h2 {
+  margin-bottom: 28px;
+}
+.place__text p {
+  max-width: 48ch;
+}
+.place__info {
+  grid-column: 8 / -1;
+}
+
+@media (max-width: 900px) {
+  .method__media,
+  .method__text,
+  .place__text,
+  .place__info {
+    grid-column: 1 / -1;
+  }
+  .method__media {
+    margin-inline: calc(var(--m) * -1);
+  }
+  .page-hero__media--strip img {
+    object-position: 22% 50%;
+  }
+  .team-strip {
+    margin-inline: 0;
+    max-width: none;
+  }
+}
+
+/* Glasurfarben: "Ein Feuer, zwei Farben" auf hellem Grund (Signatur ist für den Anker gebaut, Bühne bleibt dunkel) */
+.fire-colors {
+  row-gap: 48px;
+  align-items: start;
+}
+.fire-colors__media {
+  grid-column: 1 / 7;
+}
+.fire-colors__media img {
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
+}
+.page-werkstatt .feuer-farben__list {
+  color: var(--ink-2);
+}
+.page-werkstatt .feuer-farben__group {
+  border-color: var(--ink);
+}
+.page-werkstatt .feuer-farben__btn {
+  color: var(--ink);
+}
+.page-werkstatt .feuer-farben__btn + .feuer-farben__btn {
+  border-left-color: var(--ink);
+}
+.page-werkstatt .feuer-farben__btn:hover {
+  background: var(--ground-2);
+}
+.page-werkstatt .feuer-farben__btn[aria-pressed='true'] {
+  background: var(--ink);
+  color: var(--ground);
+}
+.page-werkstatt .feuer-farben__btn:focus-visible {
+  outline-color: var(--accent);
+}
+.page-werkstatt .feuer-farben__intro,
+.page-werkstatt .feuer-farben__why,
+.page-werkstatt .feuer-farben__note {
+  color: var(--ink-2);
+}
+
+@media (max-width: 900px) {
+  .fire-colors__media {
+    grid-column: 1 / -1;
+  }
+}

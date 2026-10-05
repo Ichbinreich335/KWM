@@ -1,0 +1,94 @@
+---
+import { kontakt, oeffnungszeitZeilen } from '../data/kontakt';
+
+interface Props {
+  /** `liste`: große Zeilen im Seitenkopf (Besuch); `tabelle`: Tabelle im Abschnitt „Werkstatt ist offen“ (Startseite) */
+  typ: 'liste' | 'tabelle';
+}
+
+const { typ } = Astro.props;
+const { hinweisZeiten } = kontakt;
+const zeilen = oeffnungszeitZeilen(kontakt.oeffnungszeiten, 'lang');
+---
+
+{typ === 'liste' ? (
+  <div class="visit-hours__times" data-reveal="fade" role="group" aria-label="Öffnungszeiten">
+    {zeilen.map(({ tage, zeit }) => (
+      <div class="visit-hours__row">
+        <span class="visit-hours__day">{tage}</span>
+        <span class="visit-hours__time">{zeit}</span>
+      </div>
+    ))}
+    <div class="visit-hours__row">
+      <span class="visit-hours__day">Sonst</span>
+      <span class="visit-hours__time visit-hours__time--small">{hinweisZeiten}</span>
+    </div>
+  </div>
+) : (
+  <table class="hours">
+    <caption class="visually-hidden">Öffnungszeiten</caption>
+    <tbody>
+      {zeilen.map(({ tage, zeit }) => (
+        <tr>
+          <th scope="row">{tage}</th>
+          <td>{zeit}</td>
+        </tr>
+      ))}
+      <tr>
+        <th scope="row">Sonst</th>
+        <td>{hinweisZeiten}</td>
+      </tr>
+    </tbody>
+  </table>
+)}
+
+<style>
+  .visit-hours__times {
+    border-top: 1px solid var(--ink);
+  }
+  .visit-hours__row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: baseline;
+    gap: 24px;
+    padding: 22px 0 20px;
+    border-bottom: 1px solid var(--hair);
+  }
+  .visit-hours__day {
+    font-size: var(--t-small);
+    line-height: var(--t-small-lh);
+    color: var(--ink-2);
+  }
+  .visit-hours__time {
+    font-family: var(--f-display);
+    font-size: var(--t-h2);
+    line-height: var(--t-h2-lh);
+    letter-spacing: -0.02em;
+    font-variant-numeric: lining-nums;
+    text-align: right;
+  }
+  .visit-hours__time--small {
+    font-size: var(--t-h3);
+    line-height: var(--t-h3-lh);
+  }
+
+  .hours {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: var(--t-body);
+    line-height: var(--t-body-lh);
+  }
+  .hours th,
+  .hours td {
+    text-align: left;
+    font-weight: 400;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--hair);
+  }
+  .hours th {
+    width: calc(50% + var(--g) / 2);
+  }
+  .hours td {
+    font-variant-numeric: tabular-nums;
+  }
+</style>

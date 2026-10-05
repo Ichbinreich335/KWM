@@ -1,0 +1,80 @@
+---
+interface Props {
+  /** `gross`: Display-Zitat als Zäsur; `aussage`: Aussage in Textgröße Statement; `zitat`: Text-Schnitt in Titelgröße, ruhig; `zitat-lang`: längeres Fremdzitat im Text-Schnitt in Zitatgröße, auf hellem wie dunklem Grund (die Quelle nimmt `--ink-2` des Umfelds) */
+  typ: 'gross' | 'aussage' | 'zitat' | 'zitat-lang';
+  /** `p`: nackter Absatz ohne `blockquote` (Aussage ohne Zitat, keine Quelle) */
+  as?: 'blockquote' | 'p';
+  /** Einblend-Animation des Satzes (Wert von `data-reveal`); `false` lässt sie weg */
+  einblenden?: 'words' | 'fade' | false;
+  /** Urheber oder Quelle unter dem Satz */
+  quelle?: string;
+  /** Id des Satzes, wenn ein Abschnitt per `aria-labelledby` darauf zeigt */
+  textId?: string;
+  /** Zusätzliche Klassen für die Platzierung durch die Seite (am `blockquote`, ohne Quelle am `p`) */
+  class?: string | undefined;
+}
+
+const { typ, as = 'blockquote', einblenden = 'words', quelle, textId, class: klasse } = Astro.props;
+const reveal = einblenden || undefined;
+---
+
+{as === 'p' ? (
+  <p class:list={['statement__text', `statement--${typ}`, klasse]} id={textId} data-reveal={reveal}>
+    <slot />
+  </p>
+) : (
+  <blockquote class:list={['statement', klasse]}>
+    <p class:list={['statement__text', `statement--${typ}`]} id={textId} data-reveal={reveal}>
+      <slot />
+    </p>
+    {quelle && <footer data-reveal={reveal && 'fade'}>{quelle}</footer>}
+  </blockquote>
+)}
+
+<style>
+  .statement {
+    margin: 0;
+  }
+  .statement__text {
+    margin: 0;
+    font-family: var(--f-display);
+    font-size: var(--t-statement);
+    line-height: var(--t-statement-lh);
+    text-wrap: balance;
+  }
+  .statement footer {
+    font-size: var(--t-meta);
+    line-height: var(--t-meta-lh);
+    color: var(--ink-2);
+  }
+  .statement--gross {
+    font-size: var(--t-display);
+    line-height: var(--t-display-lh);
+    letter-spacing: -0.025em;
+  }
+  .statement--gross:has(+ footer) {
+    margin-bottom: 28px;
+  }
+  .statement--aussage {
+    letter-spacing: -0.02em;
+  }
+  .statement--aussage:has(+ footer) {
+    margin-bottom: 22px;
+  }
+  .statement--zitat {
+    font-family: var(--f-text);
+    font-size: var(--t-h3);
+    line-height: var(--t-h3-lh);
+    text-wrap: pretty;
+  }
+  .statement--zitat:has(+ footer),
+  .statement--zitat-lang:has(+ footer) {
+    margin-bottom: 1em;
+  }
+  .statement--zitat-lang {
+    font-family: var(--f-text);
+    font-size: var(--t-quote);
+    line-height: var(--t-quote-lh);
+    text-wrap: pretty;
+  }
+</style>

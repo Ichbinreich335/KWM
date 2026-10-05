@@ -1,0 +1,39 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+
+/** Gefüllter Knopf: ein Link, wenn `href` gesetzt ist, sonst ein `button` (Standardtyp `button`, nicht `submit`) */
+type Props =
+  (Omit<HTMLAttributes<'a'>, 'type'> & { href: string; type?: never }) | (HTMLAttributes<'button'> & { href?: never });
+
+const { class: klasse, href, type = 'button', ...attribute } = Astro.props;
+---
+
+{href ? (
+  <a class:list={['button', klasse]} href={href} {...attribute}>
+    <slot />
+  </a>
+) : (
+  <button class:list={['button', klasse]} type={type} {...attribute}>
+    <slot />
+  </button>
+)}
+
+<style>
+  .button {
+    display: inline-block;
+    font-size: var(--t-small);
+    line-height: var(--t-small-lh);
+    text-decoration: none;
+    color: var(--ground);
+    background: var(--ink);
+    border: 1px solid var(--ink);
+    padding: 12px 26px 11px;
+    transition:
+      background-color var(--dur-hover) var(--ease),
+      color var(--dur-hover) var(--ease);
+  }
+  .button:hover {
+    background: transparent;
+    color: var(--ink);
+  }
+</style>

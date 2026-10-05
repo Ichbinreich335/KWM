@@ -1,0 +1,36 @@
+---
+import '../styles/basis.css';
+import LinkArrow from '../components/LinkArrow.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+---
+
+<BaseLayout
+  title="Nicht gefunden · Keramische Werkstatt Margaretenhöhe"
+  description="Diese Seite gibt es nicht."
+  bodyClass="page-404"
+  canonicalAusgeben={false}
+>
+  <main id="inhalt">
+    <PageHero typ="name" class="not-found" ledeAls="div" einblenden={false}>
+      <Fragment slot="titel">Diese Schale ist leer.</Fragment>
+      <Fragment slot="lede">
+        <p>Die Seite gibt es nicht oder nicht mehr. Vielleicht führt einer dieser Wege weiter.</p>
+        <ul class="not-found__links">
+          <li>
+            <LinkArrow href="/">Zur Startseite</LinkArrow>
+          </li>
+          <li>
+            <LinkArrow href="/meisterstuecke">Meisterstücke</LinkArrow>
+          </li>
+          <li>
+            <LinkArrow href="/manufaktur">Manufaktur</LinkArrow>
+          </li>
+          <li>
+            <LinkArrow href="/besuch">Besuch und Anfahrt</LinkArrow>
+          </li>
+        </ul>
+      </Fragment>
+    </PageHero>
+  </main>
+</BaseLayout>

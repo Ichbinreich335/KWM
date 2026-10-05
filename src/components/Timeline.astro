@@ -1,0 +1,276 @@
+---
+import type { LebenswegStation } from '../data/lebensweg';
+import LinkArrow from './LinkArrow.astro';
+
+interface Props {
+  stationen: readonly LebenswegStation[];
+  /** Link unter dem Zeitstrahl, z. B. zum ganzen Werdegang */
+  weiter: { href: string; text: string };
+}
+
+const { stationen, weiter } = Astro.props;
+---
+
+<kwm-lebensweg class="journey-track">
+  <div class="journey-stage">
+    <p class="journey-hint" aria-hidden="true">
+      Wischen
+    </p>
+    <ol class="journey grid" aria-label="Lebensweg">
+      {stationen.map((s) => (
+        <li>
+          <span class="journey__year">{s.jahr}</span>
+          <span class="journey__place">{s.ort}</span>
+          <span class="journey__what">{s.station}</span>
+        </li>
+      ))}
+    </ol>
+    <p class="journey__all grid">
+      <LinkArrow href={weiter.href}>{weiter.text}</LinkArrow>
+    </p>
+  </div>
+</kwm-lebensweg>
+
+<script>
+  // Lebensweg: Die Linie füllt sich beim Scrollen, jeder Punkt, sobald sie ihn erreicht. Am Handy wird die Reihe gewischt.
+  import { reducedMotion } from '../scripts/keramik';
+
+  const END_AT = 0.35; // Linie ist voll, wenn der Strahl so weit oben im Bild steht (Anteil der Bildhöhe)
+  const END_MOBILE = 0.7; // mobil senkrecht: voll, sobald das Ende des Strahls hier steht
+  const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
+
+  class KwmLebensweg extends HTMLElement {
+    private abort: AbortController | null = null;
+
+    connectedCallback() {
+      const line = this.querySelector<HTMLElement>('.journey');
+      if (!line) return;
+      this.abort = new AbortController();
+      const { signal } = this.abort;
+
+      // Wischreihe: nur dort Tabstopp, wo sie wirklich scrollt (Handy), nicht am Desktop
+      const wischbar = () => {
+        if (line.scrollWidth > line.clientWidth) line.setAttribute('tabindex', '0');
+        else line.removeAttribute('tabindex');
+      };
+      wischbar();
+      addEventListener('resize', wischbar, { passive: true, signal });
+
+      if (reducedMotion()) return;
+      const stops = [...line.querySelectorAll('li')];
+
+      // Wo die Mitte jedes Punktes auf der Linie liegt (0 bis 1), waagerecht oder senkrecht
+      let offsets: number[] = [];
+      const measure = () => {
+        const [first, second] = stops;
+        if (!first || !second) return false;
+        const vertical = second.offsetTop > first.offsetTop + 4;
+        const rail = getComputedStyle(line, '::before');
+        const dot = getComputedStyle(first, '::before');
+        const size = parseFloat(dot.width);
+        const start = parseFloat(vertical ? rail.top : rail.left);
+        const length = parseFloat(vertical ? rail.height : rail.width);
+        offsets = stops.map(
+          (li) => ((vertical ? li.offsetTop + parseFloat(dot.top) : li.offsetLeft) + size / 2 - start) / length,
+        );
+        return vertical;
+      };
+      const setProgress = (p: number) => {
+        line.style.setProperty('--p', Math.max(0, p).toFixed(4));
+        stops.forEach((li, i) => li.classList.toggle('is-on', p >= (offsets[i] ?? Infinity)));
+      };
+
+      let queued = 0;
+      let vertical = measure();
+      const update = () => {
+        queued = 0;
+        const { top, height } = line.getBoundingClientRect();
+        const vh = window.innerHeight;
+        // Beginn, sobald der Strahl unten ins Bild kommt; voll bei 35 % von oben (mobil: wenn sein Ende bei 70 % steht)
+        const span = vertical ? vh * (1 - END_MOBILE) + height : vh * (1 - END_AT);
+        setProgress(clamp01((vh - top) / span));
+      };
+      const request = () => {
+        if (!queued) queued = requestAnimationFrame(update);
+      };
+      update();
+      addEventListener('scroll', request, { passive: true, signal });
+      addEventListener(
+        'resize',
+        () => {
+          vertical = measure();
+          request();
+        },
+        { passive: true, signal },
+      );
+    }
+
+    disconnectedCallback() {
+      this.abort?.abort();
+    }
+  }
+
+  if (!customElements.get('kwm-lebensweg')) customElements.define('kwm-lebensweg', KwmLebensweg);
+</script>
+
+<style>
+  /* Lebensweg: Zeitstrahl über die volle Breite, fünf gleich breite Stationen */
+  .journey {
+    --dot: 11px;
+    --p: 1;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    position: relative;
+    margin-top: 0;
+    row-gap: 0;
+  }
+  .journey::before,
+  .journey::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: var(--m);
+    right: var(--m);
+    height: 1px;
+  }
+  .journey::before {
+    z-index: 1;
+    background: var(--ink);
+    transform: scaleX(var(--p));
+    transform-origin: left;
+  }
+  .journey::after {
+    background: var(--hair);
+  }
+  .journey li {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 36px var(--g) 0 0;
+  }
+  /* Punkt: Ring (::before) und Füllung (::after). Die Füllung wächst mit leichtem Überziehen, wenn die Linie den Punkt erreicht (.is-on), und leert sich wieder, wenn sie zurückgeht */
+  .journey li::before,
+  .journey li::after {
+    content: '';
+    position: absolute;
+    z-index: 2;
+    top: 0;
+    left: 0;
+    width: var(--dot);
+    height: var(--dot);
+    box-sizing: border-box;
+    border-radius: 50%;
+  }
+  .journey li::before {
+    border: 1px solid var(--ink);
+    background: var(--ground);
+    transform: translateY(-50%);
+  }
+  .journey li::after {
+    background: var(--ink);
+    translate: 0 -50%;
+  }
+  :global(.js) .journey li::after {
+    scale: 0;
+    transition: scale 0.45s var(--ease-pop);
+  }
+  :global(.js) .journey li.is-on::after {
+    scale: 1;
+  }
+  .journey__year {
+    font-size: var(--t-meta);
+    line-height: var(--t-meta-lh);
+    font-variant-numeric: tabular-nums;
+    color: var(--ink-2);
+  }
+  .journey__place {
+    font-family: var(--f-display);
+    font-size: var(--t-h3);
+    line-height: var(--t-h3-lh);
+    letter-spacing: -0.01em;
+  }
+  .journey__what {
+    font-size: var(--t-small);
+    line-height: var(--t-small-lh);
+    color: var(--ink-2);
+    text-wrap: pretty;
+  }
+  .journey__all {
+    margin-top: var(--head-gap);
+  }
+  .journey__all :global(.link-arrow) {
+    grid-column: 1 / -1;
+    margin: 0;
+    justify-self: start;
+  }
+  :global(.js) .journey {
+    --p: 0;
+  }
+  .journey-track {
+    display: block;
+    margin-top: var(--section);
+  }
+
+  .journey-hint {
+    display: none;
+  }
+
+  /* Lebensweg: Stationen als Wischreihe (Muster der Chronik); die Linie liegt je Station oben (ohne Lücke, am letzten Punkt endend), alle Punkte stehen gefüllt */
+  @media (max-width: 900px) {
+    .journey-hint {
+      display: block;
+      margin: 0 var(--m) 20px;
+      font-size: var(--t-meta);
+      line-height: var(--t-meta-lh);
+      letter-spacing: 0.04em;
+      color: var(--ink-2);
+    }
+    .journey-hint::after {
+      content: ' \2192';
+      font-family: system-ui, sans-serif;
+    }
+    .journey {
+      display: flex;
+      column-gap: 0;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scroll-padding-inline: var(--m);
+      overscroll-behavior-x: contain;
+      scrollbar-width: none;
+    }
+    .journey::-webkit-scrollbar {
+      display: none;
+    }
+    .journey::before,
+    .journey::after {
+      display: none;
+    }
+    .journey li {
+      flex: 0 0 min(64vw, 280px);
+      margin-top: var(--dot);
+      padding: 36px var(--g) 0 0;
+      scroll-snap-align: start;
+      background: linear-gradient(var(--ink), var(--ink)) 0 0 / 100% 1px no-repeat;
+    }
+    /* Die Linie läuft ohne Lücke von Punkt zu Punkt und endet am letzten Punkt */
+    .journey li:last-child {
+      background: none;
+    }
+    :global(.js) .journey li::after {
+      scale: 1;
+      transition: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    :global(.js) .journey li::after {
+      transition: none;
+    }
+    :global(.js) .journey {
+      --p: 1;
+    }
+    :global(.js) .journey li::after {
+      scale: 1;
+    }
+  }
+</style>

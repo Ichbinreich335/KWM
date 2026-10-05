@@ -1,0 +1,351 @@
+---
+import '../styles/basis.css';
+import '../styles/seiten/page-text.css';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import Prose from '../components/Prose.astro';
+import { kontakt } from '../data/kontakt';
+---
+
+<BaseLayout
+  title="Impressum · Keramische Werkstatt Margaretenhöhe"
+  description="Anbieterkennzeichnung, rechtlicher Hinweis und Datenschutzhinweise der Keramischen Werkstatt Margaretenhöhe GmbH."
+  bodyClass="page-text"
+>
+  <main id="inhalt">
+    <PageHero typ="name" textseite>
+      <Fragment slot="titel">Impressum</Fragment>
+      <Fragment slot="lede">
+        {kontakt.firma}, {kontakt.anschrift}.
+      </Fragment>
+    </PageHero>
+
+    <div class="legal grid">
+      <aside class="legal__aside ts-small">
+        <nav aria-label="Rechtliches und Service">
+          <p class="legal__label ts-meta">Rechtliches</p>
+          <ul>
+            <li>
+              <a href="/impressum" aria-current="page">
+                Impressum
+              </a>
+            </li>
+            <li>
+              <a href="/datenschutz">Datenschutz</a>
+            </li>
+            <li>
+              <a href="/agb">AGB</a>
+            </li>
+            <li>
+              <a href="/versand">Verpackung und Transport</a>
+            </li>
+            <li>
+              <a href="/zahlung">Zahlung</a>
+            </li>
+          </ul>
+        </nav>
+        <nav aria-label="Auf dieser Seite">
+          <p class="legal__label ts-meta">Auf dieser Seite</p>
+          <ol class="legal__toc">
+            <li>
+              <a href="#rechtlicher-hinweis">Rechtlicher Hinweis</a>
+            </li>
+            <li>
+              <a href="#datenschutz-ihr-gutes-recht-unsere-verpflichtung">
+                Datenschutz: Ihr gutes Recht – unsere Verpflichtung
+              </a>
+            </li>
+            <li>
+              <a href="#informationen-die-wir-erheben">Informationen, die wir erheben</a>
+            </li>
+            <li>
+              <a href="#technische-zugriffsdaten">Technische Zugriffsdaten</a>
+            </li>
+            <li>
+              <a href="#persoenliche-daten">Persönliche Daten</a>
+            </li>
+            <li>
+              <a href="#schutz-der-privatsphaere-von-kindern-im-internet">
+                Schutz der Privatsphäre von Kindern im Internet
+              </a>
+            </li>
+            <li>
+              <a href="#wie-wir-ihre-angaben-verwenden">Wie wir Ihre Angaben verwenden</a>
+            </li>
+            <li>
+              <a href="#auskunft-aenderung-und-loeschung-ihrer-daten">Auskunft, Änderung und Löschung Ihrer Daten</a>
+            </li>
+            <li>
+              <a href="#die-sicherheit-ihrer-daten">Die Sicherheit Ihrer Daten</a>
+            </li>
+            <li>
+              <a href="#links-und-verweise-zu-anderen-internetangeboten">
+                Links und Verweise zu anderen Internetangeboten
+              </a>
+            </li>
+            <li>
+              <a href="#ihr-ansprechpartner-zum-datenschutz-bei-der-kera">
+                Ihr Ansprechpartner zum Datenschutz bei der Keramischen Werkstatt Margaretenhöhe GmbH
+              </a>
+            </li>
+            <li>
+              <a href="#geltungsbereich">Geltungsbereich</a>
+            </li>
+            <li>
+              <a href="#oeffentliches-verfahrensverzeichnis">Öffentliches Verfahrensverzeichnis</a>
+            </li>
+          </ol>
+        </nav>
+      </aside>
+      <Prose>
+        <p>
+          {kontakt.firma}, {kontakt.anschrift}
+          <br />
+          Telefon {kontakt.telefon}, E-Mail: {kontakt.mail}
+          <br />
+          Vertreten durch die Geschäftsführung Young-Jae Griepentrog, geb. Lee
+          <br />
+          Sitz der Gesellschaft Essen
+          <br />
+          Registergericht Amtsgericht Essen Handelsregister B 19479
+          <br />
+          Umsatzsteuer-Identifikationsnummer DE 251551249
+        </p>
+        <p>
+          © Keramische Werkstatt Margaretenhöhe GmbH, Stand: Oktober 2009
+          <br />
+          Texte © Keramische Werkstatt Margaretenhöhe GmbH und Autoren
+          <br />
+          Fotografien © 2007 George Meister, 2008 Haydar Koyupinar, 2015 Moon Dukgwan
+          <br />
+          Übersetzung ins Englische: Alison Gallup
+          <br />
+          Lektorat der englischen Texte: Alix Sharma
+        </p>
+        <h2 id="rechtlicher-hinweis">Rechtlicher Hinweis</h2>
+        <p>
+          Die Keramische Werkstatt Margaretenhöhe GmbH (KWM) bemüht sich, auf ihrer Website zutreffende Informationen
+          und Daten zur Verfügung zu stellen. Eine Haftung oder Garantie für die Aktualität, Richtigkeit und
+          Vollständigkeit der zur Verfügung gestellten Informationen und Daten ist jedoch ausgeschlossen. Dies gilt
+          ebenfalls auch für alle anderen direkt oder indirekt angeführten Websites, auf die mittels eines Hyperlinks
+          verwiesen wird. Die KWM ist für den Inhalt solcher Websites, die mit diesen Links erreicht werden, nicht
+          verantwortlich.
+        </p>
+        <p>
+          Rechtswidrige oder unerwünschte Links werden auf entsprechenden schriftlichen Hinweis an den im Impressum
+          genannten Ansprechpartner entfernt.
+          <br />
+          KWM haftet darüber hinaus weder für direkte noch indirekte Schäden, einschließlich entgangenen Gewinn, die
+          durch die Nutzung der auf dieser Website zu findenden Informationen oder Daten entstehen. Ausgeschlossen sind
+          auch Rechte und Pflichten zwischen der KWM und dem Nutzer dieser Website oder Dritten.
+          <br />
+          Die KWM behält sich vor, ohne vorherige Ankündigung Änderungen oder Ergänzungen der bereitgestellten
+          Informationen oder Daten jederzeit vorzunehmen.
+          <br />
+          Der Inhalt dieser Website, insbesondere alle Texte, Bilder, Grafiken, Logos, Webcam-Bilder, Ton-, Video- und
+          Animationsdateien sowie auch ihre Arrangements, unterliegen dem Urheberrecht und anderen Gesetzen zum Schutz
+          geistigen Eigentums. Die KWM gewährt jedoch den Nutzern das Recht, die auf dieser Website bereitgestellten
+          nicht namentlich oder anderweitig gekennzeichneten Texte, Bilder und Grafiken zu publizistischen Zwecken im
+          Rahmen des geltenden Presse- und Urheberrechts ganz oder ausschnittsweise zu verwenden, zu speichern und zu
+          vervielfältigen, wobei KWM als Quelle/Urheber genannt und ein Belegexemplar an die Adresse der KWM geschickt
+          werden muss. Die Verwendung, Speicherung sowie Vervielfältigung der auf der KWM-Website verwendeten Logos und
+          deren Arrangements bedarf dagegen der vorherigen Zustimmung der KWM.
+          <br />
+          Die Rechte für alle bereitgestellten namentlich oder anderweitig gekennzeichneten Dokumente (Texte, Bilder und
+          Grafiken) liegen bei den dort genannten Urhebern oder Lizenzgebern. Jede Verwertung zu kommerziellen oder
+          anderen Zwecken bedarf deren jeweiliger vorheriger Zustimmung. Bitte wenden Sie sich dazu direkt an die
+          genannten Urheber/Lizenzgeber oder an den im Impressum genannten Ansprechpartner.
+          <br />
+          Die auf der KWM-Website bereitgestellten Texte, Bilder, Grafiken, Logos etc. dürfen aber weder verändert noch
+          für Handelszwecke kopiert und in anderen Medien, insbesondere auf anderen Websites, verwendet werden, es sei
+          denn, die KWM hat diesem vorher schriftlich zugestimmt.
+          <br />
+          Die Webseite der KWM gewährt auch keinerlei Lizenzrechte an dem geistigen Eigentum der KWM.
+          <br />
+          Alle auf der KWM-Website genannten Marken und Logos sind gesetzlich geschützte Warenzeichen.
+          <br />
+          Sämtliche Informationen oder Daten, ihre Nutzung und die Anmeldung zur KWM-Website sowie sämtliches mit der
+          KWM-Website zusammenhängendes Tun, Dulden oder Unterlassen unterliegen ausschließlich deutschem Recht.
+          Erfüllungsort und ausschließlicher Gerichtsstand ist Essen.
+          <br />
+          Die KWM weist darauf hin, dass dieser rechtliche Hinweis einer ständigen Anpassung an die aktuellen
+          Erfordernisse unterliegt.
+        </p>
+        <h2 id="datenschutz-ihr-gutes-recht-unsere-verpflichtung">
+          Datenschutz: Ihr gutes Recht – unsere Verpflichtung
+        </h2>
+        <p>
+          Auf den Schutz und die Sicherheit Ihrer persönlichen Daten dürfen Sie vertrauen: Die Wahrung Ihrer
+          Privatsphäre bei der Verarbeitung persönlicher Daten ist für die Keramische Werkstatt Margaretenhöhe GmbH
+          (KWM) ein wichtiges Anliegen, das wir in allen unseren Geschäftsprozessen berücksichtigen. Wir wollen Ihnen
+          daher an dieser Stelle die Grundregeln unseres Umganges mit personenbezogenen Daten erläutern. Diese Hinweise
+          und gegebenenfalls weiterführende Angaben zur Erhebung, Verarbeitung und Nutzung persönlicher Angaben finden
+          Sie außerdem immer dort, wo wir derartige Informationen von Ihnen erbitten.
+        </p>
+        <h2 id="informationen-die-wir-erheben">Informationen, die wir erheben</h2>
+        <p>
+          Sie können nahezu das gesamte Internetangebot der KWM nutzen, ohne dass wir persönliche Daten von Ihnen
+          benötigen. Lediglich einige wenige Angebote und Dienste, die Sie auf unseren Seiten finden, erfordern für Ihre
+          Nutzung die Angabe personenbezogener Daten. Wenn Sie das Internetangebot der KWM nutzen, werden durch die
+          Internetserver (Webserver) der KWM automatisch technische Zugriffsdaten aufgezeichnet und ausgewertet. Diese
+          Daten können jedoch nicht einer bestimmten Person zugeordnet werden; der einzelne Benutzer bleibt hierbei
+          anonym.
+        </p>
+        <h2 id="technische-zugriffsdaten">Technische Zugriffsdaten</h2>
+        <p>
+          Zu diesen Daten gehören zum Beispiel Informationen über den verwendeten Internetbrowser und das verwendete
+          Betriebssystem, der Domainname der Website, von der aus ein Besuch unserer Internetseiten erfolgt, die
+          durchschnittliche Verweildauer in unserem Angebot und die in unserer Website aufgerufenen Informationsseiten.
+          Diese Daten werden beim Aufruf einzelner Internetseiten durch Ihren Internetbrowser an unsere Webserver
+          übermittelt. Zudem setzen wir in einigen Bereichen unseres Internetangebotes zusätzlich Cookies ein. Cookies
+          sind kleine Datenelemente, die ein Internetserver an Ihren Computer senden kann. Durch solche Cookies kann Ihr
+          Computer während der Dauer Ihres Besuches in unserem Internetangebot identifiziert oder Ihnen die Verwendung
+          unserer Internet-Seiten erleichtert werden. Es besteht für Sie die Möglichkeit, Ihren Internetbrowser derart
+          einzustellen, dass Sie über die Annahme oder Ablehnung von Cookies informiert werden. Näheres dazu erfahren
+          Sie zum Beispiel im Hilfesystem Ihres Internetbrowsers. Wir verwenden diese technischen Zugriffsinformationen,
+          um die Attraktivität und Bedienbarkeit unserer Internetseiten sowie deren Inhalte stetig zu verbessern und um
+          mögliche technische Probleme in unserem Internetangebot zu erkennen.
+        </p>
+        <h2 id="persoenliche-daten">Persönliche Daten</h2>
+        <p>
+          Persönliche Daten erheben, verarbeiten und nutzen wir nur, wenn Sie uns diese Angaben von sich aus mitteilen.
+          Dies kann zum Beispiel im Rahmen einer Anfrage, einer Umfrage oder im Falle einer von Ihnen gewünschten
+          Kontaktaufnahme der Fall sein. Ebenso geschieht dies in der Regel im Rahmen eines Bestellvorganges.
+          <br />
+          Zudem benötigen wir von Ihnen persönliche Daten, wenn Sie bestimmte internetspezifische Dienste auf den
+          Internetseiten der KWM – soweit angeboten – nutzen möchten. Solche Dienstleistungen können zum Beispiel
+          Newsletter, Foren oder andere Angebote für geschlossene Benutzergruppen sein. Wenn Sie sich entscheiden, ein
+          solches Angebot für sich zu nutzen, finden Sie beim jeweiligen Angebot weitergehende Hinweise und
+          Informationen über die Art und den Umfang der zur Nutzung dieser Dienste erforderlichen Daten.
+        </p>
+        <h2 id="schutz-der-privatsphaere-von-kindern-im-internet">Schutz der Privatsphäre von Kindern im Internet</h2>
+        <p>
+          Der Schutz von Kindern, die Internetangebote nutzen, ist der KWM ein besonderes Anliegen. Die KWM rät daher
+          allen Eltern und Aufsichtspersonen, Kinder mit einem sicheren und verantwortungsbewussten Umgang mit
+          personenbezogenen Daten im Internet vertraut zu machen. Ohne die ausdrückliche Zustimmung der Eltern oder
+          Aufsichtspersonen sollten Kinder keine personenbezogenen Daten an die KWM übermitteln.
+        </p>
+        <h2 id="wie-wir-ihre-angaben-verwenden">Wie wir Ihre Angaben verwenden</h2>
+        <p>
+          Die KWM erhebt, verarbeitet und nutzt alle durch Ihre Besuche in unserem Internetangebot anfallenden
+          personenbezogenen Daten nur entsprechend den jeweils geltenden Vorschriften zum Schutz persönlicher Daten. Wir
+          verwenden die personenbezogenen Daten nur zu den in dieser Datenschutzerklärung angeführten Zwecken (zum
+          Beispiel zur Bearbeitung von Anfragen oder zur Nutzung von Internetdienstleistungen). Darüber hinaus werden
+          personenbezogene Daten nur dann von uns erhoben, verarbeitet oder genutzt, wenn es zur Wahrung der
+          berechtigten geschäftlichen Interessen der KWM, insbesondere zu eigenen Werbezwecken, erforderlich ist. Die
+          KWM wird die von Ihnen uns zur Verfügung gestellten persönlichen Daten ohne Ihre ausdrückliche Zustimmung
+          nicht an Dritte weitergeben.
+        </p>
+        <h2 id="auskunft-aenderung-und-loeschung-ihrer-daten">Auskunft, Änderung und Löschung Ihrer Daten</h2>
+        <p>
+          Sie können jederzeit schriftlich gemäß dem geltenden Recht nachfragen, ob und welche persönlichen Daten über
+          Sie bei uns gespeichert sind. Wir werden Ihnen dann eine entsprechende Mitteilung zusenden. Bitte richten Sie
+          Ihre Anfragen an unseren Beauftragten für den Datenschutz. Über ihn können Sie auch Änderungen und Löschungen
+          Ihrer Daten veranlassen. Angaben nach § 4e Bundesdatenschutzgesetz finden Sie in unserem öffentlichen
+          Verfahrensverzeichnis.
+        </p>
+        <h2 id="die-sicherheit-ihrer-daten">Die Sicherheit Ihrer Daten</h2>
+        <p>
+          Die von Ihnen der KWM zur Verfügung gestellten Daten werden durch geeignete technische und organisatorische
+          Mittel geschützt mit dem Ziel, Ihre Daten gegen zufällige oder vorsätzliche Manipulationen, Verlust,
+          Zerstörung, Zugriff unberechtigter Personen oder unberechtigte Offenlegung gegenüber Dritten zu sichern.
+          Unsere Sicherheitsmaßnahmen werden dabei entsprechend der technologischen Entwicklungen und organisatorischen
+          Möglichkeiten fortlaufend kontrolliert und verbessert. Weitere Informationen finden Sie auch unter Rechtlicher
+          Hinweis.
+        </p>
+        <h2 id="links-und-verweise-zu-anderen-internetangeboten">Links und Verweise zu anderen Internetangeboten</h2>
+        <p>
+          Das Internetangebot der KWM enthält Links zu anderen Websites. Bitte beachten Sie, dass die KWM für deren
+          Datenschutz oder auch den Inhalt dieser anderen Internetangebote nicht verantwortlich ist. Wir empfehlen allen
+          Internetbenutzern, beim Verlassen des Internetangebotes der KWM sich über die jeweiligen Datenschutzhinweise
+          der anderen von Ihnen besuchten Internetangebote zu informieren.
+        </p>
+        <h2 id="ihr-ansprechpartner-zum-datenschutz-bei-der-kera">
+          Ihr Ansprechpartner zum Datenschutz bei der Keramischen Werkstatt Margaretenhöhe GmbH
+        </h2>
+        <p>
+          Wenn Sie Fragen hinsichtlich der Verarbeitung Ihrer persönlichen Daten haben, können Sie sich direkt an
+          unseren Beauftragten für den Datenschutz wenden, der Ihnen mit seinem Team auch im Falle von
+          Auskunftsersuchen, Anregungen oder bei Beschwerden als Ansprechpartner zur Verfügung steht.
+        </p>
+        <p>
+          Datenschutzbeauftragte
+          <br />
+          Frau Claudia Prien
+          <br />
+          {kontakt.firma}
+          <br />
+          {kontakt.strasse}
+          <br />
+          {kontakt.plzOrt}
+        </p>
+        <h2 id="geltungsbereich">Geltungsbereich</h2>
+        <p>
+          Diese Datenschutzhinweise gelten ausschließlich für das Internetangebot der KWM. Zudem weisen wir darauf hin,
+          dass diese Erläuterungen zum Datenschutz einer ständigen Anpassung an die aktuellen Erfordernisse unterliegen.
+          <br />© Keramische Werkstatt Margaretenhöhe GmbH, Stand: 10.03.2008
+        </p>
+        <h2 id="oeffentliches-verfahrensverzeichnis">Öffentliches Verfahrensverzeichnis</h2>
+        <p>Angaben gemäß § 4e des Bundesdatenschutzgesetzes (BDSG):</p>
+        <p>
+          Zu § 4e Nr. 1, 3 BDSG
+          <br />
+          Name und Anschrift der verantwortlichen Stelle:
+          <br />
+          {kontakt.firma}, {kontakt.anschrift}
+        </p>
+        <p>
+          Zu § 4e Nr. 2 BDSG
+          <br />
+          Geschäftsführung und Verantwortliche für die Datenverarbeitung:
+          <br />
+          Young-Jae Griepentrog, geb. Lee
+        </p>
+        <p>
+          Zu § 4e Nr. 4 BDSG
+          <br />
+          Zweckbestimmung der Datenerhebung, -verarbeitung oder -nutzung:
+          <br />
+          Gegenstand des Unternehmens ist die Herstellung und der Vertrieb von keramischen Erzeugnissen sowie die
+          Ausbildung kunsthandwerklichen Nachwuchses auf dem Gebiete der Keramik.
+          <br />
+          Die Datenerhebung, -verarbeitung und -nutzung erfolgt zur Ausübung der oben angegebenen Zwecke.
+        </p>
+        <p>
+          Zu § 4e Nr. 5 BDSG
+          <br />
+          Beschreibung der betroffenen Personengruppe und der diesbezüglichen Daten oder Datenkategorien:
+          <br />
+          Daten von Kunden, Mitarbeitern, Lieferanten sowie Geschäftspartnern, sofern diese zur Erfüllung der gemäß zu §
+          4e Nr. 4 BDSG (Zweckbestimmung) genannten Ziele erforderlich sind.
+        </p>
+        <p>
+          Zu § 4e Nr. 6 BDSG
+          <br />
+          Empfänger oder Kategorien von Empfängern, denen die Daten mitgeteilt werden können.
+          <br />
+          Öffentliche Stellen bei Vorliegen vorrangiger Rechtsvorschriften, externe Auftragnehmer entsprechend
+          <br />§ 11 BDSG sowie externe Stellen und interne Bereiche zur Erfüllung der gemäß zu § 4e Nr. 4 BDSG
+          (Zweckbestimmung) genannten Ziele.
+        </p>
+        <p>
+          Zu § 4e Nr. 7 BDSG
+          <br />
+          Regelfristen für die Löschung der Daten:
+          <br />
+          Erhobene Daten werden unter Beachtung der gesetzlichen Aufbewahrungspflichten und Löschungsfristen aufbewahrt
+          und gelöscht. Sofern Daten hiervon nicht berührt sind, werden sie gelöscht, sobald ihre Kenntnis für die
+          Erfüllung des Zwecks der Speicherung nicht mehr erforderlich ist.
+        </p>
+        <p>
+          Zu § 4e Nr. 8 BDSG
+          <br />
+          Geplante Datenübermittlung an Drittstaaten:
+          <br />
+          Eine Übermittlung an Drittstaaten ist nicht geplant.
+        </p>
+        <p>© Keramische Werkstatt Margaretenhöhe GmbH, Stand: 01.10.2026</p>
+      </Prose>
+    </div>
+  </main>
+</BaseLayout>

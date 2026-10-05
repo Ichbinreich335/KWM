@@ -1,0 +1,213 @@
+---
+import type { Polymorphic } from 'astro/types';
+
+/**
+ * Bild mit Text darauf: `portrait` (Zitat auf dem Porträt) oder `feuer` (Abschnitt zum Brand).
+ * Element der Hülle: `section` für einen eigenen Abschnitt, `div` innerhalb einer `figure`.
+ */
+type Props<Tag extends 'div' | 'section' = 'div'> = Polymorphic<{ as: Tag; typ: 'portrait' | 'feuer' }>;
+
+const { typ, as: Tag = 'div', ...rest } = Astro.props;
+---
+
+{/* Der Text haftet oben im Bild (reines CSS), das Bild selbst bewegt sich nicht gegenläufig */}
+<Tag class:list={['sticky-bild', `sticky-bild--${typ}`]} {...rest}>
+  <div class="sticky-bild__media">
+    <slot name="bild" />
+  </div>
+  <div class="sticky-bild__pane grid">
+    <slot />
+  </div>
+</Tag>
+
+<style is:global>
+  /* Signatur: sticky – Text bleibt beim Scrollen oben im Foto stehen, bis das Bild durch ist (Porträt und Feuer).
+     Abschnitt ist höher als der Bildschirm, die Textebene ist nur so hoch wie der Text, klebt oben und zieht am Ende mit dem Abschnitt weiter.
+     Das Foto läuft normal mit und bleibt im Rahmen ruhig (kein Parallax). */
+  .sticky-bild {
+    --sticky-h: 150svh;
+    --sticky-text-from: 1;
+    --sticky-text-to: 9;
+    position: relative;
+    height: var(--sticky-h);
+    overflow: clip;
+    background: var(--coal);
+    color: var(--on-coal);
+    --ink-2: var(--on-coal-2);
+    --cover: var(--coal);
+  }
+  .sticky-bild ::selection {
+    background: var(--on-coal);
+    color: var(--coal);
+  }
+
+  .sticky-bild__media {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+  }
+  .sticky-bild__img {
+    position: absolute;
+    inset-inline: 0;
+    inset-block: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  /* Abdunklung: so viel wie für 4,5:1 nötig, stärker auf der Textseite, Foto bleibt rechts lesbar */
+  .sticky-bild__media::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      90deg,
+      rgb(var(--shade) / 0.78) 0%,
+      rgb(var(--shade) / 0.6) 55%,
+      rgb(var(--shade) / 0.2) 100%
+    );
+  }
+
+  .sticky-bild__pane {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    height: 100svh;
+    align-content: center;
+    pointer-events: none;
+  }
+  .sticky-bild__text {
+    grid-column: var(--sticky-text-from) / var(--sticky-text-to);
+    display: grid;
+    gap: clamp(20px, 2.4vw, 36px);
+    justify-items: start;
+    pointer-events: auto;
+  }
+  .sticky-bild__lede {
+    font-family: var(--f-text);
+    font-size: var(--t-quote);
+    line-height: var(--t-quote-lh);
+    max-width: 40ch;
+    margin: 0;
+    text-wrap: pretty;
+  }
+  /* Zitat im Porträt: Typografie und Abstand zur Quelle stecken in Statement (zitat-lang); auf dem Foto trägt die Quelle die volle Textfarbe */
+  .sticky-bild__quote {
+    --ink-2: var(--on-coal);
+    gap: 0;
+  }
+
+  /* Porträt: Text rechts, Foto läuft links weiter; Bildunterschrift auf dem Papier darunter */
+  .sticky-bild--portrait {
+    --sticky-h: 140svh;
+    --sticky-text-from: 7;
+    --sticky-text-to: 13;
+  }
+  /* Ausschnitt rückt mit der Fensterform: Im breiten Fenster steht er bei 55 %, im schmalen rückt er nach links,
+     bis der Kopf ganz im Bild ist. Rechnung in Längen, weil object-position in % den Fokuspunkt nicht halten kann. */
+  .sticky-bild--portrait .sticky-bild__media {
+    container-type: size;
+  }
+  .sticky-bild--portrait .sticky-bild__img {
+    --bild-format: calc(2000 / 1313); /* Seitenverhältnis von portrait-yjl.webp */
+    --bild-kopf: 0.16; /* Haar beginnt bei 19 % der Bildbreite; höchstens so viel links abschneiden */
+    /* Breite des Fotos bei cover: Kastenhöhe mal Seitenverhältnis, mindestens die Kastenbreite */
+    --bild-b: max(100cqw, 100cqh * var(--bild-format));
+    object-position: max((100cqw - var(--bild-b)) * 0.55, var(--bild-b) * var(--bild-kopf) * -1) 50%;
+  }
+  /* Wie beim Feuer: Der Text steht oben im Bild fest (sticky), das Bild läuft darunter durch, am Ende zieht er mit */
+  /* Höhe nur so hoch wie der Text: er haftet, bis er unten am Bild angekommen ist */
+  .sticky-bild--portrait .sticky-bild__pane {
+    align-content: start;
+    height: auto;
+    padding-block: calc(var(--head) + var(--head-gap)) var(--head-gap);
+    box-sizing: border-box;
+  }
+  .sticky-bild--portrait .sticky-bild__media::after {
+    background: linear-gradient(
+      270deg,
+      rgb(var(--shade) / 0.78) 0%,
+      rgb(var(--shade) / 0.6) 45%,
+      rgb(var(--shade) / 0.12) 100%
+    );
+  }
+  .sticky-bild__caption {
+    margin: 0;
+    padding: 10px var(--m) 0;
+    font-size: var(--t-meta);
+    line-height: var(--t-meta-lh);
+    color: var(--ink-2);
+  }
+  .sticky-bild-wrap {
+    margin: 0;
+  }
+  /* Feuer, Standard „haftend“: Der Text steht oben links im Bild fest (sticky), bis das Bild durch ist, und zieht dann mit.
+     Haltestrecke = Abschnittshöhe minus Bildschirmhöhe. */
+  .sticky-bild--feuer {
+    --sticky-h: 160svh;
+    --sticky-text-to: 8;
+  }
+  .sticky-bild--feuer .sticky-bild__pane {
+    align-content: start;
+    height: auto;
+    padding-block: calc(var(--head) + var(--head-gap)) var(--head-gap);
+    box-sizing: border-box;
+  }
+  .sticky-bild--feuer .sticky-bild__lede {
+    max-width: 46ch;
+  }
+  .sticky-bild--feuer .sticky-bild__media::after {
+    background:
+      radial-gradient(ellipse 80% 70% at 0% 0%, rgb(var(--shade) / 0.78) 0%, rgb(var(--shade) / 0) 100%),
+      linear-gradient(90deg, rgb(var(--shade) / 0.66) 0%, rgb(var(--shade) / 0.56) 58%, rgb(var(--shade) / 0.2) 100%);
+  }
+
+  @media (max-width: 900px) {
+    .sticky-bild {
+      --sticky-h: 130svh;
+      --sticky-text-from: 1;
+      --sticky-text-to: -1;
+    }
+    .sticky-bild--feuer {
+      --sticky-h: 150svh;
+      --sticky-text-to: -1;
+    }
+    .sticky-bild--feuer .sticky-bild__media::after {
+      background: rgb(var(--shade) / 0.66);
+    }
+    .sticky-bild__media::after {
+      background: rgb(var(--shade) / 0.66);
+    }
+    .sticky-bild__pane {
+      align-content: end;
+      padding-bottom: clamp(48px, 12svh, 96px);
+    }
+  }
+
+  @media (max-width: 900px), (orientation: portrait) {
+    /* Porträt mobil und im Hochformat: Bild und Zitat untereinander, ohne Sticky, Abdunklung und Parallax; das Zitat setzt das Bild auf Kohle fort.
+       Im hochformatigen Fenster wäre das Foto so stark vergrößert, dass kein Rücken Gesicht und Zitat nebeneinander zeigt. */
+    .sticky-bild--portrait {
+      height: auto;
+      --sticky-text-from: 1;
+      --sticky-text-to: -1;
+    }
+    .sticky-bild--portrait {
+      padding: var(--head-gap) var(--m) 0;
+    }
+    .sticky-bild--portrait .sticky-bild__media {
+      position: relative;
+      aspect-ratio: 1; /* mit Seitenrand und quadratisch: das Porträt steht ruhig, nicht randlos über die ganze Breite */
+    }
+    .sticky-bild--portrait .sticky-bild__media::after {
+      content: none;
+    }
+    .sticky-bild--portrait .sticky-bild__img {
+      object-position: 8% 50%; /* Gesicht liegt im 4:5-Ausschnitt mittig */
+    }
+    .sticky-bild--portrait .sticky-bild__pane {
+      position: static;
+      padding-inline: 0;
+      padding-block: var(--head-gap);
+    }
+  }
+</style>

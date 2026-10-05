@@ -1,0 +1,378 @@
+---
+import type { ChronikEintrag } from '../data/chronik';
+import LinkArrow from './LinkArrow.astro';
+
+interface Props {
+  eintraege: readonly ChronikEintrag[];
+  titel: string;
+  /** Einleitender Satz unter dem Titel */
+  lede: string;
+  id?: string;
+  titelId: string;
+  /** Kurzfassung: nur Einträge mit Kurztext, mit deren kürzerem Wortlaut (Startseite) */
+  kurz?: boolean;
+  /** Link unter dem Zeitraum */
+  link?: { href: string; text: string };
+}
+
+const { eintraege, titel, lede, id, titelId, kurz = false, link } = Astro.props;
+const gezeigt = kurz ? eintraege.filter((eintrag) => eintrag.kurztext) : eintraege;
+const zeitraum = `${gezeigt[0]?.jahr} bis ${gezeigt[gezeigt.length - 1]?.jahr}`;
+---
+
+<kwm-chronik>
+  <section class="chronicle" id={id} aria-labelledby={titelId}>
+    <div class="chronicle__body grid">
+      <div class="chronicle__intro">
+        <h2 class="h2" id={titelId} data-reveal="words">
+          {titel}
+        </h2>
+        <p class="chronicle__lede" data-reveal="fade">
+          {lede}
+        </p>
+        <p class="chronicle__span" data-reveal="fade">
+          {zeitraum}
+        </p>
+        {link && <LinkArrow href={link.href}>{link.text}</LinkArrow>}
+        <p class="chronicle__hint" aria-hidden="true">
+          Wischen
+        </p>
+      </div>
+      <ol class="chronicle__list" aria-label="Chronik der Werkstatt">
+        {gezeigt.map((eintrag) => (
+          <li class:list={{ 'chronicle__item--quiet': eintrag.leise }}>
+            <span class="chronicle__year">{eintrag.jahr}</span>
+            <div class="chronicle__what">
+              <h3 class="chronicle__title">{eintrag.titel}</h3>
+              <p>{kurz ? eintrag.kurztext : eintrag.text}</p>
+            </div>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+</kwm-chronik>
+
+<script>
+  // Chronik: Die Linie zeichnet sich strikt nacheinander an die Lesehöhe gebunden, jeder Punkt füllt sich, wenn sie ihn
+  // erreicht. Am Handy ist die Chronik eine Wischreihe: Ein Punkt füllt sich, sobald seine Karte ins Bild ragt.
+  import { MOBIL_ABFRAGE, reducedMotion } from '../scripts/keramik';
+
+  const READ_LINE = 0.62;
+  const SWIPE_EDGE = 8; // Punkt füllt sich, sobald seine Karte so weit in die Wischleiste ragt (px)
+  const SWIPE_VISIBLE = 0.9; // Wischleiste zählt als sichtbar, wenn ihre Oberkante über dieser Bildschirmhöhe liegt
+
+  class KwmChronik extends HTMLElement {
+    private abort: AbortController | null = null;
+    private einblenden: IntersectionObserver | null = null;
+
+    connectedCallback() {
+      const chronicle = this.querySelector<HTMLElement>('.chronicle__list');
+      if (!chronicle) return;
+      this.abort = new AbortController();
+      const { signal } = this.abort;
+      const items = [...chronicle.querySelectorAll('li')];
+      const reduced = reducedMotion();
+
+      // Einträge blenden beim Scrollen ein, wie alle [data-reveal] (main.ts)
+      const io = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((e) => {
+            if (!e.isIntersecting) return;
+            e.target.classList.add('is-in');
+            io.unobserve(e.target);
+          });
+        },
+        { rootMargin: '0px 0px -10% 0px', threshold: 0.12 },
+      );
+      items.forEach((li) => io.observe(li));
+      this.einblenden = io;
+
+      // Wischreihe: nur dort Tabstopp, wo sie wirklich scrollt (Handy), nicht am Desktop
+      const wischbar = () => {
+        if (chronicle.scrollWidth > chronicle.clientWidth) chronicle.setAttribute('tabindex', '0');
+        else chronicle.removeAttribute('tabindex');
+      };
+      wischbar();
+      addEventListener('resize', wischbar, { passive: true, signal });
+
+      const swipe = window.matchMedia(MOBIL_ABFRAGE);
+      let framed = false;
+      const paint = () => {
+        framed = false;
+        if (swipe.matches) {
+          const box = chronicle.getBoundingClientRect();
+          const shown = box.top < innerHeight * SWIPE_VISIBLE;
+          items.forEach((li) =>
+            li.classList.toggle('is-on', shown && li.getBoundingClientRect().left < box.right - SWIPE_EDGE),
+          );
+          return;
+        }
+        const line = innerHeight * READ_LINE;
+        const first = chronicle.firstElementChild;
+        if (!first) return;
+        const dotY = parseFloat(getComputedStyle(first, '::before').top) + 5.5;
+        items.forEach((li) => {
+          const box = li.getBoundingClientRect();
+          li.classList.toggle('is-on', line >= box.top + dotY);
+          if (!reduced && li !== items[items.length - 1])
+            li.style.setProperty('--seg', Math.min(1, Math.max(0, (line - (box.top + dotY)) / box.height)).toFixed(3));
+        });
+      };
+      const schedule = () => {
+        if (!framed) {
+          framed = true;
+          requestAnimationFrame(paint);
+        }
+      };
+      if (reduced) {
+        items.forEach((li) => li.classList.add('is-on'));
+        return;
+      }
+      addEventListener('scroll', schedule, { passive: true, signal });
+      addEventListener('resize', schedule, { passive: true, signal });
+      chronicle.addEventListener('scroll', schedule, { passive: true, signal });
+      paint();
+    }
+
+    disconnectedCallback() {
+      this.abort?.abort();
+      this.einblenden?.disconnect();
+    }
+  }
+
+  if (!customElements.get('kwm-chronik')) customElements.define('kwm-chronik', KwmChronik);
+</script>
+
+<style>
+  /* Hülle für das Skript, ohne eigenen Kasten */
+  kwm-chronik {
+    display: contents;
+  }
+
+  /* Chronik: Erzählung statt Tabelle, Zeitstrahl in Spalte 6 bis 12, links der Einstieg bleibt stehen */
+  .chronicle {
+    --yr: var(--t-statement);
+    --dot: 11px;
+    padding-block: var(--section);
+    background: var(--ground-2);
+  }
+  .chronicle__body {
+    align-items: start;
+  }
+  .chronicle__intro {
+    grid-column: 1 / 5;
+    position: sticky;
+    top: calc(var(--head) + 24px);
+  }
+  .chronicle__intro .h2 {
+    margin-bottom: 28px;
+  }
+  .chronicle__intro :global(.link-arrow) {
+    margin: 20px 0 0;
+  }
+  .chronicle__lede {
+    font-family: var(--f-text);
+    font-size: var(--t-quote);
+    line-height: var(--t-quote-lh);
+    text-wrap: pretty;
+    margin: 0 0 20px;
+  }
+  .chronicle__span {
+    font-size: var(--t-meta);
+    line-height: var(--t-meta-lh);
+    font-variant-numeric: tabular-nums;
+    color: var(--ink-2);
+    margin: 0;
+  }
+  .chronicle__list {
+    grid-column: 6 / -1;
+    display: grid;
+    grid-template-columns: subgrid;
+  }
+  .chronicle__list li {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: subgrid;
+    position: relative;
+    padding-bottom: clamp(28px, 3.2vw, 48px);
+  }
+  .chronicle__list li:last-child {
+    padding-bottom: 0;
+  }
+  .chronicle__list li {
+    --dot-top: calc(var(--yr) / 2 - var(--dot) / 2);
+    --dot-left: calc(var(--g) * -1 - var(--dot) / 2);
+  }
+  .chronicle__list li::before,
+  .chronicle__year::before {
+    content: '';
+    position: absolute;
+    top: var(--dot-top);
+    left: var(--dot-left);
+    width: var(--dot);
+    height: var(--dot);
+    box-sizing: border-box;
+    border-radius: 50%;
+  }
+  .chronicle__list li::before {
+    z-index: 1;
+    border: 1px solid var(--ink);
+    background: var(--ground-2);
+  }
+  /* Füllung des Punktes: wächst, sobald die Linie ihn erreicht (.is-on), mit leichtem Überziehen; Jahreszahl wird dabei dunkel */
+  .chronicle__year::before {
+    z-index: 2;
+    background: var(--ink);
+  }
+  :global(.js) .chronicle__year::before {
+    scale: 0;
+    transition: scale 0.45s var(--ease-pop);
+  }
+  :global(.js) .chronicle__list li.is-on .chronicle__year::before {
+    scale: 1;
+  }
+  :global(.js) .chronicle__year {
+    color: var(--ink-2);
+    transition: color var(--dur-move) var(--ease);
+  }
+  :global(.js) .chronicle__list li.is-on .chronicle__year {
+    color: var(--ink);
+  }
+  .chronicle__list li:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    top: calc(var(--yr) / 2);
+    height: 100%;
+    left: calc(var(--g) * -1);
+    width: 1px;
+    background: var(--ink);
+    transform-origin: top;
+  }
+  .chronicle__year {
+    grid-column: 1 / 4;
+    font-family: var(--f-display);
+    font-size: var(--yr);
+    line-height: var(--t-numeral-lh);
+    letter-spacing: -0.02em;
+    font-variant-numeric: lining-nums;
+  }
+  .chronicle__what {
+    grid-column: 4 / -1;
+    padding-top: 6px;
+  }
+  .chronicle__title {
+    font-family: var(--f-display);
+    font-weight: 400;
+    font-size: var(--t-h3);
+    line-height: var(--t-h3-lh);
+    margin: 0 0 10px;
+  }
+  .chronicle__what p {
+    font-size: var(--t-small);
+    line-height: var(--t-small-lh);
+    color: var(--ink-2);
+    max-width: 44ch;
+    margin: 0;
+    text-wrap: pretty;
+  }
+  :global(.js) .chronicle__list li {
+    opacity: 0;
+    transform: translateY(18px);
+    transition:
+      opacity var(--dur-reveal) var(--ease),
+      transform var(--dur-reveal) var(--ease);
+  }
+  :global(.js) .chronicle__list li.is-in {
+    opacity: 1;
+    transform: none;
+  }
+  :global(.js) .chronicle__list li::after {
+    transform: scaleY(var(--seg, 0));
+  }
+  .chronicle__hint {
+    display: none;
+  }
+
+  @media (max-width: 900px) {
+    .chronicle__intro {
+      grid-column: 1 / -1;
+      position: static;
+      margin-bottom: var(--head-gap);
+    }
+    .chronicle__hint {
+      display: block;
+      margin: 14px 0 0;
+      font-size: var(--t-meta);
+      line-height: var(--t-meta-lh);
+      letter-spacing: 0.04em;
+      color: var(--ink-2);
+    }
+    .chronicle__hint::after {
+      content: ' \2192';
+      font-family: system-ui, sans-serif;
+    }
+    .chronicle__list {
+      grid-column: 1 / -1;
+      display: flex;
+      margin-inline: calc(var(--m) * -1);
+      padding-inline: var(--m);
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scroll-padding-inline: var(--m);
+      overscroll-behavior-x: contain;
+      scrollbar-width: none;
+    }
+    .chronicle__list::-webkit-scrollbar {
+      display: none;
+    }
+    .chronicle__list li {
+      display: block;
+      flex: 0 0 78vw;
+      max-width: 340px;
+      padding: 36px 24px 0 0;
+      scroll-snap-align: start;
+    }
+    :global(.js) .chronicle__list li {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+    .chronicle__list li {
+      --dot-top: 0px;
+      --dot-left: 0px;
+    }
+    .chronicle__list li:not(:last-child)::after,
+    :global(.js) .chronicle__list li:not(:last-child)::after {
+      top: calc(var(--dot) / 2);
+      left: var(--dot);
+      width: calc(100% - var(--dot));
+      height: 1px;
+      transform: none;
+    }
+    .chronicle__what {
+      padding-top: 10px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    :global(.js) .chronicle__list li,
+    :global(.js) .chronicle__list li::after {
+      transition: none;
+      transform: none;
+      opacity: 1;
+    }
+    :global(.js) .chronicle__year,
+    :global(.js) .chronicle__year::before {
+      transition: none;
+    }
+  }
+
+  .chronicle__item--quiet .chronicle__year,
+  .chronicle__item--quiet .chronicle__what {
+    color: var(--ink-2);
+  }
+  :global(.js) .chronicle__list .chronicle__item--quiet.is-on .chronicle__year {
+    color: var(--ink-2);
+  }
+</style>

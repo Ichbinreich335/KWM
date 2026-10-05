@@ -1,0 +1,57 @@
+---
+import '../styles/basis.css';
+import '../styles/seiten/page-text.css';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import InquiryBand from '../components/InquiryBand.astro';
+import PageHero from '../components/PageHero.astro';
+import Prose from '../components/Prose.astro';
+---
+
+<BaseLayout
+  title="Verpackung und Transportkosten · Keramische Werkstatt Margaretenhöhe"
+  description="Wie sich Verpackungs- und Transportkosten bei der Keramischen Werkstatt Margaretenhöhe berechnen, auch bei Lieferungen ins Ausland."
+  bodyClass="page-text"
+>
+  <main id="inhalt">
+    <PageHero typ="name" textseite>
+      <Fragment slot="titel">Verpackung und Transportkosten</Fragment>
+      <Fragment slot="lede">So berechnen sich Versand und Verpackung.</Fragment>
+    </PageHero>
+
+    <div class="legal grid">
+      <aside class="legal__aside ts-small">
+        <nav aria-label="Rechtliches und Service">
+          <p class="legal__label ts-meta">Rechtliches</p>
+          <ul>
+            <li>
+              <a href="/impressum">Impressum</a>
+            </li>
+            <li>
+              <a href="/datenschutz">Datenschutz</a>
+            </li>
+            <li>
+              <a href="/agb">AGB</a>
+            </li>
+            <li>
+              <a href="/versand" aria-current="page">
+                Verpackung und Transport
+              </a>
+            </li>
+            <li>
+              <a href="/zahlung">Zahlung</a>
+            </li>
+          </ul>
+        </nav>
+      </aside>
+      <Prose>
+        <p>
+          Die Verpackungs- und Transportkosten richten sich nach Anzahl und Gewicht der zu versendenden Pakete. Bei
+          Auslandslieferungen kommen ggf. Kosten für die Zollabfertigung hinzu. <br />
+          Die Kosten für die Einfuhr werden von den Zollbehörden direkt an den Kunden erhoben.
+        </p>
+      </Prose>
+    </div>
+
+    <InquiryBand text="Möchten Sie wissen, was der Versand eines Stücks kostet? Nennen Sie uns das Stück und Ihr Ziel." />
+  </main>
+</BaseLayout>
