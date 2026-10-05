@@ -16,7 +16,7 @@ const { stationen, weiter } = Astro.props;
     <p class="journey-hint" aria-hidden="true">
       Wischen
     </p>
-    <ol class="journey grid" aria-label="Lebensweg" tabindex="0">
+    <ol class="journey grid" aria-label="Lebensweg">
       {stationen.map((s) => (
         <li>
           <span class="journey__year">{s.jahr}</span>

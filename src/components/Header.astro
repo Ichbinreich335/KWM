@@ -51,9 +51,7 @@ const { current } = Astro.props;
         Anfrage per E-Mail <span class="nav__mail-addr">{kontakt.mail}</span>
       </a>
       <div class="lang lang--menu" role="group" aria-label="Sprache">
-        <a href="#" aria-current="true">
-          DE
-        </a>
+        <span aria-current="true">DE</span>
         <span aria-hidden="true">/</span>
         <a href={kontakt.englischUrl} lang="en">
           EN
@@ -62,9 +60,7 @@ const { current } = Astro.props;
     </div>
   </nav>
   <div class="lang" role="group" aria-label="Sprache">
-    <a href="#" aria-current="true">
-      DE
-    </a>
+    <span aria-current="true">DE</span>
     <span aria-hidden="true">/</span>
     <a href={kontakt.englischUrl} lang="en">
       EN

@@ -72,7 +72,7 @@ const einblendung = (art: 'words' | 'fade' | 'img') => (einblenden ? art : undef
 <style>
   /* Seitenkopf: vier Typen (DESIGN.md, Seitenkopf). Gemeinsam: Raster, Abstand oben, Titel, Lede, optionales Bild. */
   .page-hero {
-    --hero-img: min(72vh, 760px);
+    --hero-img: min(72svh, 760px);
     padding-top: calc(var(--head) + clamp(48px, 6vw, 96px));
     padding-bottom: calc(var(--section) * 0.6);
     row-gap: var(--head-gap);

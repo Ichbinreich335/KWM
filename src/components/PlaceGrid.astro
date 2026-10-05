@@ -159,7 +159,7 @@ const kachelKlasse = { gross: 'xl', mittel: 'm', klein: 's' } as const;
     function lastOfRow(tile: HTMLElement) {
       const top = tile.getBoundingClientRect().top;
       const row = tiles.filter((t) => Math.abs(t.getBoundingClientRect().top - top) < ROW_TOLERANCE);
-      return row.at(-1) ?? tile;
+      return row[row.length - 1] ?? tile;
     }
 
     function place(panel: HTMLElement, tile: HTMLElement) {
@@ -662,7 +662,7 @@ const kachelKlasse = { gross: 'xl', mittel: 'm', klein: 's' } as const;
     color: var(--on-coal-2);
   }
 
-  @media (max-width: 899px) {
+  @media (max-width: 900px) {
     .orte {
       --orte-kachel: 140px; /* kleine Kacheln: etwa zwei Drittel der früheren Höhe, Name und Zählung passen noch hinein */
       --orte-kachel-breit: 160px;

@@ -210,12 +210,15 @@ export default function init(el: Element) {
 
   const sende = async (token: string): Promise<void> => {
     const daten = Object.fromEntries(new FormData(form));
+    // AbortController statt AbortSignal.timeout: Letzteres fehlt in Safari vor 16
+    const abbruch = new AbortController();
+    const zeitlimit = setTimeout(() => abbruch.abort(), SENDE_ZEITLIMIT_MS);
     const antwort = await fetch(ANFRAGE_PFAD, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ ...daten, [HONIGTOPF_FELD]: daten[HONIGTOPF_FELD] ?? '', [TURNSTILE_FELD]: token }),
-      signal: AbortSignal.timeout(SENDE_ZEITLIMIT_MS),
-    });
+      signal: abbruch.signal,
+    }).finally(() => clearTimeout(zeitlimit));
     const inhalt = (await antwort.json().catch(() => null)) as AnfrageAntwort | null;
     if (inhalt?.ok) {
       form.hidden = true;

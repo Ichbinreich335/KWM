@@ -95,7 +95,7 @@
 
 /* Fehlerseite: Wege zurück in Fließtextgröße */
 .not-found {
-  min-height: 70vh;
+  min-height: 70svh;
   align-content: center;
 }
 .not-found__links {

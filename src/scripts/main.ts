@@ -112,6 +112,16 @@ interface Bowl extends Schale {
   // Erst jetzt ist die Einblendung scharf: bricht das Skript vorher ab, greift die CSS-Sicherung (global.css)
   document.documentElement.classList.add('js-ready');
 
+  /* ---------- Wischreihen: nur dort Tabstopp, wo sie wirklich scrollen (Handy), nicht am Desktop ---------- */
+  const wischreihen = $$('.journey, .chronicle__list');
+  const wischbar = () =>
+    wischreihen.forEach((reihe) => {
+      if (reihe.scrollWidth > reihe.clientWidth) reihe.setAttribute('tabindex', '0');
+      else reihe.removeAttribute('tabindex');
+    });
+  wischbar();
+  addEventListener('resize', wischbar, { passive: true });
+
   /* ---------- Chronik: Linie zeichnet sich strikt nacheinander an die Lesehöhe gebunden, jeder Punkt füllt sich, wenn sie ihn erreicht ---------- */
   const chronicle = $('.chronicle__list');
   if (chronicle) {
@@ -138,7 +148,7 @@ interface Bowl extends Schale {
       items.forEach((li) => {
         const box = li.getBoundingClientRect();
         li.classList.toggle('is-on', line >= box.top + dotY);
-        if (!reduced && li !== items.at(-1))
+        if (!reduced && li !== items[items.length - 1])
           li.style.setProperty('--seg', Math.min(1, Math.max(0, (line - (box.top + dotY)) / box.height)).toFixed(3));
       });
     };
@@ -218,8 +228,9 @@ interface Bowl extends Schale {
     const y = window.scrollY;
     if (masthead) {
       const menuOpen = toggle?.getAttribute('aria-expanded') === 'true';
-      if (!menuOpen && y > window.innerHeight * 0.9 && y > lastY + 2) masthead.classList.add('is-hidden');
-      if (y < lastY - 2) masthead.classList.remove('is-hidden');
+      const hidden = masthead.classList.contains('is-hidden');
+      if (!menuOpen && !hidden && y > window.innerHeight * 0.9 && y > lastY + 2) masthead.classList.add('is-hidden');
+      if (hidden && y < lastY - 2) masthead.classList.remove('is-hidden');
     }
     lastY = y;
     ticking = false;

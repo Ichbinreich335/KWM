@@ -37,7 +37,7 @@
 }
 .stance__text {
   grid-column: 7 / 12;
-  padding-top: clamp(24px, 10vh, 120px);
+  padding-top: clamp(24px, 10svh, 120px);
 }
 .stance__text .h2 {
   margin-bottom: 32px;
@@ -84,7 +84,7 @@
 }
 .plate img {
   width: 100%;
-  height: min(80vh, 820px);
+  height: min(80svh, 820px);
   object-fit: cover;
 }
 .plate figcaption {

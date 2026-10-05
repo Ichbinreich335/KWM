@@ -129,7 +129,7 @@ const erste = knoepfe[0];
     }
   }
 
-  customElements.define('kwm-glaze', KwmGlaze);
+  if (!customElements.get('kwm-glaze')) customElements.define('kwm-glaze', KwmGlaze);
 </script>
 
 <style>
@@ -140,7 +140,7 @@ const erste = knoepfe[0];
   .glaze__stage {
     grid-column: 1 / 8;
     position: relative;
-    min-height: clamp(420px, 70vh, 720px);
+    min-height: clamp(420px, 70svh, 720px);
     overflow: hidden;
     background: var(--ground-2);
     color: var(--ink);

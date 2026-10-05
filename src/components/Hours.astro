@@ -1,15 +1,14 @@
 ---
-import { kontakt, oeffnungszeitZeilen, type Oeffnungszeit } from '../data/kontakt';
+import { kontakt, oeffnungszeitZeilen } from '../data/kontakt';
 
 interface Props {
   /** `liste`: große Zeilen im Seitenkopf (Besuch); `tabelle`: Tabelle im Abschnitt „Werkstatt ist offen“ (Startseite) */
   typ: 'liste' | 'tabelle';
-  zeiten?: readonly Oeffnungszeit[];
-  hinweisZeiten?: string;
 }
 
-const { typ, zeiten = kontakt.oeffnungszeiten, hinweisZeiten = kontakt.hinweisZeiten } = Astro.props;
-const zeilen = oeffnungszeitZeilen(zeiten, 'lang');
+const { typ } = Astro.props;
+const { hinweisZeiten } = kontakt;
+const zeilen = oeffnungszeitZeilen(kontakt.oeffnungszeiten, 'lang');
 ---
 
 {typ === 'liste' ? (

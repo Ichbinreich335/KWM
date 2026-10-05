@@ -17,7 +17,7 @@ interface Props {
 
 const { eintraege, titel, lede, id, titelId, kurz = false, link } = Astro.props;
 const gezeigt = kurz ? eintraege.filter((eintrag) => eintrag.kurztext) : eintraege;
-const zeitraum = `${gezeigt[0]?.jahr} bis ${gezeigt.at(-1)?.jahr}`;
+const zeitraum = `${gezeigt[0]?.jahr} bis ${gezeigt[gezeigt.length - 1]?.jahr}`;
 ---
 
 <section class="chronicle" id={id} aria-labelledby={titelId}>
@@ -37,7 +37,7 @@ const zeitraum = `${gezeigt[0]?.jahr} bis ${gezeigt.at(-1)?.jahr}`;
         Wischen
       </p>
     </div>
-    <ol class="chronicle__list" aria-label="Chronik der Werkstatt" tabindex="0">
+    <ol class="chronicle__list" aria-label="Chronik der Werkstatt">
       {gezeigt.map((eintrag) => (
         <li class:list={{ 'chronicle__item--quiet': eintrag.leise }}>
           <span class="chronicle__year">{eintrag.jahr}</span>
