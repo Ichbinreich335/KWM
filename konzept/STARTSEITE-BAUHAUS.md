@@ -73,3 +73,67 @@ Nachgesehen über den MCP `refero` (Stile mit Vorschaubild, 14 angesehen). Über
 | [Silencio](https://silencio.es) | Objekte schwebend im Weiß | (nichts) | Unschärfe, Schweben |
 
 **Zusammengefasst:** Das Raster ordnet, wird aber nicht gezeichnet. Je Reihe ein Format und eine Beschriftungsart. Ein Satz ersetzt einen Absatz. Prinzipien zeigen sich in Wiederholung (gleiche Kacheln, gleiche Kanten), nicht in Dekor.
+
+## 6. Vorher und nachher
+
+Gemessen mit Playwright (Chromium, fester Tag 04.10.2026), Wörter = sichtbarer Text je Abschnitt (zugeklappte Details zählen nicht), Höhe in px bei 1440 px und 390 px Breite.
+
+| Abschnitt vorher | Wörter | Höhe 1440 | Höhe 390 | Abschnitt nachher | Wörter | Höhe 1440 | Höhe 390 |
+|---|---:|---:|---:|---|---:|---:|---:|
+| Einstieg | 56 | 900 | 1.032 | Einstieg | 51 | 900 | 979 |
+| Aktuell | 132 | 1.615 | 2.572 | Aktuell (unverändert) | 132 | 1.615 | 2.572 |
+| Einleitungssatz, Zwei Linien | 104 | 882 | 955 | **Bauhaus: Grundformen, Farbskala** | 46 | 1.589 | 2.013 |
+| Young-Jae Lee | 182 | 2.475 | 2.692 | Young-Jae Lee | 75 | 1.361 | 1.476 |
+| Meisterstücke | 106 | 2.017 | 1.815 | Meisterstücke | 76 | 1.883 | 1.558 |
+| Ausstellungsorte | 88 | 1.786 | 2.197 | Ausstellungsorte (unverändert) | 88 | 1.786 | 2.197 |
+| Meditation | 71 | 559 | 762 | (entfällt) | | | |
+| 99 Schalen | 67 | 1.379 | 937 | 99 Schalen | 81 | 1.221 | 830 |
+| Manufaktur | 137 | 2.337 | 2.660 | (in Bauhaus) | | | |
+| Feuer | 44 | 1.440 | 1.266 | Feuer | 23 | 1.440 | 1.266 |
+| Chronik | 171 | 1.596 | 751 | Chronik | 48 | 927 | 620 |
+| Besuch | 81 | 1.222 | 1.439 | Besuch | 59 | 1.214 | 1.323 |
+| **12 Abschnitte** | **1.243** | **18.936** | **20.215** | **10 Abschnitte** | **683** | **14.664** | **15.973** |
+
+- Text insgesamt −45 %. Ohne die unveränderten Inhaltsabschnitte Aktuell und Orte: 1.023 → 463 Wörter (−55 %).
+- Seite 23 % kürzer am Rechner, 21 % kürzer am Handy, bei mehr Bildfläche je Abschnitt (die Bauhaus-Station ist der erste Abschnitt nach Aktuell, der nur aus Bild und einem Satz besteht).
+- Bilder: `konzept/startseite-bauhaus/vorher-1440.jpg`, `nachher-1440.jpg`, `vorher-390.jpg`, `nachher-390.jpg` (Ganzseiten-Screens verkleinert, in Spalten gelegt). Der 99-Schalen-Ring ist eine Canvas-Grafik und bleibt im Ganzseiten-Screen am Rechner leer (Aufnahmeartefakt); im Browser ist er da.
+- Konsole ohne Fehler, kein horizontales Scrollen bei 390 px.
+
+## 7. Wohin die entfernten Texte gewandert sind
+
+Kein Text ist verloren. Alles, was von der Startseite fällt, stand schon auf einer Unterseite (geprüft per Volltextsuche in `src/`).
+
+| Text auf der alten Startseite | Steht jetzt |
+|---|---|
+| Einleitung „Keramische Werkstatt Margaretenhöhe. Gedrehte Gefäße … heute auf dem Gelände der Zeche Zollverein.“ | gekürzt im Einstieg; Name und Adresse in Kopfzeile, Footer und /besuch |
+| Einleitungssatz „Aus der ständigen Wiederholung einer handwerklichen Technik …“ | /werkstatt, Seitenkopf |
+| „1924 auf Initiative von Margarete Krupp … Seit 1927 den Formprinzipien des Bauhauses verpflichtet – über Otto Lindigs Schüler Johannes Leßmann.“ | /werkstatt, Chronik 1924 und 1927 (ausführlich); Kern als Überschrift der Bauhaus-Station |
+| „Seit 1986 geprägt von Young-Jae Lee … Geschirr, das seitdem nahezu unverändert …“ | /meisterstuecke, Einleitung; /werkstatt, Chronik 1986 |
+| Zwei Linien „Meisterstücke: Unikate …“ und „Manufaktur: Geschirr …“ | Navigation (Beschreibungen im Mobilmenü), Links im Einstieg, Abschnitte Meisterstücke und Bauhaus |
+| Catoir „Sie erzählte von den Zeremonien in den Tempeln …“ | /young-jae-lee, Abschnitt „Eine nach der anderen.“ |
+| Jahn „Die minimale Veränderung ist Young-Jae Lees unbegrenzter Freiraum …“ | /young-jae-lee, Haltung |
+| „Zwei Traditionen treffen sich in ihren Gefäßen …“ (Jahn, „heitere, schwerelose Empfinden“) | /young-jae-lee, „Bauhaus und koreanisches Erbe.“ (vollständiges Jahn-Zitat) |
+| „Alle Meisterstücke stammen aus der Hand Young-Jae Lees …“ | /young-jae-lee, Seitenkopf („alle Meisterstücke stammen aus ihrer Hand“) |
+| Meditation „Die Herstellung jedes neuen Gefäßes gleicht einer Meditation.“ samt Absatz | /meisterstuecke |
+| Überschrift „Ein Ring aus Teilchen um eine leere Mitte.“ | bleibt als Teil des vollständigen Wagner-Zitats im Abschnitt 99 Schalen |
+| Manufaktur „Keiner Mode, keinem Zeitgeist unterworfen.“, „Unter Rückbesinnung … 25 Grundelemente …“, „Jedes Stück muss gut zu drehen sein …“, „In monatelangen Experimenten …“ | /manufaktur und /werkstatt |
+| Regalfoto „Vor dem ersten Brand“ | /manufaktur (Zäsur), /werkstatt |
+| Kurzfakten (Masse, Schrühbrand, Glasurbrand, Programm, Gebrauch) | /manufaktur, Arbeitsweise; /werkstatt |
+| Feuer: 1300 °C, neun bis zehn Stunden, 1,5 Festmeter Holz | /werkstatt, Arbeitsweise (`arbeitsweise.ts`); die neun bis zehn Stunden bleiben in der Überschrift |
+| Chronik: Kurztexte, Stationen 1944 und 1968, „neun Stationen in 82 Jahren“ | /werkstatt, Chronik vollständig (die Zählung entfällt, sie stimmte nicht mehr) |
+| Besuch: „Wenn Sie Stücke aus unserem Programm erwerben möchten …“ | /besuch, Seitenkopf |
+
+**Neu auf der Startseite** (alle aus dem Repo belegt): Überschrift „Seit 1927 in der Tradition des Bauhauses.“ (Chronik 1927, Interview), „Wir gehen immer von geometrischen Grundformen aus.“ (Interview urbanana 2023, Stimme der Werkstatt), Catoir „Vielleicht muss man aus Ostasien kommen …“ (`CONTENT-FUNDE.md` 2.2), Grundformen Teller, Schale, Krug (vorhandene Fotos aus `manufaktur.ts`).
+
+**Technisch entfallen:** `FactsTable` und `kurzfakten` (nur Startseite), die Porträt-Variante von `SigSticky`, die Statement-Typen `zitat-bild` und `lede`, das Bild `01-seladon-gefaess.webp` (nur Meditation) und die Stile von Einleitung, Zwei Linien, Meditation und Manufaktur-Block. Die Chronik kennt statt `kurztext` jetzt `startseite: true` (Startseite zeigt nur Jahr und Titel).
+
+## 8. Worauf beim Review achten
+
+1. **Am Rechner:** Trägt die Bauhaus-Station gleich nach Aktuell? Drei Grundformen über der Farbskala, alle Kanten auf demselben Raster. Ist das als Prinzip lesbar, ohne dass „Bauhaus“ mehr als einmal dasteht?
+2. **Am Rechner:** Porträt und Spindelvase stehen jetzt mit Luft im Raster (höchstens zwei Drittel der Bildschirmhöhe). Ist der leere Raum rechts neben der Vase richtig, oder wirkt er wie eine Lücke?
+3. **Am Rechner:** 99 Schalen auf hellem Grund mit Wagners Satz darüber. Den Ring mit der Maus berühren: Die Schalen weichen aus.
+4. **Am Handy:** Bauhaus-Station untereinander: drei Fotos, sechs Glasurstreifen, ein Satz. Zu lang oder genau richtig?
+5. **Am Handy:** Chronik als Wischleiste nur mit Jahr und Titel. Reicht das, oder fehlt der Satz je Station?
+6. **Am Rechner:** Rhythmus hell, dunkel, hell, dunkel (Aktuell, Orte, Feuer, Footer) mit der Chronik als einziger grauer Fläche. Ruhig genug?
+7. **Am Handy:** Einstieg und Aktuell sind unverändert. Fällt beim Herunterscrollen etwas als Bruch auf (z. B. der Übergang von Aktuell zur Bauhaus-Station)?
+8. **Am Rechner:** Die Stimme der Werkstatt („Wir gehen immer von geometrischen Grundformen aus.“) ohne Namen. Passt das zur Haltung der Werkstatt?
