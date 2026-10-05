@@ -366,6 +366,11 @@
 }
 
 @media (max-width: 899px) {
+  .orte {
+    --orte-kachel: 140px; /* kleine Kacheln: etwa zwei Drittel der früheren Höhe, Name und Zählung passen noch hinein */
+    --orte-kachel-breit: 160px;
+    --orte-kachel-gross: 240px;
+  }
   .orte__head .h2,
   .orte__aside {
     grid-column: 1 / -1;
@@ -380,12 +385,17 @@
   .orte__tile--m,
   .orte__tile--xl {
     grid-column: span 1;
-    min-height: 210px;
+    min-height: var(--orte-kachel);
   }
   .orte__tile--xl,
   .orte__tile--full {
     grid-column: 1 / -1;
-    min-height: 240px;
+  }
+  .orte__tile--xl {
+    min-height: var(--orte-kachel-gross);
+  }
+  .orte__tile--full {
+    min-height: var(--orte-kachel-breit);
   }
   .orte__detail-in {
     padding-bottom: 20px;
