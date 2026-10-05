@@ -2,12 +2,13 @@
 
 Laufende Liste: Was du tun, entscheiden oder abnehmen musst, und was mir unterwegs aufgefallen ist. Überblick über alle Schritte: [STAND.md](STAND.md). Neueste Einträge oben in jedem Abschnitt. Erledigtes wandert nach unten.
 
-Stand: 04.10.2026 (abends)
+Stand: 05.10.2026 (vormittags)
 
 ## Abnehmen
 
 | Was | Wo | Hinweis |
 |---|---|---|
+| **Bausteine Teil 1** (keine sichtbare Änderung) | PR [#11](https://github.com/Ichbinreich335/KWM/pull/11) (Entwurf, baut auf #10 auf) · Vorschau: `https://phase-d1-geruest-kwm-redesign.entwicklung-7f3.workers.dev` | Seitenkopf, Sprungleiste, Abschnittskopf, Kapitelrahmen, Fließtext und Zitat-Baustein (8 Typen, jeder große Satz läuft darüber). Wird nach dem Feinschliff gemergt und vorher darauf rebased. |
 | **Phase C4: Schriften** (keine sichtbare Änderung) | PR [#10](https://github.com/Ichbinreich335/KWM/pull/10) (Entwurf, baut auf #9 auf) · Bericht `konzept/PHASE-C-BERICHT.md` Abschnitt C4 · Vorschau: `https://phase-c4-schriften-kwm-redesign.entwicklung-7f3.workers.dev` | Schriftbild identisch; Schriften jetzt gehasht und dauerhaft gecacht. Damit ist Phase C komplett. |
 | **Phase C3: Bilder responsiv** (kein Layout-Unterschied) | PR [#9](https://github.com/Ichbinreich335/KWM/pull/9) (Entwurf, baut auf #8 auf) · Bericht `konzept/PHASE-C-BERICHT.md` Abschnitt C3 · Vorschau: `https://phase-c3-bilder-kwm-redesign.entwicklung-7f3.workers.dev` | Startseite mobil jetzt Lighthouse 100, größtes Bild 0,7 s früher sichtbar. Bitte am Handy und am großen Bildschirm auf Bildschärfe achten (Bilder werden von Astro neu kodiert). |
 | **Phase C2: Skripte als TypeScript** (keine sichtbare Änderung) | PR [#8](https://github.com/Ichbinreich335/KWM/pull/8) (Entwurf, baut auf #7 auf) · Bericht `konzept/PHASE-C-BERICHT.md` Abschnitt C2 · Vorschau: `https://phase-c2-ts-kwm-redesign.entwicklung-7f3.workers.dev` | Alle Skripte typgeprüft (strengster Modus), gebündelt. Beim Durchklicken auf interaktive Teile achten: Menü am Handy, Farbskala, Feuer (Werkstatt), Glasurbühne (Manufaktur), Aufklapper (Aktuelles), Anfrageformular. |
@@ -19,9 +20,7 @@ Stand: 04.10.2026 (abends)
 
 ## Tun (nur du kannst das)
 
-| Was | Warum | Wie |
-|---|---|---|
-| Build-Befehl bei der Vorschau `astro-umbau` setzen | Die Vorschau hat ihre Einstellungen beim Anlegen kopiert (leerer Build-Befehl), automatische Builds dieses Branches scheitern deshalb. Ich lade die Vorschau so lange von Hand hoch, der Link ist aktuell. Neue Branches erben schon `npm run build`. | Dashboard → `kwm-redesign` → Previews → `astro-umbau` → Settings → Build command `npm run build`. Oder die Vorschau löschen, wenn du so weit bist; sie entsteht beim nächsten Push neu. |
+Zurzeit nichts.
 
 ## Entscheiden
 
@@ -44,6 +43,8 @@ Stand: 04.10.2026 (abends)
 
 ## Erledigt
 
+- 05.10.2026: Build-Befehl `npm run build` bei der Vorschau `astro-umbau` gesetzt (Admin).
+- 05.10.2026: Porträt im schmalen Fenster: Ausschnitt rückt, Gesicht bleibt frei, hochkant untereinander (Admin-Wunsch, im Feinschliff).
 - 04.10.2026: Build-Befehl für Produktion und für neue Vorschauen gesetzt (Admin).
 - 04.10.2026: Hilfsskripte ohne Funktion in `.shots/` entfernt (Admin-Entscheidung).
 - 04.10.2026: Prototyp und frühe Entwürfe archiviert statt gelöscht (`archiv/`, Admin-Entscheidung).
