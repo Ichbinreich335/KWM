@@ -50,9 +50,13 @@ In Sanity: Ausstellungen samt Bildern und Flyer, Orte und Galerien, Hinweise, di
 
 ## Teil 3 (optional, Entscheidung Admin): Klicken und Bearbeiten im Studio
 
-- Das Presentation Tool zeigt die Website im Studio; ein Klick auf eine Überschrift springt zum Feld. Laut Doku braucht das serverseitiges Rendern (Entwürfe pro Anfrage, Cookie), mit statischer Ausgabe geht es nicht.
-- Vorschlag: Die öffentliche Seite bleibt statisch. Zusätzlich gibt es eine **eigene Vorschau-Instanz** (eigener Worker, z. B. `kwm-vorschau`), die denselben Code serverseitig rendert und nur Entwürfe für das Studio zeigt (`noindex`, Zugang über das Sanity-Geheimnis der Presentation-Doku). Kosten: Cloudflare Workers Free (100.000 Anfragen pro Tag) reicht; Sanity Free enthält Visual Editing.
-- Aufwand: React für die Overlay-Komponente nur in der Vorschau, Draft-Mode-Routen, Presentation-Konfiguration mit Zuordnung Dokument → Seite.
+Stand nach `konzept/RECHERCHE-VORSCHAU.md` (05.10.2026): Es braucht **keinen** eigenen Server für die Grundfunktion. Stufen:
+
+1. **(b+) Klick-Rahmen auf der statischen Seite (empfohlen, ca. 1 Tag):** Presentation Tool mit `previewUrl` als reiner Adresse (ohne `previewMode`), `resolve`/locations je Dokumenttyp. Beim Bauen schreibt die Website `data-sanity`-Attribute (Dokument-ID, Typ, Feldpfad) an die Elemente mit Sanity-Inhalt; im iframe startet `enableVisualEditing()` (`@sanity/visual-editing`, reines Browser-JS, nur wenn die Seite im Studio-iframe läuft, sonst nicht geladen). Klick auf eine Überschrift springt zum Feld; das Ergebnis erscheint nach Veröffentlichen und Neubau. Header: `frame-ancestors 'self' https://kwm.sanity.studio`, `X-Frame-Options` entfernen (Phase E anpassen), CSP für das Overlay-Skript prüfen.
+2. **(c) Spike, halber Tag:** Entwurfs-Texte live im iframe über den Live Mode des Presentation Tools (`@sanity/core-loader`, Comlink/postMessage, kein Token im Browser). Nur Textfelder, gezielt ausgetauscht; Struktur, Rich Text und Bilder nach Veröffentlichen. Erfolgskriterium: Titel im Studio tippen, H1 im iframe ändert sich, ohne Token und Server.
+3. **(d) Rückfall:** eigene SSR-Vorschau (Worker mit `@astrojs/cloudflare`), nur wenn (c) scheitert und der Admin Live-Entwürfe will.
+
+Teil 1 und 2 werden so gebaut, dass (b+) ohne Umbau möglich ist: Abfragen liefern `_id`/`_type` mit, Komponenten nehmen ein optionales Attribut für die Sanity-Markierung entgegen.
 
 ## Konto-Umzug Cloudflare und GitHub
 
