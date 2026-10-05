@@ -26,9 +26,6 @@
   grid-column: 8 / 13;
 }
 .method__rule {
-  font-family: var(--f-display);
-  font-size: var(--t-h3);
-  line-height: var(--t-h3-lh);
   letter-spacing: -0.01em;
   text-wrap: balance;
   margin-bottom: 32px;
@@ -71,9 +68,6 @@
   margin-bottom: 28px;
 }
 .place__text p {
-  font-family: var(--f-text);
-  font-size: var(--t-body);
-  line-height: var(--t-body-lh);
   max-width: 48ch;
 }
 .place__info {

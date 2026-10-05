@@ -74,11 +74,6 @@
   border-top-color: var(--ink);
 }
 
-.mf-facts .datelist__year {
-  font-size: var(--t-numeral);
-  line-height: var(--t-numeral-lh);
-}
-
 @media (max-width: 900px) {
   .mf-intro__aside,
   .mf-intro__text {

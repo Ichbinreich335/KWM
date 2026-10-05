@@ -26,14 +26,9 @@
   grid-column: 1 / 6;
 }
 .visit-hours__address {
-  font-family: var(--f-text);
-  font-size: var(--t-quote);
-  line-height: var(--t-quote-lh);
   margin-bottom: 20px;
 }
 .visit-hours__note {
-  font-size: var(--t-small);
-  line-height: var(--t-small-lh);
   color: var(--ink-2);
   max-width: 36ch;
   margin-bottom: 28px;
@@ -82,9 +77,6 @@
   margin-bottom: 28px;
 }
 .inquiry__lead {
-  font-family: var(--f-text);
-  font-size: var(--t-quote);
-  line-height: var(--t-quote-lh);
   margin-bottom: 20px;
 }
 .inquiry__text > p {
@@ -113,28 +105,17 @@
 .inquiry__forms a:hover > span:first-child {
   transform: translateX(10px);
 }
-.inquiry__form-name {
-  font-family: var(--f-text);
-  font-size: var(--t-body);
-  line-height: var(--t-body-lh);
-}
 .inquiry__form-meta {
-  font-size: var(--t-meta);
-  line-height: var(--t-meta-lh);
   color: var(--ink-2);
 }
 .inquiry__contact {
   display: grid;
   grid-template-columns: auto 1fr;
   gap: 6px 20px;
-  font-size: var(--t-small);
-  line-height: var(--t-small-lh);
   margin-bottom: 28px;
 }
 .inquiry__contact dt {
   color: var(--ink-2);
-  font-size: var(--t-meta);
-  line-height: var(--t-meta-lh);
   letter-spacing: 0.04em;
   padding-top: 2px;
 }
@@ -163,13 +144,6 @@
   gap: 16px;
   padding: 16px 0;
   border-bottom: 1px solid var(--hair);
-  font-size: var(--t-small);
-  line-height: var(--t-small-lh);
-}
-.pay__list dt {
-  font-family: var(--f-text);
-  font-size: var(--t-body);
-  line-height: var(--t-body-lh);
 }
 .pay__list dd {
   font-variant-numeric: tabular-nums;

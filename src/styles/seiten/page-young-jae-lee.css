@@ -43,9 +43,6 @@
   margin-bottom: 32px;
 }
 .stance__text p {
-  font-family: var(--f-text);
-  font-size: var(--t-body);
-  line-height: var(--t-body-lh);
   max-width: 48ch;
   text-wrap: pretty;
 }
@@ -96,8 +93,6 @@
   grid-column: 1 / -1;
   columns: 3;
   column-gap: var(--g);
-  font-size: var(--t-small);
-  line-height: var(--t-small-lh);
 }
 .museums li {
   break-inside: avoid;
@@ -141,9 +136,5 @@
   }
   .plate img {
     height: 60svh;
-  }
-  .page-yjl .datelist__year {
-    font-size: var(--t-numeral);
-    line-height: var(--t-numeral-lh);
   }
 }

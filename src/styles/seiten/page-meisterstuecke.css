@@ -47,9 +47,6 @@
 }
 .spindle__title {
   grid-column: 1 / 7;
-  font-family: var(--f-display);
-  font-size: var(--t-statement);
-  line-height: var(--t-statement-lh);
 }
 .spindle__text {
   grid-column: 8 / 13;

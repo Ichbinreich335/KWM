@@ -50,14 +50,14 @@ const routeOsm = `https://www.openstreetmap.org/search?query=${encodeURIComponen
       </Figure>
       <div class="visit-hours__body grid">
         <div class="visit-hours__place" data-reveal="fade">
-          <p class="visit-hours__address">
+          <p class="visit-hours__address ts-quote">
             {kontakt.firma}
             <br />
             {kontakt.strasse}
             <br />
             {kontakt.plzOrt}
           </p>
-          <p class="visit-hours__note">Seit 1987 im Baulager der Zeche Zollverein, heute Weltkulturerbe.</p>
+          <p class="visit-hours__note ts-small">Seit 1987 im Baulager der Zeche Zollverein, heute Weltkulturerbe.</p>
         </div>
         <p class="visit-hours__actions" data-reveal="fade">
           <Button href={routeGoogle}>Route planen</Button>
@@ -89,7 +89,7 @@ const routeOsm = `https://www.openstreetmap.org/search?query=${encodeURIComponen
         <h2 class="h2" id="inquiry-title" data-reveal="words">
           Anfrage
         </h2>
-        <p class="inquiry__lead" data-reveal="fade">
+        <p class="inquiry__lead ts-quote" data-reveal="fade">
           Schreiben Sie uns, welches Stück oder welches Programm Sie interessiert. Wir melden uns mit weiteren
           Informationen oder einem Angebot.
         </p>
@@ -99,30 +99,30 @@ const routeOsm = `https://www.openstreetmap.org/search?query=${encodeURIComponen
         </p>
         <div class="inquiry__forms" data-reveal="fade">
           <a href="https://kwm-1924.de/wp-content/uploads/2026/07/2026_04_Anfrage_inquiry_Geschirr_tableware.pdf">
-            <span class="inquiry__form-name">Anfrage – Geschirr</span>
-            <span class="inquiry__form-meta">Formular, PDF</span>
+            <span class="inquiry__form-name ts-body">Anfrage – Geschirr</span>
+            <span class="inquiry__form-meta ts-meta">Formular, PDF</span>
           </a>
           <a href="https://kwm-1924.de/wp-content/uploads/2023/09/anfrage_inquiry_editionen_editions.pdf">
-            <span class="inquiry__form-name">Anfrage – Edition</span>
-            <span class="inquiry__form-meta">Formular, PDF</span>
+            <span class="inquiry__form-name ts-body">Anfrage – Edition</span>
+            <span class="inquiry__form-meta ts-meta">Formular, PDF</span>
           </a>
         </div>
-        <dl class="inquiry__contact" data-reveal="fade">
-          <dt>Telefon</dt>
+        <dl class="inquiry__contact ts-small" data-reveal="fade">
+          <dt class="ts-meta">Telefon</dt>
           <dd>
             <a class="tap" href={kontakt.telefonHref}>
               {kontakt.telefon}
             </a>
           </dd>
-          <dt>Zeiten</dt>
+          <dt class="ts-meta">Zeiten</dt>
           <dd>{kontakt.zeitenKurz}</dd>
-          <dt>E-Mail</dt>
+          <dt class="ts-meta">E-Mail</dt>
           <dd>
             <a class="tap" href={kontakt.mailHref}>
               {kontakt.mail}
             </a>
           </dd>
-          <dt>Fax</dt>
+          <dt class="ts-meta">Fax</dt>
           <dd>{kontakt.fax}</dd>
         </dl>
       </div>
@@ -136,9 +136,9 @@ const routeOsm = `https://www.openstreetmap.org/search?query=${encodeURIComponen
       <h2 class="h2 pay__head" id="pay-title" data-reveal="words">
         Zahlung
       </h2>
-      <dl class="pay__list" data-reveal="fade">
+      <dl class="pay__list ts-small" data-reveal="fade">
         <div>
-          <dt>Banküberweisung</dt>
+          <dt class="ts-body">Banküberweisung</dt>
           <dd>
             Sparkasse Essen
             <br />
@@ -146,7 +146,7 @@ const routeOsm = `https://www.openstreetmap.org/search?query=${encodeURIComponen
           </dd>
         </div>
         <div>
-          <dt>PayPal</dt>
+          <dt class="ts-body">PayPal</dt>
           <dd>{kontakt.mail}</dd>
         </div>
       </dl>
