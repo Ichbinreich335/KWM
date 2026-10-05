@@ -1,5 +1,7 @@
 ---
 import '../styles/basis.css';
+import DateList from '../components/DateList.astro';
+import { arbeitsweise } from '../data/manufaktur';
 import Statement from '../components/Statement.astro';
 import ChapterHead from '../components/ChapterHead.astro';
 import { getImage } from 'astro:assets';
@@ -1332,36 +1334,7 @@ const glasurBild = async (src: string) =>
         zusätzliche Stücke erweitert, darunter Vasen, Pflanzengefäße und Dosen.
       </Fragment>
       <div class="grid">
-        <dl class="datelist mf-facts">
-          <div class="datelist__row" data-reveal="fade">
-            <dt class="datelist__year">Masse</dt>
-            <dd class="datelist__text">
-              Westerwälder Steinzeugmasse, auf der Töpferscheibe gedreht. Die Viereckteller werden aus Platten über
-              Gipsmodellen geformt.
-            </dd>
-          </div>
-          <div class="datelist__row" data-reveal="fade">
-            <dt class="datelist__year">950&#8239;°C</dt>
-            <dd class="datelist__text">Schrühbrand im Elektroofen.</dd>
-          </div>
-          <div class="datelist__row" data-reveal="fade">
-            <dt class="datelist__year">1300&#8239;°C</dt>
-            <dd class="datelist__text">
-              Glasurbrand im Gasofen in reduzierender Atmosphäre – für matte bis glänzende Oberflächen und aufeinander
-              abgestimmte Farben.
-            </dd>
-          </div>
-          <div class="datelist__row" data-reveal="fade">
-            <dt class="datelist__year">Umwelt</dt>
-            <dd class="datelist__text">
-              Es werden ausschließlich umweltschonende Materialien und Fertigungsverfahren angewendet.
-            </dd>
-          </div>
-          <div class="datelist__row" data-reveal="fade">
-            <dt class="datelist__year">Gebrauch</dt>
-            <dd class="datelist__text">Alle Stücke sind spülmaschinenfest.</dd>
-          </div>
-        </dl>
+        <DateList eintraege={arbeitsweise} art="definition" einblenden class="mf-facts" />
       </div>
     </ChapterHead>
 

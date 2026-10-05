@@ -1,5 +1,7 @@
 ---
 import '../styles/basis.css';
+import DateList from '../components/DateList.astro';
+import { auszeichnungen, ausstellungsauswahl, biografie } from '../data/vita';
 import Statement from '../components/Statement.astro';
 import ChapterHead from '../components/ChapterHead.astro';
 import Bild from '../components/Bild.astro';
@@ -116,54 +118,7 @@ import '../styles/signaturen/signaturen.css';
       <Fragment slot="titel">Biografie</Fragment>
       <Fragment slot="einleitung">Von Seoul über Wiesbaden, Sandhausen und Kassel nach Essen.</Fragment>
       <div class="grid">
-        <ol class="datelist">
-          <li class="datelist__row">
-            <span class="datelist__year">1951</span>
-            <p class="datelist__text">Geboren in Seoul</p>
-          </li>
-          <li class="datelist__row">
-            <span class="datelist__year">1968–72</span>
-            <p class="datelist__text">Studium an der Hochschule für Kunsterziehung in Seoul</p>
-          </li>
-          <li class="datelist__row">
-            <span class="datelist__year">1972–73</span>
-            <p class="datelist__text">Praktikum bei Christine Tappermann in Wallrabenstein</p>
-          </li>
-          <li class="datelist__row">
-            <span class="datelist__year">1973–78</span>
-            <p class="datelist__text">
-              Studium der Keramik bei Margot Münster und der Formgestaltung bei Erwin Schutzbach an der Fachhochschule
-              Wiesbaden
-            </p>
-          </li>
-          <li class="datelist__row">
-            <span class="datelist__year">1976–77</span>
-            <p class="datelist__text">Praktikum bei Ralf Busz in Friedrichsfeld</p>
-          </li>
-          <li class="datelist__row">
-            <span class="datelist__year">1978–87</span>
-            <p class="datelist__text">Eigene Werkstatt in Sandhausen bei Heidelberg</p>
-          </li>
-          <li class="datelist__row">
-            <span class="datelist__year">1984–87</span>
-            <p class="datelist__text">Künstlerisch-wissenschaftliche Mitarbeiterin an der Gesamthochschule Kassel</p>
-          </li>
-          <li class="datelist__row">
-            <span class="datelist__year">seit 1987</span>
-            <p class="datelist__text">Leitung der Keramischen Werkstatt Margaretenhöhe GmbH, Essen</p>
-          </li>
-          <li class="datelist__row">
-            <span class="datelist__year">2015</span>
-            <p class="datelist__text">
-              Gastprofessur (Sommersemester) an der Abteilung für Keramik des Kollegs für Kunst und Design an der EWHA
-              Womans University in Seoul, Korea
-            </p>
-          </li>
-          <li class="datelist__row">
-            <span class="datelist__year">2016</span>
-            <p class="datelist__text">Ehrendoktorwürde der Eugeniusz-Geppert-Akademie der Schönen Künste in Breslau</p>
-          </li>
-        </ol>
+        <DateList eintraege={biografie} />
       </div>
     </ChapterHead>
 
@@ -303,107 +258,7 @@ import '../styles/signaturen/signaturen.css';
         Eine Auswahl der letzten zehn Jahre. Ausstellungen seit 1980 in Europa, Korea, Japan und den USA.
       </Fragment>
       <div class="grid">
-        <ol class="datelist">
-          <li class="datelist__row">
-            <span class="datelist__year">2026</span>
-            <p class="datelist__text">
-              „Stille Gäste“, Künstlerzeche Unser Fritz 2/3, Herne
-              <br />
-              „99 Schalen – ein Kosmos“, Museum für Ostasiatische Kunst (MOK), Köln
-              <br />
-              „Young-Jae Lee – Schalen“, Umbrella, Nørre Nebel, Dänemark
-            </p>
-          </li>
-          <li class="datelist__row">
-            <span class="datelist__year">2025</span>
-            <p class="datelist__text">
-              „Young-Jae Lee: SCHALEN“, Stadtkirche St. Jakobi, Chemnitz
-              <br />
-              „Young-Jae Lee: Keramik“, Galerie Jahn und Jahn, München
-            </p>
-          </li>
-          <li class="datelist__row">
-            <span class="datelist__year">2024</span>
-            <p class="datelist__text">
-              „Young-Jae Lee – Forms from the Earth“, David Nolan Gallery, New York, USA
-              <br />
-              „Young-Jae Lee: SCHALEN“, Stadtkirche St. Jakobi, Chemnitz
-              <br />
-              „100 Jahre Keramische Werkstatt Margaretenhöhe – Young-Jae Lee im Hetjens“, Hetjens Museum, Düsseldorf
-            </p>
-          </li>
-          <li class="datelist__row">
-            <span class="datelist__year">2023</span>
-            <p class="datelist__text">„Gefäße retrospektiv“, Kulturforum Blaue Haus, Dießen am Ammersee</p>
-          </li>
-          <li class="datelist__row">
-            <span class="datelist__year">2022</span>
-            <p class="datelist__text">
-              „SIEBEN MAL SIEBEN“, Kunst-Station Sankt Peter, Köln
-              <br />
-              „Contemporary Craft Young-Jae Lee“, Museum für Kunst &amp; Gewerbe, Hamburg
-            </p>
-          </li>
-          <li class="datelist__row">
-            <span class="datelist__year">2021</span>
-            <p class="datelist__text">„Gefäße“, Galerie Greve, St. Moritz, Schweiz</p>
-          </li>
-          <li class="datelist__row">
-            <span class="datelist__year">2020</span>
-            <p class="datelist__text">„Young-Jae Lee Spinatschalen“, Galerie Greve, Köln</p>
-          </li>
-          <li class="datelist__row">
-            <span class="datelist__year">2019</span>
-            <p class="datelist__text">
-              „Werkkunst Keramiken von Young-Jae Lee“, Dommuseum, Hildesheim
-              <br />
-              „Young-Jae Lee“, Museum Folkwang, Essen
-              <br />
-              Gallery Tokyo, Tokyo, Japan
-              <br />
-              „Young-Jae Lee – Emptying, Filling, and Emptying“, Gwangju Museum of Art, Ha Jung-woong Museum of Art,
-              Gwangju, Korea
-            </p>
-          </li>
-          <li class="datelist__row">
-            <span class="datelist__year">2018</span>
-            <p class="datelist__text">
-              „Œuvres en céramique – Young-Jae Lee“, Galerie Karsten Greve, Paris, Frankreich
-              <br />
-              „Young-Jae Lee – Ceramics“, Centre Culturel Coréen, Brüssel, Belgien
-              <br />
-              „Arbeiten in Keramik – Young-Jae Lee“, Galerie Karsten Greve, Köln
-            </p>
-          </li>
-          <li class="datelist__row">
-            <span class="datelist__year">2017</span>
-            <p class="datelist__text">
-              Shinsegae Gallery, Daegu, Gwangju, Incheon, Busan, Korea
-              <br />
-              Gallery Kan, Fukushima, Japan
-              <br />
-              Gallery Tokyo, Tokyo, Japan
-              <br />
-              „Hingabe – Gefäße von Young-Jae Lee“, Gartenpavillon des Klosters Beuerberg des Diözesanmuseums Freising
-            </p>
-          </li>
-          <li class="datelist__row">
-            <span class="datelist__year">2016</span>
-            <p class="datelist__text">
-              „Witness to an Ancient Truth“, Pucker Gallery, Boston, USA
-              <br />
-              „Augenblicke“, Galerie Jahn, München
-              <br />
-              „Nicht schön“, Österreichisches Museum für angewandte Kunst / Gegenwartskunst, Wien, Österreich
-              <br />
-              „Young-Jae Lee – Bowls“, Manggha Museum of Japanese Art and Technology, Kraków, Polen
-              <br />
-              „Young-Jae Lee – Vessels“, Museum of Architecture, Wrocław, Polen
-              <br />
-              „Keramische Werkstatt Margaretenhöhe – Young-Jae Lee“, Galeria NEON, Wrocław, Polen
-            </p>
-          </li>
-        </ol>
+        <DateList eintraege={ausstellungsauswahl} />
         <div class="expander expander--lang" id="alle-ausstellungen" data-expander>
           <h3 class="expander__bar">
             <button type="button" class="expander__btn" aria-expanded="false" aria-controls="alle-ausstellungen-liste">
@@ -971,27 +826,7 @@ import '../styles/signaturen/signaturen.css';
     <ChapterHead id="auszeichnungen" titelId="awards-title">
       <Fragment slot="titel">Auszeichnungen</Fragment>
       <div class="grid">
-        <ol class="datelist">
-          <li class="datelist__row">
-            <span class="datelist__year">1980</span>
-            <p class="datelist__text">1. Preis der Frechener Kulturstiftung</p>
-          </li>
-          <li class="datelist__row">
-            <span class="datelist__year">1981</span>
-            <p class="datelist__text">2. Preis des Richard-Bampi-Preises zur Förderung junger Keramiker, Osnabrück</p>
-          </li>
-          <li class="datelist__row">
-            <span class="datelist__year">1989</span>
-            <p class="datelist__text">Goldmedaille des Bayerischen Staatspreises</p>
-          </li>
-          <li class="datelist__row">
-            <span class="datelist__year">2016</span>
-            <p class="datelist__text">
-              Verleihung der Ehrendoktorwürde (Doktorat honoris causa) der Eugeniusz Geppert Academy of Art and Design
-              in Wrocław
-            </p>
-          </li>
-        </ol>
+        <DateList eintraege={auszeichnungen} />
       </div>
     </ChapterHead>
 

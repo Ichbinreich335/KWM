@@ -1,5 +1,7 @@
 ---
 import '../styles/basis.css';
+import DateList from '../components/DateList.astro';
+import { werkstattAuszeichnungen } from '../data/vita';
 import ChapterHead from '../components/ChapterHead.astro';
 import Bild from '../components/Bild.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
@@ -376,26 +378,7 @@ import '../styles/signaturen/signaturen.css';
     <ChapterHead ton="flaeche" id="auszeichnungen" titelId="awards-title">
       <Fragment slot="titel">Auszeichnungen</Fragment>
       <div class="grid">
-        <ol class="datelist">
-          <li class="datelist__row">
-            <span class="datelist__year">1997</span>
-            <p class="datelist__text">Hessischer Staatspreis, 1. Preis</p>
-          </li>
-          <li class="datelist__row">
-            <span class="datelist__year">2001</span>
-            <p class="datelist__text">
-              Bayerischer Staatspreis für Gestaltung, 1. Preis
-              <br />
-              Dießener Keramikpreis, 1. Preis
-              <br />
-              Käuferpreis les Must de scènes d’intérieur, Septembre, Messe Maison &amp; Objet, Paris
-            </p>
-          </li>
-          <li class="datelist__row">
-            <span class="datelist__year">2005</span>
-            <p class="datelist__text">Hessischer Staatspreis, 1. Preis</p>
-          </li>
-        </ol>
+        <DateList eintraege={werkstattAuszeichnungen} />
       </div>
     </ChapterHead>
 
