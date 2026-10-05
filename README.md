@@ -26,19 +26,20 @@ npm run test:vorschau             # Vorschau-Modus: eigener Build (dist-vorschau
 OPTIK_TOLERANZ=0.02 npm run test:optik   # höhere Toleranz (Standard 0.002), z. B. wenn Bilder neu berechnet wurden
 ```
 
-| Test                             | Prüft                                                                                                                                             |
-| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `tests/optik.spec.ts`            | Ganzseitige Screens aller 13 Seiten, Desktop 1440 px und Mobil 390 px in Chromium und WebKit (eigene Referenzen je Projekt); keine Konsolenfehler |
-| `tests/bewegung.spec.ts`         | Mit voller Bewegung (Chromium, WebKit, iPhone): kein Bild hängt am Scrollen, keine Sprünge, Inhalte sichtbar ohne Hauptskript                     |
-| `tests/routen.spec.ts`           | 404-Seite, saubere URLs ohne `.html`, `noindex`, Linkprüfung aller Seiten                                                                         |
-| `tests/verhalten.spec.ts`        | Anfrage-Leiste und -Formular, Sonderzeichen, Leerzeichen, datumsabhängige Hinweise                                                                |
-| `tests/barrierefreiheit.spec.ts` | axe-core, WCAG 2.2 AA, alle Seiten                                                                                                                |
-| `tests/formular.spec.ts`         | Anfrageformular gegen `wrangler dev` mit Turnstile-Testschlüsseln: Danke-Zustand, Versandfehler, Feldfehler (braucht Netz)                        |
-| `tests/verhalten.spec.ts`        | u. a. Flyer-Dialog (Aktuelles und Startseite): Öffnen, Esc, Fokus, keine Vergrößerung über die Originalgröße                                      |
-| `tests/stile.spec.ts`            | Astro-Scoping greift auf allen Seiten, Skript-Stile der Komponenten (Chronik, Lebensweg, Karten, Archiv)                                          |
-| `tests/sicherheit.spec.ts`       | Sicherheits-Header, CSP-Meta mit dem Hash des Kopf-Skripts                                                                                        |
-| `src/**/*.test.ts`               | Unit-Tests (Vitest): Logik in `src/lib`, Daten in `src/data`                                                                                      |
-| `worker/*.test.ts`               | Vitest in der Workers-Laufzeit: gemeinsame Regeln, Endpunkt `/api/anfrage` (Versand und Turnstile gemockt)                                        |
+| Test                             | Prüft                                                                                                                                                                       |
+| -------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `tests/optik.spec.ts`            | Ganzseitige Screens aller 13 Seiten, Desktop 1440 px und Mobil 390 px in Chromium und WebKit (eigene Referenzen je Projekt); keine Konsolenfehler                           |
+| `tests/breit.spec.ts`            | Breite Bildschirme 1920 und 2560 px (Chromium und WebKit): kein Text ragt hinaus oder wird abgeschnitten, Raster höchstens `--raster-max`; Optik der Startseite bei 1920 px |
+| `tests/bewegung.spec.ts`         | Mit voller Bewegung (Chromium, WebKit, iPhone): kein Bild hängt am Scrollen, keine Sprünge, Inhalte sichtbar ohne Hauptskript                                               |
+| `tests/routen.spec.ts`           | 404-Seite, saubere URLs ohne `.html`, `noindex`, Linkprüfung aller Seiten                                                                                                   |
+| `tests/verhalten.spec.ts`        | Anfrage-Leiste und -Formular, Sonderzeichen, Leerzeichen, datumsabhängige Hinweise                                                                                          |
+| `tests/barrierefreiheit.spec.ts` | axe-core, WCAG 2.2 AA, alle Seiten                                                                                                                                          |
+| `tests/formular.spec.ts`         | Anfrageformular gegen `wrangler dev` mit Turnstile-Testschlüsseln: Danke-Zustand, Versandfehler, Feldfehler (braucht Netz)                                                  |
+| `tests/verhalten.spec.ts`        | u. a. Flyer-Dialog (Aktuelles und Startseite): Öffnen, Esc, Fokus, keine Vergrößerung über die Originalgröße                                                                |
+| `tests/stile.spec.ts`            | Astro-Scoping greift auf allen Seiten, Skript-Stile der Komponenten (Chronik, Lebensweg, Karten, Archiv)                                                                    |
+| `tests/sicherheit.spec.ts`       | Sicherheits-Header, CSP-Meta mit dem Hash des Kopf-Skripts                                                                                                                  |
+| `src/**/*.test.ts`               | Unit-Tests (Vitest): Logik in `src/lib`, Daten in `src/data`                                                                                                                |
+| `worker/*.test.ts`               | Vitest in der Workers-Laufzeit: gemeinsame Regeln, Endpunkt `/api/anfrage` (Versand und Turnstile gemockt)                                                                  |
 
 Die Optik-Tests laufen nur lokal (die Schriftdarstellung unter Linux weicht ab), nicht in CI. Läuft schon ein `wrangler dev` auf Port 8787, verwenden die Tests ihn weiter und bauen nicht neu; dann vorher `npm run build`.
 

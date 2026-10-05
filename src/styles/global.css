@@ -31,7 +31,11 @@
   --f-text: var(--font-caslon-text);
   --f-sans: var(--font-jost);
 
-  --m: clamp(16px, 2.8vw, 44px);
+  /* Seitenrand; über --raster-max hinaus wächst nur er, das Raster bleibt so breit wie bei 1600 px Fensterbreite,
+     wo auch die Textstile ihre Höchstgröße erreichen. Stimmungsbilder laufen weiter randlos. */
+  --rand: clamp(16px, 2.8vw, 44px);
+  --raster-max: 1512px;
+  --m: max(var(--rand), (100vw - var(--raster-max)) / 2);
   --g: clamp(12px, 1.6vw, 24px);
   --head: 64px;
   --subnav: 50px;
@@ -410,7 +414,7 @@ body::after {
   line-height: var(--t-wordmark-lh);
   letter-spacing: -0.04em;
   margin: 24px 0 -0.06em;
-  padding-inline: calc(var(--m) * 0.5);
+  padding-inline: calc(var(--rand) * 0.5);
   white-space: nowrap;
 }
 

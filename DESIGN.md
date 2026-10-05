@@ -74,7 +74,8 @@ Größen bei 1440 px: Mega 179, Seitentitel 101, Abschnitt 66, Aussage 52, Lede 
 - **Messlänge:** Fließtext höchstens 68 Zeichen, Begleittext 44 Zeichen.
 
 ## 4. Raster und Abstand
-- **Raster:** 12 Spalten (`.grid`), Seitenrand `--m` = `clamp(16px, 2.8vw, 44px)`, Spaltenabstand `--g` = `clamp(12px, 1.6vw, 24px)`.
+- **Raster:** 12 Spalten (`.grid`), Seitenrand `--m` = `max(var(--rand), (100vw - var(--raster-max)) / 2)` mit `--rand` = `clamp(16px, 2.8vw, 44px)`, Spaltenabstand `--g` = `clamp(12px, 1.6vw, 24px)`.
+- **Größte Rasterbreite:** `--raster-max` = 1512 px, das ist das Raster bei 1600 px Fensterbreite, wo auch die Textstile ihre Höchstgröße erreichen. Auf breiteren Bildschirmen wächst nur der Seitenrand, Spalten und Kompositionen (Chronik, Bauhaus-Station) bleiben beisammen. Bis 1600 px gilt `--m` = `--rand`. Randlose Stimmungsbilder und Flächen laufen weiter über die ganze Breite; Bilder, die mit `calc(var(--m) * -1)` an den Rand laufen, tun das auch dort. Die Wortmarke im Footer ist Bildelement und nutzt `--rand`.
 - **Abschnittsabstand:** `--section` = `clamp(80px, 10vw, 168px)` oben und unten. Abschnitte wählen keine eigenen Abstände, Ausnahmen gelten nur für Vollbild-Signaturen.
 - **Kopf zu Inhalt:** `--head-gap` = `clamp(32px, 4vw, 56px)`. Gilt für Abschnittsköpfe und für den Seitenkopf zum Bild.
 - **Bildformate:** Kachel 4:3, Werk 3:2, Porträt 4:5, Panorama frei. In einer Reihe immer dasselbe Format.
