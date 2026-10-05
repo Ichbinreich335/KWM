@@ -167,6 +167,17 @@ export const ausstellungen: readonly Ausstellung[] = [
         alt: 'Türkisfarbene Kumme von Young-Jae Lee mit feinem Craquelé',
         unterschrift: 'Kumme von Young-Jae Lee',
       },
+      haupt: {
+        src: '/img/kwm/aktuell/greve-533.webp',
+        alt: 'Türkisfarbene Kumme von Young-Jae Lee mit feinem Craquelé',
+        unterschrift: 'Kumme von Young-Jae Lee',
+      },
+    },
+    aktuelles: {
+      fakten: [
+        { label: 'Ort', wert: ['Galerie Karsten Greve', 'St. Moritz, Schweiz'] },
+        { label: 'Vernissage', wert: 'Samstag, 3. Oktober 2026, 17 bis 19 Uhr' },
+      ],
     },
   },
   {
