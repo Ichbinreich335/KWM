@@ -87,11 +87,16 @@ export default defineConfig({
         "font-src 'self'",
         "connect-src 'self'",
         "base-uri 'self'",
-        "form-action 'self' mailto:",
+        "form-action 'self'",
+        // Turnstile-Widget (Phase 3): lädt es erst beim Antippen eines Formularfeldes
+        'frame-src https://challenges.cloudflare.com',
         "object-src 'none'",
       ],
       // Kopf-Skript in BaseLayout.astro (is:inline); tests/sicherheit.spec.ts rechnet den Hash nach
-      scriptDirective: { hashes: ['sha256-bzycTj6gg2/wtgss/NQeh2E42eImIs6BuefgIDZCIRI='] },
+      scriptDirective: {
+        resources: ["'self'", 'https://challenges.cloudflare.com'],
+        hashes: ['sha256-bzycTj6gg2/wtgss/NQeh2E42eImIs6BuefgIDZCIRI='],
+      },
       // style="…"-Attribute (Farbwerte der Farbskala, Glasuren, Positionen)
       styleDirective: {
         resources: ["'self'", { resource: "'unsafe-inline'", kind: 'attribute' }],

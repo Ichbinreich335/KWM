@@ -2,7 +2,6 @@ import type { Anfrage } from '../src/lib/anfrage';
 
 const MAX_BETREFF_ZEICHEN = 120;
 // Steuerzeichen (auch Zeilenumbrüche) und Anführungszeichen/Klammern, die in Kopfzeilen nichts zu suchen haben
-// eslint-disable-next-line no-control-regex
 const KOPFZEILE_UNERWUENSCHT = /[\u0000-\u001f\u007f"<>]+/g;
 
 /** Wert für Betreff oder Anzeigename: eine Zeile, keine Steuerzeichen, damit keine Kopfzeilen eingeschleust werden. */

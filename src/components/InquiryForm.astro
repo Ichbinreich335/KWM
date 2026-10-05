@@ -1,10 +1,16 @@
+---
+import { kontakt } from '../data/kontakt';
+import { turnstileSitekey } from '../data/turnstile';
+import { HONIGTOPF_FELD, MAX_ZEICHEN } from '../lib/anfrage';
+---
+
 {/* Anfrage-Formular (wiederverwendbar, Modul sig-anfrage).
-     Später: action="/api/anfrage" method="post" an einen Cloudflare-Worker mit Mail-Dienst und Turnstile.
-     Bis dahin fängt das Modul das Absenden ab, prüft die Felder und öffnet eine vorbereitete E-Mail. */}
-<div class="anfrage" data-sig="anfrage">
+     Das Modul prüft die Felder mit den Regeln aus src/lib/anfrage.ts und schickt sie per POST an /api/anfrage (Worker).
+     Das Turnstile-Widget wird erst beim ersten Antippen eines Feldes geladen. */}
+<div class="anfrage" data-sig="anfrage" data-sitekey={turnstileSitekey}>
   <p class="anfrage__nojs">
-    Bitte schreiben Sie uns an <a href="mailto:kontakt@kwm1924.de?subject=Anfrage">kontakt@kwm1924.de</a> oder rufen Sie
-    an: <a href="tel:+49201305080">+49 201 30 50 80</a>.
+    Bitte schreiben Sie uns an <a href={`${kontakt.mailHref}?subject=Anfrage`}>{kontakt.mail}</a> oder rufen Sie an:
+    <a href={kontakt.telefonHref}>{kontakt.telefon}</a>.
   </p>
   <form class="anfrage__form" novalidate>
     <div class="anfrage__field">
@@ -14,6 +20,7 @@
         name="name"
         type="text"
         autocomplete="name"
+        maxlength={MAX_ZEICHEN.name}
         required
         aria-describedby="anfrage-name-fehler"
       />
@@ -27,6 +34,7 @@
         type="email"
         inputmode="email"
         autocomplete="email"
+        maxlength={MAX_ZEICHEN.email}
         required
         aria-describedby="anfrage-email-fehler"
       />
@@ -42,6 +50,7 @@
         type="tel"
         inputmode="tel"
         autocomplete="tel"
+        maxlength={MAX_ZEICHEN.telefon}
         aria-describedby="anfrage-telefon-fehler"
       />
       <p class="anfrage__error" id="anfrage-telefon-fehler" hidden></p>
@@ -55,9 +64,11 @@
         name="stueck"
         type="text"
         autocomplete="off"
-        maxlength="400"
+        maxlength={MAX_ZEICHEN.stueck}
         placeholder="z. B. Geschirr, Edition oder ein Meisterstück"
+        aria-describedby="anfrage-stueck-fehler"
       />
+      <p class="anfrage__error" id="anfrage-stueck-fehler" hidden></p>
     </div>
     <div class="anfrage__field">
       <label for="anfrage-nachricht">Nachricht</label>
@@ -65,31 +76,48 @@
         id="anfrage-nachricht"
         name="nachricht"
         rows="5"
+        maxlength={MAX_ZEICHEN.nachricht}
         required
         aria-describedby="anfrage-nachricht-fehler"
       ></textarea>
       <p class="anfrage__error" id="anfrage-nachricht-fehler" hidden></p>
     </div>
+    <div class="anfrage__trap" aria-hidden="true">
+      <label for="anfrage-website">Bitte leer lassen</label>
+      <input id="anfrage-website" name={HONIGTOPF_FELD} type="text" tabindex="-1" autocomplete="off" />
+    </div>
     <p class="anfrage__privacy">
       Ihre Angaben verwenden wir nur, um Ihre Anfrage zu beantworten. Verantwortlich ist die Keramische Werkstatt
-      Margaretenhöhe, siehe <a href="/datenschutz">Datenschutz</a>.
+      Margaretenhöhe. Zum Schutz vor automatischem Missbrauch prüft Cloudflare Turnstile den Versand, siehe
+      <a href="/datenschutz">Datenschutz</a>.
     </p>
+    <div class="anfrage__turnstile" data-turnstile>
+      <p class="anfrage__turnstile-hinweis">Die Sicherheitsprüfung erscheint hier, sobald Sie ein Feld ausfüllen.</p>
+    </div>
     <div class="anfrage__submit">
       <button class="button" type="submit">
         Anfrage senden
       </button>
       <p class="anfrage__summary" role="alert" hidden></p>
+      <p class="anfrage__status" role="status"></p>
+    </div>
+    <div class="anfrage__fail" role="alert" hidden>
+      <p class="anfrage__fail-text"></p>
+      <p>
+        Sie erreichen uns auch direkt: <a href={kontakt.telefonHref}>{kontakt.telefon}</a> oder
+        <a href={kontakt.mailHref}>{kontakt.mail}</a>.
+      </p>
     </div>
   </form>
   <div class="anfrage__done" role="status" tabindex="-1" hidden>
-    <p class="anfrage__done-title">Danke, Ihre Anfrage ist vorbereitet.</p>
-    <p>Ihr E-Mail-Programm öffnet sich mit der vorbereiteten Anfrage. Bitte senden Sie die Nachricht dort ab.</p>
+    <p class="anfrage__done-title">Danke, Ihre Anfrage ist bei uns angekommen.</p>
+    <p>Wir antworten Ihnen per E-Mail oder Telefon.</p>
     <p>
-      Es öffnet sich nichts? Schreiben Sie an <a href="mailto:kontakt@kwm1924.de">kontakt@kwm1924.de</a> oder rufen Sie
-      an: <a href="tel:+49201305080">+49 201 30 50 80</a>.
+      Noch etwas vergessen? Schreiben Sie an <a href={kontakt.mailHref}>{kontakt.mail}</a> oder rufen Sie an:
+      <a href={kontakt.telefonHref}>{kontakt.telefon}</a>.
     </p>
     <button class="anfrage__again" type="button">
-      Angaben ändern
+      Weitere Anfrage senden
     </button>
   </div>
 </div>

@@ -168,3 +168,50 @@
     grid-column: 1 / -1;
   }
 }
+
+/* Honigtopf: für Menschen unsichtbar, außerhalb des Bildschirms (kein display:none, damit Bots es ausfüllen) */
+.anfrage__trap {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+/* Turnstile-Widget (normal: 300 x 65 px): Platz ist reserviert, damit die Knöpfe beim Laden des Widgets nicht springen; bis dahin steht ein Hinweis darin */
+.anfrage__turnstile {
+  min-height: 65px;
+}
+.anfrage__turnstile-hinweis {
+  margin: 0;
+  padding-top: 8px;
+  font-size: var(--t-small);
+  line-height: var(--t-small-lh);
+  color: var(--ink-2);
+}
+.anfrage__status {
+  margin: 0;
+  font-size: var(--t-small);
+  line-height: var(--t-small-lh);
+  color: var(--ink-2);
+}
+.anfrage__status:empty {
+  display: none;
+}
+.anfrage .button:disabled {
+  cursor: progress;
+  opacity: 0.6;
+}
+
+/* Versandfehler: Meldung mit Ausweg über Telefon und E-Mail */
+.anfrage__fail {
+  padding: 16px 0 0;
+  border-top: 1px solid var(--ink);
+}
+.anfrage__fail p {
+  margin: 0 0 8px;
+  max-width: 46ch;
+}
+.anfrage__fail a {
+  text-underline-offset: 0.2em;
+}
