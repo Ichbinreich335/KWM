@@ -2,7 +2,8 @@
 import type { Ausstellung } from '../data/ausstellungen';
 import LinkArrow from './LinkArrow.astro';
 import type { Fakt } from '../data/typen';
-import { statusText, tagAusIso } from '../scripts/status';
+import { heuteTag, statusText, tagAusIso } from '../scripts/status';
+import { lesetitel as lesetitelVon } from '../scripts/lesetitel';
 import { zeitraumKurz, zeitraumMitBis } from '../scripts/zeitraum';
 import Bild from './Bild.astro';
 import FactsList from './FactsList.astro';
@@ -18,10 +19,8 @@ interface Props {
 
 const { ausstellung, typ, gespiegelt = false } = Astro.props;
 const { fotos } = ausstellung;
-const heute = new Date();
-heute.setHours(0, 0, 0, 0);
 // Der Browser berechnet den Status beim Laden neu (sig-aktuell.ts); das hier ist der Stand zum Bauzeitpunkt
-const status = statusText(tagAusIso(ausstellung.start), tagAusIso(ausstellung.ende), heute);
+const status = statusText(tagAusIso(ausstellung.start), tagAusIso(ausstellung.ende), heuteTag());
 const zeitraum = zeitraumMitBis(ausstellung.start, ausstellung.ende);
 const aktuellesFakten = ausstellung.aktuelles?.fakten;
 
@@ -39,7 +38,7 @@ const fakten: Fakt[] = [
 const panelId = `aktuell-${ausstellung.schluessel}`;
 const ausloeser = ausstellung.art === 'Werkstatt' ? 'Mehr erfahren' : 'Mehr zur Ausstellung';
 // Für Screenreader: geschützter Bindestrich und „&“ ausgeschrieben
-const lesetitel = ausstellung.titel.replaceAll('‑', '-').replaceAll(' & ', ' und ');
+const lesetitel = lesetitelVon(ausstellung.titel);
 const datum = zeitraumKurz(ausstellung.start, ausstellung.ende);
 ---
 

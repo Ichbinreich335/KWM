@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { hinweisSichtbar, statusText, tagAusIso } from './status';
+import { heuteTag, hinweisSichtbar, statusText, tagAusIso } from './status';
 
 const start = tagAusIso('2026-08-16');
 const ende = tagAusIso('2026-10-31');
@@ -56,5 +56,13 @@ describe('hinweisSichtbar', () => {
 describe('tagAusIso', () => {
   it('liefert bei ungültiger Eingabe ein ungültiges Datum', () => {
     expect(Number.isNaN(tagAusIso('kaputt').getTime())).toBe(true);
+  });
+});
+
+describe('heuteTag', () => {
+  it('liefert den heutigen Tag um 0 Uhr', () => {
+    const heute = heuteTag();
+    expect([heute.getHours(), heute.getMinutes(), heute.getSeconds(), heute.getMilliseconds()]).toEqual([0, 0, 0, 0]);
+    expect(Date.now() - heute.getTime()).toBeLessThan(25 * 60 * 60 * 1000);
   });
 });

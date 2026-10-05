@@ -73,7 +73,7 @@ const erste = knoepfe[0];
 
 <script>
   // Glasurbühne: die Probe wird zur Fläche
-  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  import { reducedMotion } from '../scripts/keramik';
 
   class KwmGlaze extends HTMLElement {
     private current: HTMLButtonElement | null = null;
@@ -117,7 +117,7 @@ const erste = knoepfe[0];
       this.layers.appendChild(layer);
       requestAnimationFrame(() => layer.classList.add('is-in'));
       const old = [...this.layers.children].slice(0, -1);
-      setTimeout(() => old.forEach((l) => l.remove()), reduced ? 0 : 1200);
+      setTimeout(() => old.forEach((l) => l.remove()), reducedMotion() ? 0 : 1200);
       this.stage.classList.toggle('is-dark', 'dark' in btn.dataset);
       this.nameEl.textContent = btn.dataset.name ?? '';
       this.metaEl.textContent = btn.dataset.meta ?? '';

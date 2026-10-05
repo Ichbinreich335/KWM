@@ -1,10 +1,9 @@
 // Signatur: aktuell. Status je Ausstellung aus dem Datum, Details klappen ohne Unterseite auf (immer nur eine offen).
-import { hinweisSichtbar, statusText, tagAusIso } from './status';
+import { heuteTag, hinweisSichtbar, statusText, tagAusIso } from './status';
 
 export default function init(el: Element) {
   if (!(el instanceof HTMLElement)) return;
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  const today = heuteTag();
 
   el.querySelectorAll<HTMLElement>('.aktuell__item[data-start]').forEach((item) => {
     const { start, end } = item.dataset;

@@ -11,4 +11,8 @@ describe('SigFarbskala', () => {
     expect(regel).toContain(`--c: ${glasur.farbe.grund.toLowerCase()};`);
     expect(regel).toContain(`--t: ${glasur.schriftfarbe.toLowerCase()};`);
   });
+  it('jede Glasur mit Sprenkeln nennt deren Art, keine ohne Sprenkel', () => {
+    for (const glasur of glasuren)
+      expect(Boolean(glasur.sprenkelart), glasur.schluessel).toBe(Boolean(glasur.sprenkel));
+  });
 });

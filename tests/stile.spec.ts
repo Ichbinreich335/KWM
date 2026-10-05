@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { ziel } from './seiten';
+import { seiten, ziel } from './seiten';
 
 test.skip(ziel !== 'astro', 'prüft den Astro-Build unter wrangler dev');
 
@@ -7,16 +7,7 @@ test.skip(ziel !== 'astro', 'prüft den Astro-Build unter wrangler dev');
 // am html-Element wirkungslos sind. Diese Tests laufen mit voller Bewegung und mit Skript.
 test.use({ reducedMotion: 'no-preference' });
 
-const seitenMitKomponenten = [
-  '/',
-  '/young-jae-lee',
-  '/aktuelles',
-  '/meisterstuecke',
-  '/besuch',
-  '/werkstatt',
-  '/manufaktur',
-  '/404-x',
-];
+const seitenPfade = seiten.map((seite) => seite.astro);
 
 /** Zeigt einen Stil eines Elements (oder Pseudo-Elements) im Zustand, den die Seite gerade hat. */
 async function stil(page: import('@playwright/test').Page, selektor: string, eigenschaft: string, pseudo?: string) {
@@ -26,7 +17,7 @@ async function stil(page: import('@playwright/test').Page, selektor: string, eig
     .evaluate((el, [e, p]) => getComputedStyle(el, p ?? null).getPropertyValue(e!), [eigenschaft, pseudo]);
 }
 
-for (const pfad of seitenMitKomponenten) {
+for (const pfad of seitenPfade) {
   test(`Astro-Scoping: keine Regel verliert Treffer durch ein Element außerhalb ihrer Komponente (${pfad})`, async ({
     page,
   }) => {

@@ -14,6 +14,13 @@ export const MONATE = [
   'Dezember',
 ];
 
+/** Heute um 0 Uhr (lokal), damit Start und Ende als ganze Tage verglichen werden. */
+export function heuteTag(): Date {
+  const heute = new Date();
+  heute.setHours(0, 0, 0, 0);
+  return heute;
+}
+
 /** Liest ein Datum `JJJJ-MM-TT` als lokalen Tag; bei ungültiger Eingabe `Invalid Date`. */
 export function tagAusIso(iso: string): Date {
   const [jahr, monat, tag] = iso.split('-').map(Number);

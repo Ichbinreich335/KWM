@@ -1,5 +1,6 @@
 ---
 import type { Flyer } from '../data/ausstellungen';
+import { lesetitel as lesetitelVon } from '../scripts/lesetitel';
 import Bild from './Bild.astro';
 import LinkArrow from './LinkArrow.astro';
 
@@ -15,7 +16,7 @@ interface Props {
 
 const { flyer, titel, schluessel, modus } = Astro.props;
 const titelId = `flyer-${schluessel}-${modus}`;
-const lesetitel = titel.replaceAll('‑', '-').replaceAll(' & ', ' und ');
+const lesetitel = lesetitelVon(titel);
 const seiten = [
   { name: 'vorne', label: 'Vorderseite', bild: flyer.vorne },
   ...(flyer.hinten ? [{ name: 'hinten', label: 'Rückseite', bild: flyer.hinten }] : []),

@@ -16,6 +16,8 @@ export interface Glasur {
   schriftfarbe: string;
   /** Farbe der Sprenkel, wenn die Glasur welche trägt */
   sprenkel?: string;
+  /** Art der Sprenkel: `korn` helle Flecken im Korn (matt), `eisen` dichte dunkle Sprenkel, `punkte` vereinzelte Eisenpunkte */
+  sprenkelart?: 'korn' | 'eisen' | 'punkte';
   /** Glasur liegt in zwei Schichten (glänzende Probe mit sichtbarer Tauchkante) */
   schichten?: boolean;
   /** Startwert des reproduzierbaren Zufalls für die Zeichnung der Probe */
@@ -32,6 +34,7 @@ export const glasuren: readonly Glasur[] = [
     farbe: { grund: '#e2ddcd', dunkel: '#cec6b3', hell: '#ece9db' },
     schriftfarbe: '#1B1815',
     sprenkel: '#9a6a2c',
+    sprenkelart: 'punkte',
     seed: 3,
     probenbild: '/img/kwm/weiss.webp',
   },
@@ -74,6 +77,7 @@ export const glasuren: readonly Glasur[] = [
     farbe: { grund: '#44462e', dunkel: '#363820', hell: '#64634d' },
     schriftfarbe: '#F4F1E8',
     sprenkel: '#a3a28b',
+    sprenkelart: 'korn',
     seed: 7,
     probenbild: '/img/kwm/dunkelgruen_matt.webp',
   },
@@ -84,6 +88,7 @@ export const glasuren: readonly Glasur[] = [
     farbe: { grund: '#8d590a', dunkel: '#864d01', hell: '#916216' },
     schriftfarbe: '#FFFDF6',
     sprenkel: '#6a3a04',
+    sprenkelart: 'eisen',
     seed: 8,
     probenbild: '/img/kwm/rostbraun.webp',
   },

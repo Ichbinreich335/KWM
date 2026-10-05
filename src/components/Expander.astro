@@ -43,7 +43,7 @@ const panelId = `${id}-liste`;
 
 <script>
   // Auf- und Zuklappen je Element. Lang: beim Schließen springt die Ansicht ruhig zurück an den Knopf.
-  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+  import { reducedMotion } from '../scripts/keramik';
 
   class KwmExpander extends HTMLElement {
     private button: HTMLButtonElement | null = null;
@@ -80,7 +80,7 @@ const panelId = `${id}-liste`;
         this.classList.contains('expander--lang') &&
         this.getBoundingClientRect().top < this.stickyTop() - 1
       ) {
-        this.scrollIntoView({ block: 'start', behavior: reduced.matches ? 'auto' : 'smooth' });
+        this.scrollIntoView({ block: 'start', behavior: reducedMotion() ? 'auto' : 'smooth' });
       }
       this.setOpen(open);
     };

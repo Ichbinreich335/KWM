@@ -33,6 +33,9 @@ export function pickGlaze(rand: Rng): Schalenglasur {
   return schalenglasuren[0];
 }
 
+/** Ab hier gilt das Mobil-Layout (wie `@media (max-width: 900px)` im CSS). */
+export const MOBIL_ABFRAGE = '(max-width: 900px)';
+
 export const reducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 // Umriss einer leicht unregelmäßigen Schale um den Ursprung

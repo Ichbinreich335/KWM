@@ -1,5 +1,5 @@
-import { hinweisSichtbar, tagAusIso } from './status';
-import { random, pickGlaze as pickFrom, renderBowlSprite, type Schale } from './keramik';
+import { heuteTag, hinweisSichtbar, tagAusIso } from './status';
+import { MOBIL_ABFRAGE, random, pickGlaze as pickFrom, reducedMotion, renderBowlSprite, type Schale } from './keramik';
 
 /** Schale im Kosmos: feste Eigenschaften, Lage im Ring und Animationszustand. */
 interface Bowl extends Schale {
@@ -20,7 +20,7 @@ interface Bowl extends Schale {
 }
 
 (() => {
-  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const reduced = reducedMotion();
   // Der Typ-Parameter legt nur fest, welchen Elementtyp der Selektor liefert; er prüft ihn nicht (Standardweg von querySelector<T>)
   const $ = <T extends Element = HTMLElement>(s: string, c: ParentNode = document): T | null => c.querySelector<T>(s);
   const $$ = <T extends Element = HTMLElement>(s: string, c: ParentNode = document): T[] => [
@@ -51,8 +51,7 @@ interface Bowl extends Schale {
   });
 
   /* ---------- Datumsgebundene Angaben ausblenden, sobald sie vorbei sind ---------- */
-  const heute = new Date();
-  heute.setHours(0, 0, 0, 0);
+  const heute = heuteTag();
   $$('#kosmos [data-start]').forEach((el) => {
     const { start, end } = el.dataset;
     if (start && end) el.hidden = !hinweisSichtbar(tagAusIso(start), tagAusIso(end), heute);
@@ -129,7 +128,7 @@ interface Bowl extends Schale {
     const READ_LINE = 0.62;
     const SWIPE_EDGE = 8; // Punkt füllt sich, sobald seine Karte so weit in die Wischleiste ragt (px)
     const SWIPE_VISIBLE = 0.9; // Wischleiste zählt als sichtbar, wenn ihre Oberkante über dieser Bildschirmhöhe liegt
-    const swipe = window.matchMedia('(max-width: 900px)');
+    const swipe = window.matchMedia(MOBIL_ABFRAGE);
     let framed = false;
     const paint = () => {
       framed = false;

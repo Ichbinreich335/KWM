@@ -3,7 +3,7 @@
 // Wird ein Band geöffnet, steigt die Glasur ein Stück höher, wie beim Tauchen.
 // Gerechnet wird in „Kachel-Koordinaten“: y läuft vom Scherben (0) zur dicken Glasur (L).
 // Mobil liegt die Kachel quer, dann werden die Achsen beim Zeichnen getauscht.
-import { CLAY, random, reducedMotion, type Rng } from './keramik';
+import { CLAY, MOBIL_ABFRAGE, random, reducedMotion, type Rng } from './keramik';
 
 type RGB = readonly [number, number, number];
 
@@ -12,16 +12,28 @@ interface Offscreen {
   x: CanvasRenderingContext2D;
 }
 
+/** Eigenschaften je Oberfläche: Flecken, Korn, Glanz (hell/dunkel), Rand zum Scherben, Glanzreflex folgt dem Zeiger */
+const OBERFLAECHEN = {
+  matt: { blobs: 44, korn: 0.5, glanz: 0.05, glanzDunkel: 0.05, randMix: 0.3, spiegelt: false },
+  satin: { blobs: 30, korn: 0.32, glanz: 0.1, glanzDunkel: 0.1, randMix: 0.14, spiegelt: false },
+  glanz: { blobs: 30, korn: 0.14, glanz: 0.3, glanzDunkel: 0.16, randMix: 0.14, spiegelt: true },
+} as const;
+type Oberflaeche = keyof typeof OBERFLAECHEN;
+const istOberflaeche = (wert: string | undefined): wert is Oberflaeche => wert !== undefined && wert in OBERFLAECHEN;
+
 interface Kachelglasur {
   grund: RGB;
   dunkel: RGB;
   hell: RGB;
-  finish: string;
+  flaeche: (typeof OBERFLAECHEN)[Oberflaeche];
   layers: boolean;
   seed: number;
   speckle?: RGB;
   speckleKind?: 'korn' | 'eisen' | 'punkte';
 }
+
+const sprenkelart = (wert: string | undefined): NonNullable<Kachelglasur['speckleKind']> =>
+  wert === 'korn' || wert === 'eisen' ? wert : 'punkte';
 
 interface Welle {
   a: number;
@@ -145,7 +157,7 @@ function paintBody(
   grain: HTMLCanvasElement,
   rand: Rng,
 ) {
-  const { grund, dunkel, hell, finish, speckle } = glaze;
+  const { grund, dunkel, hell, flaeche, speckle } = glaze;
   const g = x.createLinearGradient(0, 0, 0, L);
   g.addColorStop(0, rgba(grund, 1));
   g.addColorStop(0.45, rgba(grund, 1));
@@ -167,20 +179,14 @@ function paintBody(
     }
   }
 
-  const blobs = finish === 'matt' ? 44 : 30;
+  const blobs = flaeche.blobs;
   const lumBase = (grund[0] + grund[1] + grund[2]) / 3;
   for (let i = 0; i < blobs; i++) {
     const c = rand() < (lumBase < 110 ? 0.25 : 0.5) ? hell : dunkel;
     soft(x, rand() * T, rand() * L, T * (0.15 + rand() * 0.35), L * (0.03 + rand() * 0.08), c, 0.07 + rand() * 0.08);
   }
 
-  fillGrain(
-    x,
-    T,
-    L,
-    grain,
-    (finish === 'matt' ? 0.5 : finish === 'satin' ? 0.32 : 0.14) * (grund[0] + grund[1] + grund[2] < 330 ? 0.6 : 1),
-  );
+  fillGrain(x, T, L, grain, flaeche.korn * (grund[0] + grund[1] + grund[2] < 330 ? 0.6 : 1));
 
   if (speckle) {
     // Weiß: vereinzelte Eisenpunkte; Rostbraun: dichte dunkle Sprenkel; matt: helle Flecken im Korn
@@ -246,14 +252,13 @@ class Tile {
       grund: rgb(datum(d, 'grund')),
       dunkel: rgb(datum(d, 'dunkel')),
       hell: rgb(datum(d, 'hell')),
-      finish: d.finish ?? '',
+      flaeche: OBERFLAECHEN[istOberflaeche(d.finish) ? d.finish : 'satin'],
       layers: 'schichten' in d,
       seed: Number(d.seed),
     };
     if (d.speckle) {
       glaze.speckle = rgb(d.speckle);
-      glaze.speckleKind =
-        d.finish === 'matt' ? 'korn' : d.finish === 'satin' && d.grund !== '#e2ddcd' ? 'eisen' : 'punkte';
+      glaze.speckleKind = sprenkelart(d.speckleKind);
     }
     this.glaze = glaze;
     this.canvas = document.createElement('canvas');
@@ -324,7 +329,7 @@ class Tile {
       return;
     }
 
-    const light = glaze.finish === 'glanz';
+    const light = glaze.flaeche.spiegelt;
     const lum = (glaze.grund[0] + glaze.grund[1] + glaze.grund[2]) / 3;
     const dark = lum < 110;
 
@@ -346,17 +351,14 @@ class Tile {
     const span = Math.min(60, (L - e) * 0.5);
     if (span > 4) {
       const g = ctx.createLinearGradient(0, e - 6, 0, e + span);
-      g.addColorStop(
-        0,
-        rgba(mix(glaze.hell, rgb(CLAY.bisque), glaze.finish === 'matt' ? 0.3 : 0.14), dark ? 0.3 : 0.75),
-      );
+      g.addColorStop(0, rgba(mix(glaze.hell, rgb(CLAY.bisque), glaze.flaeche.randMix), dark ? 0.3 : 0.75));
       g.addColorStop(1, rgba(glaze.hell, 0));
       ctx.fillStyle = g;
       ctx.fillRect(0, e - 8, T, span + 8);
     }
 
     // Weicher Glanz: breites Band plus Fenster-Reflex, folgt dem Zeiger
-    const sheen = light ? (dark ? 0.16 : 0.3) : glaze.finish === 'satin' ? 0.1 : 0.05;
+    const sheen = dark ? glaze.flaeche.glanzDunkel : glaze.flaeche.glanz;
     const reach = L - e;
     const vis = Math.min(T, this.visible);
     if (reach > 20) {
@@ -426,7 +428,7 @@ class Tile {
     const mxPrev = this.mx;
     this.mx += (this.mxTarget - this.mx) * (1 - Math.exp(-dt * 8));
     if (Math.abs(this.mxTarget - this.mx) < 0.001) this.mx = this.mxTarget;
-    if (this.p !== pPrev || (this.mx !== mxPrev && this.glaze.finish === 'glanz')) this.dirty = true;
+    if (this.p !== pPrev || (this.mx !== mxPrev && this.glaze.flaeche.spiegelt)) this.dirty = true;
     return this.p !== this.target || this.mx !== this.mxTarget;
   }
 }
@@ -438,7 +440,7 @@ export default function init(el: Element) {
   const reduced = reducedMotion();
   const grain = grainTile();
   const tiles = bands.map((b, i) => new Tile(b, i, grain));
-  const narrow = window.matchMedia('(max-width: 900px)');
+  const narrow = window.matchMedia(MOBIL_ABFRAGE);
   let pinned = -1;
   let hovered = -1;
   let focused = -1;
