@@ -1,10 +1,11 @@
 ---
 import type { HTMLAttributes } from 'astro/types';
 
-/** Gefüllter Knopf: ein Link, wenn `href` gesetzt ist, sonst ein `button` (Standardtyp `button`) */
-type Props = HTMLAttributes<'a'> & HTMLAttributes<'button'>;
+/** Gefüllter Knopf: ein Link, wenn `href` gesetzt ist, sonst ein `button` (Standardtyp `button`, nicht `submit`) */
+type Props =
+  (Omit<HTMLAttributes<'a'>, 'type'> & { href: string; type?: never }) | (HTMLAttributes<'button'> & { href?: never });
 
-const { class: klasse, href, ...attribute } = Astro.props;
+const { class: klasse, href, type = 'button', ...attribute } = Astro.props;
 ---
 
 {href ? (
@@ -12,7 +13,7 @@ const { class: klasse, href, ...attribute } = Astro.props;
     <slot />
   </a>
 ) : (
-  <button class:list={['button', klasse]} {...attribute}>
+  <button class:list={['button', klasse]} type={type} {...attribute}>
     <slot />
   </button>
 )}

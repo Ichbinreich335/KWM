@@ -1,16 +1,16 @@
 ---
-import type { HTMLAttributes } from 'astro/types';
+import type { Polymorphic } from 'astro/types';
 
-type Props = Omit<HTMLAttributes<'a'>, 'type'> & {
-  /** `span`, wenn der Pfeil innerhalb eines schon verlinkten Blocks steht (kein verschachtelter Link); `button` für Auslöser ohne Ziel (z. B. Dialog öffnen) */
-  als?: 'a' | 'span' | 'button';
-};
+/**
+ * Link mit Pfeil. `as="span"`, wenn der Pfeil innerhalb eines schon verlinkten Blocks steht (kein verschachtelter Link);
+ * `as="button"` für Auslöser ohne Ziel (z. B. Dialog öffnen), dann mit Standardtyp `button`.
+ */
+type Props<Tag extends 'a' | 'span' | 'button' = 'a'> = Polymorphic<{ as: Tag }>;
 
-const { als = 'a', class: klasse, ...attribute } = Astro.props;
-const Tag = als;
+const { as: Tag = 'a', class: klasse, ...attribute } = Astro.props;
 ---
 
-<Tag class:list={['link-arrow', klasse]} {...attribute} {...(als === 'button' ? { type: 'button' } : {})}>
+<Tag class:list={['link-arrow', klasse]} {...attribute} {...(Tag === 'button' ? { type: 'button' } : {})}>
   <slot />
 </Tag>
 
