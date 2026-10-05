@@ -1,0 +1,32 @@
+{
+  "name": "kwm-studio",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Sanity Studio der Keramischen Werkstatt Margaretenhöhe",
+  "type": "module",
+  "main": "package.json",
+  "engines": {
+    "node": ">=22.12"
+  },
+  "scripts": {
+    "dev": "sanity dev --port 3333",
+    "build": "sanity build",
+    "check": "tsc --noEmit && sanity schemas validate && sanity build",
+    "deploy": "sanity deploy",
+    "schema:validate": "sanity schemas validate",
+    "typegen": "sanity schemas extract --force --enforce-required-fields && sanity typegen generate"
+  },
+  "dependencies": {
+    "@sanity/icons": "^5.2.3",
+    "@sanity/locale-de-de": "^1.1.37",
+    "@sanity/vision": "^6.17.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "sanity": "^6.17.0",
+    "styled-components": "^6.1.15"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.0",
+    "typescript": "^5.9.0"
+  }
+}
