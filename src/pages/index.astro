@@ -4,6 +4,9 @@ import Statement from '../components/Statement.astro';
 import SectionHead from '../components/SectionHead.astro';
 import FactsList from '../components/FactsList.astro';
 import { kurzfakten } from '../data/manufaktur';
+import WorkCard from '../components/WorkCard.astro';
+import { stueckBezeichnung, werk, werkschau } from '../data/werke';
+import { anfrageLink } from '../scripts/anfrage-link';
 import Bild from '../components/Bild.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import InquiryForm from '../components/InquiryForm.astro';
@@ -448,131 +451,16 @@ import '../styles/signaturen/signaturen.css';
             <p class="works__single-name" data-reveal="fade">
               Spindelvase <span>2006/07</span>
             </p>
-            <a
-              class="link-arrow"
-              href="/besuch?stueck=Spindelvase%20%28H%2035%2C5%20cm%2C%20D%2037%20cm%20%C2%B7%20Petalit-Eichenasche-Feldspat-Glasur%20%C2%B7%20Holzofen%201260%20%C2%B0C%20%C2%B7%20Reduktion%29#anfrage"
-              data-reveal="fade"
-            >
+            <a class="link-arrow" href={anfrageLink(stueckBezeichnung(werk('spindelvase-1')))} data-reveal="fade">
               Zu diesem Stück anfragen
             </a>
           </div>
         </div>
       </div>
       <ol class="works__grid grid">
-        <li class="piece">
-          <a href="/meisterstuecke#kummen">
-            <span class="piece__media">
-              <Bild
-                src="/img/kwm/kumme_2.webp"
-                width="600"
-                height="400"
-                loading="lazy"
-                alt="Zwei Kummen mit blau gesprenkelter Glasur"
-              />
-            </span>
-            <span class="piece__head">
-              <span class="piece__name">Kumme</span>
-              <span class="piece__year">1995</span>
-            </span>
-            <span class="piece__spec">H 18 cm, D 14,6 cm</span>
-            <span class="piece__spec">Petalit-Eichenasche-Glasur · Holzofen</span>
-          </a>
-        </li>
-        <li class="piece">
-          <a href="/meisterstuecke#schalen">
-            <span class="piece__media">
-              <Bild
-                src="/img/kwm/schale_spitz_xxl_1.webp"
-                width="600"
-                height="400"
-                loading="lazy"
-                alt="Große spitze Schale mit rosa Glasurverlauf"
-              />
-            </span>
-            <span class="piece__head">
-              <span class="piece__name">Schale, spitz, XXL</span>
-              <span class="piece__year">2003–05</span>
-            </span>
-            <span class="piece__spec">H 10,5 cm, D 22,5 cm</span>
-            <span class="piece__spec">Petalit-Eichenasche-Glasur</span>
-          </a>
-        </li>
-        <li class="piece">
-          <a href="/meisterstuecke#vasen">
-            <span class="piece__media">
-              <Bild
-                src="/img/kwm/zylindervasen_gross.webp"
-                width="600"
-                height="400"
-                loading="lazy"
-                alt="Drei große Zylindervasen mit Pinselbemalung"
-              />
-            </span>
-            <span class="piece__head">
-              <span class="piece__name">Zylindervasen, groß</span>
-              <span class="piece__year">2003</span>
-            </span>
-            <span class="piece__spec">H ca. 30 cm, D ca. 11,5 cm</span>
-            <span class="piece__spec">Petalit-Eichenasche-Glasur · Holzofen</span>
-          </a>
-        </li>
-        <li class="piece">
-          <a href="/meisterstuecke#schalen">
-            <span class="piece__media">
-              <Bild
-                src="/img/kwm/schale_spitz_xl_1.webp"
-                width="600"
-                height="400"
-                loading="lazy"
-                alt="Spitze Schale mit hellblauer Innenglasur"
-              />
-            </span>
-            <span class="piece__head">
-              <span class="piece__name">Schale, spitz, XL</span>
-              <span class="piece__year">2003–05</span>
-            </span>
-            <span class="piece__spec">H 10,5 cm, D 21,5 cm</span>
-            <span class="piece__spec">Strontium-Feldspat-Glasur</span>
-          </a>
-        </li>
-        <li class="piece">
-          <a href="/meisterstuecke#kummen">
-            <span class="piece__media">
-              <Bild
-                src="/img/kwm/kumme_3.webp"
-                width="600"
-                height="400"
-                loading="lazy"
-                alt="Hellblaue Bettelmönchschale"
-              />
-            </span>
-            <span class="piece__head">
-              <span class="piece__name">Bettelmönchschale</span>
-              <span class="piece__year">1988</span>
-            </span>
-            <span class="piece__spec">H 10,2 cm, D 13,6 cm</span>
-            <span class="piece__spec">Barium-Feldspat-Glasur · Gasofen</span>
-          </a>
-        </li>
-        <li class="piece">
-          <a href="/meisterstuecke#schalen">
-            <span class="piece__media">
-              <Bild
-                src="/img/kwm/schale_spitz_gross.webp"
-                width="600"
-                height="400"
-                loading="lazy"
-                alt="Spitze Schale mit türkisgrüner Glasur auf kleinem Fuß"
-              />
-            </span>
-            <span class="piece__head">
-              <span class="piece__name">Schale, spitz, groß</span>
-              <span class="piece__year">2003–05</span>
-            </span>
-            <span class="piece__spec">H 10,3 cm, D 18,8 cm</span>
-            <span class="piece__spec">Barium-Feldspat-Glasur</span>
-          </a>
-        </li>
+        {werkschau.map((werk) => (
+          <WorkCard typ="reihe" werk={werk} />
+        ))}
       </ol>
     </section>
 

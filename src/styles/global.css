@@ -930,58 +930,6 @@ body::after {
 .works__grid {
   row-gap: clamp(40px, 5vw, 72px);
 }
-.piece {
-  grid-column: span 4;
-}
-.piece a {
-  display: block;
-  text-decoration: none;
-}
-.piece__media {
-  display: block;
-  aspect-ratio: 4 / 3;
-  background: var(--ground-2);
-  overflow: hidden;
-}
-.piece__media img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 1s var(--ease);
-}
-.piece a:hover .piece__media img {
-  transform: scale(1.04);
-}
-.piece__head {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 12px;
-  margin-top: 16px;
-}
-.piece__name {
-  font-family: var(--f-display);
-  font-size: var(--t-quote);
-  line-height: var(--t-quote-lh);
-}
-.piece__year {
-  flex: none;
-  font-size: var(--t-meta);
-  line-height: var(--t-meta-lh);
-  font-variant-numeric: tabular-nums;
-  color: var(--ink-2);
-}
-.piece__spec {
-  display: block;
-  font-size: var(--t-meta);
-  line-height: var(--t-meta-lh);
-  color: var(--ink-2);
-  margin-top: 4px;
-}
-.piece__spec + .piece__spec {
-  margin-top: 0;
-}
-
 .spread {
   padding-bottom: var(--section);
   align-items: start;
@@ -1954,9 +1902,6 @@ body::after {
     padding-bottom: 0;
   }
 
-  .piece {
-    grid-column: span 6;
-  }
   .hours,
   .visit__actions {
     grid-column: 1 / -1;
@@ -2147,10 +2092,6 @@ body::after {
 }
 
 @media (max-width: 520px) {
-  .piece__head {
-    flex-direction: column;
-    gap: 2px;
-  }
   .footer__col,
   .footer__col:last-child {
     grid-column: 1 / -1;

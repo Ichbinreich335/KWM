@@ -1,0 +1,277 @@
+---
+import type { Stimmung, Werk } from '../data/werke';
+import { angabeText, stueckBezeichnung } from '../data/werke';
+import { anfrageLink } from '../scripts/anfrage-link';
+import Bild from './Bild.astro';
+
+type Props =
+  | {
+      /** Katalogkarte: Bild, Name, Angaben und Anfrage-Link */
+      typ: 'katalog';
+      werk: Werk;
+      /** Breite im 12-Spalten-Katalog: `standard` ein Drittel, `halb`, `breit` (Angaben links, Bild rechts) */
+      breite?: 'standard' | 'halb' | 'breit';
+    }
+  | {
+      /** Bild ohne Werk, nur mit Unterschrift */
+      typ: 'stimmung';
+      stimmung: Stimmung;
+      /** `band` über die ganze Breite im Querformat */
+      breite?: 'breit' | 'band';
+    }
+  | {
+      /** Kachel der Werkschau mit Jahr, ganz als Link zum Katalog (in einer `ol`, daher `li`) */
+      typ: 'reihe';
+      werk: Werk;
+    };
+
+const props = Astro.props;
+---
+
+{props.typ === 'katalog' && (
+  <figure
+    class:list={[
+      'catalog__item',
+      props.breite === 'halb' && 'catalog__item--half',
+      props.breite === 'breit' && 'catalog__item--wide',
+    ]}
+  >
+    <div class="catalog__frame" data-reveal="img">
+      <Bild
+        src={props.werk.bild.src}
+        width={props.werk.bild.breite}
+        height={props.werk.bild.hoehe}
+        loading="lazy"
+        alt={props.werk.bild.alt}
+      />
+    </div>
+    <figcaption data-reveal="fade">
+      <span class="catalog__name">{props.werk.titel}</span>
+      {props.werk.angaben.map((angabe) => (
+        <span class="catalog__spec">{angabeText(angabe)}</span>
+      ))}
+      <a class="catalog__ask" href={anfrageLink(stueckBezeichnung(props.werk))}>
+        Zu diesem Stück anfragen
+      </a>
+    </figcaption>
+  </figure>
+)}
+{props.typ === 'stimmung' && (
+  <figure
+    class:list={[
+      'catalog__item',
+      props.breite === 'band' ? 'catalog__item--band' : 'catalog__item--wide catalog__item--mood',
+    ]}
+  >
+    <div class="catalog__frame" data-reveal="img">
+      <Bild
+        src={props.stimmung.bild.src}
+        width={props.stimmung.bild.breite}
+        height={props.stimmung.bild.hoehe}
+        loading="lazy"
+        alt={props.stimmung.bild.alt}
+      />
+    </div>
+    <figcaption data-reveal="fade">
+      <span class="catalog__spec">{props.stimmung.unterschrift}</span>
+    </figcaption>
+  </figure>
+)}
+{props.typ === 'reihe' && (
+  <li class="piece">
+    <a href={props.werk.verweis}>
+      <span class="piece__media">
+        <Bild
+          src={props.werk.bild.src}
+          width={props.werk.bild.breite}
+          height={props.werk.bild.hoehe}
+          loading="lazy"
+          alt={props.werk.bild.alt}
+        />
+      </span>
+      <span class="piece__head">
+        <span class="piece__name">{props.werk.titel}</span>
+        <span class="piece__year">{props.werk.jahr}</span>
+      </span>
+      {props.werk.angaben.map((angabe) => (
+        <span class="piece__spec">{angabeText(angabe)}</span>
+      ))}
+    </a>
+  </li>
+)}
+
+<style>
+  /* Katalog: Karten im 12-Spalten-Raster der Seite */
+  .catalog__item {
+    grid-column: span 4;
+  }
+  .catalog__item--band {
+    grid-column: 1 / -1;
+  }
+  .catalog__item--half {
+    grid-column: span 6;
+  }
+  .catalog__frame {
+    overflow: hidden;
+    background: var(--ground-2);
+  }
+  .catalog__frame :global(img) {
+    width: 100%;
+    aspect-ratio: 3 / 2;
+    object-fit: cover;
+    transition: transform 1.2s var(--ease);
+  }
+  .catalog__item:hover .catalog__frame :global(img) {
+    transform: scale(1.04);
+  }
+  .catalog__item--mood .catalog__frame :global(img) {
+    aspect-ratio: 3 / 2;
+  }
+  .catalog__item--band .catalog__frame :global(img) {
+    aspect-ratio: 16 / 7;
+  }
+  .catalog__name {
+    display: block;
+    font-family: var(--f-text);
+    font-size: var(--t-body);
+    line-height: var(--t-body-lh);
+    margin-top: 14px;
+    color: var(--ink);
+  }
+  .catalog__spec {
+    display: block;
+    font-size: var(--t-meta);
+    line-height: var(--t-meta-lh);
+    color: var(--ink-2);
+    margin-top: 4px;
+  }
+  .catalog__item figcaption {
+    margin-top: 0;
+  }
+  .catalog__ask {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    box-sizing: border-box;
+    padding-block: 12px;
+    margin-block: -7px -12px;
+    font-size: var(--t-meta);
+    line-height: var(--t-meta-lh);
+    color: var(--ink-2);
+    text-underline-offset: 0.28em;
+  }
+  .catalog__ask:hover {
+    color: var(--ink);
+  }
+
+  /* Einzelwerk: Meta-Spalte links (Name, Maße, Anfrage), großes Bild rechts, an derselben Oberkante */
+  .catalog__item--wide {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: subgrid;
+    align-items: start;
+  }
+  .catalog__item--wide .catalog__frame {
+    grid-column: 4 / -1;
+    grid-row: 1;
+  }
+  .catalog__item--wide figcaption {
+    grid-column: 1 / 4;
+    grid-row: 1;
+    padding-right: var(--g);
+  }
+  .catalog__item--wide .catalog__name {
+    margin-top: 0;
+  }
+
+  /* Werkschau der Startseite */
+  .piece {
+    grid-column: span 4;
+  }
+  .piece a {
+    display: block;
+    text-decoration: none;
+  }
+  .piece__media {
+    display: block;
+    aspect-ratio: 4 / 3;
+    background: var(--ground-2);
+    overflow: hidden;
+  }
+  .piece__media :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 1s var(--ease);
+  }
+  .piece a:hover .piece__media :global(img) {
+    transform: scale(1.04);
+  }
+  .piece__head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 16px;
+  }
+  .piece__name {
+    font-family: var(--f-display);
+    font-size: var(--t-quote);
+    line-height: var(--t-quote-lh);
+  }
+  .piece__year {
+    flex: none;
+    font-size: var(--t-meta);
+    line-height: var(--t-meta-lh);
+    font-variant-numeric: tabular-nums;
+    color: var(--ink-2);
+  }
+  .piece__spec {
+    display: block;
+    font-size: var(--t-meta);
+    line-height: var(--t-meta-lh);
+    color: var(--ink-2);
+    margin-top: 4px;
+  }
+  .piece__spec + .piece__spec {
+    margin-top: 0;
+  }
+
+  @media (min-width: 901px) and (max-width: 1200px) {
+    .catalog__item {
+      grid-column: span 6;
+    }
+    .catalog__item--wide,
+    .catalog__item--band {
+      grid-column: 1 / -1;
+    }
+  }
+  @media (max-width: 900px) {
+    .catalog__item,
+    .catalog__item--wide,
+    .catalog__item--half {
+      grid-column: 1 / -1;
+    }
+    .catalog__item--wide {
+      display: block;
+    }
+    .catalog__item--wide figcaption {
+      padding: 0;
+    }
+    .catalog__item--wide .catalog__name {
+      margin-top: 14px;
+    }
+    .catalog__item--band .catalog__frame :global(img) {
+      aspect-ratio: 4 / 3;
+    }
+    .piece {
+      grid-column: span 6;
+    }
+  }
+  @media (max-width: 520px) {
+    .piece__head {
+      flex-direction: column;
+      gap: 2px;
+    }
+  }
+</style>
