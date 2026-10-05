@@ -1134,7 +1134,6 @@ body::after {
   margin-top: 14px;
 }
 .cosmos__floor {
-  background: var(--ground-2);
   padding-block: clamp(24px, 4vw, 56px);
   overflow: hidden;
 }
@@ -2110,6 +2109,10 @@ body::after {
     grid-row: auto;
   }
 
+  /* Handy: Wagner-Zitat entfällt, die Überschrift wiederholt es */
+  .cosmos__text {
+    display: none;
+  }
   .cosmos__stage {
     width: 100%;
   }
