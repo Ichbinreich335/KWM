@@ -6,7 +6,7 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ArrowDown, ArrowUp, Bookmark, ChevronDown, ChevronLeft, ChevronRight, Columns3, ImageOff, Plus, SlidersHorizontal, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
-import { PAGE_SIZE, VERKAUFT, serieVon } from "../shared/konstanten";
+import { EDITION_PROGRAMM, GESCHIRR, PAGE_SIZE, VERKAUFT, serieVon } from "../shared/konstanten";
 import { type Attachment, type RawItem, asAttachments, asOpts, downloadCsv, euro, formatDate, lookupValue, num, parseNumber, printTable, str, thumb, today, useAllPages, zahl } from "../shared/daten";
 import { Ankreuzfeld, Auswahl, DIALOG_CLASS, DoneButton, EmptyState, ErrorState, ErrorText, Etikett, ExportMenu, Feld, FieldLabel, Knopf, ListRow, LoadingState, NUR_TABELLE, PageHeader, PANEL_CLASS, PanelHeader, POPOVER_CLASS, SCROLL_ROW, SearchField, SEITE_BREIT_CLASS, StatusBadge, TABLE_PANEL_CLASS, Tabs, Thumb } from "../shared/ui";
 
@@ -57,6 +57,7 @@ const editionSelect = q.select({
   reserviert: "L1bO5",
   ausser: "v9V6W",
   partner: "hs3iV",
+  rueckgabe: "nBkRl",
   gedreht: "7FQQm",
   glasiert: "dkREk",
   masse: "eVHco",
@@ -66,12 +67,15 @@ const ansichtSelect = q.select({ name: "8s5KL", definition: "rWGS9", von: "uPraE
 const VIEW_VERSION = 3;
 const SCROLL_STEP = 320;
 const PAGE_ROWS = 50;
-const UNIKAT = "Unikat";
-const EDITION = "Geschirr & Edition";
+const MEISTERSTUECK = "Meisterstück";
+// Frühere Werte der Spalte „Art“ in gespeicherten Ansichten und Links.
+const ALTE_ART: Record<string, string[]> = { Unikat: [MEISTERSTUECK], "Geschirr & Edition": [GESCHIRR, EDITION_PROGRAMM] };
+const neueArt = (werte: string[]) => werte.flatMap((v) => ALTE_ART[v] ?? [v]);
 const euroCent = new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR" });
 
-type ArtTab = "alle" | "unikat" | "edition";
-const ART_OF_TAB: Record<ArtTab, string | null> = { alle: null, unikat: UNIKAT, edition: EDITION };
+type ArtTab = "alle" | "geschirr" | "edition" | "unikat";
+const ART_OF_TAB: Record<ArtTab, string | null> = { alle: null, geschirr: GESCHIRR, edition: EDITION_PROGRAMM, unikat: MEISTERSTUECK };
+const istMenge = (r: { art: string }) => r.art !== MEISTERSTUECK;
 
 type Row = {
   id: string;
@@ -142,57 +146,65 @@ type ColKey =
   | "reserviert"
   | "rueckgabe";
 type CellValue = string | number | boolean | string[] | null;
-// only: Spalte gibt es nur bei Unikaten bzw. nur bei Geschirr und Edition. Im Reiter der anderen Art fällt sie weg.
-type Col = { key: ColKey; label: string; type: FieldType; get: (r: Row) => CellValue; visible: boolean; align?: "right"; only?: ArtTab };
+// only: Spalte gibt es nur bei Meisterstücken („unikat“) bzw. nur bei Geschirr und Edition („menge“). Im Reiter der anderen Art fällt sie weg.
+type Col = { key: ColKey; label: string; type: FieldType; get: (r: Row) => CellValue; align?: "right"; only?: "alle" | "menge" | "unikat" };
 
 const COLUMNS: Col[] = [
-  { key: "art", label: "Art", type: "select", get: (r) => r.art, visible: false, only: "alle" },
-  { key: "programm", label: "Serie", type: "select", get: (r) => r.programm || null, visible: false, only: "edition" },
-  { key: "inv", label: "Nr.", type: "text", get: (r) => r.inv || r.artikelnr || null, visible: true },
-  { key: "name", label: "Name / Modell", type: "text", get: (r) => r.name, visible: true },
-  { key: "typ", label: "Typ", type: "select", get: (r) => r.typ || null, visible: true },
-  { key: "status", label: "Status / Zustand", type: "select", get: (r) => r.status || null, visible: true },
-  { key: "anzahl", label: "Anzahl", type: "number", get: (r) => r.anzahl, visible: true, align: "right", only: "edition" },
-  { key: "preis", label: "Preis intern", type: "number", get: (r) => r.preis, visible: true, align: "right", only: "unikat" },
-  { key: "vk", label: "VK-Preis", type: "number", get: (r) => r.vk, visible: false, align: "right", only: "edition" },
-  { key: "glasur", label: "Glasur", type: "multi", get: (r) => r.glasur, visible: false },
-  { key: "lagerort", label: "Lagerort", type: "select", get: (r) => r.lagerort || null, visible: true },
-  { key: "ausser", label: "Außer Haus", type: "select", get: (r) => r.ausser || null, visible: false, only: "edition" },
-  { key: "gedreht", label: "Gedreht von", type: "select", get: (r) => r.gedreht || null, visible: false },
-  { key: "glasiert", label: "Glasiert von", type: "select", get: (r) => r.glasiert || null, visible: false },
-  { key: "datum", label: "Datum", type: "date", get: (r) => r.datum.slice(0, 10) || null, visible: false, only: "unikat" },
-  { key: "gedrehtAm", label: "Gedreht am", type: "date", get: (r) => r.gedrehtAm.slice(0, 10) || null, visible: false, only: "unikat" },
-  { key: "glasiertAm", label: "Glasiert am", type: "date", get: (r) => r.glasiertAm.slice(0, 10) || null, visible: false, only: "unikat" },
-  { key: "jahr", label: "Jahr", type: "number", get: (r) => r.jahr, visible: false, align: "right", only: "unikat" },
-  { key: "masse", label: "Maße", type: "text", get: (r) => r.masse || null, visible: false },
-  { key: "galerie", label: "Partner", type: "select", get: (r) => r.galerie || null, visible: false },
-  { key: "website", label: "Auf Website", type: "bool", get: (r) => r.website, visible: false, only: "unikat" },
-  { key: "notiz", label: "Notiz", type: "text", get: (r) => r.notiz || null, visible: false },
-  { key: "erfasstAm", label: "Erfasst am", type: "date", get: (r) => r.erfasstAm.slice(0, 10) || null, visible: false },
-  { key: "geaendertAm", label: "Geändert am", type: "date", get: (r) => r.geaendertAm.slice(0, 10) || null, visible: false },
-  { key: "verkauftAm", label: "Verkauft am", type: "date", get: (r) => r.verkauftAm.slice(0, 10) || null, visible: false, only: "unikat" },
-  { key: "verkauftAn", label: "Verkauft an", type: "text", get: (r) => r.verkauftAn || null, visible: false, only: "unikat" },
-  { key: "brand", label: "Brand vom", type: "date", get: (r) => r.brand || null, visible: false, only: "edition" },
-  { key: "reserviert", label: "Reserviert für", type: "text", get: (r) => r.reserviert || null, visible: false, only: "edition" },
-  { key: "rueckgabe", label: "Rückgabe bis", type: "date", get: (r) => r.rueckgabe.slice(0, 10) || null, visible: false, only: "unikat" },
+  { key: "art", label: "Art", type: "select", get: (r) => r.art, only: "alle" },
+  { key: "programm", label: "Serie", type: "select", get: (r) => r.programm || null, only: "menge" },
+  { key: "inv", label: "Nr.", type: "text", get: (r) => r.inv || r.artikelnr || null },
+  { key: "name", label: "Name / Modell", type: "text", get: (r) => r.name },
+  { key: "typ", label: "Typ", type: "select", get: (r) => r.typ || null },
+  { key: "status", label: "Status / Zustand", type: "select", get: (r) => r.status || null },
+  { key: "anzahl", label: "Anzahl", type: "number", get: (r) => r.anzahl, align: "right", only: "menge" },
+  { key: "preis", label: "Preis intern", type: "number", get: (r) => r.preis, align: "right", only: "unikat" },
+  { key: "vk", label: "VK-Preis", type: "number", get: (r) => r.vk, align: "right", only: "menge" },
+  { key: "glasur", label: "Glasur", type: "multi", get: (r) => r.glasur },
+  { key: "lagerort", label: "Lagerort", type: "select", get: (r) => r.lagerort || null },
+  { key: "ausser", label: "Außer Haus", type: "select", get: (r) => r.ausser || null, only: "menge" },
+  { key: "gedreht", label: "Gedreht von", type: "select", get: (r) => r.gedreht || null },
+  { key: "glasiert", label: "Glasiert von", type: "select", get: (r) => r.glasiert || null },
+  { key: "datum", label: "Datum", type: "date", get: (r) => r.datum.slice(0, 10) || null, only: "unikat" },
+  { key: "gedrehtAm", label: "Gedreht am", type: "date", get: (r) => r.gedrehtAm.slice(0, 10) || null, only: "unikat" },
+  { key: "glasiertAm", label: "Glasiert am", type: "date", get: (r) => r.glasiertAm.slice(0, 10) || null, only: "unikat" },
+  { key: "jahr", label: "Jahr", type: "number", get: (r) => r.jahr, align: "right", only: "unikat" },
+  { key: "masse", label: "Maße", type: "text", get: (r) => r.masse || null },
+  { key: "galerie", label: "Partner", type: "select", get: (r) => r.galerie || null },
+  { key: "website", label: "Auf Website", type: "bool", get: (r) => r.website, only: "unikat" },
+  { key: "notiz", label: "Notiz", type: "text", get: (r) => r.notiz || null },
+  { key: "erfasstAm", label: "Erfasst am", type: "date", get: (r) => r.erfasstAm.slice(0, 10) || null },
+  { key: "geaendertAm", label: "Geändert am", type: "date", get: (r) => r.geaendertAm.slice(0, 10) || null },
+  { key: "verkauftAm", label: "Verkauft am", type: "date", get: (r) => r.verkauftAm.slice(0, 10) || null, only: "unikat" },
+  { key: "verkauftAn", label: "Verkauft an", type: "text", get: (r) => r.verkauftAn || null, only: "unikat" },
+  { key: "brand", label: "Brand vom", type: "date", get: (r) => r.brand || null, only: "menge" },
+  { key: "reserviert", label: "Reserviert für", type: "text", get: (r) => r.reserviert || null, only: "menge" },
+  { key: "rueckgabe", label: "Rückgabe bis", type: "date", get: (r) => r.rueckgabe.slice(0, 10) || null },
 ];
 
 // „Art“ ist nur im Reiter „Alle“ sinnvoll, sonst gilt: Spalten der anderen Art fallen weg.
 function relevant(c: Col, tab: ArtTab): boolean {
   if (c.only === "alle") return tab === "alle";
-  return !c.only || tab === "alle" || c.only === tab;
+  if (!c.only || tab === "alle") return true;
+  return c.only === "menge" ? tab !== "unikat" : tab === "unikat";
 }
 
-const QUICK_KEYS: ColKey[] = ["programm", "typ", "status", "glasur", "lagerort", "galerie"];
+// Spalten je Reiter: Bei Geschirr und Edition unterscheiden Glasur und Brand die Posten, bei Meisterstücken Status und Preis.
+const SPALTEN: Record<ArtTab, ColKey[]> = {
+  alle: ["inv", "name", "art", "status", "anzahl", "lagerort"],
+  geschirr: ["inv", "name", "status", "glasur", "brand", "anzahl", "reserviert", "lagerort"],
+  edition: ["inv", "name", "status", "glasur", "brand", "anzahl", "ausser", "lagerort"],
+  unikat: ["inv", "name", "typ", "status", "preis", "lagerort"],
+};
+
+const QUICK_KEYS: ColKey[] = ["typ", "status", "glasur", "lagerort", "galerie"];
 type Quick = Partial<Record<ColKey, string[]>>;
 
 function quickLabel(key: ColKey, tab: ArtTab): string {
-  if (key === "status") return tab === "unikat" ? "Status" : tab === "edition" ? "Zustand" : "Status / Zustand";
+  if (key === "status") return tab === "unikat" ? "Status" : tab === "alle" ? "Status / Zustand" : "Zustand";
   return COL_LABEL[key];
 }
 const COL = Object.fromEntries(COLUMNS.map((c) => [c.key, c])) as Record<ColKey, Col>;
 const COL_LABEL = Object.fromEntries(COLUMNS.map((c) => [c.key, c.label])) as Record<ColKey, string>;
-const DEFAULT_VISIBLE = COLUMNS.filter((c) => c.visible).map((c) => c.key);
 
 type Op =
   | "contains"
@@ -277,7 +289,7 @@ function toUnikatRow(i: RawItem): Row {
   const f = i.fields;
   return {
     id: i.id,
-    art: UNIKAT,
+    art: MEISTERSTUECK,
     inv: str(f.inv),
     artikelnr: "",
     programm: "",
@@ -317,7 +329,7 @@ function toEditionRow(i: RawItem): Row {
   const f = i.fields;
   return {
     id: i.id,
-    art: EDITION,
+    art: serieVon(labels(f.programm)[0] ?? "") || EDITION_PROGRAMM,
     inv: "",
     artikelnr: str(lookupValue(f.artikelnr)),
     programm: serieVon(labels(f.programm)[0] ?? ""),
@@ -348,7 +360,7 @@ function toEditionRow(i: RawItem): Row {
     verkauftAn: "",
     brand: str(f.brand).slice(0, 10),
     reserviert: str(f.reserviert),
-    rueckgabe: "",
+    rueckgabe: str(f.rueckgabe),
     fotos: asAttachments(f.foto),
   };
 }
@@ -442,7 +454,7 @@ function legacyToConditions(def: Record<string, unknown>): Condition[] {
   };
   range("jahr", f.jahrVon, f.jahrBis);
   range("preis", f.preisVon, f.preisBis);
-  out.push({ id: newId(), field: "art", op: "anyOf", value: [UNIKAT] });
+  out.push({ id: newId(), field: "art", op: "anyOf", value: [MEISTERSTUECK] });
   return out;
 }
 
@@ -486,8 +498,8 @@ type Start = { tab: ArtTab; quick: Quick; conditions: Condition[]; columns: ColK
 function startFromUrl(): Start {
   const params = new URLSearchParams(window.location.search);
   const list = (key: string) => (params.get(key) ?? "").split(",").map((v) => v.trim()).filter(Boolean);
-  const art = list("art");
-  const tab: ArtTab = art.length === 1 && art[0] === UNIKAT ? "unikat" : art.length === 1 && art[0] === EDITION ? "edition" : "alle";
+  const art = neueArt(list("art"));
+  const tab: ArtTab = art.length === 1 ? ((Object.entries(ART_OF_TAB).find(([, a]) => a === art[0])?.[0] as ArtTab | undefined) ?? "alle") : "alle";
   const quick: Quick = {};
   if (list("status").length) quick.status = list("status");
   if (list("partner").length) quick.galerie = list("partner");
@@ -500,7 +512,7 @@ function startFromUrl(): Start {
   const extra: ColKey[] = [];
   if (quick.galerie || quick.status?.some((v) => v === "in Kommission" || v === "ausgestellt")) extra.push("galerie", "rueckgabe");
   if (conditions.length) extra.push("verkauftAm");
-  return { tab, quick, conditions, columns: [...DEFAULT_VISIBLE, ...extra.filter((k) => !DEFAULT_VISIBLE.includes(k))] };
+  return { tab, quick, conditions, columns: [...SPALTEN[tab], ...extra.filter((k) => !SPALTEN[tab].includes(k))] };
 }
 
 function matchesQuick(r: Row, quick: Quick): boolean {
@@ -652,10 +664,10 @@ function ConditionRow({
 }
 
 function Detail({ r, onClose }: { r: Row; onClose: () => void }) {
-  const tab: ArtTab = r.art === UNIKAT ? "unikat" : "edition";
-  const fields: [string, string][] = COLUMNS.filter((c) => c.key !== "name" && relevant(c, tab)).map((c) => [c.key === "inv" ? (r.art === UNIKAT ? "Inv.-Nr." : "Artikelnr.") : c.label, formatCell(c, r)]);
-  if (r.art === UNIKAT) fields.push(["Bildnachweis", r.bildnachweis], ["Erfasst von", r.erfasstVon]);
-  const href = r.art === UNIKAT ? `/bestand?id=${r.id}` : "/bestand?tab=edition";
+  const tab: ArtTab = istMenge(r) ? "edition" : "unikat";
+  const fields: [string, string][] = COLUMNS.filter((c) => c.key !== "name" && relevant(c, tab)).map((c) => [c.key === "inv" ? (istMenge(r) ? "Artikelnr." : "Inv.-Nr.") : c.label, formatCell(c, r)]);
+  if (!istMenge(r)) fields.push(["Bildnachweis", r.bildnachweis], ["Erfasst von", r.erfasstVon]);
+  const href = istMenge(r) ? `/bestand?tab=${r.art === GESCHIRR ? "geschirr" : "edition"}&q=${encodeURIComponent(r.name)}` : `/bestand?id=${r.id}`;
   const foto = r.fotos[0];
   return (
     <Dialog open onOpenChange={(o) => !o && onClose()}>
@@ -809,7 +821,11 @@ export default function Block() {
   const currentPage = Math.min(page, lastPage);
   const pageRows = visibleRows.slice(currentPage * PAGE_ROWS, (currentPage + 1) * PAGE_ROWS);
 
-  const shown = tabColumns.filter((c) => columns.includes(c.key));
+  // Reihenfolge wie gewählt (Spalten je Reiter), Überschrift „Status“ bzw. „Zustand“ passend zum Reiter.
+  const shown = tabColumns
+    .filter((c) => columns.includes(c.key))
+    .sort((a, b) => columns.indexOf(a.key) - columns.indexOf(b.key))
+    .map((c) => (c.key === "status" ? { ...c, label: quickLabel("status", tab) } : c));
   const tableBox = useRef<HTMLDivElement>(null);
   const [scrollState, setScrollState] = useState({ left: false, right: false });
   const scroller = () => tableBox.current?.firstElementChild as HTMLElement | null | undefined;
@@ -852,6 +868,7 @@ export default function Block() {
 
   function switchTab(next: ArtTab) {
     setTab(next);
+    setColumns(SPALTEN[next]);
     setQuick((qq) => Object.fromEntries(Object.entries(qq).filter(([k]) => relevant(COL[k as ColKey], next))) as Quick);
     setPage(0);
   }
@@ -873,18 +890,19 @@ export default function Block() {
     try {
       const def = JSON.parse(view.definition) as Partial<ViewDef> & Record<string, unknown>;
       if (def.v === VIEW_VERSION || def.v === 2) {
-        setTab(def.tab ?? "alle");
+        const viewTab = def.tab && def.tab in ART_OF_TAB ? def.tab : "alle";
+        setTab(viewTab);
         setQuick(def.quick ?? {});
-        setConditions(def.conditions ?? []);
+        setConditions((def.conditions ?? []).map((c) => (c.field === "art" && Array.isArray(c.value) ? { ...c, value: neueArt(c.value) } : c)));
         setConj(def.conj ?? "und");
-        setColumns(def.columns?.length ? def.columns : DEFAULT_VISIBLE);
+        setColumns(def.columns?.length ? def.columns.filter((k) => k in COL) : SPALTEN[viewTab]);
         setSort(def.sort ?? null);
       } else {
         setTab("alle");
         setQuick({});
         setConditions(legacyToConditions(def));
         setConj("und");
-        setColumns(DEFAULT_VISIBLE);
+        setColumns(SPALTEN.alle);
         setSort(null);
       }
       setSearch(typeof def.search === "string" ? def.search : "");
@@ -927,14 +945,14 @@ export default function Block() {
     setConditions([]);
     setSearch("");
     setSort(null);
-    setColumns(DEFAULT_VISIBLE);
+    setColumns(SPALTEN[tab]);
     setFilterOpen(false);
     changed();
   }
 
   // Untertitel der Druckansicht: was gerade gefiltert ist, damit eine Liste für sich verständlich bleibt.
   function filterBeschreibung(): string {
-    const teile: string[] = [tab === "alle" ? "Geschirr, Edition und Unikate" : tab === "unikat" ? "Unikate" : EDITION];
+    const teile: string[] = [tab === "alle" ? "Geschirr, Edition und Meisterstücke" : tab === "unikat" ? "Meisterstücke" : (ART_OF_TAB[tab] ?? "")];
     quickKeys.forEach((k) => quick[k]?.length && teile.push(`${quickLabel(k, tab)}: ${quick[k]?.join(", ")}`));
     if (search.trim()) teile.push(`Suche „${search.trim()}“`);
     if (activeConditions.length) teile.push(`${activeConditions.length} weitere Bedingung${activeConditions.length === 1 ? "" : "en"}`);
@@ -984,8 +1002,9 @@ export default function Block() {
           label="Art"
           tabs={[
             { key: "alle" as ArtTab, label: "Alle", count: rows.length },
-            { key: "edition" as ArtTab, label: EDITION, count: rows.filter((r) => r.art === EDITION).length },
-            { key: "unikat" as ArtTab, label: "Unikate", count: rows.filter((r) => r.art === UNIKAT).length },
+            { key: "geschirr" as ArtTab, label: GESCHIRR, count: rows.filter((r) => r.art === GESCHIRR).length },
+            { key: "edition" as ArtTab, label: EDITION_PROGRAMM, count: rows.filter((r) => r.art === EDITION_PROGRAMM).length },
+            { key: "unikat" as ArtTab, label: "Meisterstücke", count: rows.filter((r) => r.art === MEISTERSTUECK).length },
           ]}
           value={tab}
           onChange={switchTab}
@@ -1033,7 +1052,7 @@ export default function Block() {
                     </label>
                   );
                 })}
-                <Knopf variant="ghost" className="w-full h-11 text-base mt-1" onClick={() => setColumns(DEFAULT_VISIBLE)}>
+                <Knopf variant="ghost" className="w-full h-11 text-base mt-1" onClick={() => setColumns(SPALTEN[tab])}>
                   Standardspalten
                 </Knopf>
               </PopoverContent>
@@ -1116,11 +1135,11 @@ export default function Block() {
                     <ListRow
                       fotos={r.fotos}
                       title={r.name || "Ohne Namen"}
-                      sub={[r.inv || r.artikelnr, r.typ, r.galerie || r.lagerort].filter(Boolean).join(" · ")}
+                      sub={(istMenge(r) ? [r.inv || r.artikelnr, r.glasur.join(", "), r.brand && `Brand ${formatDate(r.brand)}`, r.reserviert && `für ${r.reserviert}`, r.galerie || r.lagerort] : [r.inv, r.typ, r.galerie || r.lagerort]).filter(Boolean).join(" · ")}
                       meta={
                         <span className="flex flex-col items-end gap-1">
                           <StatusBadge text={r.status} />
-                          <span className="text-sm tabular-nums">{r.art === EDITION ? `${zahl.format(r.anzahl)} Stück` : r.preis !== null ? euro.format(r.preis) : ""}</span>
+                          <span className="text-sm tabular-nums">{istMenge(r) ? `${zahl.format(r.anzahl)} Stück` : r.preis !== null ? euro.format(r.preis) : ""}</span>
                         </span>
                       }
                       onClick={() => setSelected(r)}
@@ -1130,7 +1149,7 @@ export default function Block() {
               </ul>
               <Pager page={currentPage} total={visibleRows.length} onPage={setPage} />
               <p className="text-sm font-medium text-right">
-                {summeLabel}: {zahl.format(summeAnzahl)} Stück · {euro.format(summePreis)}
+                {[`${summeLabel}: ${zahl.format(summeAnzahl)} Stück`, tab === "geschirr" || tab === "edition" ? "" : euro.format(summePreis)].filter(Boolean).join(" · ")}
               </p>
             </div>
             <div className="hidden sm:block space-y-3">

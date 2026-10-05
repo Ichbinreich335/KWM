@@ -319,11 +319,11 @@ export function GroupedSelect({ id, value, onChange, groups, placeholder }: { id
   );
 }
 
-export function SearchField({ value, onChange, placeholder, label }: { value: string; onChange: (v: string) => void; placeholder: string; label: string }) {
+export function SearchField({ id, value, onChange, placeholder, label }: { id?: string; value: string; onChange: (v: string) => void; placeholder: string; label: string }) {
   return (
     <div className="relative flex-1 min-w-0">
       <Search className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" aria-hidden />
-      <Feld type="search" aria-label={label} placeholder={placeholder} value={value} onChange={(e) => onChange(e.target.value)} className="pl-10" />
+      <Feld id={id} type="search" aria-label={label} placeholder={placeholder} value={value} onChange={(e) => onChange(e.target.value)} className="pl-10" />
     </div>
   );
 }
@@ -426,6 +426,53 @@ export function GlasurWahl({ modell, alle, value, onChange, onCreate }: { modell
       ) : (
         <ZusatzKnopf label="Andere oder neue Glasur" onClick={() => setOffen(true)} />
       )}
+    </div>
+  );
+}
+
+const SUCH_TREFFER = 8;
+
+// Auswahl aus einer langen Liste per Suchfeld, z. B. Modelle: „16“ oder „Teller“ tippen, Treffer antippen.
+// Treffer, die mit dem Suchwort beginnen, stehen oben. Die Gewählte steht danach als Feld mit „Ändern“ da.
+export function SuchAuswahl({ id, value, onChange, options, placeholder }: { id: string; value: string; onChange: (id: string) => void; options: Opt[]; placeholder: string }) {
+  const [term, setTerm] = useState("");
+  const [suchen, setSuchen] = useState(false);
+  const gewaehlt = options.find((o) => o.id === value);
+  if (gewaehlt && !suchen) {
+    return (
+      <div className="flex items-center gap-2">
+        <span className={`flex-1 min-w-0 flex items-center h-12 px-3 rounded-md border ${LINE} bg-background text-base truncate`}>{gewaehlt.label}</span>
+        <Knopf type="button" variant="outline" className="h-12 text-base" onClick={() => setSuchen(true)}>
+          Ändern
+        </Knopf>
+      </div>
+    );
+  }
+  const t = term.trim().toLowerCase();
+  const passend = options.filter((o) => !t || o.label.toLowerCase().includes(t));
+  const sortiert = [...passend.filter((o) => o.label.toLowerCase().startsWith(t)), ...passend.filter((o) => !o.label.toLowerCase().startsWith(t))];
+  return (
+    <div className="space-y-2">
+      <SearchField id={id} label={placeholder} placeholder={placeholder} value={term} onChange={setTerm} />
+      {sortiert.length === 0 ? (
+        <p className="text-sm text-muted-foreground">Nichts gefunden zu „{term.trim()}“.</p>
+      ) : (
+        <ul className={`${PANEL_CLASS} divide-y px-2`}>
+          {sortiert.slice(0, SUCH_TREFFER).map((o) => (
+            <li key={o.id}>
+              <ListRow
+                title={o.label}
+                onClick={() => {
+                  onChange(o.id);
+                  setTerm("");
+                  setSuchen(false);
+                }}
+              />
+            </li>
+          ))}
+        </ul>
+      )}
+      {sortiert.length > SUCH_TREFFER && <p className="text-sm text-muted-foreground">{`und ${sortiert.length - SUCH_TREFFER} weitere. Nummer oder Namen genauer eingeben.`}</p>}
     </div>
   );
 }

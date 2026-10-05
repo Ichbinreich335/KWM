@@ -110,6 +110,7 @@ type Posten = {
   status: string;
   partnerId: string;
   partner: string;
+  rueckgabe: string;
   gedrehtId: string;
   gedreht: string;
   glasiertId: string;
@@ -146,6 +147,7 @@ function toPosten(item: RawItem): Posten {
     status: asOpts(f.status)[0]?.label ?? "",
     partnerId: partner?.id ?? "",
     partner: partner?.label ?? "",
+    rueckgabe: str(f.rueckgabe).slice(0, 10),
     gedrehtId: gedreht?.id ?? "",
     gedreht: gedreht?.label ?? "",
     glasiertId: glasiert?.id ?? "",
@@ -231,6 +233,14 @@ function brandGruppen(posten: Posten[]): BrandGruppe[] {
     g.zusammen = g.braende[0]?.anzahl ?? 0;
   }
   return gruppen.sort((a, b) => b.gesamt - a.gesamt || a.glasur.localeCompare(b.glasur, "de"));
+}
+
+// Eine Zeile für Listen: je Glasur die freie Ware, bei mehreren Bränden mit der Zahl, die zusammen passt.
+// z. B. „Rostbraun 16 (9 aus einem Brand) · Weiß 6“
+function glasurZeile(posten: Posten[]): string {
+  return brandGruppen(posten)
+    .map((g) => `${g.glasur || "ohne Glasur"} ${g.gesamt}${g.braende.length > 1 ? ` (${g.zusammen} aus einem Brand)` : ""}`)
+    .join(" · ");
 }
 
 // Die eine Rahmenfarbe der App: Flächen, Kacheln, Felder, Auswahlen, Knöpfe. Nur Trennlinien innerhalb einer Fläche bleiben heller.
@@ -368,7 +378,7 @@ function EmptyState({ text }: { text: string }) {
 }
 
 const ds = datasource.define({ unikate: "unikate", edition: "edition", partner: "partner", modelle: "modelle" });
-const modellSelect = q.select({ name: "eXo5w", artikelnr: "BNpSN", vk: "772dM", archiviert: "3tlrw" });
+const modellSelect = q.select({ name: "eXo5w", artikelnr: "BNpSN", vk: "772dM", programm: "Mrgtb", archiviert: "3tlrw" });
 
 const unikatSelect = q.select({
   inv: "glG6V",
@@ -398,6 +408,8 @@ const editionSelect = q.select({
   brand: "jqmqn",
   reserviert: "L1bO5",
   status: "v9V6W",
+  partner: "hs3iV",
+  rueckgabe: "nBkRl",
 });
 
 const MODELLE_SICHTBAR = 10;
@@ -422,6 +434,7 @@ type Unikat = {
   verkauftAm: string;
 };
 type Edition = Posten & { erfasstAm: string; geaendertAm: string };
+type Aussen = { partnerId: string; partner: string; anzahl: number; rueckgabe: string; edition: boolean };
 type Serie = "geschirr" | "edition";
 type Pruefpunkt = { label: string; items: { id: string; label: string; href: string }[] };
 type Ton = "rot" | "gelb";
@@ -568,14 +581,14 @@ function Lagerliste({ staende, zustaende, tab, leer }: { staende: ModellStand[];
       </thead>
       <tbody className="divide-y">
         {staende.map((s) => {
-          const frei = brandGruppen(s.posten).map((g) => `${g.glasur || "ohne Glasur"} ${zahl.format(g.gesamt)}${g.braende.length > 1 ? ` (${zahl.format(g.zusammen)} aus einem Brand)` : ""}`);
-          const zusatz = [s.reserviert > 0 && `${zahl.format(s.reserviert)} reserviert`, s.ausserHaus > 0 && `${zahl.format(s.ausserHaus)} außer Haus`].filter(Boolean);
+          const frei = glasurZeile(s.posten);
+          const zusatz = [frei, s.reserviert > 0 && `${zahl.format(s.reserviert)} reserviert`, s.ausserHaus > 0 && `${zahl.format(s.ausserHaus)} außer Haus`].filter(Boolean);
           return (
             <tr key={s.modellId || s.modell} className="hover:bg-muted/40 align-top">
               <th scope="row" className="py-2 text-left font-normal">
                 <a href={`/bestand?tab=${tab}&q=${encodeURIComponent(s.modell)}`} className="block min-h-11 hover:underline underline-offset-4">
                   <span className="block font-medium">{s.modell}</span>
-                  {[...frei, ...zusatz].length > 0 && <span className="block text-sm text-muted-foreground">{[...frei, ...zusatz].join(" · ")}</span>}
+                  {zusatz.length > 0 && <span className="block text-sm text-muted-foreground">{zusatz.join(" · ")}</span>}
                 </a>
               </th>
               {zustaende.map((z) => (
@@ -654,6 +667,15 @@ export default function Block() {
   );
 
   const jahr = new Date().getFullYear();
+  // Alles außer Haus, Meisterstücke und Edition zusammen: Partner, Stück, Rückgabe.
+  const aussen = useMemo<Aussen[]>(
+    () => [
+      ...unikate.filter((u) => isAusserHaus(u.status)).map((u) => ({ partnerId: u.galerieId, partner: u.galerie, anzahl: 1, rueckgabe: u.rueckgabe.slice(0, 10), edition: false })),
+      ...editionen.filter((e) => e.status && e.anzahl > 0).map((e) => ({ partnerId: e.partnerId, partner: e.partner, anzahl: e.anzahl, rueckgabe: e.rueckgabe, edition: true })),
+    ],
+    [unikate, editionen],
+  );
+
   const stats = useMemo(() => {
     const by = (s: string) => unikate.filter((u) => u.status === s);
     const verfuegbar = by(VERFUEGBAR);
@@ -666,14 +688,14 @@ export default function Block() {
       reserviert: by(RESERVIERT).length,
       ausserHaus: ausserHaus.length,
       partner: new Set(ausserHaus.map((u) => u.galerieId).filter(Boolean)).size,
-      ueberfaellig: ausserHaus.filter((u) => fristStatus(u.rueckgabe) === "ueberfaellig").length,
+      ueberfaellig: aussen.filter((a) => fristStatus(a.rueckgabe) === "ueberfaellig").length,
       verkauftJahr: verkauftJahr.length,
       umsatzJahr: sum(verkauftJahr),
       verkauftLuecken: by(VERKAUFT).filter((u) => !u.verkauftAm || u.preis === null).length,
-      bald: ausserHaus.filter((u) => fristStatus(u.rueckgabe) === "bald").length,
-      ueberfaelligBei: [...new Set(ausserHaus.filter((u) => fristStatus(u.rueckgabe) === "ueberfaellig").map((u) => u.galerie || "ohne Partner"))],
+      bald: aussen.filter((a) => fristStatus(a.rueckgabe) === "bald").length,
+      ueberfaelligBei: [...new Set(aussen.filter((a) => fristStatus(a.rueckgabe) === "ueberfaellig").map((a) => a.partner || "ohne Partner"))],
     };
-  }, [unikate, editionen, jahr]);
+  }, [unikate, aussen, jahr]);
 
   // Mengenlager je Serie wie auf der Lagerliste: eine Zeile je Modell, Stück je Zustand. „roh“ nur, wenn es Rohware gibt.
   const mengen = useMemo(
@@ -713,20 +735,18 @@ export default function Block() {
   }, [editionen]);
 
   const ausserHausGruppen = useMemo(() => {
-    const groups = new Map<string, { key: string; name: string; art: string; ort: string; anzahl: number; naechste: string }>();
-    unikate
-      .filter((u) => isAusserHaus(u.status))
-      .forEach((u) => {
-        const key = u.galerieId || "ohne";
-        const info = partnerInfo.get(u.galerieId);
-        const g = groups.get(key) ?? { key, name: u.galerie || "Ohne Partner", art: info?.art ?? "", ort: info?.ort ?? "", anzahl: 0, naechste: "" };
-        g.anzahl += 1;
-        const frist = u.rueckgabe.slice(0, 10);
-        if (frist && (!g.naechste || frist < g.naechste)) g.naechste = frist;
-        groups.set(key, g);
-      });
+    const groups = new Map<string, { key: string; name: string; art: string; ort: string; anzahl: number; naechste: string; nurEdition: boolean }>();
+    aussen.forEach((a) => {
+      const key = a.partnerId || "ohne";
+      const info = partnerInfo.get(a.partnerId);
+      const g = groups.get(key) ?? { key, name: a.partner || "Ohne Partner", art: info?.art ?? "", ort: info?.ort ?? "", anzahl: 0, naechste: "", nurEdition: true };
+      g.anzahl += a.anzahl;
+      g.nurEdition = g.nurEdition && a.edition;
+      if (a.rueckgabe && (!g.naechste || a.rueckgabe < g.naechste)) g.naechste = a.rueckgabe;
+      groups.set(key, g);
+    });
     return [...groups.values()].sort((a, b) => (a.naechste || "9").localeCompare(b.naechste || "9"));
-  }, [unikate, partnerInfo]);
+  }, [aussen, partnerInfo]);
 
   // Geschirr wird aus geschrühter Ware glasiert. Wird sie knapp, muss nachgedreht werden.
   const knapp = geschirr.staende.filter((s) => (s.je[GESCHRUEHT] ?? 0) < LOW_STOCK).sort((a, b) => (a.je[GESCHRUEHT] ?? 0) - (b.je[GESCHRUEHT] ?? 0));
@@ -738,7 +758,7 @@ export default function Block() {
     { label: GESCHIRR, value: zahl.format(geschirr.gesamt), sub: mengeSub(geschirr), href: "/bestand?tab=geschirr" },
     { label: EDITION_PROGRAMM, value: zahl.format(edition.gesamt), sub: [...mengeSub(edition), ...(edition.wertGlasiert > 0 ? [`Wert glasiert ${euro.format(edition.wertGlasiert)}`] : [])], href: "/bestand?tab=edition" },
     {
-      label: "Unikate im Haus",
+      label: "Meisterstücke im Haus",
       value: zahl.format(stats.verfuegbar + stats.reserviert),
       sub: [`${zahl.format(stats.ausserHaus)} außer Haus`, `${zahl.format(stats.verkauftJahr)} verkauft ${jahr}`],
       href: "/bestand?tab=imhaus",
@@ -782,11 +802,11 @@ export default function Block() {
 
   const pruefpunkte: Pruefpunkt[] = [
     {
-      label: "Unikate ohne Foto",
+      label: "Meisterstücke ohne Foto",
       items: unikate.filter((u) => u.status !== VERKAUFT && u.fotos.length === 0).map((u) => ({ id: u.id, label: u.name || u.inv, href: `/bestand?id=${u.id}` })),
     },
     {
-      label: "Unikate ohne Preis",
+      label: "Meisterstücke ohne Preis",
       items: unikate.filter((u) => u.status !== VERKAUFT && u.preis === null).map((u) => ({ id: u.id, label: u.name || u.inv, href: `/bestand?id=${u.id}` })),
     },
     {
@@ -794,9 +814,10 @@ export default function Block() {
       items: unikate.filter((u) => isAusserHaus(u.status) && !u.galerieId).map((u) => ({ id: u.id, label: u.name || u.inv, href: `/bestand?id=${u.id}` })),
     },
     {
-      label: "Modelle ohne VK-Preis",
+      // Geschirr hat bewusst keine Preise, darum nur Editionen.
+      label: "Editionen ohne VK-Preis",
       items: ((modellQuery.data?.pages.flatMap((p) => p.items) ?? []) as RawItem[])
-        .filter((i) => i.fields.archiviert !== true && num(i.fields.vk) === null)
+        .filter((i) => i.fields.archiviert !== true && num(i.fields.vk) === null && firstLabel(i.fields.programm) === EDITION_PROGRAMM)
         .map((i) => ({ id: i.id, label: modellLabel(str(i.fields.artikelnr), str(i.fields.name)), href: "/stammdaten?tab=modelle" })),
     },
   ];
@@ -804,7 +825,7 @@ export default function Block() {
   return (
     <div className={SEITE_CLASS}>
       <div className="content space-y-6" lang="de">
-        <PageHeader title="Übersicht" description={`${zahl.format(geschirr.gesamt)} Stück Geschirr · ${zahl.format(edition.gesamt)} Stück Edition · ${plural(unikate.length, "Unikat", "Unikate")}`} />
+        <PageHeader title="Übersicht" />
 
         {failed ? (
           <ErrorState text="Die Übersicht konnte nicht geladen werden. Bitte die Seite neu laden." />
@@ -826,7 +847,9 @@ export default function Block() {
                       <li key={r.name}>
                         <ListRow
                           title={r.name}
-                          sub={r.posten.map((e) => `${e.modell} · ${postenText(e)} · ${e.anzahl}`).join(" | ")}
+                          sub={r.posten.map((e) => (
+                            <span key={e.id} className="block">{`${e.anzahl} × ${e.modell} · ${postenText(e)}`}</span>
+                          ))}
                           meta={<span className="text-base font-semibold tabular-nums">{plural(r.anzahl, "Stück", "Stück")}</span>}
                           href={`/bestand?tab=${r.posten[0].serie === GESCHIRR ? "geschirr" : "edition"}&q=${encodeURIComponent(r.name)}`}
                         />
@@ -859,7 +882,7 @@ export default function Block() {
                 ))}
             </Section>
 
-            <Section title="Unikate außer Haus" description="Nach Partner, früheste Rückgabe zuerst">
+            <Section title="Außer Haus" description="Meisterstücke und Edition nach Partner, früheste Rückgabe zuerst">
               {ausserHausGruppen.length === 0 ? (
                 <EmptyState text="Zurzeit ist nichts außer Haus." />
               ) : (
@@ -870,7 +893,7 @@ export default function Block() {
                         title={g.name}
                         sub={[plural(g.anzahl, "Stück", "Stück"), g.art, g.ort].filter(Boolean).join(" · ")}
                         meta={<FristBadge iso={g.naechste} />}
-                        href={g.key === "ohne" ? AUSSER_HAUS_LINK : `${AUSSER_HAUS_LINK}&q=${encodeURIComponent(g.name)}`}
+                        href={g.nurEdition ? `/bestand?tab=edition&q=${encodeURIComponent(g.key === "ohne" ? "" : g.name)}` : g.key === "ohne" ? AUSSER_HAUS_LINK : `${AUSSER_HAUS_LINK}&q=${encodeURIComponent(g.name)}`}
                       />
                     </li>
                   ))}

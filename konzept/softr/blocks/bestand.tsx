@@ -148,6 +148,7 @@ type Posten = {
   status: string;
   partnerId: string;
   partner: string;
+  rueckgabe: string;
   gedrehtId: string;
   gedreht: string;
   glasiertId: string;
@@ -160,7 +161,7 @@ type Posten = {
   notiz: string;
 };
 
-type PostenKey = Pick<Posten, "modellId" | "zustand" | "glasurId" | "brand" | "reserviert" | "status" | "partnerId" | "gedrehtId" | "glasiertId">;
+type PostenKey = Pick<Posten, "modellId" | "zustand" | "glasurId" | "brand" | "reserviert" | "status" | "partnerId" | "rueckgabe" | "gedrehtId" | "glasiertId">;
 
 // Liest einen Datensatz des Editionsbestands. Jeder Block wählt seine Felder selbst aus, fehlende bleiben leer.
 function toPosten(item: RawItem): Posten {
@@ -186,6 +187,7 @@ function toPosten(item: RawItem): Posten {
     status: asOpts(f.status)[0]?.label ?? "",
     partnerId: partner?.id ?? "",
     partner: partner?.label ?? "",
+    rueckgabe: str(f.rueckgabe).slice(0, 10),
     gedrehtId: gedreht?.id ?? "",
     gedreht: gedreht?.label ?? "",
     glasiertId: glasiert?.id ?? "",
@@ -208,6 +210,7 @@ function gleicherPosten(a: PostenKey, b: PostenKey): boolean {
     a.reserviert.toLowerCase() === b.reserviert.toLowerCase() &&
     a.status === b.status &&
     a.partnerId === b.partnerId &&
+    a.rueckgabe === b.rueckgabe &&
     a.gedrehtId === b.gedrehtId &&
     a.glasiertId === b.glasiertId
   );
@@ -221,6 +224,7 @@ const keyVon = (p: Posten): PostenKey => ({
   reserviert: p.reserviert,
   status: p.status,
   partnerId: p.partnerId,
+  rueckgabe: p.rueckgabe,
   gedrehtId: p.gedrehtId,
   glasiertId: p.glasiertId,
 });
@@ -231,9 +235,9 @@ const ausserHaus = (p: Pick<Posten, "status">) => p.status !== "";
 // Frei verkaufbar: glasiert, nicht reserviert und in der Werkstatt.
 const verkaufbar = (p: Posten) => p.zustand === GLASIERT && !p.reserviert && !ausserHaus(p);
 
-// Status für die Anzeige, z. B. „ausgestellt bei Galerie Mitte“.
-function statusText(p: Pick<Posten, "status" | "partner">): string {
-  return p.status ? [p.status, p.partner && `bei ${p.partner}`].filter(Boolean).join(" ") : "";
+// Status für die Anzeige, z. B. „ausgestellt bei Galerie Mitte bis 30.11.2026“.
+function statusText(p: Pick<Posten, "status" | "partner"> & { rueckgabe?: string }): string {
+  return p.status ? [p.status, p.partner && `bei ${p.partner}`, p.rueckgabe && `bis ${formatDate(p.rueckgabe)}`].filter(Boolean).join(" ") : "";
 }
 
 // Nächster Arbeitsschritt: roh → Schrühbrand → geschrüht → Glasurbrand → glasiert. Glasiert ist fertig.
@@ -251,7 +255,7 @@ function postenText(p: Pick<Posten, "zustand" | "glasur" | "brand">): string {
 }
 
 // Bezeichnung des Datensatzes (Hauptfeld in der Datenbank), damit die Tabelle in Softr lesbar bleibt.
-function bezeichnung(modell: string, p: Pick<Posten, "zustand" | "glasur" | "brand" | "reserviert" | "status" | "partner">): string {
+function bezeichnung(modell: string, p: Pick<Posten, "zustand" | "glasur" | "brand" | "reserviert" | "status" | "partner"> & { rueckgabe?: string }): string {
   return [modell, postenText(p), p.reserviert && `für ${p.reserviert}`, statusText(p)].filter(Boolean).join(" · ");
 }
 
@@ -319,6 +323,14 @@ function brandGruppen(posten: Posten[]): BrandGruppe[] {
 }
 
 const brandName = (brand: string) => (brand ? `Brand ${formatDate(brand)}` : "Brand unbekannt");
+
+// Eine Zeile für Listen: je Glasur die freie Ware, bei mehreren Bränden mit der Zahl, die zusammen passt.
+// z. B. „Rostbraun 16 (9 aus einem Brand) · Weiß 6“
+function glasurZeile(posten: Posten[]): string {
+  return brandGruppen(posten)
+    .map((g) => `${g.glasur || "ohne Glasur"} ${g.gesamt}${g.braende.length > 1 ? ` (${g.zusammen} aus einem Brand)` : ""}`)
+    .join(" · ");
+}
 
 // „geschrüht 25 · glasiert 12“: nur Zustände mit Bestand, in der Reihenfolge des Ablaufs.
 function standText(je: Record<string, number>): string {
@@ -620,11 +632,11 @@ function OptionSelect({ id, value, onChange, options, placeholder, disabled }: {
   );
 }
 
-function SearchField({ value, onChange, placeholder, label }: { value: string; onChange: (v: string) => void; placeholder: string; label: string }) {
+function SearchField({ id, value, onChange, placeholder, label }: { id?: string; value: string; onChange: (v: string) => void; placeholder: string; label: string }) {
   return (
     <div className="relative flex-1 min-w-0">
       <Search className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" aria-hidden />
-      <Feld type="search" aria-label={label} placeholder={placeholder} value={value} onChange={(e) => onChange(e.target.value)} className="pl-10" />
+      <Feld id={id} type="search" aria-label={label} placeholder={placeholder} value={value} onChange={(e) => onChange(e.target.value)} className="pl-10" />
     </div>
   );
 }
@@ -1072,6 +1084,9 @@ const unikatSelect = q.select({
   verkauftAn: "4qhRx",
   seit: "Evxm2",
   rueckgabe: "ENQkk",
+  ort: "6YbfO",
+  brennart: "8D0WI",
+  glasurrezept: "XhsmV",
 });
 const unikatUpdateFields = q.select({
   name: "7IBVW",
@@ -1095,6 +1110,9 @@ const unikatUpdateFields = q.select({
   verkauftAn: "4qhRx",
   seit: "Evxm2",
   rueckgabe: "ENQkk",
+  ort: "6YbfO",
+  brennart: "8D0WI",
+  glasurrezept: "XhsmV",
   fotos: "rqreT",
 });
 const editionSelect = q.select({
@@ -1112,6 +1130,7 @@ const editionSelect = q.select({
   reserviert: "L1bO5",
   status: "v9V6W",
   partner: "hs3iV",
+  rueckgabe: "nBkRl",
   gedreht: "7FQQm",
   glasiert: "dkREk",
   masse: "eVHco",
@@ -1128,6 +1147,7 @@ const editionCreateFields = q.select({
   reserviert: "L1bO5",
   status: "v9V6W",
   partner: "hs3iV",
+  rueckgabe: "nBkRl",
   gedreht: "7FQQm",
   glasiert: "dkREk",
   masse: "eVHco",
@@ -1135,6 +1155,7 @@ const editionCreateFields = q.select({
 const AUSSER_STATUS: Opt[] = [AUSGESTELLT, KOMMISSION].map((s) => ({ id: s, label: s }));
 
 const LIST_STEP = 50;
+const LETZTE_BRAENDE = 3;
 const UNDO_MS = 10000;
 
 type Unikat = {
@@ -1165,6 +1186,9 @@ type Unikat = {
   verkauftAn: string;
   seit: string;
   rueckgabe: string;
+  ort: string;
+  brennart: string;
+  glasurrezept: string;
 };
 
 // Drei Serien der Werkstatt. Geschirr und Edition sind Mengenware (Stück je Zustand), Unikate Einzelstücke.
@@ -1242,6 +1266,9 @@ function toUnikat(item: RawItem): Unikat {
     verkauftAn: str(f.verkauftAn),
     seit: str(f.seit),
     rueckgabe: str(f.rueckgabe),
+    ort: str(f.ort),
+    brennart: str(f.brennart),
+    glasurrezept: str(f.glasurrezept),
   };
 }
 
@@ -1294,6 +1321,9 @@ type EditForm = {
   verkauftAm: string;
   verkauftAn: string;
   notiz: string;
+  ort: string;
+  brennart: string;
+  glasurrezept: string;
 };
 
 function UnikatDetail({
@@ -1336,9 +1366,13 @@ function UnikatDetail({
     verkauftAm: u.verkauftAm.slice(0, 10),
     verkauftAn: u.verkauftAn,
     notiz: u.notiz,
+    ort: u.ort,
+    brennart: u.brennart,
+    glasurrezept: u.glasurrezept,
   };
   const [editing, setEditing] = useState(false);
   const [einzelDaten, setEinzelDaten] = useState(false);
+  const [werkOffen, setWerkOffen] = useState(false);
   const [form, setForm] = useState<EditForm>(initial);
   const [formError, setFormError] = useState<Partial<Record<keyof EditForm, string>>>({});
   const [photoIndex, setPhotoIndex] = useState(0);
@@ -1439,6 +1473,9 @@ function UnikatDetail({
           verkauftAm: form.verkauftAm || null,
           verkauftAn: form.verkauftAn.trim(),
           notiz: form.notiz.trim(),
+          ort: form.ort.trim(),
+          brennart: form.brennart.trim(),
+          glasurrezept: form.glasurrezept.trim(),
           ...(fotos ? { fotos } : {}),
         },
       } as never);
@@ -1465,6 +1502,11 @@ function UnikatDetail({
     ["Verkauft", [u.verkauftAn && `an ${u.verkauftAn}`, u.verkauftAm && `am ${formatDate(u.verkauftAm)}`].filter(Boolean).join(" ")],
     ["Bildnachweis", u.bildnachweis],
     ["Erfasst", [formatDate(u.erfasstAm), u.erfasstVon].filter(Boolean).join(", von ")],
+    // Werkangaben bleiben im Hintergrund: nur sichtbar, wenn sie ausgefüllt sind.
+    ...([
+      ["Ort", u.ort],
+      ["Brennart", u.brennart],
+    ] as [string, string][]).filter(([, v]) => v),
   ];
 
   return (
@@ -1597,6 +1639,12 @@ function UnikatDetail({
                   <p className="text-base whitespace-pre-line">{u.notiz}</p>
                 </div>
               )}
+              {u.glasurrezept && (
+                <div>
+                  <p className="text-sm text-muted-foreground">Glasurrezept</p>
+                  <p className="text-base whitespace-pre-line">{u.glasurrezept}</p>
+                </div>
+              )}
               <div className="flex flex-col gap-3">
                 {update.enabled && (
                   <Knopf onClick={() => setEditing(true)}>
@@ -1689,6 +1737,26 @@ function UnikatDetail({
                 <FieldLabel htmlFor="d-notiz">Notiz</FieldLabel>
                 <Textfeld id="d-notiz" rows={3} value={form.notiz} onChange={(e) => set("notiz", e.target.value)} />
               </div>
+              {werkOffen || form.ort || form.brennart || form.glasurrezept ? (
+                <>
+                  <div className="grid sm:grid-cols-2 gap-5">
+                    <div>
+                      <FieldLabel htmlFor="d-ort">Ort</FieldLabel>
+                      <Feld id="d-ort" value={form.ort} onChange={(e) => set("ort", e.target.value)} placeholder="z. B. Essen" />
+                    </div>
+                    <div>
+                      <FieldLabel htmlFor="d-brennart">Brennart</FieldLabel>
+                      <Feld id="d-brennart" value={form.brennart} onChange={(e) => set("brennart", e.target.value)} placeholder="z. B. Holzbrand, reduzierend" />
+                    </div>
+                  </div>
+                  <div>
+                    <FieldLabel htmlFor="d-glasurrezept">Glasurrezept</FieldLabel>
+                    <Textfeld id="d-glasurrezept" rows={2} value={form.glasurrezept} onChange={(e) => set("glasurrezept", e.target.value)} />
+                  </div>
+                </>
+              ) : (
+                <ZusatzKnopf label="Werkangaben: Ort, Brennart, Glasurrezept" onClick={() => setWerkOffen(true)} />
+              )}
               <div>
                 <FieldLabel htmlFor="foto-input">Fotos hinzufügen</FieldLabel>
                 <PhotoPicker files={newFiles} onChange={setNewFiles} multiple />
@@ -1888,37 +1956,119 @@ function InventurView({ rows, onApply, onClose }: { rows: Posten[]; onApply: (ch
 }
 
 type MengenArt = "reservieren" | "freigeben" | "ausstellen" | "zurueck" | "ausbuchen";
-type Schritt = { art: "liste" } | { art: "wahl" | "weiter" | "korrigieren" | MengenArt; p: Posten };
+type Schritt = { art: "liste" } | { art: "brand"; glasurId: string; glasur: string; brand: string } | { art: "wahl" | "weiter" | "korrigieren" | MengenArt; p: Posten };
 type UmbuchenFn = (p: Posten, auftrag: { entnommen: number; ausschuss: number; ziel: PostenKey | null; glasur: string; lagerortId: string; meldung: string }) => Promise<boolean>;
 type KorrigierenFn = (p: Posten, fields: { anzahl: number; lagerort: string[]; notiz: string; masse: string }) => Promise<boolean>;
-type Auswahlen = { modellGlasuren: Opt[]; glasuren: Opt[]; lagerorte: Opt[]; personen: Opt[]; partner: Opt[]; kunden: string[]; onGlasurNeu: (name: string) => Promise<string | null> };
+type Auswahlen = { modellGlasuren: Opt[]; glasuren: Opt[]; lagerorte: Opt[]; personen: Opt[]; partner: Opt[]; kunden: string[]; braende: string[]; onGlasurNeu: (name: string) => Promise<string | null> };
 
 // Antwort auf „Wie viele kann ich zusammen verkaufen?“: je Glasur die freie Ware im Haus, aufgeteilt nach Brand.
-// Nur Stücke aus einem Brand haben denselben Farbton. Die größte Zahl ist, was zusammen geht.
-function ZusammenVerkaufbar({ posten }: { posten: Posten[] }) {
+// Nur Stücke aus einem Brand haben denselben Farbton. Einen Brand antippen reserviert direkt daraus.
+// Darunter, wie viel geschrühte Ware zum Nachglasieren bereitliegt.
+function ZusammenVerkaufbar({ posten, onReservieren, onNachglasieren }: { posten: Posten[]; onReservieren?: (g: BrandGruppe, brand: string) => void; onNachglasieren?: (p: Posten) => void }) {
   const gruppen = brandGruppen(posten);
-  if (!gruppen.length) return null;
+  const geschrueht = posten.filter((p) => p.zustand === GESCHRUEHT && !p.reserviert && !ausserHaus(p) && p.anzahl > 0).sort((a, b) => b.anzahl - a.anzahl);
+  const geschruehtSumme = geschrueht.reduce((n, p) => n + p.anzahl, 0);
+  if (!gruppen.length && !geschruehtSumme) return null;
   return (
-    <section className={`${PANEL_CLASS} p-3`}>
-      <h3 className="font-semibold">Zusammen verkaufbar</h3>
-      <p className="text-sm text-muted-foreground">Frei, im Haus und aus einem Brand, also im selben Farbton.</p>
-      <ul className="mt-2 divide-y">
-        {gruppen.map((g) => (
-          <li key={g.glasurId || "ohne"} className="flex items-center justify-between gap-3 py-2">
-            <div className="min-w-0">
-              <p className="font-medium">{g.glasur || "Ohne Glasur"}</p>
-              <p className="text-sm text-muted-foreground">
-                {g.braende.length > 1 ? `${g.gesamt} frei aus ${g.braende.length} Bränden: ${g.braende.map((b) => b.anzahl).join(" + ")}` : `${g.gesamt} frei · ${brandName(g.braende[0].brand)}`}
-              </p>
-            </div>
-            <span className="shrink-0 text-right">
-              <span className="block text-lg font-semibold tabular-nums">{zahl.format(g.zusammen)}</span>
-              <span className="block text-xs text-muted-foreground">zusammen</span>
-            </span>
-          </li>
-        ))}
-      </ul>
+    <section className={`${PANEL_CLASS} p-3 space-y-3`}>
+      <div>
+        <h3 className="font-semibold">Zusammen verkaufbar</h3>
+        <p className="text-sm text-muted-foreground">{`Frei, im Haus und aus einem Brand, also im selben Farbton.${onReservieren ? " Brand antippen zum Reservieren." : ""}`}</p>
+      </div>
+      {gruppen.map((g) => (
+        <div key={g.glasurId || "ohne"}>
+          <p className="font-medium">
+            {g.glasur || "Ohne Glasur"} <span className="font-normal text-muted-foreground">{g.braende.length > 1 ? `· ${g.gesamt} frei, bis zu ${g.zusammen} zusammen` : `· ${g.gesamt} frei`}</span>
+          </p>
+          <ul className="divide-y">
+            {g.braende.map((b) => (
+              <li key={b.brand || "unbekannt"}>
+                <ListRow title={brandName(b.brand)} meta={<span className="text-lg font-semibold tabular-nums">{zahl.format(b.anzahl)}</span>} onClick={onReservieren ? () => onReservieren(g, b.brand) : undefined} />
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+      {geschruehtSumme > 0 && (
+        <div className="flex flex-wrap items-center justify-between gap-2 rounded-md bg-muted p-3">
+          <p className="text-base">
+            Zum Nachglasieren: <strong>{zahl.format(geschruehtSumme)} geschrüht</strong>
+          </p>
+          {onNachglasieren && (
+            <Knopf variant="outline" className="h-11 text-base" onClick={() => onNachglasieren(geschrueht[0])}>
+              Glasieren
+            </Knopf>
+          )}
+        </div>
+      )}
     </section>
+  );
+}
+
+// Reservieren direkt aus einem Brand: zieht die Stück aus den freien Posten dieser Glasur und dieses Brands.
+function BrandReservieren({ posten, glasurId, glasur, brand, auswahl, onUmbuchen, onFertig, onZurueck }: { posten: Posten[]; glasurId: string; glasur: string; brand: string; auswahl: Auswahlen; onUmbuchen: UmbuchenFn; onFertig: () => void; onZurueck: () => void }) {
+  const quelle = posten.filter((p) => verkaufbar(p) && p.glasurId === glasurId && p.brand === brand).sort((a, b) => b.anzahl - a.anzahl);
+  const frei = quelle.reduce((n, p) => n + p.anzahl, 0);
+  const [anzahl, setAnzahl] = useState(frei);
+  const [fuer, setFuer] = useState("");
+  const [fehler, setFehler] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  async function speichern() {
+    if (!fuer.trim()) {
+      setFehler("Bitte angeben, für wen reserviert wird.");
+      return;
+    }
+    setBusy(true);
+    let rest = anzahl;
+    for (const p of quelle) {
+      if (rest <= 0) break;
+      const n = Math.min(rest, p.anzahl);
+      const ok = await onUmbuchen(p, { entnommen: n, ausschuss: 0, ziel: { ...keyVon(p), reserviert: fuer.trim() }, glasur: p.glasur, lagerortId: p.lagerort?.id ?? "", meldung: "" });
+      if (!ok) {
+        setBusy(false);
+        return;
+      }
+      rest -= n;
+    }
+    toast.success(`${anzahl} Stück ${glasur} (${brandName(brand)}) für ${fuer.trim()} reserviert.`);
+    setBusy(false);
+    onFertig();
+  }
+
+  if (frei === 0) {
+    return (
+      <div className="pb-2 space-y-3">
+        <EmptyState text="Aus diesem Brand ist nichts mehr frei." />
+        <SchrittKnoepfe text="Zurück zur Liste" busy={false} onSpeichern={onFertig} onZurueck={onZurueck} />
+      </div>
+    );
+  }
+  return (
+    <div className="pb-2 space-y-5">
+      <div>
+        <FieldLabel htmlFor="b-anzahl">Anzahl</FieldLabel>
+        <Stueckzahl id="b-anzahl" value={anzahl} min={1} max={frei} onChange={setAnzahl} />
+        <Hint>{`Frei aus diesem Brand: ${frei} Stück.`}</Hint>
+      </div>
+      <div>
+        <FieldLabel htmlFor="b-fuer" required>
+          Reserviert für
+        </FieldLabel>
+        <TextMitVorschlag
+          id="b-fuer"
+          value={fuer}
+          onChange={(v) => {
+            setFuer(v);
+            setFehler("");
+          }}
+          vorschlaege={auswahl.kunden}
+          placeholder="z. B. Café Lindenhof oder Auftrag 2026-14"
+        />
+        <ErrorText>{fehler}</ErrorText>
+      </div>
+      <SchrittKnoepfe text={`${anzahl} Stück reservieren`} busy={busy} onSpeichern={speichern} onZurueck={onZurueck} />
+    </div>
   );
 }
 
@@ -1941,7 +2091,7 @@ function ModellFenster({
 }) {
   const [schritt, setSchritt] = useState<Schritt>({ art: "liste" });
   // Nach dem Neuladen den Posten mit aktueller Anzahl zeigen. Gibt es ihn nicht mehr, zurück zur Liste.
-  const aktuell = schritt.art === "liste" ? undefined : stand.posten.find((p) => p.id === schritt.p.id);
+  const aktuell = "p" in schritt ? stand.posten.find((p) => p.id === schritt.p.id) : undefined;
   const zurListe = () => setSchritt({ art: "liste" });
   const zustaende = ZUSTAENDE.filter((z) => stand.posten.some((p) => p.zustand === z));
   const andere = stand.posten.filter((p) => !ZUSTAENDE.includes(p.zustand));
@@ -1952,15 +2102,23 @@ function ModellFenster({
         <PanelHeader
           title={stand.modell}
           description={
-            schritt.art === "liste" || !aktuell
+            schritt.art === "brand"
+              ? `${schritt.glasur || "Ohne Glasur"} · ${brandName(schritt.brand)}`
+              : schritt.art === "liste" || !aktuell
               ? [stand.serie, stand.typ, standText(stand.je)].filter(Boolean).join(" · ")
               : [postenText(aktuell), `${aktuell.anzahl} Stück`, aktuell.reserviert && `für ${aktuell.reserviert}`, statusText(aktuell)].filter(Boolean).join(" · ")
           }
         />
-        {schritt.art === "liste" || !aktuell ? (
+        {schritt.art === "brand" ? (
+          <BrandReservieren posten={stand.posten} glasurId={schritt.glasurId} glasur={schritt.glasur} brand={schritt.brand} auswahl={auswahl} onUmbuchen={onUmbuchen} onFertig={zurListe} onZurueck={zurListe} />
+        ) : schritt.art === "liste" || !aktuell ? (
           <div className="pb-2 space-y-5">
             {stand.fotos[0] && <img src={thumb(stand.fotos[0], "large")} alt={stand.modell} className="w-full max-h-56 object-contain rounded-lg bg-muted" />}
-            <ZusammenVerkaufbar posten={stand.posten} />
+            <ZusammenVerkaufbar
+              posten={stand.posten}
+              onReservieren={canEdit ? (g, brand) => setSchritt({ art: "brand", glasurId: g.glasurId, glasur: g.glasur, brand }) : undefined}
+              onNachglasieren={canEdit ? (p) => setSchritt({ art: "weiter", p }) : undefined}
+            />
             {[
               ...zustaende.map((z) => ({ titel: z, posten: stand.posten.filter((p) => p.zustand === z) })),
               ...(andere.length ? [{ titel: "Ohne Zustand", posten: andere }] : []),
@@ -2057,6 +2215,8 @@ function WeiterSchritt({ p, auswahl, onUmbuchen, onFertig, onZurueck }: { p: Pos
   const { modellGlasuren, glasuren, lagerorte, personen, kunden } = auswahl;
   const [glasurId, setGlasurId] = useState(modellGlasuren.length === 1 ? modellGlasuren[0].id : "");
   const [brand, setBrand] = useState(today());
+  const [anderesDatum, setAnderesDatum] = useState(false);
+  const [mehr, setMehr] = useState(!!p.reserviert);
   const [glasiertId, setGlasiertId] = useState("");
   const [fuer, setFuer] = useState(p.reserviert);
   const [lagerortId, setLagerortId] = useState(p.lagerort?.id ?? "");
@@ -2064,6 +2224,10 @@ function WeiterSchritt({ p, auswahl, onUmbuchen, onFertig, onZurueck }: { p: Pos
   const [busy, setBusy] = useState(false);
   const gut = Math.max(0, entnommen - ausschuss);
   const glasur = glasuren.find((g) => g.id === glasurId)?.label ?? "";
+  // Brand als Knöpfe: heute oder einer der letzten Brände. Ein vertipptes Datum ergäbe sonst einen Scheinbrand.
+  const ANDERES = "Anderes Datum";
+  const brandKnoepfe = [{ id: today(), label: "Heute" }, ...auswahl.braende.map((b) => ({ id: b, label: formatDate(b) })), { id: ANDERES, label: ANDERES }];
+  const brandWert = anderesDatum ? ANDERES : (brandKnoepfe.find((k) => k.id === brand)?.label ?? ANDERES);
 
   async function speichern() {
     if (glasieren && !glasurId) {
@@ -2121,24 +2285,46 @@ function WeiterSchritt({ p, auswahl, onUmbuchen, onFertig, onZurueck }: { p: Pos
             <ErrorText>{fehler}</ErrorText>
           </div>
           <div>
-            <FieldLabel htmlFor="w-brand">Brand vom</FieldLabel>
-            <Feld id="w-brand" type="date" value={brand} onChange={(e) => setBrand(e.target.value)} />
+            <FieldLabel>Brand vom</FieldLabel>
+            <ChoiceChips
+              label="Brand vom"
+              options={brandKnoepfe}
+              value={brandWert}
+              onChange={(label) => {
+                const k = brandKnoepfe.find((x) => x.label === label);
+                setAnderesDatum(label === ANDERES);
+                if (k && label !== ANDERES) setBrand(k.id);
+              }}
+            />
+            {anderesDatum && (
+              <div className="mt-3">
+                <Feld id="w-brand" type="date" aria-label="Datum des Brands" value={brand} onChange={(e) => setBrand(e.target.value)} />
+              </div>
+            )}
             <Hint>Stücke aus einem Brand haben denselben Farbton und stehen zusammen.</Hint>
-          </div>
-          <div>
-            <FieldLabel htmlFor="w-glasiert">Glasiert von</FieldLabel>
-            <OptionSelect id="w-glasiert" value={glasiertId} onChange={setGlasiertId} options={personen} placeholder="Freiwillig" />
           </div>
         </>
       )}
-      <div>
-        <FieldLabel htmlFor="w-fuer">Reserviert für</FieldLabel>
-        <TextMitVorschlag id="w-fuer" value={fuer} onChange={setFuer} vorschlaege={kunden} placeholder="Kunde oder Auftrag (freiwillig)" />
-      </div>
-      <div>
-        <FieldLabel htmlFor="w-lagerort">Lagerort</FieldLabel>
-        <OptionSelect id="w-lagerort" value={lagerortId} onChange={setLagerortId} options={lagerorte} placeholder="Kein Lagerort" />
-      </div>
+      {mehr ? (
+        <>
+          {glasieren && (
+            <div>
+              <FieldLabel htmlFor="w-glasiert">Glasiert von</FieldLabel>
+              <OptionSelect id="w-glasiert" value={glasiertId} onChange={setGlasiertId} options={personen} placeholder="Freiwillig" />
+            </div>
+          )}
+          <div>
+            <FieldLabel htmlFor="w-fuer">Reserviert für</FieldLabel>
+            <TextMitVorschlag id="w-fuer" value={fuer} onChange={setFuer} vorschlaege={kunden} placeholder="Kunde oder Auftrag (freiwillig)" />
+          </div>
+          <div>
+            <FieldLabel htmlFor="w-lagerort">Lagerort</FieldLabel>
+            <OptionSelect id="w-lagerort" value={lagerortId} onChange={setLagerortId} options={lagerorte} placeholder="Kein Lagerort" />
+          </div>
+        </>
+      ) : (
+        <ZusatzKnopf label={glasieren ? "Mehr: glasiert von, reserviert, Lagerort" : "Mehr: reserviert, Lagerort"} onClick={() => setMehr(true)} />
+      )}
       <p className="rounded-md bg-muted p-3 text-base">
         Danach: {p.zustand} <strong>{p.anzahl - entnommen}</strong> · {ziel}
         {glasur ? ` ${glasur}` : ""} <strong>+{gut}</strong>
@@ -2155,6 +2341,7 @@ function MengenSchritt({ art, p, auswahl, onUmbuchen, onFertig, onZurueck }: { a
   const [fuer, setFuer] = useState("");
   const [status, setStatus] = useState(AUSGESTELLT);
   const [partnerId, setPartnerId] = useState("");
+  const [rueckgabe, setRueckgabe] = useState("");
   const [fehler, setFehler] = useState("");
   const [busy, setBusy] = useState(false);
   const partner = auswahl.partner.find((x) => x.id === partnerId)?.label ?? "";
@@ -2171,14 +2358,14 @@ function MengenSchritt({ art, p, auswahl, onUmbuchen, onFertig, onZurueck }: { a
   const ziele: Record<MengenArt, PostenKey | null> = {
     reservieren: { ...keyVon(p), reserviert: fuer.trim() },
     freigeben: { ...keyVon(p), reserviert: "" },
-    ausstellen: { ...keyVon(p), status, partnerId },
-    zurueck: { ...keyVon(p), status: "", partnerId: "" },
+    ausstellen: { ...keyVon(p), status, partnerId, rueckgabe },
+    zurueck: { ...keyVon(p), status: "", partnerId: "", rueckgabe: "" },
     ausbuchen: null,
   };
   const erledigt = {
     reservieren: `für ${fuer.trim()} reserviert`,
     freigeben: "wieder frei",
-    ausstellen: [status, partner && `bei ${partner}`].filter(Boolean).join(" "),
+    ausstellen: statusText({ status, partner, rueckgabe }),
     zurueck: "wieder in der Werkstatt",
     ausbuchen: "ausgebucht",
   }[art];
@@ -2235,6 +2422,11 @@ function MengenSchritt({ art, p, auswahl, onUmbuchen, onFertig, onZurueck }: { a
           <div>
             <FieldLabel htmlFor="m-partner">Partner (Galerie, Museum …)</FieldLabel>
             <OptionSelect id="m-partner" value={partnerId} onChange={setPartnerId} options={auswahl.partner} placeholder="Freiwillig" />
+          </div>
+          <div>
+            <FieldLabel htmlFor="m-rueckgabe">Rückgabe bis</FieldLabel>
+            <Feld id="m-rueckgabe" type="date" value={rueckgabe} onChange={(e) => setRueckgabe(e.target.value)} />
+            <Hint>Freiwillig. Die Übersicht erinnert rechtzeitig an die Rückgabe.</Hint>
           </div>
         </>
       )}
@@ -2325,6 +2517,15 @@ export default function Block() {
   const unikate = useMemo(() => (unikateQuery.data?.pages.flatMap((p) => p.items) ?? []).map((i) => toUnikat(i as RawItem)), [unikateQuery.data]);
   const posten = useMemo(() => (editionQuery.data?.pages.flatMap((p) => p.items) ?? []).map((i) => toPosten(i as RawItem)), [editionQuery.data]);
   // Frühere Kunden und Aufträge als Vorschläge, damit derselbe Name gleich geschrieben wird.
+  // Die letzten Brände (außer heute) als Knöpfe beim Glasieren.
+  const letzteBraende = useMemo(
+    () =>
+      [...new Set<string>(posten.map((p) => p.brand).filter((b) => b && b !== today()))]
+        .sort()
+        .reverse()
+        .slice(0, LETZTE_BRAENDE),
+    [posten],
+  );
   const kunden = useMemo(
     () => [...new Set([...posten.map((p) => p.reserviert), ...unikate.map((u) => u.verkauftAn.trim())].filter(Boolean))].sort((a, b) => a.localeCompare(b, "de")),
     [posten, unikate],
@@ -2347,7 +2548,7 @@ export default function Block() {
   const activeMenge = MENGEN_FILTER.find((f) => f.key === mengenFilter) ?? MENGEN_FILTER[0];
   const visibleStaende = imTyp
     .filter(activeMenge.match)
-    .filter((s) => !term || [s.modell, s.typ, ...s.posten.flatMap((p) => [p.glasur, p.reserviert, p.lagerort?.label])].join(" ").toLowerCase().includes(term.toLowerCase()));
+    .filter((s) => !term || [s.modell, s.typ, ...s.posten.flatMap((p) => [p.glasur, p.reserviert, p.partner, p.lagerort?.label])].join(" ").toLowerCase().includes(term.toLowerCase()));
   const typenMenge = [...new Set(staende.map((s) => s.typ).filter(Boolean))].sort((a, b) => a.localeCompare(b, "de"));
   const glasurenJeModell = useMemo(
     () => new Map(((modellQuery.data?.pages.flatMap((p) => p.items) ?? []) as RawItem[]).map((m) => [m.id, asOpts(m.fields.glasuren)] as [string, Opt[]])),
@@ -2379,7 +2580,7 @@ export default function Block() {
       if (plan.ziel && "neu" in plan.ziel) {
         const n = plan.ziel.neu;
         await editionCreate.mutateAsync({
-          bezeichnung: bezeichnung(p.modell, { zustand: n.zustand, glasur: a.glasur, brand: n.brand, reserviert: n.reserviert, status: n.status, partner: activeOptions(stamm.partner, [n.partnerId]).find((x) => x.id === n.partnerId)?.label ?? "" }),
+          bezeichnung: bezeichnung(p.modell, { zustand: n.zustand, glasur: a.glasur, brand: n.brand, reserviert: n.reserviert, status: n.status, rueckgabe: n.rueckgabe, partner: activeOptions(stamm.partner, [n.partnerId]).find((x) => x.id === n.partnerId)?.label ?? "" }),
           modell: link(n.modellId),
           glasur: link(n.glasurId || undefined),
           zustand: n.zustand,
@@ -2389,6 +2590,7 @@ export default function Block() {
           reserviert: n.reserviert,
           status: n.status || null,
           partner: link(n.partnerId || undefined),
+          rueckgabe: n.rueckgabe || null,
           gedreht: link(n.gedrehtId || undefined),
           glasiert: link(n.glasiertId || undefined),
           masse: n.masse,
@@ -2398,7 +2600,7 @@ export default function Block() {
       }
       if ("loeschen" in plan.quelle) await editionDelete.mutateAsync(plan.quelle.id);
       else await editionUpdate.mutateAsync({ recordId: plan.quelle.id, fields: { anzahl: plan.quelle.anzahl } } as never);
-      toast.success(a.meldung);
+      if (a.meldung) toast.success(a.meldung);
       return true;
     } catch {
       toast.error("Speichern hat nicht geklappt. Bitte den Bestand dieses Modells prüfen.");
@@ -2514,7 +2716,7 @@ export default function Block() {
       <div className="content space-y-4" lang="de">
         <PageHeader
           title="Bestand"
-          description={isMenge ? `${zahl.format(stueckGesamt)} Stück in ${zahl.format(visibleStaende.length)} ${visibleStaende.length === 1 ? "Modell" : "Modellen"}` : `${zahl.format(visible.length)} von ${zahl.format(unikate.length)} Unikaten`}
+          description={isMenge ? `${zahl.format(stueckGesamt)} Stück in ${zahl.format(visibleStaende.length)} ${visibleStaende.length === 1 ? "Modell" : "Modellen"}` : `${zahl.format(visible.length)} von ${zahl.format(unikate.length)} Meisterstücken`}
           // Handy und Desktop gleich: Ansichtsumschalter bzw. Inventur im Kopf, Filter hinter dem Filterknopf.
           aside={isMenge ? inventurButton : <AnsichtToggle value={ansicht} onChange={setAnsicht} />}
         />
@@ -2524,7 +2726,7 @@ export default function Block() {
           tabs={[
             { key: "geschirr" as Art, label: GESCHIRR, count: nachModell(posten.filter((p) => p.serie === GESCHIRR)).length },
             { key: "edition" as Art, label: EDITION_PROGRAMM, count: nachModell(posten.filter((p) => p.serie === EDITION_PROGRAMM)).length },
-            { key: "unikat" as Art, label: "Unikate", count: unikate.length },
+            { key: "unikat" as Art, label: "Meisterstücke", count: unikate.length },
           ]}
           value={art}
           onChange={(key) => {
@@ -2593,7 +2795,12 @@ export default function Block() {
                   <ListRow
                     fotos={s.fotos}
                     title={s.modell}
-                    sub={standText(s.je)}
+                    sub={
+                      <>
+                        {standText(s.je)}
+                        {glasurZeile(s.posten) && <span className="block">{glasurZeile(s.posten)}</span>}
+                      </>
+                    }
                     meta={s.reserviert > 0 ? <span className="text-sm text-amber-900">{zahl.format(s.reserviert)} reserviert</span> : undefined}
                     onClick={() => setModellKey(s.modellId || s.modell)}
                   />
@@ -2673,6 +2880,7 @@ export default function Block() {
             personen: activeOptions(stamm.kuenstler),
             partner: activeOptions(stamm.partner),
             kunden,
+            braende: letzteBraende,
             onGlasurNeu: neueGlasur,
           }}
           onClose={() => setModellKey("")}

@@ -371,7 +371,7 @@ export default function Block() {
       hint: "Wer dreht und glasiert. Erscheint als Auswahl beim Erfassen und Glasieren.",
       fields: [{ key: "name", label: "Name", kind: "text", required: true, placeholder: "Vor- und Nachname" }],
       entries: items(kuenstlerQuery).map((i) => toEntry(i, ["name"], () => "")),
-      usage: (id) => [stueck(usage("person", id, "u"), "Unikat", "Unikaten"), usage("person", id, "e") ? stueck(usage("person", id, "e"), "Editionsposten", "Editionsposten") : ""].filter(Boolean).join(" · "),
+      usage: (id) => [stueck(usage("person", id, "u"), "Meisterstück", "Meisterstücken"), usage("person", id, "e") ? stueck(usage("person", id, "e"), "Editionsposten", "Editionsposten") : ""].filter(Boolean).join(" · "),
       usageCount: (id) => usage("person", id, "u") + usage("person", id, "e"),
       archive: archiveVia(kuenstlerUpdate, kuenstlerQuery.refetch),
       remove: removeVia(kuenstlerDelete, kuenstlerQuery.refetch, [...PERSONEN_FELDER.map((key) => ({ source: "u" as const, key })), ...PERSONEN_FELDER_EDITION.map((key) => ({ source: "e" as const, key }))]),
@@ -381,11 +381,11 @@ export default function Block() {
       key: "glasuren",
       label: "Glasuren",
       singular: "Glasur",
-      hint: "Glasurname für Unikate und Editionsware.",
+      hint: "Glasuren für Geschirr, Edition und Meisterstücke.",
       fields: [{ key: "name", label: "Name", kind: "text", required: true, placeholder: "z. B. Seladon Nebel" }],
       entries: items(glasurQuery).map((i) => toEntry(i, ["name"], () => "")),
       usage: (id) =>
-        [stueck(usage("glasur", id, "u"), "Unikat", "Unikaten"), stueck(usage("glasur", id, "e"), "Editionsposten", "Editionsposten"), usage("glasuren", id, "m") ? `bei ${zahl.format(usage("glasuren", id, "m"))} ${usage("glasuren", id, "m") === 1 ? "Modell" : "Modellen"}` : ""]
+        [stueck(usage("glasur", id, "u"), "Meisterstück", "Meisterstücken"), stueck(usage("glasur", id, "e"), "Editionsposten", "Editionsposten"), usage("glasuren", id, "m") ? `bei ${zahl.format(usage("glasuren", id, "m"))} ${usage("glasuren", id, "m") === 1 ? "Modell" : "Modellen"}` : ""]
           .filter(Boolean)
           .join(" · "),
       usageCount: (id) => usage("glasur", id, "u") + usage("glasur", id, "e") + usage("glasuren", id, "m"),
@@ -464,7 +464,7 @@ export default function Block() {
         { key: "notiz", label: "Notiz", kind: "textarea" },
       ],
       entries: items(partnerQuery).map((i) => toEntry(i, ["name", "art", "ort", "kontakt", "zusammenarbeit", "notiz"], (v) => [v.art, v.ort, v.zusammenarbeit === "beendet" ? "beendet" : ""].filter(Boolean).join(" · "))),
-      usage: (id) => [`zurzeit ${stueck(usage("galerie", id, "u"), "Unikat", "Unikaten")}`, usage("partner", id, "e") ? stueck(usage("partner", id, "e"), "Editionsposten", "Editionsposten") : ""].filter(Boolean).join(" · "),
+      usage: (id) => [`zurzeit ${stueck(usage("galerie", id, "u"), "Meisterstück", "Meisterstücken")}`, usage("partner", id, "e") ? stueck(usage("partner", id, "e"), "Editionsposten", "Editionsposten") : ""].filter(Boolean).join(" · "),
       usageCount: (id) => usage("galerie", id, "u") + usage("partner", id, "e"),
       archive: archiveVia(partnerUpdate, partnerQuery.refetch),
       remove: removeVia(partnerDelete, partnerQuery.refetch, [
@@ -486,7 +486,7 @@ export default function Block() {
         { key: "bereich", label: "Bereich", kind: "chips", options: bereiche },
       ],
       entries: items(lagerortQuery).map((i) => toEntry(i, ["name", "bereich"], (v) => v.bereich)),
-      usage: (id) => `${stueck(usage("lagerort", id, "u"), "Unikat", "Unikaten")} · ${stueck(usage("lagerort", id, "e"), "Editionsposten", "Editionsposten")}`,
+      usage: (id) => `${stueck(usage("lagerort", id, "u"), "Meisterstück", "Meisterstücken")} · ${stueck(usage("lagerort", id, "e"), "Editionsposten", "Editionsposten")}`,
       usageCount: (id) => usage("lagerort", id, "u") + usage("lagerort", id, "e"),
       archive: archiveVia(lagerortUpdate, lagerortQuery.refetch),
       remove: removeVia(lagerortDelete, lagerortQuery.refetch, [

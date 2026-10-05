@@ -1,5 +1,5 @@
 // Mengenlager für Geschirr und Edition: Der Bestand ist eine Zahl je Posten.
-// Ein Posten ist eindeutig durch Modell, Zustand, Glasur, Brand, Reservierung, Status mit Partner und wer gedreht und glasiert hat.
+// Ein Posten ist eindeutig durch Modell, Zustand, Glasur, Brand, Reservierung, Status mit Partner und Rückgabe und wer gedreht und glasiert hat.
 // Gleiche Posten werden zusammengezählt.
 import { GLASIERT, GESCHRUEHT, ROH, ZUSTAENDE, serieVon } from "../shared/konstanten";
 import { type Attachment, type Opt, type RawItem, asAttachments, asOpts, compareNr, formatDate, lookupValue, modellLabel, num, str } from "../shared/daten";
@@ -19,6 +19,7 @@ export type Posten = {
   status: string;
   partnerId: string;
   partner: string;
+  rueckgabe: string;
   gedrehtId: string;
   gedreht: string;
   glasiertId: string;
@@ -31,7 +32,7 @@ export type Posten = {
   notiz: string;
 };
 
-export type PostenKey = Pick<Posten, "modellId" | "zustand" | "glasurId" | "brand" | "reserviert" | "status" | "partnerId" | "gedrehtId" | "glasiertId">;
+export type PostenKey = Pick<Posten, "modellId" | "zustand" | "glasurId" | "brand" | "reserviert" | "status" | "partnerId" | "rueckgabe" | "gedrehtId" | "glasiertId">;
 
 // Liest einen Datensatz des Editionsbestands. Jeder Block wählt seine Felder selbst aus, fehlende bleiben leer.
 export function toPosten(item: RawItem): Posten {
@@ -57,6 +58,7 @@ export function toPosten(item: RawItem): Posten {
     status: asOpts(f.status)[0]?.label ?? "",
     partnerId: partner?.id ?? "",
     partner: partner?.label ?? "",
+    rueckgabe: str(f.rueckgabe).slice(0, 10),
     gedrehtId: gedreht?.id ?? "",
     gedreht: gedreht?.label ?? "",
     glasiertId: glasiert?.id ?? "",
@@ -79,6 +81,7 @@ export function gleicherPosten(a: PostenKey, b: PostenKey): boolean {
     a.reserviert.toLowerCase() === b.reserviert.toLowerCase() &&
     a.status === b.status &&
     a.partnerId === b.partnerId &&
+    a.rueckgabe === b.rueckgabe &&
     a.gedrehtId === b.gedrehtId &&
     a.glasiertId === b.glasiertId
   );
@@ -92,6 +95,7 @@ export const keyVon = (p: Posten): PostenKey => ({
   reserviert: p.reserviert,
   status: p.status,
   partnerId: p.partnerId,
+  rueckgabe: p.rueckgabe,
   gedrehtId: p.gedrehtId,
   glasiertId: p.glasiertId,
 });
@@ -102,9 +106,9 @@ export const ausserHaus = (p: Pick<Posten, "status">) => p.status !== "";
 // Frei verkaufbar: glasiert, nicht reserviert und in der Werkstatt.
 export const verkaufbar = (p: Posten) => p.zustand === GLASIERT && !p.reserviert && !ausserHaus(p);
 
-// Status für die Anzeige, z. B. „ausgestellt bei Galerie Mitte“.
-export function statusText(p: Pick<Posten, "status" | "partner">): string {
-  return p.status ? [p.status, p.partner && `bei ${p.partner}`].filter(Boolean).join(" ") : "";
+// Status für die Anzeige, z. B. „ausgestellt bei Galerie Mitte bis 30.11.2026“.
+export function statusText(p: Pick<Posten, "status" | "partner"> & { rueckgabe?: string }): string {
+  return p.status ? [p.status, p.partner && `bei ${p.partner}`, p.rueckgabe && `bis ${formatDate(p.rueckgabe)}`].filter(Boolean).join(" ") : "";
 }
 
 // Nächster Arbeitsschritt: roh → Schrühbrand → geschrüht → Glasurbrand → glasiert. Glasiert ist fertig.
@@ -122,7 +126,7 @@ export function postenText(p: Pick<Posten, "zustand" | "glasur" | "brand">): str
 }
 
 // Bezeichnung des Datensatzes (Hauptfeld in der Datenbank), damit die Tabelle in Softr lesbar bleibt.
-export function bezeichnung(modell: string, p: Pick<Posten, "zustand" | "glasur" | "brand" | "reserviert" | "status" | "partner">): string {
+export function bezeichnung(modell: string, p: Pick<Posten, "zustand" | "glasur" | "brand" | "reserviert" | "status" | "partner"> & { rueckgabe?: string }): string {
   return [modell, postenText(p), p.reserviert && `für ${p.reserviert}`, statusText(p)].filter(Boolean).join(" · ");
 }
 
@@ -190,6 +194,14 @@ export function brandGruppen(posten: Posten[]): BrandGruppe[] {
 }
 
 export const brandName = (brand: string) => (brand ? `Brand ${formatDate(brand)}` : "Brand unbekannt");
+
+// Eine Zeile für Listen: je Glasur die freie Ware, bei mehreren Bränden mit der Zahl, die zusammen passt.
+// z. B. „Rostbraun 16 (9 aus einem Brand) · Weiß 6“
+export function glasurZeile(posten: Posten[]): string {
+  return brandGruppen(posten)
+    .map((g) => `${g.glasur || "ohne Glasur"} ${g.gesamt}${g.braende.length > 1 ? ` (${g.zusammen} aus einem Brand)` : ""}`)
+    .join(" · ");
+}
 
 // „geschrüht 25 · glasiert 12“: nur Zustände mit Bestand, in der Reihenfolge des Ablaufs.
 export function standText(je: Record<string, number>): string {

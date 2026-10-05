@@ -27,6 +27,7 @@ import {
   Hint,
   Knopf,
   OptionSelect,
+  SuchAuswahl,
   PageHeader,
   PANEL_CLASS,
   PhotoPicker,
@@ -87,6 +88,7 @@ const editionFields = q.select({
   reserviert: "L1bO5",
   status: "v9V6W",
   partner: "hs3iV",
+  rueckgabe: "nBkRl",
   gedreht: "7FQQm",
   glasiert: "dkREk",
   masse: "eVHco",
@@ -107,7 +109,7 @@ type Art = "geschirr" | "edition" | "unikat";
 const ART_TABS: { key: Art; label: string }[] = [
   { key: "geschirr", label: "Geschirr" },
   { key: "edition", label: "Edition" },
-  { key: "unikat", label: "Unikat" },
+  { key: "unikat", label: "Meisterstück" },
 ];
 const IM_HAUS = "im Haus";
 const EDITION_STATUS: Opt[] = [IM_HAUS, AUSGESTELLT, KOMMISSION].map((s) => ({ id: s, label: s }));
@@ -140,6 +142,7 @@ type EditionForm = {
   reserviert: string;
   status: string;
   partner: string;
+  rueckgabe: string;
   gedreht: string;
   glasiert: string;
   masse: string;
@@ -167,14 +170,17 @@ const emptyUnikat = (): UnikatForm => ({
   notiz: "",
 });
 
-const emptyEdition = (): EditionForm => ({
+// Geschirr wird meist geschrüht erfasst, Edition meist fertig glasiert.
+const startZustand = (art: Art) => (art === "edition" ? GLASIERT : GESCHRUEHT);
+const emptyEdition = (art: Art): EditionForm => ({
   modell: "",
-  zustand: GESCHRUEHT,
+  zustand: startZustand(art),
   glasur: "",
   brand: today(),
   reserviert: "",
   status: IM_HAUS,
   partner: "",
+  rueckgabe: "",
   gedreht: "",
   glasiert: "",
   masse: "",
@@ -206,7 +212,7 @@ function ZweiteSpalte({ title, hint, children }: { title: string; hint: string; 
   );
 }
 
-function SuccessCard({ saved, onNext }: { saved: Saved; onNext: () => void }) {
+function SuccessCard({ saved, onNext, onAgain }: { saved: Saved; onNext: () => void; onAgain?: () => void }) {
   const bestandLink = useNavigationSetting({
     name: "bestand-link",
     label: "Link zum Bestand",
@@ -230,7 +236,12 @@ function SuccessCard({ saved, onNext }: { saved: Saved; onNext: () => void }) {
         {inventarnummer && <p className="text-base mt-1">Inventarnummer: <strong>{inventarnummer}</strong></p>}
       </div>
       <div className="flex flex-col sm:flex-row gap-3 justify-center">
-        <Knopf size="lg" onClick={onNext}>
+        {onAgain && (
+          <Knopf size="lg" onClick={onAgain}>
+            Noch eins wie dieses
+          </Knopf>
+        )}
+        <Knopf size="lg" variant={onAgain ? "outline" : "default"} onClick={onNext}>
           Nächstes Stück erfassen
         </Knopf>
         <Knopf asChild size="lg" variant="outline">
@@ -247,7 +258,7 @@ export default function Block() {
   const [art, setArt] = useState<Art>("geschirr");
   const isMenge = art !== "unikat";
   const [unikat, setUnikat] = useState<UnikatForm>(emptyUnikat);
-  const [edition, setEdition] = useState<EditionForm>(emptyEdition);
+  const [edition, setEdition] = useState<EditionForm>(() => emptyEdition("geschirr"));
   const [files, setFiles] = useState<File[]>([]);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [saved, setSaved] = useState<Saved | null>(null);
@@ -362,6 +373,7 @@ export default function Block() {
     reserviert: isGlasiert ? edition.reserviert.trim() : "",
     status,
     partnerId: status ? edition.partner : "",
+    rueckgabe: status ? edition.rueckgabe : "",
     gedrehtId: edition.gedreht,
     glasiertId: isGlasiert ? edition.glasiert : "",
   };
@@ -480,12 +492,12 @@ export default function Block() {
           notiz: unikat.notiz.trim(),
           erfasstVon: user?.fullName || user?.email || "",
         } as never);
-        setSaved({ art, recordId: (created as { id: string }).id, text: `Unikat „${unikat.name.trim()}“ ist im Bestand.` });
+        setSaved({ art, recordId: (created as { id: string }).id, text: `Meisterstück „${unikat.name.trim()}“ ist im Bestand.` });
       } else {
         const modell = gewaehltesModell?.label ?? "";
         const glasur = glasurOptions.find((g) => g.id === wantGlasur)?.label;
         const partner = galerieOptions.find((g) => g.id === postenKey.partnerId)?.label ?? "";
-        const variante = bezeichnung(modell, { zustand: edition.zustand, glasur: glasur ?? "", brand: postenKey.brand, reserviert: postenKey.reserviert, status, partner });
+        const variante = bezeichnung(modell, { zustand: edition.zustand, glasur: glasur ?? "", brand: postenKey.brand, reserviert: postenKey.reserviert, status, partner, rueckgabe: postenKey.rueckgabe });
         // Direkt vor dem Speichern frisch laden: Hat jemand anderes die Zeile gerade angelegt oder geändert,
         // wird dort weitergezählt statt eine doppelte Zeile anzulegen oder Stück zu verlieren.
         const fresh = await freshItems(editionQuery);
@@ -506,6 +518,7 @@ export default function Block() {
             reserviert: postenKey.reserviert,
             status: status || null,
             partner: link(postenKey.partnerId || undefined),
+            rueckgabe: postenKey.rueckgabe || null,
             gedreht: link(postenKey.gedrehtId || undefined),
             glasiert: link(postenKey.glasiertId || undefined),
             masse: edition.masse.trim(),
@@ -531,7 +544,16 @@ export default function Block() {
     setErrors({});
     setFiles([]);
     setUnikat(emptyUnikat());
-    setEdition(emptyEdition());
+    setEdition(emptyEdition(art));
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  // Nach dem Speichern dasselbe Modell gleich noch einmal erfassen, z. B. eine weitere Glasur aus demselben Brand.
+  function nochEins() {
+    setSaved(null);
+    setErrors({});
+    setFiles([]);
+    setEdition((s) => ({ ...s, glasur: "", anzahl: 1, notiz: "" }));
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
@@ -543,7 +565,7 @@ export default function Block() {
         </div>
 
         {saved ? (
-          <SuccessCard saved={saved} onNext={reset} />
+          <SuccessCard saved={saved} onNext={reset} onAgain={saved.art === "unikat" ? undefined : nochEins} />
         ) : (
           <form ref={formRef} onSubmit={submit} noValidate className="space-y-6">
             <Tabs
@@ -551,7 +573,7 @@ export default function Block() {
               tabs={ART_TABS}
               value={art}
               onChange={(key) => {
-                if (key !== art) setEdition((s) => ({ ...s, modell: "", glasur: "", masse: "" }));
+                if (key !== art) setEdition((s) => ({ ...s, modell: "", glasur: "", masse: "", zustand: startZustand(key) }));
                 setArt(key);
                 setErrors({});
                 setFiles((f) => (key === "unikat" ? f : f.slice(0, 1)));
@@ -713,7 +735,7 @@ export default function Block() {
                     <FieldLabel htmlFor="e-modell" required>
                       Modell
                     </FieldLabel>
-                    <OptionSelect id="e-modell" value={edition.modell} onChange={chooseModell} options={serienModelle} placeholder={art === "geschirr" ? "Geschirr wählen (Nummer oder Name)" : "Edition wählen (Nummer oder Name)"} />
+                    <SuchAuswahl key={art} id="e-modell" value={edition.modell} onChange={chooseModell} options={serienModelle} placeholder={art === "geschirr" ? "Geschirr suchen: Nummer oder Name" : "Edition suchen: Nummer oder Name"} />
                     <Hint>Neue Modelle unter „Stammdaten“ anlegen.</Hint>
                     <ErrorText>{errors.modell}</ErrorText>
                   </div>
@@ -772,12 +794,13 @@ export default function Block() {
                       </p>
                     )}
                   </div>
+                  {art === "geschirr" && !mehrOffen && <ZusatzKnopf label="Weitere Angaben zeigen" onClick={() => setMehrOffen(true)} />}
                 </div>
 
                 {/* Edition: weitere Angaben offen, weil jedes Stück anders ist. Geschirr: auf Wunsch aufklappen. */}
                 {art === "edition" || mehrOffen ? (
                   <ZweiteSpalte title="Weitere Angaben" hint="Freiwillig. Kann auch später im Bestand ergänzt werden.">
-                    <div className="grid sm:grid-cols-2 gap-6">
+                    <div className={isGlasiert ? "grid sm:grid-cols-2 gap-6" : ""}>
                       <div>
                         <FieldLabel htmlFor="e-gedreht">Gedreht von</FieldLabel>
                         <OptionSelect id="e-gedreht" value={edition.gedreht} onChange={(v) => setE("gedreht", v)} options={kuenstlerOptions} placeholder="Bitte wählen" />
@@ -811,9 +834,15 @@ export default function Block() {
                           statusColors
                         />
                         {status && (
-                          <div className="mt-4">
-                            <FieldLabel htmlFor="e-partner">Partner (Galerie, Museum …)</FieldLabel>
-                            <OptionSelect id="e-partner" value={edition.partner} onChange={(v) => setE("partner", v)} options={galerieOptions} placeholder="Partner wählen" />
+                          <div className="grid sm:grid-cols-2 gap-6 mt-4">
+                            <div>
+                              <FieldLabel htmlFor="e-partner">Partner (Galerie, Museum …)</FieldLabel>
+                              <OptionSelect id="e-partner" value={edition.partner} onChange={(v) => setE("partner", v)} options={galerieOptions} placeholder="Partner wählen" />
+                            </div>
+                            <div>
+                              <FieldLabel htmlFor="e-rueckgabe">Rückgabe bis</FieldLabel>
+                              <Feld id="e-rueckgabe" type="date" value={edition.rueckgabe} onChange={(e) => setE("rueckgabe", e.target.value)} />
+                            </div>
                           </div>
                         )}
                       </div>
@@ -835,11 +864,7 @@ export default function Block() {
                       </>
                     )}
                   </ZweiteSpalte>
-                ) : (
-                  <div className={SECOND_COLUMN}>
-                    <ZusatzKnopf label="Weitere Angaben zeigen" onClick={() => setMehrOffen(true)} />
-                  </div>
-                )}
+                ) : null}
               </div>
             )}
 
