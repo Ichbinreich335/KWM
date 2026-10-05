@@ -27,3 +27,11 @@ export interface BildAngabe {
   widths?: readonly number[];
   sizes?: string;
 }
+
+/** Ein Fach des Regals: Foto der Warengruppe mit Beschriftung darunter */
+export interface Regalfach {
+  bild: BildAngabe;
+  beschriftung: string;
+  /** `prioritaet`: Bild im ersten Bildschirm (hohe Priorität); `sofort`: nicht verzögert laden */
+  laden: 'prioritaet' | 'sofort';
+}

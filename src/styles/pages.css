@@ -1,48 +1,5 @@
 /* Bausteine der Unterseiten. Tokens, Raster, Typografie und Motion kommen aus global.css. */
 
-.shelf {
-  grid-column: 1 / -1;
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: var(--g);
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-.shelf__item {
-  margin: 0;
-}
-.shelf__item img {
-  width: 100%;
-  aspect-ratio: 3 / 2;
-  object-fit: cover;
-}
-.plinth {
-  grid-column: 1 / -1;
-  margin-inline: calc(var(--m) * -1);
-  height: clamp(14px, 1.6vw, 24px);
-  background: var(--ground-3);
-  margin-top: -1px;
-}
-.shelf {
-  margin-bottom: calc(var(--head-gap) * -1);
-}
-.shelf-caps {
-  grid-column: 1 / -1;
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: var(--g);
-  margin: calc(var(--head-gap) * -1) 0 0;
-  padding: 0 0 28px;
-  list-style: none;
-  font-size: var(--t-meta);
-  line-height: var(--t-meta-lh);
-  color: var(--ink-2);
-}
-.shelf-caps li {
-  padding-top: 10px;
-}
-
 /* Die Linie des Kopfes ersetzt die obere Linie der folgenden Liste */
 .chapter__head + .grid > :is(.datelist, .texts, .pubs) {
   border-top: 0;
@@ -182,15 +139,6 @@
 }
 
 @media (max-width: 900px) {
-  .shelf {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    row-gap: var(--g);
-    margin-bottom: 0;
-  }
-  .plinth,
-  .shelf-caps {
-    display: none;
-  }
   .catalog__quote,
   .person {
     grid-column: 1 / -1;

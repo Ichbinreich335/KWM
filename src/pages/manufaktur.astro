@@ -3,7 +3,7 @@ import '../styles/basis.css';
 import LinkArrow from '../components/LinkArrow.astro';
 import WareGroup from '../components/WareGroup.astro';
 import DateList from '../components/DateList.astro';
-import { arbeitsweise, gruppe } from '../data/manufaktur';
+import { arbeitsweise, gruppe, regal } from '../data/manufaktur';
 import Statement from '../components/Statement.astro';
 import ChapterHead from '../components/ChapterHead.astro';
 import Bild from '../components/Bild.astro';
@@ -14,6 +14,7 @@ import PageHero from '../components/PageHero.astro';
 import Figure from '../components/Figure.astro';
 import GlazeStage from '../components/GlazeStage.astro';
 import { glasurproben } from '../data/glasuren';
+import Plinth from '../components/Plinth.astro';
 import '../styles/seiten/page-manufaktur.css';
 import '../styles/signaturen/signaturen.css';
 ---
@@ -31,51 +32,7 @@ import '../styles/signaturen/signaturen.css';
         Vom Teller bis zur Schüssel, von der Tasse bis zum Krug hin zu Salz-, Pfeffer-, Milch- und Zuckergefäßen –
         unsere Geschirr-Serie umfasst alle Bestandteile eines Speisegeschirrs.
       </Fragment>
-      <ul class="shelf" data-reveal="img">
-        <li class="shelf__item">
-          <Bild
-            priority
-            src="/img/kwm/teller.webp"
-            width="600"
-            height="400"
-            alt="Teller in Dunkelgrün, Hellgrün und Rostbraun, von oben gesehen"
-          />
-        </li>
-        <li class="shelf__item">
-          <Bild
-            priority
-            src="/img/kwm/kannen.webp"
-            width="600"
-            height="400"
-            alt="Krüge in Seladon und Beige und ein dunkelgrüner Becher"
-          />
-        </li>
-        <li class="shelf__item">
-          <Bild
-            src="/img/kwm/tassen2.webp"
-            width="600"
-            height="400"
-            alt="Teebecher und Trinkbecher in Beige, Seladon und Dunkelbraun"
-            loading="eager"
-          />
-        </li>
-        <li class="shelf__item">
-          <Bild
-            src="/img/kwm/toepfe.webp"
-            width="600"
-            height="400"
-            alt="Deckeldose und Deckeltöpfe in Dunkelbraun, Grau, Orange und Seladon"
-            loading="eager"
-          />
-        </li>
-      </ul>
-      <div class="plinth" aria-hidden="true"></div>
-      <ul class="shelf-caps">
-        <li>Teller</li>
-        <li>Krüge und Kannen</li>
-        <li>Becher und Tassen</li>
-        <li>Töpfe und Dosen</li>
-      </ul>
+      <Plinth faecher={regal} />
     </PageHero>
 
     <section class="mf-intro on-anker grid" aria-label="Über das Manufakturprogramm">

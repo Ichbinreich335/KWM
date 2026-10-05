@@ -1,7 +1,7 @@
 // Manufakturprogramm: Geschirr und Edition in Warengruppen, jede mit Sätzen aus Foto und Teileliste
 // (Sanity-Typ `manufakturteil`; Vorschlag: Foto je Satz, Teile als Liste). Keine Preise, kein Bestand.
 import { BRENNTEMPERATUR, grad } from './brenntemperatur';
-import type { BildAngabe, DatumEintrag, Fakt } from './typen';
+import type { BildAngabe, DatumEintrag, Fakt, Regalfach } from './typen';
 
 export interface Teil {
   name: string;
@@ -543,4 +543,48 @@ export const kurzfakten: readonly Fakt[] = [
   { label: 'Glasurbrand', wert: `Gasofen, ca. ${grad(BRENNTEMPERATUR.glasurbrandGas)}, reduzierende Atmosphäre` },
   { label: 'Programm', wert: 'Vom Teller bis zum Krug, dazu die Edition mit Vasen, Pflanzgefäßen und Dosen' },
   { label: 'Gebrauch', wert: 'Alle Stücke sind spülmaschinenfest' },
+];
+
+/** Regal im Kopf der Seite: je Warengruppe ein Foto mit Beschriftung (Vorschlag Sanity: Feld `kopfbild` je Gruppe) */
+export const regal: readonly Regalfach[] = [
+  {
+    bild: {
+      src: '/img/kwm/teller.webp',
+      breite: 600,
+      hoehe: 400,
+      alt: 'Teller in Dunkelgrün, Hellgrün und Rostbraun, von oben gesehen',
+    },
+    beschriftung: 'Teller',
+    laden: 'prioritaet',
+  },
+  {
+    bild: {
+      src: '/img/kwm/kannen.webp',
+      breite: 600,
+      hoehe: 400,
+      alt: 'Krüge in Seladon und Beige und ein dunkelgrüner Becher',
+    },
+    beschriftung: 'Krüge und Kannen',
+    laden: 'prioritaet',
+  },
+  {
+    bild: {
+      src: '/img/kwm/tassen2.webp',
+      breite: 600,
+      hoehe: 400,
+      alt: 'Teebecher und Trinkbecher in Beige, Seladon und Dunkelbraun',
+    },
+    beschriftung: 'Becher und Tassen',
+    laden: 'sofort',
+  },
+  {
+    bild: {
+      src: '/img/kwm/toepfe.webp',
+      breite: 600,
+      hoehe: 400,
+      alt: 'Deckeldose und Deckeltöpfe in Dunkelbraun, Grau, Orange und Seladon',
+    },
+    beschriftung: 'Töpfe und Dosen',
+    laden: 'sofort',
+  },
 ];
