@@ -33,6 +33,7 @@ type Opt = { id: string; label: string };
 type Attachment = { id?: string; url: string; filename?: string; thumbnails?: { url: string; size: string }[] };
 type RawItem = { id: string; fields: Record<string, unknown> };
 type ThumbSize = "small" | "medium" | "large";
+const zahl = new Intl.NumberFormat("de-DE");
 
 function asOpts(v: unknown): Opt[] {
   if (!v) return [];
@@ -301,6 +302,8 @@ function SchalterFeld({ id, label, hint, checked, onChange, lage = "" }: { id: s
   );
 }
 
+const MOBILE_QUERY = "(max-width: 639px)";
+
 // Gewählt = gefüllt. Kein zusätzliches Symbol, damit der Knopf beim Antippen nicht breiter wird und nichts springt.
 // Mindestbreite, damit kurze Wörter (Sieb, Topf) nicht winzig wirken und die Reihen ruhiger aussehen.
 // shrink-0: In einer Wischzeile wird der Knopf nie gestaucht, der Text bleibt in der Box.
@@ -549,10 +552,12 @@ function GlasurWahl({ modell, alle, value, onChange, onCreate }: { modell: Opt[]
 }
 
 const SUCH_TREFFER = 8;
+type Vorschlaege = { titel: string; eintraege: { opt: Opt; meta: string }[] };
 
 // Auswahl aus einer langen Liste per Suchfeld, z. B. Modelle: „16“ oder „Teller“ tippen, Treffer antippen.
 // Treffer, die mit dem Suchwort beginnen, stehen oben. Die Gewählte steht danach als Feld mit „Ändern“ da.
-function SuchAuswahl({ id, value, onChange, options, placeholder }: { id: string; value: string; onChange: (id: string) => void; options: Opt[]; placeholder: string }) {
+// Bei leerem Suchfeld stehen dort die Vorschläge (z. B. die häufigsten Modelle), ohne Vorschläge die ersten Einträge.
+function SuchAuswahl({ id, value, onChange, options, placeholder, vorschlaege }: { id: string; value: string; onChange: (id: string) => void; options: Opt[]; placeholder: string; vorschlaege?: Vorschlaege }) {
   const [term, setTerm] = useState("");
   const [suchen, setSuchen] = useState(false);
   const gewaehlt = options.find((o) => o.id === value);
@@ -569,30 +574,42 @@ function SuchAuswahl({ id, value, onChange, options, placeholder }: { id: string
   const t = term.trim().toLowerCase();
   const passend = options.filter((o) => !t || o.label.toLowerCase().includes(t));
   const sortiert = [...passend.filter((o) => o.label.toLowerCase().startsWith(t)), ...passend.filter((o) => !o.label.toLowerCase().startsWith(t))];
+  const waehle = (o: Opt) => {
+    onChange(o.id);
+    setTerm("");
+    setSuchen(false);
+  };
+  const liste = (eintraege: { opt: Opt; meta?: string }[]) => (
+    <ul className={`${PANEL_CLASS} divide-y px-2`}>
+      {eintraege.map(({ opt, meta }) => (
+        <li key={opt.id}>
+          <ListRow title={opt.label} meta={meta && <span className="text-sm text-muted-foreground tabular-nums">{meta}</span>} onClick={() => waehle(opt)} />
+        </li>
+      ))}
+    </ul>
+  );
+  const zeigeVorschlaege = !t && !!vorschlaege?.eintraege.length;
   return (
     <div className="space-y-2">
       <SearchField id={id} label={placeholder} placeholder={placeholder} value={term} onChange={setTerm} />
-      {sortiert.length === 0 ? (
+      {zeigeVorschlaege && vorschlaege ? (
+        <>
+          <p className="text-sm text-muted-foreground">{vorschlaege.titel}</p>
+          {liste(vorschlaege.eintraege)}
+        </>
+      ) : sortiert.length === 0 ? (
         <p className="text-sm text-muted-foreground">Nichts gefunden zu „{term.trim()}“.</p>
       ) : (
-        <ul className={`${PANEL_CLASS} divide-y px-2`}>
-          {sortiert.slice(0, SUCH_TREFFER).map((o) => (
-            <li key={o.id}>
-              <ListRow
-                title={o.label}
-                onClick={() => {
-                  onChange(o.id);
-                  setTerm("");
-                  setSuchen(false);
-                }}
-              />
-            </li>
-          ))}
-        </ul>
+        liste(sortiert.slice(0, SUCH_TREFFER).map((opt) => ({ opt })))
       )}
-      {sortiert.length > SUCH_TREFFER && <p className="text-sm text-muted-foreground">{`und ${sortiert.length - SUCH_TREFFER} weitere. Nummer oder Namen genauer eingeben.`}</p>}
+      {!zeigeVorschlaege && sortiert.length > SUCH_TREFFER && <p className="text-sm text-muted-foreground">{`und ${sortiert.length - SUCH_TREFFER} weitere. Nummer oder Namen genauer eingeben.`}</p>}
     </div>
   );
+}
+
+// Startwert für Bereiche, die am Rechner offen und am Handy eingeklappt beginnen.
+function amRechner(): boolean {
+  return typeof window !== "undefined" && !window.matchMedia?.(MOBILE_QUERY).matches;
 }
 
 function Thumb({ fotos, size = "small", className = "w-12 h-12 rounded-md" }: { fotos: Attachment[]; size?: ThumbSize; className?: string }) {
@@ -811,6 +828,9 @@ function PhotoPicker({ files, onChange, multiple, error }: { files: File[]; onCh
     </div>
   );
 }
+
+// So viele Modelle stehen als Schnellwahl über der Modellsuche.
+const HAEUFIG = 7;
 
 const ds = datasource.define({ unikate: "unikate", edition: "edition", glasuren: "glasuren", kuenstler: "kuenstler", lagerorte: "lagerorte", partner: "partner", modelle: "modelle" });
 const glasurNeu = q.select({ name: "OuhBi" });
@@ -1034,7 +1054,7 @@ export default function Block() {
   const [busy, setBusy] = useState(false);
   const [rueckfrage, setRueckfrage] = useState(false);
   const [einzelDaten, setEinzelDaten] = useState(false);
-  const [mehrOffen, setMehrOffen] = useState(false);
+  const [mehrOffen, setMehrOffen] = useState(amRechner);
 
   const { uploadAsync } = useUpload();
   const createUnikat = useRecordCreate({ from: ds.unikate, fields: unikatFields });
@@ -1130,6 +1150,20 @@ export default function Block() {
   useAllPages(editionQuery);
   const editionReady = editionQuery.status === "success" && !editionQuery.hasNextPage;
   const editionRows = editionQuery.data?.pages.flatMap((p) => p.items) ?? [];
+  // Schnellwahl über der Modellsuche: die Modelle der Serie mit den meisten Stück im Bestand.
+  const stueckJeModell = new Map<string, number>();
+  for (const r of editionRows as RawItem[]) {
+    const id = asOpts(r.fields.modell)[0]?.id;
+    if (id) stueckJeModell.set(id, (stueckJeModell.get(id) ?? 0) + (num(r.fields.anzahl) ?? 0));
+  }
+  const haeufig: Vorschlaege = {
+    titel: "Am meisten im Bestand",
+    eintraege: serienModelle
+      .filter((m) => (stueckJeModell.get(m.id) ?? 0) > 0)
+      .sort((a, b) => (stueckJeModell.get(b.id) ?? 0) - (stueckJeModell.get(a.id) ?? 0))
+      .slice(0, HAEUFIG)
+      .map((m) => ({ opt: m, meta: `${zahl.format(stueckJeModell.get(m.id) ?? 0)} Stück` })),
+  };
   const isGlasiert = edition.zustand === GLASIERT;
   const wantGlasur = isGlasiert ? edition.glasur : "";
   // Brand, Reservierung, Status und „glasiert von“ gibt es erst bei glasierter Ware.
@@ -1309,7 +1343,7 @@ export default function Block() {
   function reset() {
     setSaved(null);
     setEinzelDaten(false);
-    setMehrOffen(false);
+    setMehrOffen(amRechner());
     setErrors({});
     setFiles([]);
     setUnikat(emptyUnikat());
@@ -1504,7 +1538,7 @@ export default function Block() {
                     <FieldLabel htmlFor="e-modell" required>
                       Modell
                     </FieldLabel>
-                    <SuchAuswahl key={art} id="e-modell" value={edition.modell} onChange={chooseModell} options={serienModelle} placeholder={art === "geschirr" ? "Geschirr suchen: Nummer oder Name" : "Edition suchen: Nummer oder Name"} />
+                    <SuchAuswahl key={art} id="e-modell" value={edition.modell} onChange={chooseModell} options={serienModelle} vorschlaege={haeufig} placeholder={art === "geschirr" ? "Geschirr suchen: Nummer oder Name" : "Edition suchen: Nummer oder Name"} />
                     <Hint>Neue Modelle unter „Stammdaten“ anlegen.</Hint>
                     <ErrorText>{errors.modell}</ErrorText>
                   </div>

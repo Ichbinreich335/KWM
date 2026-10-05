@@ -432,9 +432,12 @@ export function GlasurWahl({ modell, alle, value, onChange, onCreate }: { modell
 
 const SUCH_TREFFER = 8;
 
+export type Vorschlaege = { titel: string; eintraege: { opt: Opt; meta: string }[] };
+
 // Auswahl aus einer langen Liste per Suchfeld, z. B. Modelle: „16“ oder „Teller“ tippen, Treffer antippen.
 // Treffer, die mit dem Suchwort beginnen, stehen oben. Die Gewählte steht danach als Feld mit „Ändern“ da.
-export function SuchAuswahl({ id, value, onChange, options, placeholder }: { id: string; value: string; onChange: (id: string) => void; options: Opt[]; placeholder: string }) {
+// Bei leerem Suchfeld stehen dort die Vorschläge (z. B. die häufigsten Modelle), ohne Vorschläge die ersten Einträge.
+export function SuchAuswahl({ id, value, onChange, options, placeholder, vorschlaege }: { id: string; value: string; onChange: (id: string) => void; options: Opt[]; placeholder: string; vorschlaege?: Vorschlaege }) {
   const [term, setTerm] = useState("");
   const [suchen, setSuchen] = useState(false);
   const gewaehlt = options.find((o) => o.id === value);
@@ -451,30 +454,42 @@ export function SuchAuswahl({ id, value, onChange, options, placeholder }: { id:
   const t = term.trim().toLowerCase();
   const passend = options.filter((o) => !t || o.label.toLowerCase().includes(t));
   const sortiert = [...passend.filter((o) => o.label.toLowerCase().startsWith(t)), ...passend.filter((o) => !o.label.toLowerCase().startsWith(t))];
+  const waehle = (o: Opt) => {
+    onChange(o.id);
+    setTerm("");
+    setSuchen(false);
+  };
+  const liste = (eintraege: { opt: Opt; meta?: string }[]) => (
+    <ul className={`${PANEL_CLASS} divide-y px-2`}>
+      {eintraege.map(({ opt, meta }) => (
+        <li key={opt.id}>
+          <ListRow title={opt.label} meta={meta && <span className="text-sm text-muted-foreground tabular-nums">{meta}</span>} onClick={() => waehle(opt)} />
+        </li>
+      ))}
+    </ul>
+  );
+  const zeigeVorschlaege = !t && !!vorschlaege?.eintraege.length;
   return (
     <div className="space-y-2">
       <SearchField id={id} label={placeholder} placeholder={placeholder} value={term} onChange={setTerm} />
-      {sortiert.length === 0 ? (
+      {zeigeVorschlaege && vorschlaege ? (
+        <>
+          <p className="text-sm text-muted-foreground">{vorschlaege.titel}</p>
+          {liste(vorschlaege.eintraege)}
+        </>
+      ) : sortiert.length === 0 ? (
         <p className="text-sm text-muted-foreground">Nichts gefunden zu „{term.trim()}“.</p>
       ) : (
-        <ul className={`${PANEL_CLASS} divide-y px-2`}>
-          {sortiert.slice(0, SUCH_TREFFER).map((o) => (
-            <li key={o.id}>
-              <ListRow
-                title={o.label}
-                onClick={() => {
-                  onChange(o.id);
-                  setTerm("");
-                  setSuchen(false);
-                }}
-              />
-            </li>
-          ))}
-        </ul>
+        liste(sortiert.slice(0, SUCH_TREFFER).map((opt) => ({ opt })))
       )}
-      {sortiert.length > SUCH_TREFFER && <p className="text-sm text-muted-foreground">{`und ${sortiert.length - SUCH_TREFFER} weitere. Nummer oder Namen genauer eingeben.`}</p>}
+      {!zeigeVorschlaege && sortiert.length > SUCH_TREFFER && <p className="text-sm text-muted-foreground">{`und ${sortiert.length - SUCH_TREFFER} weitere. Nummer oder Namen genauer eingeben.`}</p>}
     </div>
   );
+}
+
+// Startwert für Bereiche, die am Rechner offen und am Handy eingeklappt beginnen.
+export function amRechner(): boolean {
+  return typeof window !== "undefined" && !window.matchMedia?.(MOBILE_QUERY).matches;
 }
 
 export function Thumb({ fotos, size = "small", className = "w-12 h-12 rounded-md" }: { fotos: Attachment[]; size?: ThumbSize; className?: string }) {

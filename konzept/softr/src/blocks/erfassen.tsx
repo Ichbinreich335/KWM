@@ -15,7 +15,7 @@ import { useCurrentUser } from "@/lib/user";
 import { Check, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { AUSGESTELLT, AUSSER_HAUS_ORT, GESCHRUEHT, GLASIERT, KOMMISSION, MANUFAKTUR_PROGRAMM, PAGE_SIZE, isAusserHaus } from "../shared/konstanten";
-import { type Opt, type RawItem, activeOptions, asOpts, compareNr, freshItems, link, modellLabel, parseNumber, str, today, useAllPages } from "../shared/daten";
+import { type Opt, type RawItem, activeOptions, asOpts, compareNr, freshItems, link, modellLabel, num, parseNumber, str, today, useAllPages, zahl } from "../shared/daten";
 import { type PostenKey, bezeichnung, gleicherPosten, toPosten } from "../shared/mengen";
 import {
   AddNew,
@@ -28,6 +28,7 @@ import {
   Knopf,
   OptionSelect,
   SuchAuswahl,
+  amRechner,
   PageHeader,
   PANEL_CLASS,
   PhotoPicker,
@@ -37,11 +38,15 @@ import {
   SEITE_CLASS,
   STICKY_BOTTOM,
   Stueckzahl,
+  type Vorschlaege,
   Tabs,
   Textfeld,
   TextMitVorschlag,
   ZusatzKnopf,
 } from "../shared/ui";
+
+// So viele Modelle stehen als Schnellwahl über der Modellsuche.
+const HAEUFIG = 7;
 
 const ds = datasource.define({ unikate: "unikate", edition: "edition", glasuren: "glasuren", kuenstler: "kuenstler", lagerorte: "lagerorte", partner: "partner", modelle: "modelle" });
 const glasurNeu = q.select({ name: "OuhBi" });
@@ -265,7 +270,7 @@ export default function Block() {
   const [busy, setBusy] = useState(false);
   const [rueckfrage, setRueckfrage] = useState(false);
   const [einzelDaten, setEinzelDaten] = useState(false);
-  const [mehrOffen, setMehrOffen] = useState(false);
+  const [mehrOffen, setMehrOffen] = useState(amRechner);
 
   const { uploadAsync } = useUpload();
   const createUnikat = useRecordCreate({ from: ds.unikate, fields: unikatFields });
@@ -361,6 +366,20 @@ export default function Block() {
   useAllPages(editionQuery);
   const editionReady = editionQuery.status === "success" && !editionQuery.hasNextPage;
   const editionRows = editionQuery.data?.pages.flatMap((p) => p.items) ?? [];
+  // Schnellwahl über der Modellsuche: die Modelle der Serie mit den meisten Stück im Bestand.
+  const stueckJeModell = new Map<string, number>();
+  for (const r of editionRows as RawItem[]) {
+    const id = asOpts(r.fields.modell)[0]?.id;
+    if (id) stueckJeModell.set(id, (stueckJeModell.get(id) ?? 0) + (num(r.fields.anzahl) ?? 0));
+  }
+  const haeufig: Vorschlaege = {
+    titel: "Am meisten im Bestand",
+    eintraege: serienModelle
+      .filter((m) => (stueckJeModell.get(m.id) ?? 0) > 0)
+      .sort((a, b) => (stueckJeModell.get(b.id) ?? 0) - (stueckJeModell.get(a.id) ?? 0))
+      .slice(0, HAEUFIG)
+      .map((m) => ({ opt: m, meta: `${zahl.format(stueckJeModell.get(m.id) ?? 0)} Stück` })),
+  };
   const isGlasiert = edition.zustand === GLASIERT;
   const wantGlasur = isGlasiert ? edition.glasur : "";
   // Brand, Reservierung, Status und „glasiert von“ gibt es erst bei glasierter Ware.
@@ -540,7 +559,7 @@ export default function Block() {
   function reset() {
     setSaved(null);
     setEinzelDaten(false);
-    setMehrOffen(false);
+    setMehrOffen(amRechner());
     setErrors({});
     setFiles([]);
     setUnikat(emptyUnikat());
@@ -735,7 +754,7 @@ export default function Block() {
                     <FieldLabel htmlFor="e-modell" required>
                       Modell
                     </FieldLabel>
-                    <SuchAuswahl key={art} id="e-modell" value={edition.modell} onChange={chooseModell} options={serienModelle} placeholder={art === "geschirr" ? "Geschirr suchen: Nummer oder Name" : "Edition suchen: Nummer oder Name"} />
+                    <SuchAuswahl key={art} id="e-modell" value={edition.modell} onChange={chooseModell} options={serienModelle} vorschlaege={haeufig} placeholder={art === "geschirr" ? "Geschirr suchen: Nummer oder Name" : "Edition suchen: Nummer oder Name"} />
                     <Hint>Neue Modelle unter „Stammdaten“ anlegen.</Hint>
                     <ErrorText>{errors.modell}</ErrorText>
                   </div>
