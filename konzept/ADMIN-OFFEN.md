@@ -8,6 +8,7 @@ Stand: 04.10.2026
 
 | Was | Wo | Hinweis |
 |---|---|---|
+| **Phase D: Komponenten-Bibliothek (D1 bis D5)** | Branches `phase-d1-geruest` bis `phase-d5-bilder` · Bericht `konzept/PHASE-D-BERICHT.md` | Optik unverändert bis auf Ruling 27: „Mo–Fr“, „Sonst“ und Telefon „+49 201 30 50 80“ jetzt überall gleich (Besuch, Impressum, AGB, Datenschutz). Bitte ansehen; offen: zwei Farbsätze für dieselben Glasurtöne (Farbskala und Glasurbühne) angleichen? |
 | **Phase A: Website auf Astro (1:1)** | Vorschau https://astro-umbau-kwm-redesign.entwicklung-7f3.workers.dev · PR [#4](https://github.com/Ichbinreich335/KWM/pull/4) (Entwurf) · Bericht `konzept/ASTRO-BERICHT.md` | Sieht aus wie V3, nur ohne Entwurf-Panel. Auf Handy und Rechner durchklicken. Nach OK: PR auf „bereit“ stellen und mergen (ersetzt die Produktion auf `workers.dev`, nicht `kwm-1924.de`). |
 
 ## Tun (nur du kannst das)
