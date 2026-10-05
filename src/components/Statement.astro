@@ -1,7 +1,7 @@
 ---
 interface Props {
-  /** `gross`: Display-Zitat als Zäsur; `aussage`: Aussage in Textgröße Statement; `zitat`: Text-Schnitt in Titelgröße, ruhig; `lede`: einleitender Satz der Startseite in Lede-Größe; `zitat-lang`: längeres Fremdzitat im Text-Schnitt in Zitatgröße, auf hellem wie dunklem Grund (die Quelle nimmt `--ink-2` des Umfelds) */
-  typ: 'gross' | 'aussage' | 'zitat' | 'lede' | 'zitat-lang';
+  /** `gross`: Display-Zitat als Zäsur; `aussage`: Aussage in Textgröße Statement; `zitat`: Text-Schnitt in Titelgröße, ruhig; `zitat-lang`: längeres Fremdzitat im Text-Schnitt in Zitatgröße, auf hellem wie dunklem Grund (die Quelle nimmt `--ink-2` des Umfelds) */
+  typ: 'gross' | 'aussage' | 'zitat' | 'zitat-lang';
   /** `p`: nackter Absatz ohne `blockquote` (Aussage ohne Zitat, keine Quelle) */
   als?: 'blockquote' | 'p';
   /** Einblend-Animation des Satzes; `keine` lässt `data-reveal` weg */
@@ -70,12 +70,6 @@ const reveal = einblendung === 'keine' ? undefined : einblendung;
   .statement--zitat:has(+ footer),
   .statement--zitat-lang:has(+ footer) {
     margin-bottom: 1em;
-  }
-  .statement--lede {
-    font-family: var(--f-text);
-    font-size: var(--t-lede);
-    line-height: var(--t-lede-lh);
-    letter-spacing: -0.01em;
   }
   .statement--zitat-lang {
     font-family: var(--f-text);
