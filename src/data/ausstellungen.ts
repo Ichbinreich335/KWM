@@ -118,8 +118,7 @@ export const ausstellungen: readonly Ausstellung[] = [
       haupt: {
         src: '/img/kwm/kummerschalen.webp',
         alt: 'Viele flache Schalen in Seladon, Schwarz und Rotbraun, auf dem Boden ausgelegt',
-        unterschrift:
-          'Schalen von Young-Jae Lee · Fotografie: Christopher Clem Franken, © Kunst-Station Sankt Peter, Köln',
+        unterschrift: 'Schalen von Young-Jae Lee · Foto: Christopher Clem Franken · © Kunst-Station Sankt Peter, Köln',
       },
     },
     aktuelles: {
