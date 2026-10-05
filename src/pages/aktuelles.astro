@@ -2,6 +2,8 @@
 import '../styles/basis.css';
 import ChapterHead from '../components/ChapterHead.astro';
 import Bild from '../components/Bild.astro';
+import PubList from '../components/PubList.astro';
+import { veroeffentlichungen } from '../data/texte';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import InquiryBand from '../components/InquiryBand.astro';
 import SubNav from '../components/SubNav.astro';
@@ -778,24 +780,7 @@ import '../styles/signaturen/signaturen.css';
     <ChapterHead id="veroeffentlichungen" titelId="pub-title">
       <Fragment slot="titel">Veröffentlichungen</Fragment>
       <Fragment slot="einleitung">Berichte und Gespräche über die Werkstatt.</Fragment>
-      <div class="pubs">
-        <article class="pub" data-reveal="fade">
-          <a href="https://urbanana.de/de/keramische-werkstatt-margaretenhoehe-der-ruf-des-bauhaus/">
-            <p class="pub__title">„Der Ruf des Bauhaus“</p>
-            <p class="pub__meta">Interview bei Urbanana · von Ilona Marx · 25. Januar 2023</p>
-            <span class="link-arrow">Interview lesen</span>
-          </a>
-        </article>
-        <article class="pub" data-reveal="fade">
-          <a href="https://kwm-1924.de/neuigkeiten/vergangene/jahr_2019/">
-            <p class="pub__title">„Vom Stolz, eine Töpferin zu sein“</p>
-            <p class="pub__meta">
-              Handwerkskammer Düsseldorf, Geschäftsbericht „Werkstatt 2019“ zum Schwerpunkt „In Frauenhand“
-            </p>
-            <span class="link-arrow">Zum Hinweis im Archiv</span>
-          </a>
-        </article>
-      </div>
+      <PubList typ="artikel" eintraege={veroeffentlichungen} />
     </ChapterHead>
 
     <InquiryBand text="Die Werkstatt ist offen. Besuchen Sie uns oder schreiben Sie uns.">

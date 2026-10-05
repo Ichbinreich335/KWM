@@ -1,0 +1,212 @@
+---
+import type { Publikation, Text, Veroeffentlichung } from '../data/texte';
+
+type Props =
+  | {
+      /** Berichte und Gespräche, jeder Eintrag ein Link über die ganze Kachel */
+      typ: 'artikel';
+      eintraege: readonly Veroeffentlichung[];
+    }
+  | {
+      /** Literaturliste in zwei Spalten: Titel mit Angabe */
+      typ: 'literatur';
+      eintraege: readonly Publikation[];
+    }
+  | {
+      /** Essays mit Autor, Titel, Auszug und Links */
+      typ: 'essays';
+      eintraege: readonly Text[];
+    };
+
+const props = Astro.props;
+---
+
+{props.typ === 'artikel' && (
+  <div class="pubs pubs--artikel">
+    {props.eintraege.map((eintrag) => (
+      <article class="pub" data-reveal="fade">
+        <a href={eintrag.href}>
+          <p class="pub__title">{eintrag.titel}</p>
+          <p class="pub__meta">{eintrag.angabe}</p>
+          <span class="link-arrow">{eintrag.linkText}</span>
+        </a>
+      </article>
+    ))}
+  </div>
+)}
+{props.typ === 'literatur' && (
+  <ul class="pubs pubs--literatur">
+    {props.eintraege.map((eintrag) => (
+      <li>
+        <span class="pubs__title">{eintrag.titel}</span>
+        <span class="pubs__meta">{eintrag.angabe}</span>
+      </li>
+    ))}
+  </ul>
+)}
+{props.typ === 'essays' && (
+  <ol class="texts">
+    {props.eintraege.map((eintrag) => (
+      <li class="texts__row">
+        <p class="texts__author">{eintrag.autor}</p>
+        <h3 class="texts__title">
+          {eintrag.titel}
+          {eintrag.untertitel && (
+            <Fragment>
+              {' '}
+              <small>{eintrag.untertitel}</small>
+            </Fragment>
+          )}
+        </h3>
+        {eintrag.auszug && <p class="texts__excerpt">{eintrag.auszug}</p>}
+        <p class="texts__links">
+          {eintrag.online && (
+            <a class="link-arrow" href={eintrag.online}>
+              Online lesen
+            </a>
+          )}
+          {eintrag.pdf && (
+            <a class="link-arrow" href={eintrag.pdf}>
+              PDF
+            </a>
+          )}
+        </p>
+      </li>
+    ))}
+  </ol>
+)}
+
+<style>
+  /* Veröffentlichungen (Aktuelles) */
+  .pubs--artikel {
+    padding-inline: var(--m);
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--g);
+  }
+  .pub {
+    grid-column: span 6;
+    border-top: 1px solid var(--ink);
+    padding: 22px 0 8px;
+  }
+  .pub a {
+    text-decoration: none;
+    display: block;
+  }
+  .pub__title {
+    font-family: var(--f-display);
+    font-size: var(--t-statement);
+    line-height: var(--t-statement-lh);
+    margin-bottom: 14px;
+    text-wrap: balance;
+    transition: color 0.4s;
+  }
+  .pub a:hover .pub__title {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.18em;
+  }
+  .pub__meta {
+    font-size: var(--t-small);
+    line-height: var(--t-small-lh);
+    color: var(--ink-2);
+    margin-bottom: 18px;
+  }
+
+  /* Literatur (Young-Jae Lee) */
+  .pubs--literatur {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: var(--g);
+    border-top: 1px solid var(--ink);
+  }
+  .pubs--literatur li {
+    padding: 16px 0;
+    border-bottom: 1px solid var(--hair);
+    padding-right: 24px;
+  }
+  .pubs__title {
+    display: block;
+    font-family: var(--f-text);
+    font-size: var(--t-body);
+    line-height: var(--t-body-lh);
+    text-wrap: balance;
+  }
+  .pubs__meta {
+    display: block;
+    font-size: var(--t-meta);
+    line-height: var(--t-meta-lh);
+    color: var(--ink-2);
+    margin-top: 4px;
+    text-wrap: pretty;
+  }
+
+  /* Texte über Young-Jae Lee */
+  .texts {
+    grid-column: 1 / -1;
+    border-top: 1px solid var(--ink);
+  }
+  .texts__row {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--g);
+    row-gap: 8px;
+    padding: 28px 0;
+    border-bottom: 1px solid var(--hair);
+    align-items: baseline;
+  }
+  .texts__author {
+    grid-column: 1 / 4;
+    font-size: var(--t-small);
+    line-height: var(--t-small-lh);
+    color: var(--ink-2);
+    margin: 0;
+  }
+  .texts__title {
+    grid-column: 4 / 9;
+    font-family: var(--f-display);
+    font-size: var(--t-h3);
+    line-height: var(--t-h3-lh);
+    margin: 0;
+    text-wrap: balance;
+  }
+  .texts__title small {
+    display: block;
+    font-family: var(--f-text);
+    font-size: var(--t-small);
+    line-height: var(--t-small-lh);
+    color: var(--ink-2);
+    margin-top: 8px;
+  }
+  .texts__excerpt {
+    grid-column: 9 / 13;
+    font-family: var(--f-text);
+    font-size: var(--t-small);
+    line-height: var(--t-small-lh);
+    margin: 0;
+    text-wrap: pretty;
+  }
+  .texts__links {
+    grid-column: 9 / 13;
+    display: flex;
+    gap: 18px 24px;
+    flex-wrap: wrap;
+    margin: 6px 0 0;
+  }
+
+  @media (max-width: 900px) {
+    .pub {
+      grid-column: 1 / -1;
+    }
+    .pubs--literatur {
+      grid-template-columns: 1fr;
+    }
+    .texts__author,
+    .texts__title,
+    .texts__excerpt,
+    .texts__links {
+      grid-column: 1 / -1;
+    }
+  }
+</style>

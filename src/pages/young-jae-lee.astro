@@ -1,6 +1,8 @@
 ---
 import '../styles/basis.css';
 import DateList from '../components/DateList.astro';
+import PubList from '../components/PubList.astro';
+import { publikationen, texte } from '../data/texte';
 import { auszeichnungen, ausstellungsauswahl, biografie } from '../data/vita';
 import Statement from '../components/Statement.astro';
 import ChapterHead from '../components/ChapterHead.astro';
@@ -129,113 +131,7 @@ import '../styles/signaturen/signaturen.css';
         Essays aus Katalogen und Büchern, vollständig zu lesen auf der bisherigen Website.
       </Fragment>
       <div class="grid">
-        <ol class="texts">
-          <li class="texts__row">
-            <p class="texts__author">Barbara Catoir</p>
-            <h3 class="texts__title">Gespannte Lebendigkeit</h3>
-            <p class="texts__excerpt">
-              „Young-Jae Lees Gefäße nehmen einen geheimnisvollen Dialog mit der spätgotischen Emporenkirche Sankt Peter
-              auf.“
-            </p>
-            <p class="texts__links">
-              <a class="link-arrow" href="https://kwm-1924.de/gespannte-lebendigkeit/">
-                Online lesen
-              </a>
-              <a class="link-arrow" href="https://kwm-1924.de/wp-content/uploads/2023/08/catoir.pdf">
-                PDF
-              </a>
-            </p>
-          </li>
-          <li class="texts__row">
-            <p class="texts__author">Gisela Jahn</p>
-            <h3 class="texts__title">
-              Gefäße drehen, Gefäße betrachten, Gefäße benützen{' '}
-              <small>Über die Schalen- und Vasenserien von Young-Jae Lee</small>
-            </h3>
-            <p class="texts__excerpt">
-              „Viele hundert Schalen hat Young-Jae Lee gedreht. In letzter Zeit sind es sich verhalten öffnende Schalen,
-              manche wie ein Blütenkelch, andere trichterförmig.“
-            </p>
-            <p class="texts__links">
-              <a
-                class="link-arrow"
-                href="https://kwm-1924.de/gefaesse-drehen-geefaesse-betrachten-gefaesse-benuetzenueber-die-schalen-und-vasenserien-von-young-jae-lee/"
-              >
-                Online lesen
-              </a>
-              <a class="link-arrow" href="https://kwm-1924.de/wp-content/uploads/2023/08/jahn.pdf">
-                PDF
-              </a>
-            </p>
-          </li>
-          <li class="texts__row">
-            <p class="texts__author">P. Friedhelm Mennekes S. J.</p>
-            <h3 class="texts__title">
-              »Wie erlange ich Erkenntnis der Liebe?« <small>Künstlerische und mystische Aspekte der Devotion</small>
-            </h3>
-            <p class="texts__excerpt">„Devotion, … das heißt die Verehrung oder auch die Kunst der Hingabe …“</p>
-            <p class="texts__links">
-              <a
-                class="link-arrow"
-                href="https://kwm-1924.de/wie-erlange-ich-erkenntnis-der-liebekuenstlerische-und-mystische-aspekte-der-devotion/"
-              >
-                Online lesen
-              </a>
-              <a class="link-arrow" href="https://kwm-1924.de/wp-content/uploads/2023/08/mennekes.pdf">
-                PDF
-              </a>
-            </p>
-          </li>
-          <li class="texts__row">
-            <p class="texts__author">Prof. Dr. Willibald Veit</p>
-            <h3 class="texts__title">Young-Jae Lee – Die Töpferin</h3>
-            <p class="texts__links">
-              <a class="link-arrow" href="https://kwm-1924.de/wp-content/uploads/2023/08/veit.pdf">
-                PDF
-              </a>
-            </p>
-          </li>
-          <li class="texts__row">
-            <p class="texts__author">Thomas Wagner</p>
-            <h3 class="texts__title">
-              Die aufgehobene Zeit{' '}
-              <small>Elf Bemerkungen zu eintausendeinhundertundelf Schalen von Young-Jae Lee</small>
-            </h3>
-            <p class="texts__excerpt">„Immer sind es Schalen, und doch ist keine wie die andere.“</p>
-            <p class="texts__links">
-              <a
-                class="link-arrow"
-                href="https://kwm-1924.de/die-aufgehobene-zeitelf-bemerkungen-zu-eintausendeinhundertundelf-schalen-von-young-jae-lee/"
-              >
-                Online lesen
-              </a>
-              <a class="link-arrow" href="https://kwm-1924.de/wp-content/uploads/2023/08/wagner_zeit-1.pdf">
-                PDF
-              </a>
-            </p>
-          </li>
-          <li class="texts__row">
-            <p class="texts__author">Thomas Wagner</p>
-            <h3 class="texts__title">
-              Galaxie 333 <small>Anmerkungen zu den Schalen von Young-Jae Lee</small>
-            </h3>
-            <p class="texts__excerpt">
-              „Young-Jae Lees Vasen und Schalen sind immer ästhetisches Objekt und Gebrauchsgegenstand, Gefäß und
-              Skulptur.“
-            </p>
-            <p class="texts__links">
-              <a
-                class="link-arrow"
-                href="https://kwm-1924.de/galaxie-333-anmerkungen-zu-den-schalen-von-young-jae-lee/"
-              >
-                Online lesen
-              </a>
-              <a class="link-arrow" href="https://kwm-1924.de/wp-content/uploads/2023/08/wagner_333.pdf">
-                PDF
-              </a>
-            </p>
-          </li>
-        </ol>
+        <PubList typ="essays" eintraege={texte} />
       </div>
     </ChapterHead>
 
@@ -835,112 +731,7 @@ import '../styles/signaturen/signaturen.css';
       <Fragment slot="titel">Publikationen</Fragment>
       <Fragment slot="einleitung">Kataloge, Bücher und Artikel, 1981 bis 2020.</Fragment>
       <div class="grid">
-        <ul class="pubs">
-          <li>
-            <span class="pubs__title">Young-Jae Lee – das Grün in den Schalen</span>
-            <span class="pubs__meta">hrsg. Museum Folkwang, Essen 2020</span>
-          </li>
-          <li>
-            <span class="pubs__title">
-              Günter Figal, Einfachheit. Über eine Schale von Young-Jae Lee / Simplicity. On a bowl by Young-Jae Lee
-            </span>
-            <span class="pubs__meta">Freiburg i. Br. 2014</span>
-          </li>
-          <li>
-            <span class="pubs__title">Young-Jae Lee und Emil Schumacher</span>
-            <span class="pubs__meta">
-              hrsg. von Ulrich Schumacher und Rouven Lotz, Ausst.-Kat. Emil Schumacher Museum Hagen, Bönen 2013
-            </span>
-          </li>
-          <li>
-            <span class="pubs__title">Vessels. Installationen von Young-Jae Lee</span>
-            <span class="pubs__meta">
-              hrsg. von Arnulf Siebeneicker, Ausst.-Kat. LWL-Industriemuseum Schiffshebewerk Henrichenburg, Essen 2013
-            </span>
-          </li>
-          <li>
-            <span class="pubs__title">Young-Jae Lee. Formen aus der Erde</span>
-            <span class="pubs__meta">
-              hrsg. von ALTANA Kulturstiftung, Andrea Firmenich, Johannes Janssen, Ausst.-Kat. Museum Sinclair-Haus Bad
-              Homburg, Köln 2010
-            </span>
-          </li>
-          <li>
-            <span class="pubs__title">Reinhard Krause, Wo aus Braunrot Jadegrün wird</span>
-            <span class="pubs__meta">In: AD. Architectural Digest, Nr. 100, 06/09</span>
-          </li>
-          <li>
-            <span class="pubs__title">Philipp Meier, Schönheit des Einfachen</span>
-            <span class="pubs__meta">In: Neue Zürcher Zeitung / NZZ am Sonntag, Z – Die schönen Seiten, 10/08</span>
-          </li>
-          <li>
-            <span class="pubs__title">Young-Jae Lee, Spindelvasen</span>
-            <span class="pubs__meta">Ausst.-Kat. Pinakothek der Moderne, München 2008</span>
-          </li>
-          <li>
-            <span class="pubs__title">Young-Jae Lee, 1111 Schalen</span>
-            <span class="pubs__meta">
-              hrsg. von Reinhold Baumstark, Bayerische Staatsgemäldesammlungen, München 2006
-            </span>
-          </li>
-          <li>
-            <span class="pubs__title">Young-Jae Lee – Gefäße</span>
-            <span class="pubs__meta">
-              hrsg. Gerhard Finckh / RAG Aktiengesellschaft, Ausst.-Kat. Museum Morsbroich Leverkusen, Leverkusen 2004
-            </span>
-          </li>
-          <li>
-            <span class="pubs__title">Young-Jae Lee</span>
-            <span class="pubs__meta">
-              hrsg. von Victoria Scheinler und Kurt Danch, Ausst.-Kat. Kunststation St. Peter Köln, Köln 2002
-            </span>
-          </li>
-          <li>
-            <span class="pubs__title">Keramische Werkstatt Margaretenhöhe 1924–1999</span>
-            <span class="pubs__meta">München 1999</span>
-          </li>
-          <li>
-            <span class="pubs__title">Young-Jae Lee, Keramiken 1975–1995</span>
-            <span class="pubs__meta">
-              Ausst.-Kat. Museum für Ostasiatische Kunst, Staatliche Museen zu Berlin Preußischer Kulturbesitz; Museum
-              für Ostasiatische Kunst Köln, München 1996
-            </span>
-          </li>
-          <li>
-            <span class="pubs__title">Keramik des 20. Jahrhunderts: Sammlung Welle</span>
-            <span class="pubs__meta">hrsg. von Ekkart Klinge, Köln 1996</span>
-          </li>
-          <li>
-            <span class="pubs__title">
-              Koreanische Keramik in Deutschland: Young-Jae Lee, Si-Sook Kang, Kap-Sun Hwang
-            </span>
-            <span class="pubs__meta">
-              Ausst.-Kat. Schleswig-Holsteinisches Landesmuseum Kloster Cismar, Schleswig 1995
-            </span>
-          </li>
-          <li>
-            <span class="pubs__title">Zeitgenössisches deutsches Kunsthandwerk, Triennale 1994</span>
-            <span class="pubs__meta">
-              Ausst.-Kat. Museum für Kunsthandwerk Frankfurt am Main, Frankfurt am Main 1994
-            </span>
-          </li>
-          <li>
-            <span class="pubs__title">Zeitgenössisches deutsches und finnisches Kunsthandwerk, Triennale 1987/88</span>
-            <span class="pubs__meta">
-              Ausst.-Kat. Museum für Kunsthandwerk Frankfurt am Main, Frankfurt am Main 1987
-            </span>
-          </li>
-          <li>
-            <span class="pubs__title">Deutsche Keramik heute</span>
-            <span class="pubs__meta">hrsg. von Ekkart Klinge, Düsseldorf 1984</span>
-          </li>
-          <li>
-            <span class="pubs__title">
-              Zeitgenössisches deutsches und niederländisches Kunsthandwerk, Triennale 1981
-            </span>
-            <span class="pubs__meta">Ausst.-Kat. Museum für Kunsthandwerk Frankfurt, Frankfurt am Main 1981</span>
-          </li>
-        </ul>
+        <PubList typ="literatur" eintraege={publikationen} />
       </div>
     </ChapterHead>
 

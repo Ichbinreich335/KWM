@@ -146,42 +146,6 @@
   justify-self: start;
 }
 
-/* Veröffentlichungen */
-.pubs {
-  padding-inline: var(--m);
-  display: grid;
-  grid-template-columns: repeat(12, minmax(0, 1fr));
-  column-gap: var(--g);
-}
-.pub {
-  grid-column: span 6;
-  border-top: 1px solid var(--ink);
-  padding: 22px 0 8px;
-}
-.pub a {
-  text-decoration: none;
-  display: block;
-}
-.pub__title {
-  font-family: var(--f-display);
-  font-size: var(--t-statement);
-  line-height: var(--t-statement-lh);
-  margin-bottom: 14px;
-  text-wrap: balance;
-  transition: color 0.4s;
-}
-.pub a:hover .pub__title {
-  text-decoration: underline;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 0.18em;
-}
-.pub__meta {
-  font-size: var(--t-small);
-  line-height: var(--t-small-lh);
-  color: var(--ink-2);
-  margin-bottom: 18px;
-}
-
 @media (max-width: 900px) {
   .feature__media,
   .feature--mirror .feature__media {
@@ -210,9 +174,6 @@
     grid-column: 1;
     grid-row: auto;
     text-align: left;
-  }
-  .pub {
-    grid-column: 1 / -1;
   }
 }
 @media (max-width: 520px) {
