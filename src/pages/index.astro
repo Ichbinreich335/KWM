@@ -11,6 +11,8 @@ import ExhibitionCard from '../components/ExhibitionCard.astro';
 import { ausstellungen } from '../data/ausstellungen';
 import { hinweise } from '../data/hinweise';
 import Timeline from '../components/Timeline.astro';
+import Chronicle from '../components/Chronicle.astro';
+import { chronik } from '../data/chronik';
 import { lebensweg } from '../data/lebensweg';
 import Bild from '../components/Bild.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
@@ -885,104 +887,15 @@ import '../styles/signaturen/signaturen.css';
     </section>
 
     {/* Werkstatt / Chronik */}
-    <section class="chronicle" id="werkstatt" aria-labelledby="chron-title">
-      <div class="chronicle__body grid">
-        <div class="chronicle__intro">
-          <h2 class="h2" id="chron-title" data-reveal="words">
-            Hundert Jahre an der Scheibe.
-          </h2>
-          <p class="chronicle__lede" data-reveal="fade">
-            Von der Siedlungswerkstatt in Essen zur Manufaktur auf Zollverein: neun Stationen in 82 Jahren.
-          </p>
-          <p class="chronicle__span" data-reveal="fade">
-            1924 bis 2006
-          </p>
-          <a class="link-arrow" href="/werkstatt">
-            Werkstatt, Team und Chronik
-          </a>
-          <p class="chronicle__hint" aria-hidden="true">
-            Wischen
-          </p>
-        </div>
-        <ol class="chronicle__list" aria-label="Chronik der Werkstatt" tabindex="0">
-          <li>
-            <span class="chronicle__year">1924</span>
-            <div class="chronicle__what">
-              <h3 class="chronicle__title">Siedlungswerkstatt</h3>
-              <p>
-                Margarete Krupp realisiert die Siedlung Margaretenhöhe in Essen. Hermann Kätelhön initiiert eine
-                Keramikwerkstatt auf dem Gelände, Leiter wird Will Lammert.
-              </p>
-            </div>
-          </li>
-          <li>
-            <span class="chronicle__year">1927</span>
-            <div class="chronicle__what">
-              <h3 class="chronicle__title">Bauhaus im Ruhrgebiet</h3>
-              <p>
-                Johannes Leßmann, Schüler des Bauhaus-Keramikers Otto Lindig, stellt auf Serienkeramik um – und
-                verschafft der Bauhaus-Idee im Ruhrgebiet Breitenwirkung.
-              </p>
-            </div>
-          </li>
-          <li>
-            <span class="chronicle__year">1933</span>
-            <div class="chronicle__what">
-              <h3 class="chronicle__title">Auf Zollverein</h3>
-              <p>Umzug in ein Gebäude der Zeche Zollverein.</p>
-            </div>
-          </li>
-          <li>
-            <span class="chronicle__year">1944</span>
-            <div class="chronicle__what">
-              <h3 class="chronicle__title">Neue Leitung</h3>
-              <p>Walburga Külz, ebenfalls Schülerin Otto Lindigs, übernimmt die Leitung.</p>
-            </div>
-          </li>
-          <li>
-            <span class="chronicle__year">1953</span>
-            <div class="chronicle__what">
-              <h3 class="chronicle__title">Baukeramik</h3>
-              <p>Helmut Gniesmer stellt das Programm vorwiegend auf Baukeramik um.</p>
-            </div>
-          </li>
-          <li>
-            <span class="chronicle__year">1968</span>
-            <div class="chronicle__what">
-              <h3 class="chronicle__title">Ruhrkohle</h3>
-              <p>Die Werkstatt geht in den Besitz der Ruhrkohle AG über, später RAG Aktiengesellschaft.</p>
-            </div>
-          </li>
-          <li>
-            <span class="chronicle__year">1986</span>
-            <div class="chronicle__what">
-              <h3 class="chronicle__title">Zurück zum Gefäß</h3>
-              <p>
-                Young-Jae Lee und Hildegard Eggemann übernehmen die Leitung und nehmen das Manufakturprogramm wieder
-                auf.
-              </p>
-            </div>
-          </li>
-          <li>
-            <span class="chronicle__year">1987</span>
-            <div class="chronicle__what">
-              <h3 class="chronicle__title">Das Baulager</h3>
-              <p>Umzug in das Baulager der Zeche Zollverein, heute Weltkulturerbe.</p>
-            </div>
-          </li>
-          <li>
-            <span class="chronicle__year">2006</span>
-            <div class="chronicle__what">
-              <h3 class="chronicle__title">In eigener Verantwortung</h3>
-              <p>
-                Young-Jae Lee übernimmt die Werkstatt von der RAG Aktiengesellschaft und führt sie als
-                Geschäftsführerin.
-              </p>
-            </div>
-          </li>
-        </ol>
-      </div>
-    </section>
+    <Chronicle
+      eintraege={chronik}
+      kurz
+      id="werkstatt"
+      titelId="chron-title"
+      titel="Hundert Jahre an der Scheibe."
+      lede="Von der Siedlungswerkstatt in Essen zur Manufaktur auf Zollverein: neun Stationen in 82 Jahren."
+      link={{ href: '/werkstatt', text: 'Werkstatt, Team und Chronik' }}
+    />
 
     {/* Besuch */}
     <section class="visit" id="besuch" aria-labelledby="visit-title">
