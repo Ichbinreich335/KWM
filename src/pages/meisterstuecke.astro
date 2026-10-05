@@ -10,7 +10,7 @@ import { stimmung, werk } from '../data/werke';
 import Bild from '../components/Bild.astro';
 import Steps from '../components/Steps.astro';
 import { arbeitsschritte } from '../data/arbeitsweise';
-import { wagnerQuelle } from '../data/texte';
+import { jahnQuelle, wagnerQuelle } from '../data/texte';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import InquiryBand from '../components/InquiryBand.astro';
 import SubNav from '../components/SubNav.astro';
@@ -79,11 +79,7 @@ import PageHero from '../components/PageHero.astro';
       <div class="catalog">
         <WorkCard typ="katalog" breite="halb" werk={werk('schale-spitz-xxl-1')} />
         <WorkCard typ="katalog" breite="halb" werk={werk('schale-spitz-xxl-2')} />
-        <Statement
-          typ="zitat"
-          class="catalog__quote"
-          quelle="Gisela Jahn, »Gefäße drehen, Gefäße betrachten, Gefäße benutzen«"
-        >
+        <Statement typ="zitat" class="catalog__quote" quelle={jahnQuelle}>
           Vom Volumen bezieht die Schale ihre Kraft, ihre Präsenz.
         </Statement>
         <WorkCard typ="katalog" breite="halb" werk={werk('schale-spitz-xxl-3')} />
@@ -109,7 +105,7 @@ import PageHero from '../components/PageHero.astro';
       <Steps
         typ="arbeitsschritte"
         schritte={arbeitsschritte}
-        bildunterschrift="Young-Jae Lee, Teeschale, ohne Titel, 2023"
+        bildunterschrift="Ohne Titel (Teeschale), 2023 · Foto: Edi Baumann"
       >
         <Fragment slot="bild">
           <Bild
@@ -152,11 +148,7 @@ import PageHero from '../components/PageHero.astro';
         <WorkCard typ="katalog" breite="halb" werk={werk('zylindervasen-mittel-1')} />
         <WorkCard typ="katalog" breite="halb" werk={werk('kleines-zylindervasenpaar-1')} />
 
-        <Statement
-          typ="zitat"
-          class="catalog__quote"
-          quelle="Gisela Jahn, »Gefäße drehen, Gefäße betrachten, Gefäße benutzen«"
-        >
+        <Statement typ="zitat" class="catalog__quote" quelle={jahnQuelle}>
           Das sinnliche Gespür […] reifte in der frühen Essener Zeit mit der Wiederannäherung an die koreanische
           Keramik.
         </Statement>

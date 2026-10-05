@@ -46,7 +46,7 @@ export const katalog: readonly Werk[] = [
   {
     schluessel: 'schale-spitz-xxl-1',
     titel: 'Schale, spitz, XXL',
-    angaben: [{ masse: 'H 16 cm, D 29,5 cm', glasur: 'Petalit-Eichenasche-Glasur', jahr: '2003–2005' }],
+    angaben: [{ masse: 'H 16 × Ø 29,5 cm', glasur: 'Petalit-Eichenasche-Glasur', jahr: '2003–2005' }],
     bild: {
       src: '/img/kwm/schale_spitz_xxl_3.webp',
       alt: 'Spitz zulaufende Schale mit hellrosa geflammter Innenseite auf hohem Fuß',
@@ -55,7 +55,7 @@ export const katalog: readonly Werk[] = [
   {
     schluessel: 'schale-spitz-xxl-2',
     titel: 'Schale, spitz, XXL',
-    angaben: [{ masse: 'H 10,5 cm, D 22,5 cm', glasur: 'Petalit-Eichenasche-Glasur', jahr: '2003–2005' }],
+    angaben: [{ masse: 'H 10,5 × Ø 22,5 cm', glasur: 'Petalit-Eichenasche-Glasur', jahr: '2003–2005' }],
     bild: {
       src: '/img/kwm/schale_spitz_xxl_1.webp',
       alt: 'Große spitze Schale mit rosa Innenseite, von oben gesehen, auf gesprenkeltem Stein',
@@ -64,7 +64,7 @@ export const katalog: readonly Werk[] = [
   {
     schluessel: 'schale-spitz-xxl-3',
     titel: 'Schale, spitz, XXL',
-    angaben: [{ masse: 'H 11,5 cm, D 28,5 cm', glasur: 'Spodumen-Feldspat-Glasur', jahr: '2003–2005' }],
+    angaben: [{ masse: 'H 11,5 × Ø 28,5 cm', glasur: 'Spodumen-Feldspat-Glasur', jahr: '2003–2005' }],
     bild: {
       src: '/img/kwm/schale-spitz_xxl_2.webp',
       alt: 'Weite, flache Schale in hellem Grau auf schmalem Fuß vor dunklem Grund',
@@ -73,7 +73,7 @@ export const katalog: readonly Werk[] = [
   {
     schluessel: 'schale-spitz-xl-1',
     titel: 'Schale, spitz, XL',
-    angaben: [{ masse: 'H 10,5 cm, D 21,5 cm', glasur: 'Strontium-Feldspat-Glasur', jahr: '2003–2005' }],
+    angaben: [{ masse: 'H 10,5 × Ø 21,5 cm', glasur: 'Strontium-Feldspat-Glasur', jahr: '2003–2005' }],
     bild: {
       src: '/img/kwm/schale_spitz_xl_1.webp',
       alt: 'Spitze Schale mit graublauer Innenseite und bräunlichem Fuß',
@@ -82,7 +82,7 @@ export const katalog: readonly Werk[] = [
   {
     schluessel: 'schale-spitz-xl-2',
     titel: 'Schale, spitz, XL',
-    angaben: [{ masse: 'H 11 cm, D 21 cm', glasur: 'Barium-Feldspat-Glasur', jahr: '2004/05' }],
+    angaben: [{ masse: 'H 11 × Ø 21 cm', glasur: 'Barium-Feldspat-Glasur', jahr: '2004/05' }],
     bild: {
       src: '/img/kwm/schale_spitz_xl_2.webp',
       alt: 'Drei ineinandergestellte hellblaue Schalen im Streiflicht',
@@ -91,7 +91,7 @@ export const katalog: readonly Werk[] = [
   {
     schluessel: 'schale-spitz-xl-3',
     titel: 'Schale, spitz, XL',
-    angaben: [{ masse: 'H 10,5 cm, D 28 cm', glasur: 'Wollastonit-Feldspat-Glasur', jahr: '2003–2005' }],
+    angaben: [{ masse: 'H 10,5 × Ø 28 cm', glasur: 'Wollastonit-Feldspat-Glasur', jahr: '2003–2005' }],
     bild: {
       src: '/img/kwm/schale_spitz_xl_3.webp',
       alt: 'Flache, weite Schale in Olivgrün vor grauem Grund',
@@ -100,7 +100,7 @@ export const katalog: readonly Werk[] = [
   {
     schluessel: 'schale-spitz-gross-1',
     titel: 'Schale, spitz, groß',
-    angaben: [{ masse: 'H 10,3 cm, D 18,8 cm', glasur: 'Barium-Feldspat-Glasur', jahr: '2003–2005' }],
+    angaben: [{ masse: 'H 10,3 × Ø 18,8 cm', glasur: 'Barium-Feldspat-Glasur', jahr: '2003–2005' }],
     bild: {
       src: '/img/kwm/schale_spitz_gross.webp',
       alt: 'Spitze Schale mit türkisgrüner Glasur auf kleinem Fuß',
@@ -109,7 +109,7 @@ export const katalog: readonly Werk[] = [
   {
     schluessel: 'schale-spitz-mittel-1',
     titel: 'Schale, spitz, mittel',
-    angaben: [{ masse: 'H 9 cm, D 15,8 cm', glasur: 'Spodumen-Feldspat-Glasur', jahr: '2003–2005' }],
+    angaben: [{ masse: 'H 9 × Ø 15,8 cm', glasur: 'Spodumen-Feldspat-Glasur', jahr: '2003–2005' }],
     bild: {
       src: '/img/kwm/schale_spitz_mittel.webp',
       alt: 'Spitze Schale mit orangebraun geflammter Außenseite und hellem Rand',
@@ -119,9 +119,9 @@ export const katalog: readonly Werk[] = [
     schluessel: 'schalen-spitz-klein-1',
     titel: 'Schalen, spitz, klein',
     angaben: [
-      { masse: 'H 8,2 cm, D 9,8 cm', glasur: 'Strontium-Feldspat-Glasur', jahr: '2003–2005' },
-      { masse: 'H 8,3 cm, D 9,7 cm', glasur: 'Wollastonit-Feldspat-Glasur', jahr: '2003–2005' },
-      { masse: 'H 8,2 cm, D 10 cm', glasur: 'Strontium-Feldspat-Glasur', jahr: '2003–2005' },
+      { masse: 'H 8,2 × Ø 9,8 cm', glasur: 'Strontium-Feldspat-Glasur', jahr: '2003–2005' },
+      { masse: 'H 8,3 × Ø 9,7 cm', glasur: 'Wollastonit-Feldspat-Glasur', jahr: '2003–2005' },
+      { masse: 'H 8,2 × Ø 10 cm', glasur: 'Strontium-Feldspat-Glasur', jahr: '2003–2005' },
     ],
     bild: {
       src: '/img/kwm/schale_spitz.webp',
@@ -133,7 +133,7 @@ export const katalog: readonly Werk[] = [
     titel: 'Große Schale',
     angaben: [
       {
-        masse: 'H 9,5 cm, D 53,5 cm',
+        masse: 'H 9,5 × Ø 53,5 cm',
         glasur: 'Wollastonit-Feldspat-Glasur',
         brand: 'Gasofen',
         ort: 'Essen',
@@ -150,7 +150,7 @@ export const katalog: readonly Werk[] = [
     titel: 'Kummen',
     angaben: [
       {
-        masse: 'H 18 cm, D 14,6 cm · H 18 cm, D 14 cm',
+        masse: 'H 18 × Ø 14,6 cm · H 18 × Ø 14 cm',
         glasur: 'Petalit-Eichenasche-Glasur',
         brand: 'Holzofen',
         ort: 'Essen',
@@ -167,7 +167,7 @@ export const katalog: readonly Werk[] = [
     titel: 'Kumme',
     angaben: [
       {
-        masse: 'H 16 cm, D 12,2 cm',
+        masse: 'H 16 × Ø 12,2 cm',
         glasur: 'Wollastonit-Feldspat-Glasur auf weißer Engobe',
         brand: 'Gasofen',
         ort: 'Essen',
@@ -183,7 +183,7 @@ export const katalog: readonly Werk[] = [
     schluessel: 'bettelmoenchschale-1',
     titel: 'Bettelmönchschale',
     angaben: [
-      { masse: 'H 10,2 cm, D 13,6 cm', glasur: 'Barium-Feldspat-Glasur', brand: 'Gasofen', ort: 'Essen', jahr: '1988' },
+      { masse: 'H 10,2 × Ø 13,6 cm', glasur: 'Barium-Feldspat-Glasur', brand: 'Gasofen', ort: 'Essen', jahr: '1988' },
     ],
     bild: {
       src: '/img/kwm/kumme_3.webp',
@@ -195,7 +195,7 @@ export const katalog: readonly Werk[] = [
     titel: 'Zylindervasen, XL',
     angaben: [
       {
-        masse: 'H ca. 49 cm, D ca. 15 cm',
+        masse: 'H ca. 49 × Ø ca. 15 cm',
         glasur: 'Petalit-Eichenasche-Glasur',
         brand: 'Holzofen',
         ort: 'Essen',
@@ -212,7 +212,7 @@ export const katalog: readonly Werk[] = [
     titel: 'Zylindervasen, groß',
     angaben: [
       {
-        masse: 'H ca. 30 cm, D ca. 11,5 cm',
+        masse: 'H ca. 30 × Ø ca. 11,5 cm',
         glasur: 'Petalit-Eichenasche-Glasur',
         brand: 'Holzofen',
         ort: 'Essen',
@@ -230,7 +230,7 @@ export const katalog: readonly Werk[] = [
     angaben: [
       {
         masse:
-          'H 29,5 cm, D 12,1 cm · H 21,3 cm, D 11,1 cm · H 30,5 cm, D 12,7 cm · H 19,1 cm, D 11 cm · H 27,1 cm, D 12,4 cm · H 24,1 cm, D 12 cm',
+          'H 29,5 × Ø 12,1 cm · H 21,3 × Ø 11,1 cm · H 30,5 × Ø 12,7 cm · H 19,1 × Ø 11 cm · H 27,1 × Ø 12,4 cm · H 24,1 × Ø 12 cm',
       },
       { glasur: 'Petalit-Eichenasche-Glasur', brand: 'Holzofen', ort: 'Essen', jahr: '2003' },
     ],
@@ -244,7 +244,7 @@ export const katalog: readonly Werk[] = [
     titel: 'Kleines Zylindervasenpaar',
     angaben: [
       {
-        masse: 'H 14,5 cm, D 14,5 cm · H 13,3 cm, D 14,5 cm',
+        masse: 'H 14,5 × Ø 14,5 cm · H 13,3 × Ø 14,5 cm',
         glasur: 'Kalkspat-Glasur',
         brand: 'Gasofen',
         ort: 'Kassel',
@@ -260,7 +260,7 @@ export const katalog: readonly Werk[] = [
     schluessel: 'kugelvase-1',
     titel: 'Kugelvase',
     angaben: [
-      { masse: 'H 25 cm, D 32,5 cm', glasur: 'Barium-Feldspat-Glasur', brand: 'Holzofen', ort: 'Essen', jahr: '1996' },
+      { masse: 'H 25 × Ø 32,5 cm', glasur: 'Barium-Feldspat-Glasur', brand: 'Holzofen', ort: 'Essen', jahr: '1996' },
     ],
     bild: {
       src: '/img/kwm/kugelvase.webp',
@@ -272,7 +272,7 @@ export const katalog: readonly Werk[] = [
     titel: 'Spindelvase',
     angaben: [
       {
-        masse: 'H 35,5 cm, D 37 cm',
+        masse: 'H 35,5 × Ø 37 cm',
         glasur: 'Petalit-Eichenasche-Feldspat-Glasur',
         brand: `Holzofen ${grad(BRENNTEMPERATUR.holzofen)} · Reduktion`,
       },
@@ -287,7 +287,7 @@ export const katalog: readonly Werk[] = [
     titel: 'Spindelvase',
     angaben: [
       {
-        masse: 'H 40,4 cm, D 34,5 cm',
+        masse: 'H 40,4 × Ø 34,5 cm',
         glasur: 'Wollastonit-Feldspat-Glasur',
         brand: `Gasofen ${grad(BRENNTEMPERATUR.gasofen)} · Reduktion`,
       },
@@ -302,7 +302,7 @@ export const katalog: readonly Werk[] = [
     titel: 'Spindelvase',
     angaben: [
       {
-        masse: 'H 35,5 cm, D 37 cm',
+        masse: 'H 37,5 × Ø 33 cm',
         glasur: 'Petalit-Eichenasche-Feldspat-Glasur',
         brand: `Holzofen ${grad(BRENNTEMPERATUR.holzofen)} · Reduktion`,
       },
@@ -317,12 +317,12 @@ export const katalog: readonly Werk[] = [
     titel: 'Spindelvasen',
     angaben: [
       {
-        masse: 'H 34,7 cm, D 33 cm',
+        masse: 'H 34,7 × Ø 33 cm',
         glasur: 'Magnesium-Zinn-Feldspat-Glasur',
         brand: `Gasofen ca. ${grad(BRENNTEMPERATUR.gasofen)} · Reduktion`,
       },
       {
-        masse: 'H 45 cm, D 36 cm',
+        masse: 'H 45 × Ø 36 cm',
         glasur: 'Magnesium-Zinn-Feldspat-Glasur',
         brand: `Gasofen ca. ${grad(BRENNTEMPERATUR.gasofen)} · Reduktion`,
       },
@@ -337,12 +337,12 @@ export const katalog: readonly Werk[] = [
     titel: 'Spindelvasen',
     angaben: [
       {
-        masse: 'H 40,4 cm, D 34,5 cm',
+        masse: 'H 40,4 × Ø 34,5 cm',
         glasur: 'Wollastonit-Feldspat-Glasur',
         brand: `Gasofen ${grad(BRENNTEMPERATUR.gasofen)} · Reduktion`,
       },
       {
-        masse: 'H 34,5 cm, D 36,5 cm',
+        masse: 'H 34,5 × Ø 36,5 cm',
         glasur: 'Petalit-Eichenasche-Feldspat-Glasur',
         brand: `Holzofen ${grad(BRENNTEMPERATUR.holzofen)} · Reduktion`,
       },
@@ -357,12 +357,12 @@ export const katalog: readonly Werk[] = [
     titel: 'Spindelvasen',
     angaben: [
       {
-        masse: 'H 38,8 cm, D 35,3 cm',
+        masse: 'H 38,8 × Ø 35,3 cm',
         glasur: 'Petalit-Eichenasche-Feldspat-Glasur',
         brand: `Holzofen ${grad(BRENNTEMPERATUR.holzofen)} · Reduktion`,
       },
       {
-        masse: 'H 35 cm, D 36,5 cm',
+        masse: 'H 35 × Ø 36,5 cm',
         glasur: 'Petalit-Eichenasche-Feldspat-Glasur',
         brand: `Holzofen ${grad(BRENNTEMPERATUR.holzofen)} · Reduktion`,
       },
@@ -414,15 +414,15 @@ export const werkschau: readonly Werk[] = [
     schluessel: 'werkschau-1',
     titel: 'Kumme',
     jahr: '1995',
-    angaben: [{ masse: 'H 18 cm, D 14,6 cm' }, { glasur: 'Petalit-Eichenasche-Glasur', brand: 'Holzofen' }],
+    angaben: [{ masse: 'H 18 × Ø 14,6 cm' }, { glasur: 'Petalit-Eichenasche-Glasur', brand: 'Holzofen' }],
     bild: { src: '/img/kwm/kumme_2.webp', alt: 'Zwei Kummen mit blau gesprenkelter Glasur' },
     verweis: '/meisterstuecke#kummen',
   },
   {
     schluessel: 'werkschau-2',
     titel: 'Schale, spitz, XXL',
-    jahr: '2003–05',
-    angaben: [{ masse: 'H 10,5 cm, D 22,5 cm' }, { glasur: 'Petalit-Eichenasche-Glasur' }],
+    jahr: '2003–2005',
+    angaben: [{ masse: 'H 10,5 × Ø 22,5 cm' }, { glasur: 'Petalit-Eichenasche-Glasur' }],
     bild: {
       src: '/img/kwm/schale_spitz_xxl_1.webp',
       alt: 'Große spitze Schale mit rosa Glasurverlauf',
@@ -433,7 +433,7 @@ export const werkschau: readonly Werk[] = [
     schluessel: 'werkschau-3',
     titel: 'Zylindervasen, groß',
     jahr: '2003',
-    angaben: [{ masse: 'H ca. 30 cm, D ca. 11,5 cm' }, { glasur: 'Petalit-Eichenasche-Glasur', brand: 'Holzofen' }],
+    angaben: [{ masse: 'H ca. 30 × Ø ca. 11,5 cm' }, { glasur: 'Petalit-Eichenasche-Glasur', brand: 'Holzofen' }],
     bild: {
       src: '/img/kwm/zylindervasen_gross.webp',
       alt: 'Drei große Zylindervasen mit Pinselbemalung',
@@ -443,8 +443,8 @@ export const werkschau: readonly Werk[] = [
   {
     schluessel: 'werkschau-4',
     titel: 'Schale, spitz, XL',
-    jahr: '2003–05',
-    angaben: [{ masse: 'H 10,5 cm, D 21,5 cm' }, { glasur: 'Strontium-Feldspat-Glasur' }],
+    jahr: '2003–2005',
+    angaben: [{ masse: 'H 10,5 × Ø 21,5 cm' }, { glasur: 'Strontium-Feldspat-Glasur' }],
     bild: {
       src: '/img/kwm/schale_spitz_xl_1.webp',
       alt: 'Spitze Schale mit hellblauer Innenglasur',
@@ -455,15 +455,15 @@ export const werkschau: readonly Werk[] = [
     schluessel: 'werkschau-5',
     titel: 'Bettelmönchschale',
     jahr: '1988',
-    angaben: [{ masse: 'H 10,2 cm, D 13,6 cm' }, { glasur: 'Barium-Feldspat-Glasur', brand: 'Gasofen' }],
+    angaben: [{ masse: 'H 10,2 × Ø 13,6 cm' }, { glasur: 'Barium-Feldspat-Glasur', brand: 'Gasofen' }],
     bild: { src: '/img/kwm/kumme_3.webp', alt: 'Hellblaue Bettelmönchschale' },
     verweis: '/meisterstuecke#kummen',
   },
   {
     schluessel: 'werkschau-6',
     titel: 'Schale, spitz, groß',
-    jahr: '2003–05',
-    angaben: [{ masse: 'H 10,3 cm, D 18,8 cm' }, { glasur: 'Barium-Feldspat-Glasur' }],
+    jahr: '2003–2005',
+    angaben: [{ masse: 'H 10,3 × Ø 18,8 cm' }, { glasur: 'Barium-Feldspat-Glasur' }],
     bild: {
       src: '/img/kwm/schale_spitz_gross.webp',
       alt: 'Spitze Schale mit türkisgrüner Glasur auf kleinem Fuß',

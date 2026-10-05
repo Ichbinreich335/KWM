@@ -41,10 +41,10 @@ export const ausstellungsauswahl: readonly DatumEintrag[] = [
     text: [
       '„Young-Jae Lee – Forms from the Earth“, David Nolan Gallery, New York, USA',
       '„Young-Jae Lee: SCHALEN“, Stadtkirche St. Jakobi, Chemnitz',
-      '„100 Jahre Keramische Werkstatt Margaretenhöhe – Young-Jae Lee im Hetjens“, Hetjens Museum, Düsseldorf',
+      '„100 Jahre Keramische Werkstatt Margaretenhöhe – Young-Jae Lee im Hetjens“, Hetjens-Museum, Düsseldorf',
     ],
   },
-  { jahr: '2023', text: '„Gefäße retrospektiv“, Kulturforum Blaue Haus, Dießen am Ammersee' },
+  { jahr: '2023', text: '„Gefäße retrospektiv“, Kulturforum Blaues Haus, Dießen am Ammersee' },
   {
     jahr: '2022',
     text: [
@@ -59,15 +59,15 @@ export const ausstellungsauswahl: readonly DatumEintrag[] = [
     text: [
       '„Werkkunst Keramiken von Young-Jae Lee“, Dommuseum, Hildesheim',
       '„Young-Jae Lee“, Museum Folkwang, Essen',
-      'Gallery Tokyo, Tokyo, Japan',
-      '„Young-Jae Lee – Emptying, Filling, and Emptying“, Gwangju Museum of Art, Ha Jung-woong Museum of Art, Gwangju, Korea',
+      'Gallery Tokyo, Tokio, Japan',
+      '„Young-Jae Lee – Emptying, Filling and Emptying“, Gwangju Museum of Art, Ha Jung-woong Museum of Art, Gwangju, Korea',
     ],
   },
   {
     jahr: '2018',
     text: [
       '„Œuvres en céramique – Young-Jae Lee“, Galerie Karsten Greve, Paris, Frankreich',
-      '„Young-Jae Lee – Ceramics“, Centre Culturel Coréen, Brüssel, Belgien',
+      '„Young-Jae Lee – Ceramics“, Korean Cultural Center, Brüssel, Belgien',
       '„Arbeiten in Keramik – Young-Jae Lee“, Galerie Karsten Greve, Köln',
     ],
   },
@@ -76,19 +76,19 @@ export const ausstellungsauswahl: readonly DatumEintrag[] = [
     text: [
       'Shinsegae Gallery, Daegu, Gwangju, Incheon, Busan, Korea',
       'Gallery Kan, Fukushima, Japan',
-      'Gallery Tokyo, Tokyo, Japan',
+      'Gallery Tokyo, Tokio, Japan',
       '„Hingabe – Gefäße von Young-Jae Lee“, Gartenpavillon des Klosters Beuerberg des Diözesanmuseums Freising',
     ],
   },
   {
     jahr: '2016',
     text: [
-      '„Witness to an Ancient Truth“, Pucker Gallery, Boston, USA',
+      '„WITNESS TO AN ANCIENT TRUTH“, Pucker Gallery, Boston, USA',
       '„Augenblicke“, Galerie Jahn, München',
-      '„Nicht schön“, Österreichisches Museum für angewandte Kunst / Gegenwartskunst, Wien, Österreich',
-      '„Young-Jae Lee – Bowls“, Manggha Museum of Japanese Art and Technology, Kraków, Polen',
-      '„Young-Jae Lee – Vessels“, Museum of Architecture, Wrocław, Polen',
-      '„Keramische Werkstatt Margaretenhöhe – Young-Jae Lee“, Galeria NEON, Wrocław, Polen',
+      '„NICHT SCHÖN“, Österreichisches Museum für angewandte Kunst / Gegenwartskunst, Wien, Österreich',
+      '„Young-Jae Lee – Bowls“, Manggha Museum of Japanese Art and Technology, Krakau, Polen',
+      '„Young-Jae Lee – Vessels“, Museum of Architecture, Breslau, Polen',
+      '„Keramische Werkstatt Margaretenhöhe – Young-Jae Lee“, Galeria NEON, Breslau, Polen',
     ],
   },
 ];
@@ -99,7 +99,7 @@ export const auszeichnungen: readonly DatumEintrag[] = [
   { jahr: '1989', text: 'Goldmedaille des Bayerischen Staatspreises' },
   {
     jahr: '2016',
-    text: 'Verleihung der Ehrendoktorwürde (Doktorat honoris causa) der Eugeniusz Geppert Academy of Art and Design in Wrocław',
+    text: 'Verleihung der Ehrendoktorwürde (Doktorat honoris causa) der Eugeniusz-Geppert-Akademie der Schönen Künste in Breslau',
   },
 ];
 
@@ -110,7 +110,7 @@ export const werkstattAuszeichnungen: readonly DatumEintrag[] = [
     text: [
       'Bayerischer Staatspreis für Gestaltung, 1. Preis',
       'Dießener Keramikpreis, 1. Preis',
-      'Käuferpreis les Must de scènes d’intérieur, Septembre, Messe Maison & Objet, Paris',
+      'Käuferpreis les Must de scènes d’intérieur, September, Messe Maison & Objet, Paris',
     ],
   },
   { jahr: '2005', text: 'Hessischer Staatspreis, 1. Preis' },

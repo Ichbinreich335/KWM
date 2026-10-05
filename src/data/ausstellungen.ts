@@ -104,8 +104,7 @@ export const ausstellungen: readonly Ausstellung[] = [
       haupt: {
         src: '/img/kwm/kummerschalen.webp',
         alt: 'Viele flache Schalen in Seladon, Schwarz und Rotbraun, auf dem Boden ausgelegt',
-        unterschrift:
-          'Schalen von Young-Jae Lee · Fotografie: Christopher Clem Franken, © Kunst-Station Sankt Peter, Köln',
+        unterschrift: 'Schalen von Young-Jae Lee · Foto: Christopher Clem Franken · © Kunst-Station Sankt Peter, Köln',
       },
     },
     aktuelles: {
@@ -149,6 +148,17 @@ export const ausstellungen: readonly Ausstellung[] = [
         alt: 'Türkisfarbene Kumme von Young-Jae Lee mit feinem Craquelé',
         unterschrift: 'Kumme von Young-Jae Lee',
       },
+      haupt: {
+        src: '/img/kwm/aktuell/greve-533.webp',
+        alt: 'Türkisfarbene Kumme von Young-Jae Lee mit feinem Craquelé',
+        unterschrift: 'Kumme von Young-Jae Lee',
+      },
+    },
+    aktuelles: {
+      fakten: [
+        { label: 'Ort', wert: ['Galerie Karsten Greve', 'St. Moritz, Schweiz'] },
+        { label: 'Vernissage', wert: 'Samstag, 3. Oktober 2026, 17 bis 19 Uhr' },
+      ],
     },
   },
   {
@@ -168,7 +178,7 @@ export const ausstellungen: readonly Ausstellung[] = [
       'Burggraf Burggraf (Taschen)',
       'Joachim Kern (Mode)',
       'Christiane Kuntz (Mode)',
-      'Dietrich Pampus (Vintage Leuchten)',
+      'Dietrich Pampus (Vintage-Leuchten)',
     ],
     link: { href: '/besuch', text: 'Anfahrt zur Werkstatt' },
     flyer: {
@@ -202,7 +212,7 @@ export const ausstellungen: readonly Ausstellung[] = [
             'Burggraf Burggraf (Taschen)',
             'Joachim Kern (Mode)',
             'Christiane Kuntz (Mode)',
-            'Dietrich Pampus (Vintage Leuchten)',
+            'Dietrich Pampus (Vintage-Leuchten)',
           ],
         },
         { label: 'Ort', wert: [`${werkstatt.strasse}, ${werkstatt.plz} ${werkstatt.ort}`, werkstatt.adresszusatz] },
@@ -210,9 +220,3 @@ export const ausstellungen: readonly Ausstellung[] = [
     },
   },
 ];
-
-export const ausstellung = (schluessel: string): Ausstellung => {
-  const treffer = ausstellungen.find((eintrag) => eintrag.schluessel === schluessel);
-  if (!treffer) throw new Error(`Ausstellung nicht gefunden: ${schluessel}`);
-  return treffer;
-};

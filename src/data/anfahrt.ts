@@ -20,7 +20,7 @@ export const anfahrtAuto: readonly Weg[] = [
     titel: 'Mit dem Auto von Norden',
     schritte: [
       'A 42, Ausfahrt Gelsenkirchen-Heßler / Essen-Katernberg',
-      'im Kreisverkehr Ausfahrt Richtung Katernberg, Stoppenberg (Schalker Straße, Katernberger Str.)',
+      'im Kreisverkehr Ausfahrt Richtung Katernberg, Stoppenberg (Schalker Straße, Katernberger Straße)',
       'ca. 2,7 Kilometer dem Straßenverlauf folgen (durch Katernberg)',
       'an der ersten Ampel nach der S-Bahn-Unterführung rechts in die Bullmannaue abbiegen',
       'weiterfahren bis auf das Zechengelände – dann links abbiegen',

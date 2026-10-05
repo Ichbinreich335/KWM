@@ -4,7 +4,7 @@ import '../styles/seiten/page-aktuelles.css';
 import LinkArrow from '../components/LinkArrow.astro';
 import ChapterHead from '../components/ChapterHead.astro';
 import ExhibitionCard from '../components/ExhibitionCard.astro';
-import { ausstellung } from '../data/ausstellungen';
+import { ausstellungen } from '../data/ausstellungen';
 import YearArchive from '../components/YearArchive.astro';
 import { vergangene } from '../data/archiv';
 import PubList from '../components/PubList.astro';
@@ -17,7 +17,7 @@ import PageHero from '../components/PageHero.astro';
 
 <BaseLayout
   title="Aktuelles · Keramische Werkstatt Margaretenhöhe"
-  description="Ausstellungen 2026 mit Werken von Young-Jae Lee und der Keramischen Werkstatt Margaretenhöhe: Köln, Wesel und ein Pop-up in der Werkstatt auf Zollverein."
+  description="Ausstellungen 2026 mit Werken von Young-Jae Lee und der Keramischen Werkstatt Margaretenhöhe: Köln, Wesel, St. Moritz und ein Pop-up in der Werkstatt auf Zollverein."
   bodyClass="page-aktuelles"
   nav="aktuelles"
 >
@@ -25,7 +25,7 @@ import PageHero from '../components/PageHero.astro';
     <PageHero typ="name">
       <Fragment slot="titel">Aktuelles</Fragment>
       <Fragment slot="lede">
-        Liebe Freunde der Keramischen Werkstatt, besuchen Sie und freuen Sie sich auf die folgenden Ausstellungen.
+        Liebe Freunde der Keramischen Werkstatt, wir freuen uns auf Ihren Besuch in den folgenden Ausstellungen.
       </Fragment>
     </PageHero>
 
@@ -39,12 +39,15 @@ import PageHero from '../components/PageHero.astro';
     />
 
     <div id="ausstellungen">
-      <ExhibitionCard typ="eintrag" prioritaet ausstellung={ausstellung('mok')} />
-      <ExhibitionCard typ="eintrag" gespiegelt ausstellung={ausstellung('wesel')} />
-      {/* Pop-up in der Werkstatt */}
-      <div class="feature-band on-flaeche">
-        <ExhibitionCard typ="eintrag" ausstellung={ausstellung('popup')} />
-      </div>
+      {ausstellungen.map((eintrag, i) =>
+        eintrag.art === 'Werkstatt' ? (
+          <div class="feature-band on-flaeche">
+            <ExhibitionCard typ="eintrag" ausstellung={eintrag} />
+          </div>
+        ) : (
+          <ExhibitionCard typ="eintrag" gespiegelt={i % 2 === 1} ausstellung={eintrag} />
+        ),
+      )}
     </div>
 
     {/* Vergangene Ausstellungen */}

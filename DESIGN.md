@@ -78,6 +78,7 @@ Größen bei 1440 px: Mega 179, Seitentitel 101, Abschnitt 66, Aussage 52, Lede 
 - **Abschnittsabstand:** `--section` = `clamp(80px, 10vw, 168px)` oben und unten. Abschnitte wählen keine eigenen Abstände, Ausnahmen gelten nur für Vollbild-Signaturen.
 - **Kopf zu Inhalt:** `--head-gap` = `clamp(32px, 4vw, 56px)`. Gilt für Abschnittsköpfe und für den Seitenkopf zum Bild.
 - **Bildformate:** Kachel 4:3, Werk 3:2, Porträt 4:5, Panorama frei. In einer Reihe immer dasselbe Format.
+- **Ausnahme Einzelwerk:** Das Einzelwerk der Startseite (zwei Schalen aus „99 Schalen – ein Kosmos“) steht bewusst in 5:4. Der Ausschnitt hält beide Schalen im Bild und wirkt neben der Aussage ruhiger als 3:2. Die Höhe begrenzt `--werk-max`, das Bild wird dann beschnitten (`object-fit: cover`).
 - **Bildgröße nach Rolle:** Werkbilder höchstens zwei Drittel der Bildschirmhöhe (`--werk-max` = 66 svh), mit Luft im Raster, nie randlos. Stimmungsbilder (Einstieg, Feuer, Orte, das haftende Porträt der Startseite am Rechner) dürfen randlos und groß sein.
 
 ## 5. Abschnittstypen und Rhythmus
@@ -136,6 +137,7 @@ Ein Muster für die ganze Website:
 - Folgt direkt eine Liste mit eigener oberer Linie (`.datelist`, `.texts`, `.pubs`), entfällt deren Linie, die Kopflinie genügt.
 - Mobil stehen H2 und Begleittext untereinander.
 - Auf Anker: Linie und Schrift erben über `.on-anker`.
+- Ausnahme Bauhaus-Station (`BauhausStation`): eigener Kopf mit Raster 7/5 statt 8/4, die Jahreszahl 1927 ist Marke. Haarlinie und Abstände wie hier, die Linie in `--ink`. Die Überschrift blendet als Ganzes mit `fade` ein, nicht mit `words`, weil sie aus verschachtelten Spannen besteht.
 
 ### Anfrage-Leiste (`.anfrage-band`, Partial `partials/anfrage-band.html`)
 - Ruhiger Abschluss jeder Unterseite außer Besuch (dort ist das Formular) und 404, direkt vor dem Footer. Fläche `--ground-2`, nie Anker.
@@ -168,10 +170,6 @@ Die eine Aufklapp-Komponente der Seite. Kein `<details>`, keine eigenen Aufklapp
 - **Ghost:** transparent mit 1 px Rand.
 - **Anfrage-Buttons:** immer die Telefonnummer daneben.
 
-### Zwei Linien (`.lines`)
-- Abzweig zu zwei Zielen: großer Display-Name, eine Zeile Beschreibung, Pfeil.
-- Hover und Fokus: Fläche `--ink`, Schrift `--ground`.
-
 ### Kachel (`.now--dark .now__item`, verallgemeinert: Kachel)
 - Bild 4:3, darunter Datum (Daten-Stil), Titel (Kacheltitel), Ort (klein, `--ink-2`).
 - Drei Spalten auf Desktop, eine Spalte mobil.
@@ -180,12 +178,15 @@ Die eine Aufklapp-Komponente der Seite. Kein `<details>`, keine eigenen Aufklapp
 ### Werkangaben (`.facts`)
 Liste mit Spaltenlabel und Haarlinien. Ganz unten der Anfrage-Link „Zu diesem Stück anfragen“ als mailto mit Werkname im Betreff.
 
-### Zitat und Lede
-- Display oder Text in der Größe Lede.
-- Quelle immer mit Namen, im Daten-Stil darunter.
+### Zitat und Aussage (`Statement`)
+- Vier Typen: `gross` (Display-Zitat als Zäsur), `aussage` (Aussage in Textgröße Statement), `zitat` (ruhig, Titelgröße) und `zitat-lang` (längeres Fremdzitat in Zitatgröße).
+- Quelle immer mit Namen und Titel, im Daten-Stil darunter. Die Quellenzeile kommt aus `src/data/texte.ts` (`jahnQuelle`, `catoirQuelle`, `wagnerQuelle`), nicht aus dem Markup, damit Titel und Schreibweise überall gleich sind.
+- Wird ein Zitat gekürzt, steht die Auslassung als „[…]“ an der Kürzungsstelle, auch am Satzende.
 
 ### Bildunterschrift und Nachweis
 - `figcaption`: Textstil Meta, `--ink-2`, 10 px unter dem Bild.
+- Nachweis nach dem Schema „Titel · Foto: Name“, wo der Fotograf belegt ist; ein Rechteinhaber folgt höchstens als „· © …“.
+- Maßangaben immer „H 10,5 × Ø 22,5 cm“ (Höhe vor Durchmesser, Dezimalkomma, keine Nachkommastelle „,0“). Der Test `src/data/masse.test.ts` prüft das für Meisterstücke, Werkschau und Manufaktur.
 - Nachweis über einem Foto nur auf einer Fläche im Grundton, nie als weiße Schrift direkt auf dem Bild.
 
 ### Navigation
@@ -215,7 +216,7 @@ Sticky unter dem Header, mobil seitlich scrollbar mit Randausblendung. Der aktiv
 | Name | Abschnitt | Inhalt |
 |---|---|---|
 | `kosmos` | Ausstellung (`main.js`) | 99 Schalen im Ring um eine leere Mitte, die Schalen weichen dem Zeiger aus |
-| `orte` | nach Meisterstücke | Ausstellungsorte als Bildraster, Orts-Name groß über einem gedämpften Foto |
+| `orte` | nach Young-Jae Lee | Ausstellungsorte als Bildraster, Orts-Name groß über einem gedämpften Foto |
 | `farbskala` | Farben (Startseite) | Glasur-Testkacheln mit gemessenen Farben |
 | `feuer` | Feuer | Eine Schale, umschaltbar zwischen oxidierendem und reduzierendem Brand |
 | `logo` | Footer | Logo als Konstruktionszeichnung, Hilfslinien verschwinden am Ende |

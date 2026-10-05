@@ -36,7 +36,7 @@ export const vergangene: readonly ArchivJahr[] = [
       },
       {
         titel: 'Mode, Taschen, Keramik und Licht im Dialog',
-        ort: 'No Nonsense – Pop Up Store, Köln',
+        ort: 'No Nonsense – Pop-up-Store, Köln',
         datum: '28.–30. Mai',
       },
       {
@@ -102,7 +102,7 @@ export const vergangene: readonly ArchivJahr[] = [
   },
   {
     jahr: '2024',
-    teaser: '100 Jahre Werkstatt · Hetjens Museum, Düsseldorf · David Nolan Gallery, New York',
+    teaser: '100 Jahre Werkstatt · Hetjens-Museum, Düsseldorf · David Nolan Gallery, New York',
     eintraege: [
       {
         titel: '„Weihnachtsausstellung – Editionen“',
@@ -121,7 +121,7 @@ export const vergangene: readonly ArchivJahr[] = [
       },
       {
         titel: '„100 Jahre Keramische Werkstatt Margaretenhöhe – Young-Jae Lee im Hetjens“',
-        ort: 'Hetjens Museum, Düsseldorf',
+        ort: 'Hetjens-Museum, Düsseldorf',
         datum: '16. Mai – 1. September',
       },
       {
@@ -130,8 +130,8 @@ export const vergangene: readonly ArchivJahr[] = [
         datum: '17. Mai – 29. Juni',
       },
       {
-        titel: 'Diessener Töpfermarkt',
-        ort: 'Diessen',
+        titel: 'Dießener Töpfermarkt',
+        ort: 'Dießen',
         datum: '9.–12. Mai',
       },
       {
@@ -168,7 +168,7 @@ export const vergangene: readonly ArchivJahr[] = [
       },
       {
         titel: 'Gallery Tokyo',
-        ort: 'Tokyo',
+        ort: 'Tokio',
         datum: '1.–5. Mai',
       },
     ],
@@ -237,7 +237,7 @@ export const vergangene: readonly ArchivJahr[] = [
       },
       {
         titel: 'Gallery Tokyo',
-        ort: 'Tokyo',
+        ort: 'Tokio',
         datum: '2.–6. April',
       },
       {
@@ -315,7 +315,7 @@ export const vergangene: readonly ArchivJahr[] = [
         datum: '9. März – 24. April',
       },
       {
-        titel: '„Who´s afraid of Bauhaus?“',
+        titel: '„Who’s afraid of Bauhaus?“',
         ort: 'Museum Ratingen',
         datum: '15. Februar – 12. Mai',
       },
@@ -333,7 +333,7 @@ export const vergangene: readonly ArchivJahr[] = [
       },
       {
         titel: '„Young-Jae Lee – Ceramics“',
-        ort: 'Korean Cultural Center Brussels',
+        ort: 'Korean Cultural Center, Brüssel',
         datum: '8. März – 28. April',
       },
       {
@@ -342,7 +342,7 @@ export const vergangene: readonly ArchivJahr[] = [
         datum: '1. März – 14. April',
       },
       {
-        titel: 'Arbeiten in Keramik',
+        titel: '„Arbeiten in Keramik“',
         ort: 'Galerie Karsten Greve, Köln',
         datum: '13. Januar – 24. Februar',
       },
@@ -355,7 +355,7 @@ export const vergangene: readonly ArchivJahr[] = [
     eintraege: [
       {
         titel: 'Shinsegae Gallery',
-        ort: 'Dai-gu, Incheon, Busan, Korea',
+        ort: 'Daegu, Incheon, Busan, Korea',
         datum: 'Herbst 2017',
       },
       {
@@ -365,12 +365,12 @@ export const vergangene: readonly ArchivJahr[] = [
       },
       {
         titel: '„HINGABE“ – Gefäße von Young-Jae Lee',
-        ort: 'Gartenpavillon des Kloster Beuerberg, Diözesanmuseum Freising',
+        ort: 'Gartenpavillon des Klosters Beuerberg, Diözesanmuseum Freising',
         datum: '27. Mai – 3. Oktober',
       },
       {
         titel: 'Gallery Tokyo',
-        ort: 'Tokyo, Japan',
+        ort: 'Tokio, Japan',
         datum: '21.–25. Juli',
       },
       {
@@ -387,7 +387,7 @@ export const vergangene: readonly ArchivJahr[] = [
     eintraege: [
       {
         titel: '„Gefäße der Keramischen Werkstatt“',
-        ort: 'LIVING MOTIF, Tokyo',
+        ort: 'LIVING MOTIF, Tokio',
         datum: '16. September – 16. Oktober',
       },
       {
@@ -412,7 +412,7 @@ export const vergangene: readonly ArchivJahr[] = [
       },
       {
         titel: 'Verleihung der Ehrendoktorwürde an Young-Jae Lee',
-        ort: 'Eugeniusz Geppert Academy of Art and Design, Wrocław',
+        ort: 'Eugeniusz-Geppert-Akademie der Schönen Künste, Breslau',
         datum: '4. April',
       },
       {
@@ -451,7 +451,7 @@ export const ausstellungsarchiv: readonly AusstellungsJahr[] = [
     eintraege: [
       'Galerie L, Hamburg',
       'Galerie im Roten Haus, Veronika Ellwanger, Lenzkirch',
-      'Keramik heute, Hetjensmuseum, Düsseldorf',
+      'Keramik heute, Hetjens-Museum, Düsseldorf',
     ],
   },
   {
@@ -498,7 +498,7 @@ export const ausstellungsarchiv: readonly AusstellungsJahr[] = [
   {
     jahr: '1992',
     eintraege: [
-      'Gruppenausstellung mit Görge Holt und Horst Kerstan, Akasaka Green Gallery, Tokyo, Japan',
+      'Gruppenausstellung mit Görge Holt und Horst Kerstan, Akasaka Green Gallery, Tokio, Japan',
       'Galerie Fred Jahn, Stuttgart',
       'Charlotte Hennig, Darmstadt',
     ],
@@ -554,9 +554,9 @@ export const ausstellungsarchiv: readonly AusstellungsJahr[] = [
       '»Form 97«, Frankfurt/Main und Schwäbisch Gmünd',
       'Keramion, Frechen',
       'Weinberg Contemporary Art, San Francisco, USA',
-      'Nichinichi (Harajuku Box Office), Tokyo, Japan',
+      'Nichinichi (Harajuku Box Office), Tokio, Japan',
       'Galerie Yabuki, Okayama, Japan',
-      'Nichinichi (Werkstatt Toyabo), Monzen, Ishiokawa, Japan',
+      'Nichinichi (Werkstatt Toyabo), Monzen, Ishikawa, Japan',
       'Tour Road Livings Galerie, Kobe, Japan',
       'Meiso Galerie, Sendai, Japan',
     ],
@@ -568,7 +568,7 @@ export const ausstellungsarchiv: readonly AusstellungsJahr[] = [
       'Craft Design for the Global Village, Florenz, Italien',
       'Galerie Helga Malten, Dortmund',
       'Galerie AnnTon, Wasserschloss Klaffenbach, Chemnitz',
-      'Nichinichi (Tsuta Salon), Tokyo, Japan',
+      'Nichinichi (Tsuta Salon), Tokio, Japan',
       'Werkstatt Nin, Ibara, Okayama, Japan',
       'Nichinichi (Free Space Roji), Kyoto, Japan',
       'Atelier Rinka, Kochi, Japan',
@@ -581,7 +581,7 @@ export const ausstellungsarchiv: readonly AusstellungsJahr[] = [
       'Galerie Goutez, Mihara, Hiroshima, Japan',
       'The Road Livings Gallery Nakayamate, Kobe, Japan',
       'Nichinichi (Matsuya) Kyoto, Japan',
-      'Nichinichi (Tsuta Salon), Tokyo, Japan',
+      'Nichinichi (Tsuta Salon), Tokio, Japan',
       'Galerie Momogusa, Tajimi, Gifu, Japan',
       'Mingei Kawanoya, Shimonoseki, Japan',
       'Galerie Azusa, Fujisawa, Japan',
@@ -596,10 +596,10 @@ export const ausstellungsarchiv: readonly AusstellungsJahr[] = [
     eintraege: [
       'Keramion, Frechen',
       'Rietberg Museum, Zürich',
-      'Nichinichi (Yoshioka Someji), Tokyo, Japan',
+      'Nichinichi (Yoshioka Someji), Tokio, Japan',
       'Nichinichi (Space Miki), Kurashiki, Japan',
       'Nichinichi (Free Space Roji), Kyoto, Japan',
-      'Maiso Galerie, Sendai, Japan',
+      'Meiso Galerie, Sendai, Japan',
       'Berger Bücherstube, Frankfurt/Main',
     ],
   },
@@ -610,7 +610,7 @@ export const ausstellungsarchiv: readonly AusstellungsJahr[] = [
       'Galerie Helga Malten, Dortmund',
       'Galerie Rosemarie Jäger, Hochheim',
       'Kunstraum Falkenstein, Hamburg',
-      'Akademia Sztuk Pieknych, Wroctaw, Polen',
+      'Akademia Sztuk Pięknych, Breslau, Polen',
       'Keramikgalerie Margret Faita, Hameln',
       'Werkkunstgalerie Mia Temmes, Würzburg',
       'Galerie Rosenhauer, Göttingen',
@@ -619,7 +619,7 @@ export const ausstellungsarchiv: readonly AusstellungsJahr[] = [
   {
     jahr: '2002',
     eintraege: [
-      'Kunststation St. Peter, Köln',
+      'Kunst-Station Sankt Peter, Köln',
       'Werkkunstgalerie Mia Temmes, Würzburg',
       'Galerie Claudia Delank, Köln',
       'Schloss Moyland, Kleve',
@@ -658,7 +658,7 @@ export const ausstellungsarchiv: readonly AusstellungsJahr[] = [
       'Berger Bücherstube, Frankfurt/Main',
       'Galerie Silke Finke, Borken-Burlo',
       'Rosenthal Studio-Haus, Hamburg',
-      'Jürgen Lehl, Marunouchi Tokyo, Japan',
+      'Jürgen Lehl, Marunouchi Tokio, Japan',
       'Museum für Kunst und Gewerbe, Hamburg',
       'Galerie Johannes von Geymüller, Essen',
       'Bad Homburger Herbstsalon, Bad Homburg',
@@ -669,14 +669,14 @@ export const ausstellungsarchiv: readonly AusstellungsJahr[] = [
   {
     jahr: '2006',
     eintraege: [
-      'Gallery Tokyo, Tokyo, Japan',
+      'Gallery Tokyo, Tokio, Japan',
       'Galerie Lumen, Paris',
       'Jürgen Lehl, Kobe, Obihiro, Shizuoka und Hakata, Japan',
       'Galerie Momogusa, Tajimi, Japan',
       'Galerie Umeya, Fukuoka, Japan',
-      'Galerie Han, Yamonashi, Japan',
+      'Galerie Han, Yamanashi, Japan',
       'Galerie Utsuwa Nanohana, Odawara, Japan',
-      'Galerie FUDOKI, Tokyo, Japan',
+      'Galerie FUDOKI, Tokio, Japan',
       'design: palette auf Zollverein, Essen',
       'Ulrike Kohrt-Sinner, Huck-Beifang-Haus, Burgsteinfurt',
       'Pinakothek der Moderne, München',
@@ -687,13 +687,13 @@ export const ausstellungsarchiv: readonly AusstellungsJahr[] = [
     eintraege: [
       'Bayerischer Kunstgewerbeverein, München',
       'Galerie Handwerk, München',
-      'Jürgen Lehl, Tokyo, Japan',
+      'Jürgen Lehl, Tokio, Japan',
       'Töpfermarkt in Dießen am Ammersee',
       'Galerie Fred Jahn, München',
       'Casa camilla, Arqua Petrarca, Italien',
       'Akagi san u.co., Osaka, Japan',
-      'Galerie Sawa, Kagoshima, Tokyo, Japan',
-      'Elmar Weinmayr, Tokyo, Japan',
+      'Galerie Sawa, Kagoshima, Tokio, Japan',
+      'Elmar Weinmayr, Tokio, Japan',
       'Manufaktum Landesausstellung im NRW-Forum, Düsseldorf',
       'Tendence lifestyle, Frankfurt/Main',
       'Elke Dröscher, Kunstraum Falkenstein, Hamburg',
@@ -722,21 +722,21 @@ export const ausstellungsarchiv: readonly AusstellungsJahr[] = [
       'Goethe-Institut, Seoul, Korea',
       'Pinakothek der Moderne (1+1=1), München',
       'Museum BOZAR, Brüssel',
-      'Gallery Tokyo, Tokyo, Japan',
-      'Quico, Tokyo, Japan',
+      'Gallery Tokyo, Tokio, Japan',
+      'Quico, Tokio, Japan',
     ],
   },
   {
     jahr: '2009',
     eintraege: [
       'Galerie DKM, Duisburg',
-      'Elmar Weinmayr, Tokyo, Japan',
+      'Elmar Weinmayr, Tokio, Japan',
       'Töpfermarkt in Frechen',
       'Töpfermarkt in Dießen am Ammersee',
       'Töpfermarkt in Bonn',
       'MANIDESIGN, Neapel, Italien',
-      'Galerie Nichinichi, Tokyo, Japan',
-      'Jürgen Lehl, Tokyo, Japan',
+      'Galerie Nichinichi, Tokio, Japan',
+      'Jürgen Lehl, Tokio, Japan',
       'Hofwerkstattgalerie, Essen',
       'Rheinisches Landesmuseum Trier',
       'Galerie Handwerk Koblenz',
@@ -752,8 +752,8 @@ export const ausstellungsarchiv: readonly AusstellungsJahr[] = [
       'Designmarkt »Handverlesen«, Zollverein-Gelände, Essen',
       'Messe »EUNIQUE arts & craft 2010«, Karlsruhe',
       'Altana Kulturstiftung im Sinclair-Haus, Bad Homburg',
-      'Shinsagae Gallery, Busan / Seoul / Kwang Ju, Korea',
-      'Style-Hug Gallery, Tokyo, Japan',
+      'Shinsegae Gallery, Busan / Seoul / Kwang Ju, Korea',
+      'Style-Hug Gallery, Tokio, Japan',
       'Fowler-Museum, UCLA, Los Angeles',
     ],
   },
@@ -762,13 +762,13 @@ export const ausstellungsarchiv: readonly AusstellungsJahr[] = [
     eintraege: [
       'Gallery Khan, Koriyama, Japan',
       'Galeria Sztuki Współczesnej BWA w Katowicach, Katowice, Polen',
-      'Gallery Tokyo, Tokyo, Japan',
+      'Gallery Tokyo, Tokio, Japan',
       'Forum am Schillerplatz, Wien',
       'Museum für Asiatische Kunst, Berlin',
       'Keramische Werkstatt Margaretenhöhe, Essen',
       'new designshop AANNEX, Berlin',
-      'Gallery Fudoki, Tokyo, Japan',
-      'M6, Annete Tietenberg, Braunschweig',
+      'Gallery Fudoki, Tokio, Japan',
+      'M6, Annette Tietenberg, Braunschweig',
       'Gallery Kan, Koriyama, Japan',
       'Alexander Ochs Galleries, Berlin',
       'Looshaus, Wien',
@@ -783,9 +783,9 @@ export const ausstellungsarchiv: readonly AusstellungsJahr[] = [
       'Gallery Hase, Nagoya Aichi, Japan',
       'Zeche Zollverein',
       'tendence, Frankfurt am Main',
-      'Quico, Tokyo',
+      'Quico, Tokio',
       'Meditations Biennale, Poznań, Polen',
-      'Jurgen Lehl, Tokyo, Japan',
+      'Jürgen Lehl, Tokio, Japan',
       'koubou IKUKO, Okayama, Japan',
     ],
   },
@@ -796,9 +796,9 @@ export const ausstellungsarchiv: readonly AusstellungsJahr[] = [
       'Emil-Schumacher-Museum Hagen',
       'Kunststation St. Stephanskirche, Bamberg',
       'Galerie Uhn, Königstein',
-      'Quico, Tokyo',
+      'Quico, Tokio',
       '2014',
-      '„Young-Jae Lee – Keramische Gefäße“, Lippische Gesellschaft für Kunst eV, Schloß Detmold',
+      '„Young-Jae Lee – Keramische Gefäße“, Lippische Gesellschaft für Kunst e. V., Schloß Detmold',
       '„Young-Jae Lee: Große Schalen – und Tee-Utensilien aus der Keramischen Werkstatt Margaretenhöhe“, Sonderausstellung: Galerie Fred Jahn, Residenz, München',
       '„Universality of the Essential – Ceramics by Young Jae Lee“, Pucker Gallery, Boston (MA)',
     ],
@@ -810,12 +810,12 @@ export const ausstellungsarchiv: readonly AusstellungsJahr[] = [
   {
     jahr: '2016',
     eintraege: [
-      '„Witness to an Ancient Truth“, Pucker Gallery, Boston, U.S.A.',
+      '„WITNESS TO AN ANCIENT TRUTH“, Pucker Gallery, Boston, USA',
       '„Augenblicke“, Galerie Jahn, München',
-      '„Nicht schön“, Österreichisches Museum für angewandte Kunst / Gegenwartkunst, Wien, Österreich',
-      '„Young-Jae Lee – Bowls“, Manggha Museum of Japanese Art and Technology, Kraków, Polen',
-      '„Young-Jae Lee – Vessels“, Museum of Architecture, Wrocław, Polen',
-      '„Keramische Werkstatt Margaretenhöhe – Young-Jae Lee“, Galeria NEON, Wrocław, Polen',
+      '„NICHT SCHÖN“, Österreichisches Museum für angewandte Kunst / Gegenwartskunst, Wien, Österreich',
+      '„Young-Jae Lee – Bowls“, Manggha Museum of Japanese Art and Technology, Krakau, Polen',
+      '„Young-Jae Lee – Vessels“, Museum of Architecture, Breslau, Polen',
+      '„Keramische Werkstatt Margaretenhöhe – Young-Jae Lee“, Galeria NEON, Breslau, Polen',
     ],
   },
   {
@@ -823,7 +823,7 @@ export const ausstellungsarchiv: readonly AusstellungsJahr[] = [
     eintraege: [
       'Shinsegae Gallery, Daegu, Gwangju, Incheon, Busan, Korea',
       'Gallery Kan, Fukushima, Japan',
-      'Gallery Tokyo, Tokyo, Japan',
+      'Gallery Tokyo, Tokio, Japan',
       '„Hingabe – Gefäße von Young-Jae Lee“, Gartenpavillon des Klosters Beuerberg des Diözesanmuseums Freising',
     ],
   },
@@ -831,7 +831,7 @@ export const ausstellungsarchiv: readonly AusstellungsJahr[] = [
     jahr: '2018',
     eintraege: [
       '„Œuvres en céramique – Young-Jae Lee“, Galerie Karsten Greve, Paris, Frankreich',
-      '„Young-Jae Lee – Ceramics“, Centre Culturel Coréen, Brüssel, Belgien',
+      '„Young-Jae Lee – Ceramics“, Korean Cultural Center, Brüssel, Belgien',
       '„Arbeiten in Keramik – Young-Jae Lee“, Galerie Karsten Greve, Köln',
     ],
   },
@@ -840,9 +840,9 @@ export const ausstellungsarchiv: readonly AusstellungsJahr[] = [
     eintraege: [
       '„Werkkunst Keramiken von Young-Jae Lee“, Dommuseum, Hildesheim',
       '„Young-Jae Lee“, Museum Folkwang, Essen',
-      'Gallery Tokyo, Tokyo, Japan',
-      '„Young-Jae Lee – Emptying, Filling, and Emptying“, Gwanju Museum of Art',
-      'Ha Jung-woong Museum of Art, Gwanju, Korea',
+      'Gallery Tokyo, Tokio, Japan',
+      '„Young-Jae Lee – Emptying, Filling and Emptying“, Gwangju Museum of Art',
+      'Ha Jung-woong Museum of Art, Gwangju, Korea',
     ],
   },
   {
@@ -851,7 +851,7 @@ export const ausstellungsarchiv: readonly AusstellungsJahr[] = [
   },
   {
     jahr: '2021',
-    eintraege: ['„Gefäße“, Gallerie Greve, St. Moritz, Schweiz'],
+    eintraege: ['„Gefäße“, Galerie Karsten Greve, St. Moritz, Schweiz'],
   },
   {
     jahr: '2022',
@@ -862,14 +862,14 @@ export const ausstellungsarchiv: readonly AusstellungsJahr[] = [
   },
   {
     jahr: '2023',
-    eintraege: ['„Gefäße retrospektiv“, Kulturforum Blaue Haus, Diessen am Ammersee'],
+    eintraege: ['„Gefäße retrospektiv“, Kulturforum Blaues Haus, Dießen am Ammersee'],
   },
   {
     jahr: '2024',
     eintraege: [
       '„Young-Jae Lee – Forms from the Earth“, David Nolan Gallery, New York, USA',
       '„Young-Jae Lee: SCHALEN“, Stadtkirche St. Jakobi, Chemnitz',
-      '„100 Jahre Keramische Werkstatt Margaretenhöhe – Young-Jae Lee im Hetjens“, Hetjens Museum, Düsseldorf',
+      '„100 Jahre Keramische Werkstatt Margaretenhöhe – Young-Jae Lee im Hetjens“, Hetjens-Museum, Düsseldorf',
     ],
   },
   {
@@ -883,8 +883,8 @@ export const ausstellungsarchiv: readonly AusstellungsJahr[] = [
     jahr: '2026',
     eintraege: [
       '„Stille Gäste“, Künstlerzeche Unser Fritz 2/3, Herne',
-      '„99 Schalen – ein Kosmos“, Museum für ostasiatische Kunst (MOK), Köln',
-      '„Young-Jae Lee – Schalen“, Umbrella, Norre Nebel, Dänemark',
+      '„99 Schalen – ein Kosmos“, Museum für Ostasiatische Kunst (MOK), Köln',
+      '„Young-Jae Lee – Schalen“, Umbrella, Nørre Nebel, Dänemark',
     ],
   },
 ];
