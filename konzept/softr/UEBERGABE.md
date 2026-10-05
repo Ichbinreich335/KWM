@@ -22,6 +22,21 @@ Für die nächste Session. Zuerst `CLAUDE.md`, `konzept/SOFTR-AUFTRAG.md` und `k
 | `/uebersicht` | `16450fdc-1469-49fb-8785-acac62a5c953` | `uebersicht.tsx` | `c62602bd-dd73-44d6-9625-b59aec539939` | unikate, edition, partner | keine |
 | `/stammdaten` | `c8a4fadb-196f-4712-b649-816e0f1ebd5e` | `stammdaten.tsx` | `451b0d69-677c-4f15-9f15-87cae9021028` | kuenstler, glasuren, modelle, partner, lagerorte, unikate, edition | alle ADD → LOGGED_IN_USERS |
 
+## Stand 05.10.2026 (Runde 14, Feedback Admin, gilt vor allem darunter)
+Runde 13 ist hochgeladen, aber **nicht veröffentlicht** (Freigabe Admin offen). Entscheidungen aus dem Feedback:
+- **Wort „Manufakturprogramm“ nie anzeigen**, überall „Geschirr“ (Erfassen, Stammdaten, Tabelle). Der DB-Wert darf vorerst bleiben, die Anzeige läuft über `serieVon`.
+- **Erfassen, erster Schritt:** drei große Knöpfe Geschirr | Edition | Unikat. Danach nur die Modelle dieser Serie (keine lange gruppierte Liste mehr).
+- **Geschirr und Edition bekommen mehr Felder**, aufklappbar („Weitere Angaben“): gedreht von, glasiert von (Freitext mit Vorschlägen), Maße, Notiz. Für Edition wichtig, für Geschirr optional.
+- **Maße:** vorbelegt aus dem Modell, änderbar, beim Erfassen am Posten gespeichert (neues Feld im Editionsbestand, nur ergänzen).
+- **Status für Edition:** Ein Editionsstück kann z. B. „ausgestellt“ sein. Status-Feld am Posten (im Haus / ausgestellt), im Bestand sichtbar und änderbar. Teil des Posten-Schlüssels.
+- **Glasuren frei erweiterbar:** In der Glasurauswahl (Erfassen und Schritt „Glasieren“) gibt es „Neue Glasur“ direkt im Feld (z. B. „Grün dunkel“, „Freestyle“). Edition ist nicht auf die Glasuren des Modells beschränkt.
+- **Unikat:** Feld „Künstler:in“ entfällt (Unikate sind nur Meisterstücke der Werkstattleitung). Weitere Unikat-Felder nur bei klarem Nutzen.
+- **Brand sichtbar machen (statt Brandbuch-Seite):** Stücke aus verschiedenen Bränden sehen anders aus und sind nicht zusammen verkaufbar (z. B. 16 Essteller aus 3 Bränden). Im Modellfenster glasierte Posten je Glasur nach Brand gruppieren und „zusammen verkaufbar: N (größter Brand)“ zeigen.
+- **Kernfragen**, die die App ohne Zählen beantworten muss: Was habe ich? Wie viel roh, geschrüht, glasiert? Wie viele je Glasur? Wie viele davon aus einem Brand, also zusammen verkaufbar?
+- **Übersicht** neu und einfacher, entlang dieser Kernfragen. **Bestand** bleibt wie er ist („simpel, sieht gut aus“).
+- **Website:** Ein Prüfagent sieht sich an, ob die Website Geschirr, Edition und Unikat sauber trennt (Begriffe, Felder, Glasuren, Maße).
+- **Workflow-Fragen:** Liste möglicher Alltagsfragen an den Admin, der bewertet, welche realistisch sind.
+
 ## Stand 05.10.2026 (Runde 13, gilt vor allem darunter): Mengenlager nach Kundengespräch
 - **Drei Serien:** Geschirr (in der DB „Manufakturprogramm“, Nr. 1 ff., sechs Glasuren), Edition (Nr. 2001 ff., Farbe je nach Brand) und Unikate (= Meisterstücke von Young-Jae Lee, seltener). Geschirr und Edition sind der Hauptfluss und stehen überall zuerst.
 - **Zustände:** roh → geschrüht → glasiert (Feld `WUkN3`, „Rohling“ entfernt, die 5 Demo-Zeilen auf „geschrüht“ umgestellt).
