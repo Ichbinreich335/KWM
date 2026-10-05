@@ -2,17 +2,16 @@
 
 Kurzüberblick: was fertig ist, was läuft, was als Nächstes kommt. Wird bei jedem Schritt aktualisiert. Was du tun oder entscheiden musst, steht in [ADMIN-OFFEN.md](ADMIN-OFFEN.md).
 
-Stand: 05.10.2026, mittags
+Stand: 05.10.2026, nachmittags
 
 ## Jetzt gerade
 
 | Strang | Stand | Wo |
 |---|---|---|
-| **Bausteine, Teil 2** (unsichtbar) | läuft: Karten, Listen, Ausstellungsdaten in Sanity-Form | Branch `phase-d2-eintraege`, Ordner `../KWM-phase-d` |
-| **Zitate angleichen** (sichtbar, Vergleich) | läuft: 5 Rollen statt 8 Darstellungen | Branch `zitate-angleichen`, Ordner `../KWM-zitate` |
-| **Sanity, Teil 1** | fertig: Studio https://kwm.sanity.studio (deutsch), Schema, Seitenköpfe und Kontakt als Entwürfe | Branch `phase-2-sanity`, Ordner `../KWM-sanity`, Plan `PLAN-PHASE-2-SANITY.md` |
-| **Handy kürzer** (Vergleich) | fertig, wartet auf deine Entscheidung (−17 %) | Branch `phase-b3-mobil-kurz`, Ordner `../KWM-mobil` |
-| **Konzept Flyer/Galerien** (Vergleich) | fertig, wartet auf deine Entscheidung | Branch `konzept-flyer-galerien` |
+| **Bausteine** (unsichtbar) | Teil 1 (#11), Teil 2 (#14) und Teil 3 fertig: `class`-Zeilen in den Seiten 1778 → 303. Läuft: Korrekturrunde (Raster ins Seiten-CSS, schmalere Bausteine, Scoping-Fehler `.js …` in Komponenten, Tests). Danach PR Teil 3, dann Teil 4–5. | `phase-d3-aufklappen`, `../KWM-phase-d` |
+| **Sanity** | Studio https://kwm.sanity.studio mit Schema passend zur Seite. Läuft: Öffnungstage strukturiert, Inhalte (Ausstellungen, Orte, Galerien, Hinweise, Bilder) als Entwürfe importieren. Danach Teil 2: Website liest beim Bauen aus Sanity. | `phase-2-sanity`, `../KWM-sanity` |
+| **Anfrageformular** | fertig als Entwurf (#15), echter Versand nach Konto-Umzug | `phase-3-formular`, `../KWM-formular` |
+| **Vergleiche** (warten auf dich) | Handy kürzer, Flyer/Galerien, Zitate angleichen | siehe `ADMIN-OFFEN.md` |
 
 ## Fertig (wartet auf deine Abnahme)
 
@@ -30,18 +29,19 @@ Alle PRs sind Entwürfe und bauen aufeinander auf. Gemergt wird in dieser Reihen
 | ✓ | Feinschliff | Porträt rückt im schmalen Fenster, Feuer haftet, Aktuell-Karten auf einer Linie, Korrekturen nach DESIGN.md. | ja | #13 |
 | ✓ | SEO und Sicherheit | Sitemap, Vorschaubilder für Links, strukturierte Daten, Sicherheits-Header, CSP; Go-live-Anleitung. | nein | #12 |
 | ✓ | Bausteine Teil 1 | Wiederkehrende Abschnitte gibt es nur noch einmal als Baustein; jeder große Satz läuft über den Zitat-Baustein. | nein | #11 |
+| ✓ | Bausteine Teil 2 | Karten, Listen, Daten in Sanity-Form, Status-Funktion mit Unit-Tests. | nein | #14 |
+| ✓ | Anfrageformular | Worker unter `/api/anfrage`, Turnstile, Versand an verifizierte Adresse; Sicherheitsprüfung erledigt. | ja (Formular) | #15 |
 | ✓ | Vergleich Hell/Dunkel | Vier Fassungen der Startseite als Screens. Empfehlung: so lassen (siehe ADMIN-OFFEN). | – | `.shots/rhythmus/` |
 | ✓ | Visuelles Review | Die externe Kritik ist geprüft: 14 von 20 Punkten stimmen. Der Bericht liegt in `VISUELLES-REVIEW.md`. | – | – |
 
 ## Als Nächstes
 
-1. **Bausteine Teil 2–5** fertigstellen (Aufklapper, Orte, Formular, Kontaktdaten aus einer Quelle, Bilder).
-2. **Sanity Teil 2:** Website liest Ausstellungen, Orte, Galerien, Hinweise, Seitenköpfe und Kontakt beim Bauen aus Sanity; Inhalte importieren; Neubau per Webhook. Webhook erst nach dem Konto-Umzug.
-3. **Deine Entscheidungen einarbeiten:** Handy kürzer, Flyer/Galerien, Zitate (danach ggf. reduzieren).
-4. **Anfrageformular** als Cloudflare Worker mit Turnstile (nach Konto-Umzug; braucht Ziel-Mailadresse und die Domain bei Cloudflare).
-5. **Einwilligung + Google Tag Manager** (braucht GTM-ID und Banner-Wahl).
-6. **Merge-Kette nach `main`**, dann ein gebündeltes `/code-review` über den Sammel-Stand und alle Funde beheben.
-7. **Go-live** (`GO-LIVE.md`), nach deiner Freigabe.
+1. **Bausteine:** Korrekturrunde abschließen, PR Teil 3, dann Teil 4 (Formular-Kleinteile, Kontaktdaten aus einer Quelle) und Teil 5 (Bilder, Signaturen, Glasuren).
+2. **Sanity Teil 2:** Website liest beim Bauen aus Sanity (Plan `PLAN-PHASE-2-SANITY.md`); danach (b+) Klick-Rahmen im Studio, wenn du zustimmst.
+3. **Deine Entscheidungen einarbeiten** (Vergleiche), danach die Vergleichs-Branches mergen bzw. verwerfen.
+4. **Konto-Umzug** (du), dann Webhook, echter Formularversand, Statistik (Phase 4, Weiche in `ADMIN-OFFEN.md`).
+5. **Merge-Kette nach `main`** (Rebases: SEO und Formular auf die Bausteine), dann gebündeltes `/code-review` und Funde beheben.
+6. **Go-live** nach deiner Freigabe (`GO-LIVE.md`).
 
 ## Warum in Schritten und nicht alles beim Umzug
 
