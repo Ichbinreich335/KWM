@@ -1,5 +1,6 @@
 ---
 import { kontakt } from '../data/kontakt';
+import Button from './Button.astro';
 import LinkArrow from './LinkArrow.astro';
 import { anfrageLink } from '../scripts/anfrage-link';
 
@@ -18,9 +19,7 @@ const hatHinweis = Astro.slots.has('default');
     {text}
   </p>
   <div class="anfrage-band__actions" data-reveal="fade">
-    <a class="button" href={href}>
-      Anfrage schreiben
-    </a>
+    <Button href={href}>Anfrage schreiben</Button>
     <LinkArrow href={kontakt.telefonHref}>{kontakt.telefon}</LinkArrow>
   </div>
   {hatHinweis && (

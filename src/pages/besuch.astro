@@ -1,5 +1,6 @@
 ---
 import '../styles/basis.css';
+import Button from '../components/Button.astro';
 import LinkArrow from '../components/LinkArrow.astro';
 import Steps from '../components/Steps.astro';
 import { anfahrtAuto, oepnv } from '../data/anfahrt';
@@ -74,9 +75,7 @@ const zeitenKurzWort = oeffnungszeitKurz(kontakt.oeffnungszeiten, 'kurzWort').jo
           <p class="visit-hours__note">Seit 1987 im Baulager der Zeche Zollverein, heute Weltkulturerbe.</p>
         </div>
         <p class="visit-hours__actions" data-reveal="fade">
-          <a class="button" href={routeGoogle}>
-            Route planen
-          </a>
+          <Button href={routeGoogle}>Route planen</Button>
           <LinkArrow href={routeOsm}>Route in OpenStreetMap öffnen</LinkArrow>
           <LinkArrow href={kontakt.telefonHref}>{kontakt.telefon}</LinkArrow>
         </p>

@@ -1,5 +1,6 @@
 ---
 import { kontakt } from '../data/kontakt';
+import Button from './Button.astro';
 ---
 
 {/* Anfrage-Formular (wiederverwendbar, Modul sig-anfrage).
@@ -79,9 +80,7 @@ import { kontakt } from '../data/kontakt';
       Margaretenhöhe, siehe <a href="/datenschutz">Datenschutz</a>.
     </p>
     <div class="anfrage__submit">
-      <button class="button" type="submit">
-        Anfrage senden
-      </button>
+      <Button type="submit">Anfrage senden</Button>
       <p class="anfrage__summary" role="alert" hidden></p>
     </div>
   </form>

@@ -1,5 +1,6 @@
 ---
 import '../styles/basis.css';
+import Button from '../components/Button.astro';
 import LinkArrow from '../components/LinkArrow.astro';
 import { BRENNTEMPERATUR, grad } from '../data/brenntemperatur';
 import Statement from '../components/Statement.astro';
@@ -445,9 +446,7 @@ import '../styles/signaturen/signaturen.css';
           <figcaption>Vor dem ersten Brand · Foto: Haydar Koyupinar</figcaption>
         </figure>
         <FactsTable fakten={kurzfakten}>
-          <a class="button" href="/manufaktur">
-            Zum Programm
-          </a>
+          <Button href="/manufaktur">Zum Programm</Button>
         </FactsTable>
         <figure class="craft__media3" data-reveal="img">
           <Bild

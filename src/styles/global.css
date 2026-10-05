@@ -201,24 +201,6 @@ figcaption {
   letter-spacing: 0.02em;
   color: var(--ink-2);
 }
-.button {
-  display: inline-block;
-  font-size: var(--t-small);
-  line-height: var(--t-small-lh);
-  text-decoration: none;
-  color: var(--ground);
-  background: var(--ink);
-  border: 1px solid var(--ink);
-  padding: 12px 26px 11px;
-  transition:
-    background-color 0.3s var(--ease),
-    color 0.3s var(--ease);
-}
-.button:hover {
-  background: transparent;
-  color: var(--ink);
-}
-
 /* Textlink mit 44-px-Tippfläche, ohne das Zeilenbild zu verändern */
 .tap {
   display: inline-block;
