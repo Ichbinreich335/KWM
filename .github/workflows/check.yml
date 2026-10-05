@@ -13,4 +13,5 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
+      - run: npm run studio:install
       - run: npm run check

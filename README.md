@@ -74,3 +74,7 @@ Gesichert durch den Test „Stylesheet-Reihenfolge“ in `tests/routen.spec.ts`:
 ## Schriften
 
 `astro.config.mjs` registriert Jost, Libre Caslon Display und Libre Caslon Text mit dem lokalen Provider (je Teilmenge eine Variante mit `unicodeRange`). Das Layout bindet sie mit `<Font>` ein und lädt zwei Dateien vor. Die Fonts API kann lokale Schriften nicht nach Teilmenge vorladen, deshalb wählt das Layout die Dateien über `fontData`: Die latin-Variante muss in `varianten()` vor latin-ext stehen. Die Tokens `--f-*` in `global.css` verweisen auf `--font-*` (enthalten die Ersatzschriften).
+
+## Sanity-Studio: Erstimport
+
+`studio/scripts/import-inhalte.mjs` legt Orte, Galerien, laufende und kommende Ausstellungen und Hinweise als Entwürfe an (nichts wird veröffentlicht). Die Bilder aus `src/assets/img/kwm/` des Branches `phase-d3-aufklappen` per `git show` in einen Ordner holen, dann `cd studio && node scripts/import-inhalte.mjs <Bilderordner>` (Token aus `SANITY_AUTH_TOKEN` oder der Sanity-CLI-Anmeldung; `--replace` überschreibt vorhandene Entwürfe).
