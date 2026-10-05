@@ -13,6 +13,15 @@ npm run dev                       # Entwicklungsserver http://localhost:4321
 npm run preview                   # baut dist/ und startet wrangler dev (wie in Produktion: Weiterleitungen, Header, 404)
 ```
 
+## Inhalte aus Sanity
+
+Ausstellungen, Hinweise, Orte, die Archiv-Liste seit 2016 und die Seitenköpfe (Überschrift, Einleitung, Meta-Beschreibung der sieben Seiten) holt der Build aus Sanity (Projekt `135lyh9t`, Dataset `production`). Die Seite bleibt statisch, im Browser fragt nichts bei Sanity an; auch die Bilder lädt und verarbeitet der Build (`cdn.sanity.io` nur beim Bauen, `image.remotePatterns`).
+
+- Produktion liest nur **veröffentlichte** Inhalte. Fehlt etwas oder schlägt eine Abfrage fehl, bricht der Build mit einer klaren Meldung ab, die letzte gute Version bleibt online.
+- Lokal mit Entwürfen: `.env.example` nach `.env` kopieren, im Ordner `studio/` einen Viewer-Token anlegen (`npx sanity tokens add "build-lesen" --role viewer`), in `.env` als `SANITY_API_READ_TOKEN` eintragen und `SANITY_PERSPEKTIVE=drafts` setzen. `.env` ist nicht im Repo.
+- Alle Abfragen stehen in `src/sanity/queries.ts` (nur freigegebene Felder, immer `_id` und `_type`). Typen erzeugt `npm --prefix studio run typegen` nach `src/sanity/sanity.types.ts`. Die Dateien in `src/data/` (ausstellungen, orte, archiv, hinweise, seiten) sind dünne Ladefunktionen mit den Typen, die die Komponenten erwarten.
+- Chronik, Lebensweg, Werke, Manufaktur, Team und die Gesamtliste seit 1980 bleiben im Code; Kontakt und Werkstatt folgen später.
+
 ## Prüfen
 
 ```bash
@@ -48,7 +57,8 @@ astro.config.mjs      statisch, build.format 'file' (aktuelles.astro → /aktuel
 wrangler.jsonc        Worker kwm-redesign, Assets aus dist/, 404-Seite, Previews
 src/layouts/          BaseLayout.astro: Kopf, Skripte, Header und Footer (kein CSS-Import)
 src/components/       Komponenten nach DESIGN.md §11 (Gerüst, Köpfe, Statement, Einträge wie ExhibitionCard, WorkCard, WorkTile, WareCard, FactsList, FactsTable, DateList, PubList, PersonCard, Steps, Aufklappen und Archive: Expander, YearArchive, Timeline, Chronicle, PlaceGrid), Bild (jedes Bild, rendert `<Image>` aus `astro:assets`)
-src/data/             Inhalte in der Form des Sanity-Modells: ausstellungen.ts, hinweise.ts, werke.ts, manufaktur.ts, team.ts, texte.ts, vita.ts, werkstatt.ts, anfahrt.ts, arbeitsweise.ts, chronik.ts, lebensweg.ts, orte.ts (Orte und Galerien), archiv.ts (vergangene Ausstellungen); dazu kontakt.ts, navigation.ts, bilder.ts (löst Bildpfade auf), typen.ts (gemeinsame Typen)
+src/sanity/           Zugriff auf Sanity beim Build: client.ts, queries.ts, bild.ts (Sanity-Bild zur Bildangabe), text.ts (Portable Text zu HTML), sanity.types.ts (erzeugt)
+src/data/             Inhalte in der Form des Sanity-Modells (aus Sanity: ausstellungen.ts, hinweise.ts, orte.ts, archiv.ts, seiten.ts; im Code: werke.ts, manufaktur.ts, team.ts, texte.ts, vita.ts, werkstatt.ts, anfahrt.ts, arbeitsweise.ts, chronik.ts, lebensweg.ts, Gesamtliste seit 1980 in archiv.ts); dazu kontakt.ts, navigation.ts, bilder.ts (löst Bildpfade auf), typen.ts (gemeinsame Typen)
 src/pages/            eine .astro-Datei pro Seite
 src/styles/           basis.css (bindet global.css und pages.css ein), seiten/ (Seiten-CSS), signaturen/ (signaturen.css und sig-*.css)
 src/scripts/          Browser-Skripte (TypeScript, Unit-Tests `*.test.ts` mit Vitest: `npm run test:unit`): status (Ausstellungsstatus aus dem Datum), zeitraum, anfrage-link, main, signaturen (lädt die sig-* als eigene Chunks), keramik (gemeinsame Typen und Daten); das Layout bindet sie als ein verarbeitetes Skript ein
@@ -78,3 +88,5 @@ Gesichert durch den Test „Stylesheet-Reihenfolge“ in `tests/routen.spec.ts`:
 ## Sanity-Studio: Erstimport
 
 `studio/scripts/import-inhalte.mjs` legt Orte, Galerien, laufende und kommende Ausstellungen und Hinweise als Entwürfe an (nichts wird veröffentlicht). Die Bilder aus `src/assets/img/kwm/` des Branches `phase-d3-aufklappen` per `git show` in einen Ordner holen, dann `cd studio && node scripts/import-inhalte.mjs <Bilderordner>` (Token aus `SANITY_AUTH_TOKEN` oder der Sanity-CLI-Anmeldung; `--replace` überschreibt vorhandene Entwürfe).
+
+Danach `cd studio && node scripts/import-archiv.mjs` (Archiv-Auswahl 2016–2026 als `archivEintrag`, dazu die Häuser der Orte; Daten in `scripts/archiv-daten.json`, ebenfalls nur Entwürfe).

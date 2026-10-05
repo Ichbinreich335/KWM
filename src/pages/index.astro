@@ -9,10 +9,11 @@ import WorkTile from '../components/WorkTile.astro';
 import { stueckBezeichnung, werk, werkschau } from '../data/werke';
 import { anfrageLink } from '../scripts/anfrage-link';
 import ExhibitionCard from '../components/ExhibitionCard.astro';
-import { ausstellungen } from '../data/ausstellungen';
-import { hinweise } from '../data/hinweise';
+import { ladeAusstellungen } from '../data/ausstellungen';
+import { ladeHinweise } from '../data/hinweise';
+import { ladeSeite } from '../data/seiten';
 import PlaceGrid from '../components/PlaceGrid.astro';
-import { kacheln } from '../data/orte';
+import { ladeKacheln } from '../data/orte';
 import Timeline from '../components/Timeline.astro';
 import Chronicle from '../components/Chronicle.astro';
 import { chronik } from '../data/chronik';
@@ -21,11 +22,14 @@ import Bild from '../components/Bild.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import InquiryForm from '../components/InquiryForm.astro';
 import '../styles/signaturen/signaturen.css';
+
+const seite = await ladeSeite('startseite');
+const [ausstellungen, hinweise, kacheln] = await Promise.all([ladeAusstellungen(), ladeHinweise(), ladeKacheln()]);
 ---
 
 <BaseLayout
   title="Keramische Werkstatt Margaretenhöhe · seit 1924"
-  description="Gedrehte Gefäße von Young-Jae Lee und ein Manufakturprogramm nach den Formprinzipien des Bauhauses. Keramische Werkstatt Margaretenhöhe, Zeche Zollverein, Essen."
+  description={seite.beschreibung}
   bodyClass="page-home"
 >
   <main id="inhalt">
@@ -44,14 +48,13 @@ import '../styles/signaturen/signaturen.css';
       </figure>
       <div class="hero__text">
         <h1 class="hero__title" id="hero-title" data-reveal="words">
-          Immer sind es Schalen, und doch ist keine wie die andere.
+          {seite.titel}
         </h1>
         <p class="hero__source" data-reveal="fade">
           Thomas Wagner über die Schalen von Young-Jae Lee
         </p>
         <p class="hero__intro" data-reveal="fade">
-          Keramische Werkstatt Margaretenhöhe. Gedrehte Gefäße und Gebrauchsgeschirr aus Essen – seit 1924, heute auf
-          dem Gelände der Zeche Zollverein.
+          {seite.einleitung}
         </p>
         <p class="hero__actions" data-reveal="fade">
           <a class="link-arrow" href="/meisterstuecke">

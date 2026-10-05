@@ -1,5 +1,6 @@
 ---
 import '../styles/basis.css';
+import { ladeSeite } from '../data/seiten';
 import { BRENNTEMPERATUR, grad } from '../data/brenntemperatur';
 import Statement from '../components/Statement.astro';
 import ChapterHead from '../components/ChapterHead.astro';
@@ -14,21 +15,20 @@ import SubNav from '../components/SubNav.astro';
 import PageHero from '../components/PageHero.astro';
 import '../styles/seiten/page-meisterstuecke.css';
 import '../styles/signaturen/signaturen.css';
+
+const seite = await ladeSeite('meisterstuecke');
 ---
 
 <BaseLayout
   title="Meisterstücke · Keramische Werkstatt Margaretenhöhe"
-  description="Schalen, Kummen und Vasen aus der Hand von Young-Jae Lee – gedreht, bemalt und glasiert in der Keramischen Werkstatt Margaretenhöhe, Essen."
+  description={seite.beschreibung}
   bodyClass="page-meisterstuecke"
   nav="meisterstuecke"
 >
   <main id="inhalt">
     <PageHero typ="meta" titelId="ms-title" bildunterschrift="Schalen von Young-Jae Lee">
-      <Fragment slot="titel">Meisterstücke</Fragment>
-      <Fragment slot="lede">
-        Alle hier gezeigten Meisterstücke stammen aus der Hand Young-Jae Lees und wurden von ihr selbst gedreht, bemalt
-        und glasiert.
-      </Fragment>
+      <Fragment slot="titel">{seite.titel}</Fragment>
+      <Fragment slot="lede">{seite.einleitung}</Fragment>
       <Bild
         slot="bild"
         priority

@@ -1,5 +1,6 @@
 ---
 import '../styles/basis.css';
+import { ladeSeite } from '../data/seiten';
 import Steps from '../components/Steps.astro';
 import { anfahrtAuto, oepnv } from '../data/anfahrt';
 import SectionHead from '../components/SectionHead.astro';
@@ -9,22 +10,20 @@ import InquiryForm from '../components/InquiryForm.astro';
 import PageHero from '../components/PageHero.astro';
 import '../styles/seiten/page-besuch.css';
 import '../styles/signaturen/signaturen.css';
+
+const seite = await ladeSeite('besuch');
 ---
 
 <BaseLayout
   title="Besuch & Anfahrt · Keramische Werkstatt Margaretenhöhe"
-  description="Öffnungszeiten, Anfahrt und Anfrage: Keramische Werkstatt Margaretenhöhe, Bullmannaue 19, 45327 Essen, auf dem Gelände der Zeche Zollverein."
+  description={seite.beschreibung}
   bodyClass="page-besuch"
   nav="besuch"
 >
   <main id="inhalt">
     <PageHero typ="meta">
-      <Fragment slot="titel">Besuchen Sie die Werkstatt.</Fragment>
-      <Fragment slot="lede">
-        Wir danken Ihnen für Ihr Interesse. Wenn Sie Fragen haben oder Stücke aus unserem Programm erwerben möchten,
-        senden wir Ihnen natürlich gerne weitere Informationen oder ein Angebot zu. Selbstverständlich können Sie unsere
-        Werkstatt auch besuchen.
-      </Fragment>
+      <Fragment slot="titel">{seite.titel}</Fragment>
+      <Fragment slot="lede">{seite.einleitung}</Fragment>
       <div class="visit-hours__times" data-reveal="fade" role="group" aria-label="Öffnungszeiten">
         <div class="visit-hours__row">
           <span class="visit-hours__day">Montag bis Freitag</span>

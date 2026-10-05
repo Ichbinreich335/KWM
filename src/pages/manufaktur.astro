@@ -1,5 +1,7 @@
 ---
 import '../styles/basis.css';
+import { ladeSeite } from '../data/seiten';
+import { WEICHES_TRENNZEICHEN } from '../data/zeichen';
 import WareGroup from '../components/WareGroup.astro';
 import DateList from '../components/DateList.astro';
 import { arbeitsweise, gruppe } from '../data/manufaktur';
@@ -27,21 +29,22 @@ const glasurBild = async (src: string) =>
       position: 'center',
     })
   ).src;
+
+const seite = await ladeSeite('manufaktur');
 ---
 
 <BaseLayout
   title="Manufakturprogramm · Keramische Werkstatt Margaretenhöhe"
-  description="Geschirr und Edition der Keramischen Werkstatt Margaretenhöhe: auf der Scheibe gedreht, nach den Formprinzipien des Bauhauses, in einer sechstonigen Farbskala."
+  description={seite.beschreibung}
   bodyClass="page-manufaktur"
   nav="manufaktur"
 >
   <main id="inhalt">
     <PageHero typ="flaeche" titelId="mf-title" class="mf-hero">
-      <Fragment slot="titel">Manufaktur&shy;programm</Fragment>
-      <Fragment slot="lede">
-        Vom Teller bis zur Schüssel, von der Tasse bis zum Krug hin zu Salz-, Pfeffer-, Milch- und Zuckergefäßen –
-        unsere Geschirr-Serie umfasst alle Bestandteile eines Speisegeschirrs.
+      <Fragment slot="titel">
+        {seite.titel.replace('Manufakturprogramm', `Manufaktur${WEICHES_TRENNZEICHEN}programm`)}
       </Fragment>
+      <Fragment slot="lede">{seite.einleitung}</Fragment>
       <ul class="shelf" data-reveal="img">
         <li class="shelf__item">
           <Bild

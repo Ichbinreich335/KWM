@@ -1,5 +1,6 @@
 ---
 import '../styles/basis.css';
+import { ladeSeite } from '../data/seiten';
 import PersonCard from '../components/PersonCard.astro';
 import { team } from '../data/team';
 import FactsList from '../components/FactsList.astro';
@@ -16,22 +17,20 @@ import Chronicle from '../components/Chronicle.astro';
 import { chronik } from '../data/chronik';
 import '../styles/seiten/page-werkstatt.css';
 import '../styles/signaturen/signaturen.css';
+
+const seite = await ladeSeite('werkstatt');
 ---
 
 <BaseLayout
   title="Werkstatt · Keramische Werkstatt Margaretenhöhe"
-  description="Seit 1924 eine Keramikwerkstatt in Essen, seit 1927 den Formprinzipien des Bauhauses verpflichtet. Arbeitsweise, Chronik, Team und Auszeichnungen der Keramischen Werkstatt Margaretenhöhe."
+  description={seite.beschreibung}
   bodyClass="page-werkstatt"
   nav="werkstatt"
 >
   <main id="inhalt">
     <PageHero typ="anker" streifen bildunterschrift="Young-Jae Lee in der Werkstatt">
-      <Fragment slot="titel">Die Werkstatt</Fragment>
-      <Fragment slot="lede">
-        Handwerkliche Ästhetik in ihrer Zurückgenommenheit, Konzentriertheit, formalen Perfektion. Aus der ständigen
-        Wiederholung einer handwerklichen Technik, dem Drehen auf der Töpferscheibe, erwächst die vollkommene Schönheit
-        einer Form.
-      </Fragment>
+      <Fragment slot="titel">{seite.titel}</Fragment>
+      <Fragment slot="lede">{seite.einleitung}</Fragment>
       <Bild
         slot="bild"
         priority
