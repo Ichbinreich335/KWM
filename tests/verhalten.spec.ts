@@ -64,6 +64,23 @@ test('Kein Entwurf-Panel, feste Fassung der Startseite', async ({ page }) => {
   await expect(page.getByRole('button', { name: /Entwurf/ })).toHaveCount(0);
 });
 
+// Vorschau der Bauhaus-Station: entfällt mit dem Umschalter, sobald ein Entwurf gewählt ist
+for (const [abfrage, sichtbar] of [
+  ['', 1],
+  ['?bauhaus=1', 1],
+  ['?bauhaus=2', 2],
+  ['?bauhaus=3', 3],
+  ['?bauhaus=9', 1],
+] as const) {
+  test(`Bauhaus-Station zeigt genau Entwurf ${sichtbar} bei „${abfrage || 'ohne Angabe'}“`, async ({ page }) => {
+    await page.goto(`/${abfrage}`);
+    for (const entwurf of [1, 2, 3]) {
+      await expect(page.locator(`.entwurf--${entwurf}`)).toBeVisible({ visible: entwurf === sichtbar });
+    }
+    await expect(page.locator('#bauhaus h2:visible')).toHaveCount(1);
+  });
+}
+
 test('Expander (Zeile): Enter öffnet und schließt, Tab überspringt den geschlossenen Inhalt', async ({
   page,
   browserName,
