@@ -2077,6 +2077,12 @@ body::after {
   .piece {
     grid-column: span 6;
   }
+  /* Handy: vier Werke mit Titel und Jahr; Angaben, Satz zur Handschrift und die übrigen Werke stehen auf /meisterstuecke */
+  .piece:nth-child(n + 5),
+  .piece__spec,
+  .works__statement {
+    display: none;
+  }
   .hours,
   .visit__actions {
     grid-column: 1 / -1;
