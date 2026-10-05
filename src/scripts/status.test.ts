@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { statusText, tagAusIso } from './status';
+import { hinweisSichtbar, statusText, tagAusIso } from './status';
 
 const start = tagAusIso('2026-08-16');
 const ende = tagAusIso('2026-10-31');
@@ -18,6 +18,38 @@ describe('statusText', () => {
   });
   it('nutzt die Umlaut-Monate', () => {
     expect(statusText(tagAusIso('2026-03-02'), tagAusIso('2026-03-09'), tagAusIso('2026-03-01'))).toBe('Ab 2. März');
+  });
+});
+
+describe('statusText über den Jahreswechsel', () => {
+  const winterStart = tagAusIso('2026-12-20');
+  const winterEnde = tagAusIso('2027-01-10');
+  const winter = (heute: string) => statusText(winterStart, winterEnde, tagAusIso(heute));
+  it('läuft am Silvestertag und am Neujahrstag', () => {
+    expect(winter('2026-12-31')).toBe('Läuft · bis 10. Januar');
+    expect(winter('2027-01-01')).toBe('Läuft · bis 10. Januar');
+  });
+  it('kündigt vor dem Start an und meldet nach dem Ende als beendet', () => {
+    expect(winter('2026-12-19')).toBe('Ab 20. Dezember');
+    expect(winter('2027-01-11')).toBe('Beendet am 10. Januar');
+  });
+});
+
+describe('hinweisSichtbar', () => {
+  const von = tagAusIso('2026-12-30');
+  const bis = tagAusIso('2027-01-02');
+  const sichtbar = (heute: string) => hinweisSichtbar(von, bis, tagAusIso(heute));
+  it('zeigt den Hinweis von `von` bis `bis`, beide Tage eingeschlossen', () => {
+    expect(sichtbar('2026-12-30')).toBe(true);
+    expect(sichtbar('2026-12-31')).toBe(true);
+    expect(sichtbar('2027-01-02')).toBe(true);
+  });
+  it('blendet ihn davor und danach aus, auch über den Jahreswechsel', () => {
+    expect(sichtbar('2026-12-29')).toBe(false);
+    expect(sichtbar('2027-01-03')).toBe(false);
+  });
+  it('blendet ihn bei ungültigem Datum aus', () => {
+    expect(hinweisSichtbar(tagAusIso('kaputt'), bis, tagAusIso('2026-12-31'))).toBe(false);
   });
 });
 

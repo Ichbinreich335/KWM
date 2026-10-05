@@ -1,5 +1,5 @@
 // Signatur: aktuell. Status je Ausstellung aus dem Datum, Details klappen ohne Unterseite auf (immer nur eine offen).
-import { statusText, tagAusIso } from './status';
+import { hinweisSichtbar, statusText, tagAusIso } from './status';
 
 export default function init(el: Element) {
   if (!(el instanceof HTMLElement)) return;
@@ -16,7 +16,7 @@ export default function init(el: Element) {
   el.querySelectorAll<HTMLElement>('.aktuell__note').forEach((note) => {
     const { start, end } = note.dataset;
     if (!start || !end) return;
-    note.hidden = today < tagAusIso(start) || today > tagAusIso(end);
+    note.hidden = !hinweisSichtbar(tagAusIso(start), tagAusIso(end), today);
   });
 
   const items = [...el.querySelectorAll<HTMLElement>('.aktuell__item')].filter((item) =>

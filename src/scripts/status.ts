@@ -31,3 +31,8 @@ export function statusText(start: Date, ende: Date, heute: Date): string {
   if (heute > ende) return `Beendet am ${tagFormat(ende)}`;
   return `Läuft · bis ${tagFormat(ende)}`;
 }
+
+/** Ein Hinweis erscheint von `von` bis `bis`, beide Tage inklusive; ein ungültiges Datum blendet ihn aus. */
+export function hinweisSichtbar(von: Date, bis: Date, heute: Date): boolean {
+  return heute >= von && heute <= bis;
+}
