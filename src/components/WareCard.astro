@@ -1,0 +1,150 @@
+---
+import type { Satz } from '../data/manufaktur';
+import Bild from './Bild.astro';
+
+interface Props {
+  satz: Satz;
+}
+
+const { satz } = Astro.props;
+---
+
+{satz.bild ? (
+  <figure class:list={['set', satz.breit && 'set--wide']}>
+    <div class:list={['set__frame', satz.kontur && 'set__frame--contain']} data-reveal="img">
+      <Bild src={satz.bild.src} width={satz.bild.breite} height={satz.bild.hoehe} loading="lazy" alt={satz.bild.alt} />
+    </div>
+    {satz.untertitel && <p class="set__sub">{satz.untertitel}</p>}
+    <ul class="set__list">
+      {satz.teile.map((teil) => (
+        <li class:list={[teil.hinweis === 'nicht mehr im Programm' && 'is-retired']}>
+          <span>
+            {teil.name}
+            {teil.hinweis && (
+              <Fragment>
+                {' '}
+                <em>{teil.hinweis}</em>
+              </Fragment>
+            )}
+          </span>
+          <span>{teil.masse}</span>
+          <span>{teil.programmnr && `Nr. ${teil.programmnr}`}</span>
+        </li>
+      ))}
+    </ul>
+  </figure>
+) : (
+  <div class="set set--text">
+    {satz.untertitel && <p class="set__sub">{satz.untertitel}</p>}
+    <ul class="set__list">
+      {satz.teile.map((teil) => (
+        <li>
+          <span>{teil.name}</span>
+          <span>{teil.masse}</span>
+          <span>{teil.programmnr && `Nr. ${teil.programmnr}`}</span>
+        </li>
+      ))}
+    </ul>
+    {satz.notiz && <p class="ware__note">{satz.notiz}</p>}
+  </div>
+)}
+
+<style>
+  .set {
+    margin: 0;
+  }
+  .set--wide {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 0 var(--g);
+    align-items: start;
+  }
+  .set--wide .set__list {
+    margin-top: 0;
+  }
+  .set__frame {
+    overflow: hidden;
+    background: var(--ground-2);
+  }
+  .set__frame :global(img) {
+    width: 100%;
+    aspect-ratio: 3 / 2;
+    object-fit: cover;
+    transition: transform 1.2s var(--ease);
+  }
+  .set:hover .set__frame :global(img) {
+    transform: scale(1.035);
+  }
+  .set__frame--contain {
+    background: var(--coal-2);
+    aspect-ratio: 3 / 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .set__frame--contain :global(img) {
+    width: auto;
+    height: 100%;
+    max-width: 100%;
+    aspect-ratio: auto;
+    object-fit: contain;
+  }
+  .set__sub {
+    font-family: var(--f-text);
+    font-size: var(--t-body);
+    line-height: var(--t-body-lh);
+    margin: 14px 0 0;
+  }
+  .set--text .set__sub {
+    margin-top: 0;
+  }
+  .set__list {
+    margin-top: 14px;
+    border-top: 1px solid var(--ink);
+    font-size: var(--t-small);
+    line-height: var(--t-small-lh);
+  }
+  .set__list li {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto 3.6em;
+    gap: 12px;
+    padding: 8px 0 7px;
+    border-bottom: 1px solid var(--hair);
+    align-items: baseline;
+  }
+  .set__list li > span:nth-child(2) {
+    color: var(--ink-2);
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+  .set__list li > span:nth-child(3) {
+    color: var(--ink-2);
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+  .set__list em {
+    display: block;
+    font-style: normal;
+    font-size: var(--t-meta);
+    line-height: var(--t-meta-lh);
+    color: var(--ink-2);
+  }
+  .set__list li.is-retired > span:first-child {
+    color: var(--ink-2);
+  }
+
+  @media (max-width: 900px) {
+    .set--wide {
+      grid-template-columns: 1fr;
+    }
+    .set--wide .set__list {
+      margin-top: 14px;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .set__frame :global(img) {
+      transition: none !important;
+    }
+  }
+</style>

@@ -1,0 +1,79 @@
+---
+import type { Warengruppe } from '../data/manufaktur';
+import WareCard from './WareCard.astro';
+
+interface Props {
+  gruppe: Warengruppe;
+}
+
+const { gruppe } = Astro.props;
+---
+
+<div class="ware grid">
+  <h3 class="ware__title" data-reveal="fade">
+    {gruppe.titel}
+  </h3>
+  <div class:list={['ware__sets', gruppe.dreispaltig && 'ware__sets--three']}>
+    {gruppe.saetze.map((satz) => (
+      <WareCard satz={satz} />
+    ))}
+    {gruppe.hinweis && (
+      <p class="ware__note" data-reveal="fade">
+        {gruppe.hinweis}
+      </p>
+    )}
+  </div>
+</div>
+
+<style>
+  /* Warengruppen: Titel links, Sätze aus Bild und Liste rechts */
+  .ware {
+    padding-block: clamp(40px, 5vw, 72px);
+    border-top: 1px solid var(--hair);
+    align-items: start;
+    row-gap: 24px;
+  }
+  .ware__title {
+    grid-column: 1 / 4;
+    font-family: var(--f-display);
+    font-size: var(--t-h3);
+    line-height: var(--t-h3-lh);
+    position: sticky;
+    top: calc(var(--head) + 76px);
+  }
+  .ware__sets {
+    grid-column: 4 / 13;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(36px, 4vw, 56px) var(--g);
+    align-items: start;
+  }
+  .ware__sets--three {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .ware__sets :global(.ware__note) {
+    font-size: var(--t-small);
+    line-height: var(--t-small-lh);
+    color: var(--ink-2);
+    max-width: 36ch;
+    margin: 0;
+    align-self: end;
+  }
+
+  @media (max-width: 1200px) and (min-width: 901px) {
+    .ware__sets--three {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (max-width: 900px) {
+    .ware__title {
+      grid-column: 1 / -1;
+      position: static;
+    }
+    .ware__sets,
+    .ware__sets--three {
+      grid-column: 1 / -1;
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
