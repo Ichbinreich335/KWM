@@ -128,6 +128,14 @@ main
 - **Portfolio-Seite** aus der Lager-Datenbank: vorerst nicht bauen.
 - Weiter gilt: keine Preise, kein Bestand, keine Lagerorte, keine Verfügbarkeit auf der Website.
 
+**Stand 05.10.2026, abends – Hauptlinie ist jetzt `gesamtstand`:**
+- **Gesamtstand** (Branch `gesamtstand`, Ordner `../KWM-gesamt`, Port 8787, Vorschau https://gesamtstand-kwm-redesign.entwicklung-7f3.workers.dev): EIN Stand mit Bausteinen 1–5, Zitaten (Statement-Typen), Handy-Kürzung, SEO/CSP (ohne `style-src-attr`), Formular-Worker mit Vorschau-Modus (Branch ≠ main: kein Turnstile, Bestätigung ohne Versand), echten Flyern, ohne Parallax, mit allen Befunden der Opus-Qualitätsprüfung (`.superpowers/sdd/GESAMT/audit-opus.md`) behoben. Tests in Chromium und WebKit (Desktop + iPhone) inkl. `tests/bewegung.spec.ts`. Diesen Link hat die Werkstatt bekommen. Ledger: `.superpowers/sdd/GESAMT/progress.md`.
+- **Mittelweg-Startseite** (Branch `startseite-mittelweg`, `../KWM-mittelweg`, Port 8784): Gesamtstand + ausgewählte Teile der Bauhaus-Variante nach Admin-Entscheid (Bauhaus-Station in drei umschaltbaren Entwürfen `?bauhaus=1|2|3`, Orte nach Young-Jae Lee, Meditation und doppelte Zitate raus, neues Meisterstück-Bild). Ledger `.superpowers/sdd/MITTELWEG/progress.md`.
+- **Bauhaus-Variante** (`startseite-bauhaus`, auf gesamtstand rebased): nur noch Steinbruch.
+- Ältere Einzel-Branches (`phase-*`, `zitate-angleichen`, `phase-b3-mobil-kurz`, `konzept-flyer-galerien`) sind im Gesamtstand aufgegangen; PRs #4–#18 bleiben Entwürfe, gemergt wird künftig der Gesamtstand (Sammel-PR gegen `main`, davor gebündeltes `/code-review`).
+- **Sanity Teil 2** (`phase-2-website`, `../KWM-sanity-web`): gestagte Nacharbeiten warten auf Admin-Freigabe (Commit/Push vom Klassifikator gestoppt); danach auf `gesamtstand` rebasen; baut erst nach Veröffentlichung der Entwürfe.
+- Admin-Regeln 05.10.: Aussage-Bilder nicht zu groß (höchstens zwei Drittel Bildschirmhöhe), Stimmungsbilder randlos; Kritiker-Zitate erwünscht, Werkstatt spricht mit geteilter Stimme; Glasurbühne nicht auf der Startseite; kein Bild bewegt sich beim Scrollen.
+
 **Entscheidungen und Stand 05.10.2026 (Admin und Opus):**
 - **Branches und PRs** (alle Entwürfe, gemergt wird von oben nach unten): #4 → #5 → #6 → #7–#10 → **#13 Feinschliff** (`phase-b3-feinschliff`) → **#11 Bausteine Teil 1** (`phase-d1-geruest`, auf den Feinschliff rebased; Sicherung `backup/phase-d1-geruest-vor-rebase`) → `phase-d2-eintraege` (läuft). **#12 SEO/Sicherheit** (`phase-e-seo`) baut auf C4 auf und wird vor dem Merge auf die Bausteine rebased.
 - **Vergleichs-Branches** (Merge erst nach Admin-Entscheidung): `phase-b3-mobil-kurz` (Handy −17 %), `konzept-flyer-galerien` (wird nie gemergt), `zitate-angleichen` (5 Rollen statt 8 Darstellungen).
