@@ -16,6 +16,10 @@ interface Props {
   strukturiert?: boolean;
   /** Vorschaubild für Link-Vorschauen (Open Graph); Standard: das Einstiegsbild der Startseite. */
   bild?: ImageMetadata;
+  /** Alt-Text zum Vorschaubild; gilt für das Standardbild, bei eigenem `bild` mitgeben. */
+  bildAlt?: string;
+  /** Canonical und og:url ausgeben; auf der 404-Seite aus. */
+  canonicalAusgeben?: boolean;
 }
 const {
   title,
@@ -24,6 +28,8 @@ const {
   nav,
   strukturiert = false,
   bild = bildMetadaten('/img/kwm/kummerschalen.webp'),
+  bildAlt = 'Viele flache Schalen von Young-Jae Lee auf einem Steinboden, seladonblau, schwarz gesprenkelt und rotbraun glasiert',
+  canonicalAusgeben = true,
 } = Astro.props;
 
 // build.format 'file' liefert pathname mit .html; die öffentliche URL hat keins (Cloudflare entfernt es)
@@ -46,14 +52,17 @@ const vorgeladeneSchriften = (['--font-caslon-display', '--font-jost'] as const)
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
-    <link rel="canonical" href={canonical} />
+    {canonicalAusgeben && <link rel="canonical" href={canonical} />}
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Keramische Werkstatt Margaretenhöhe" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:url" content={canonical} />
+    {canonicalAusgeben && <meta property="og:url" content={canonical} />}
     <meta property="og:locale" content="de_DE" />
     <meta property="og:image" content={vorschaubild} />
+    <meta property="og:image:width" content={String(bild.width)} />
+    <meta property="og:image:height" content={String(bild.height)} />
+    <meta property="og:image:alt" content={bildAlt} />
     <meta name="twitter:card" content="summary_large_image" />
     <link rel="sitemap" href="/sitemap-index.xml" />
     <link rel="icon" href="/img/kwm/logo.svg" type="image/svg+xml" />

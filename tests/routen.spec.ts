@@ -123,14 +123,23 @@ test('Canonical und Open Graph: je Seite genau ein Canonical ohne .html, og:titl
     const canonical = await page
       .locator('link[rel=canonical]')
       .evaluateAll((links) => links.map((l) => l.getAttribute('href') ?? ''));
-    expect(canonical.length, `${seite.name}: Anzahl Canonical`).toBe(1);
-    expect(canonical[0], seite.name).toMatch(/^https:\/\/kwm-1924\.de\/[^.]*$/);
+    if (seite.name === '404') {
+      expect(canonical, '404: kein Canonical').toHaveLength(0);
+      expect(await page.locator('meta[property="og:url"]').count(), '404: kein og:url').toBe(0);
+    } else {
+      expect(canonical.length, `${seite.name}: Anzahl Canonical`).toBe(1);
+      expect(canonical[0], seite.name).toMatch(/^https:\/\/kwm-1924\.de\/[^.]*$/);
+    }
     expect(await page.locator('meta[property="og:title"]').getAttribute('content'), seite.name).toBe(
       await page.title(),
     );
     // Die Domain ist noch nicht live; geprüft wird der Pfad auf dem Testserver.
     const bild = await page.locator('meta[property="og:image"]').getAttribute('content');
     expect((await request.get(new URL(bild ?? '', 'https://kwm-1924.de').pathname)).status(), seite.name).toBe(200);
+    for (const eigenschaft of ['width', 'height', 'alt']) {
+      const wert = await page.locator(`meta[property="og:image:${eigenschaft}"]`).getAttribute('content');
+      expect(wert, `${seite.name}: og:image:${eigenschaft}`).toBeTruthy();
+    }
   }
 });
 

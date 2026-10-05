@@ -32,6 +32,8 @@ const daten = {
     closes: stunde(bis),
   })),
 };
+// "<" als \u003c ausgeben, damit kein "</script>" im Wert das Skript-Element vorzeitig beendet.
+const json = JSON.stringify(daten).replace(/</g, '\\u003c');
 ---
 
-<script type="application/ld+json" set:html={JSON.stringify(daten)} />
+<script type="application/ld+json" set:html={json} />
