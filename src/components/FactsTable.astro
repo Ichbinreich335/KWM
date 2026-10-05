@@ -11,7 +11,7 @@ const { fakten } = Astro.props;
 <div class="facts">
   <dl class="facts__list">
     {fakten.map((fakt) => (
-      <div>
+      <div class:list={{ facts__mehr: fakt.ergaenzend }}>
         <dt>{fakt.label}</dt>
         <dd>{fakt.wert}</dd>
       </div>
@@ -47,5 +47,11 @@ const { fakten } = Astro.props;
   }
   .facts__cta {
     padding-block: 16px;
+  }
+  /* Handy: ergänzende Angaben entfallen, sie stehen auf /manufaktur */
+  @media (max-width: 900px) {
+    .facts__mehr {
+      display: none;
+    }
   }
 </style>

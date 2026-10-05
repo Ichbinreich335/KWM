@@ -15,6 +15,8 @@ export interface Fakt {
   label: string;
   wert?: string | readonly string[];
   links?: readonly { href: string; text: string }[];
+  /** Ergänzende Angabe; die Kurzfassung am Handy lässt sie weg */
+  ergaenzend?: boolean;
 }
 
 export interface BildAngabe {

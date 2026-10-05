@@ -539,9 +539,13 @@ export const arbeitsweise: readonly DatumEintrag[] = [
 /** Kurzfakten zum Manufakturprogramm auf der Startseite */
 export const kurzfakten: readonly Fakt[] = [
   { label: 'Masse', wert: 'Westerwälder Steinzeug, auf der Töpferscheibe gedreht' },
-  { label: 'Schrühbrand', wert: `Elektroofen, etwa ${grad(BRENNTEMPERATUR.schruehbrand)}` },
+  { label: 'Schrühbrand', wert: `Elektroofen, etwa ${grad(BRENNTEMPERATUR.schruehbrand)}`, ergaenzend: true },
   { label: 'Glasurbrand', wert: `Gasofen, ca. ${grad(BRENNTEMPERATUR.glasurbrandGas)}, reduzierende Atmosphäre` },
-  { label: 'Programm', wert: 'Vom Teller bis zum Krug, dazu die Edition mit Vasen, Pflanzgefäßen und Dosen' },
+  {
+    label: 'Programm',
+    wert: 'Vom Teller bis zum Krug, dazu die Edition mit Vasen, Pflanzgefäßen und Dosen',
+    ergaenzend: true,
+  },
   { label: 'Gebrauch', wert: 'Alle Stücke sind spülmaschinenfest' },
 ];
 

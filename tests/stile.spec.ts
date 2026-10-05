@@ -77,7 +77,8 @@ test('Startseite: Chronik und Lebensweg tragen ihre Skript-Stile (Startzustand u
   const jahr = '.chronicle__list li:not(.chronicle__item--quiet) .chronicle__year';
   const gedaempft = await stil(page, jahr, 'color');
   expect(await stil(page, jahr, 'scale', '::before')).toBe('0');
-  expect(await stil(page, '.journey li', 'scale', '::after')).toBe('0');
+  // Mobil ist der Lebensweg eine Wischreihe mit gefüllten Punkten, am Desktop füllt sie die Linie beim Scrollen
+  expect(await stil(page, '.journey li', 'scale', '::after')).toBe(isMobile ? '1' : '0');
 
   await page.locator(eintrag).scrollIntoViewIfNeeded();
   await page.locator('.chronicle__list').scrollIntoViewIfNeeded();

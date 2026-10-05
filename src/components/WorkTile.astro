@@ -77,6 +77,14 @@ const { werk } = Astro.props;
     margin-top: 0;
   }
 
+  /* Handy: vier Werke mit Titel und Jahr; Angaben und die übrigen Werke stehen auf /meisterstuecke */
+  @media (max-width: 900px) {
+    .piece:nth-child(n + 5),
+    .piece__spec {
+      display: none;
+    }
+  }
+
   @media (max-width: 520px) {
     .piece__head {
       flex-direction: column;

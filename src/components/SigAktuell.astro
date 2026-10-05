@@ -12,6 +12,8 @@ interface Props {
 }
 
 const { ausstellungen, hinweise } = Astro.props;
+const spotlights = ausstellungen.filter((eintrag) => eintrag.spotlight);
+const weitere = ausstellungen.filter((eintrag) => !eintrag.spotlight);
 ---
 
 {/* Dunkler Abschnitt der Startseite; das Skript setzt Status und Hinweise nach dem Datum und lässt immer nur ein Detail offen (sig-aktuell.ts) */}
@@ -32,9 +34,19 @@ const { ausstellungen, hinweise } = Astro.props;
   ))}
 
   <ol class="aktuell__list">
-    {ausstellungen.map((eintrag) => (
-      <ExhibitionCard typ={eintrag.spotlight ? 'spotlight' : 'kachel'} ausstellung={eintrag} />
+    {spotlights.map((eintrag) => (
+      <ExhibitionCard typ="spotlight" ausstellung={eintrag} />
     ))}
+    <li class="aktuell__rest">
+      <p class="aktuell__hint" aria-hidden="true">
+        Wischen
+      </p>
+      <ol class="aktuell__reihe" aria-label="Weitere Ausstellungen" tabindex="0">
+        {weitere.map((eintrag) => (
+          <ExhibitionCard typ="kachel" ausstellung={eintrag} />
+        ))}
+      </ol>
+    </li>
   </ol>
 </section>
 
@@ -49,6 +61,7 @@ const { ausstellungen, hinweise } = Astro.props;
     --cover: var(--coal);
     --aktuell-ease-time: 0.5s;
     --aktuell-reihe: clamp(48px, 6vw, 88px); /* Abstand zwischen den Reihen der Liste */
+    --aktuell-karte: min(80vw, 420px); /* Breite einer Karte in der Wischreihe (Handy) */
   }
   .aktuell ::selection {
     background: var(--on-coal);
@@ -87,6 +100,15 @@ const { ausstellungen, hinweise } = Astro.props;
   .aktuell__item[data-spotlight] {
     grid-column: 1 / -1;
   }
+  /* Die weiteren Karten stehen in einer eigenen Liste; am Desktop löst display: contents sie wieder ins Raster auf */
+  .aktuell__rest,
+  .aktuell__reihe {
+    display: contents;
+    list-style: none;
+  }
+  .aktuell__hint {
+    display: none;
+  }
   .aktuell__note {
     margin: 0 var(--m) var(--head-gap);
     padding-left: 16px;
@@ -119,6 +141,52 @@ const { ausstellungen, hinweise } = Astro.props;
     .aktuell__note {
       font-size: var(--t-small);
       line-height: var(--t-small-lh);
+    }
+    /* Weitere Karten als Wischreihe (Muster der Chronik): die Karte ist rund 80 % breit, die nächste schaut heraus */
+    .aktuell__rest {
+      display: block;
+      grid-column: 1 / -1;
+    }
+    .aktuell__hint {
+      display: block;
+      margin: 0 0 16px;
+      font-size: var(--t-meta);
+      line-height: var(--t-meta-lh);
+      letter-spacing: 0.04em;
+      color: var(--on-coal-2);
+    }
+    .aktuell__hint::after {
+      content: ' \2192';
+      font-family: system-ui, sans-serif;
+    }
+    .aktuell__reihe {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--g);
+      margin-inline: calc(var(--m) * -1);
+      padding-inline: var(--m);
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scroll-padding-inline: var(--m);
+      overscroll-behavior-x: contain;
+      scrollbar-width: none;
+    }
+    .aktuell__reihe::-webkit-scrollbar {
+      display: none;
+    }
+    .aktuell__reihe:focus-visible {
+      outline: 2px solid var(--on-coal);
+      outline-offset: -2px;
+    }
+    /* In der schmalen Karte steht die Bezeichnung über dem Wert, sonst stößt „Öffnungszeiten“ an */
+    .aktuell__reihe .aktuell__facts > div {
+      grid-template-columns: minmax(0, 1fr);
+      row-gap: 2px;
+    }
+    .aktuell__reihe > .aktuell__item {
+      flex: 0 0 var(--aktuell-karte);
+      margin-bottom: 0;
+      scroll-snap-align: start;
     }
   }
   @media (prefers-reduced-motion: reduce) {

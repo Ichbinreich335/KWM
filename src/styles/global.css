@@ -69,6 +69,11 @@
   :root {
     --t-mega: clamp(3rem, 15.5vw, 6rem);
   }
+  /* Startseite: große Aussagen und Zitate eine Stufe kleiner, damit sie am Handy nicht wuchtig stehen */
+  .page-home {
+    --t-lede: clamp(1.45rem, 5.6vw, 1.65rem);
+    --t-statement: clamp(1.75rem, 7vw, 2rem);
+  }
 }
 *,
 *::before,
@@ -863,7 +868,6 @@ body::after {
   margin-top: 14px;
 }
 .cosmos__floor {
-  background: var(--ground-2);
   padding-block: clamp(24px, 4vw, 56px);
   overflow: hidden;
 }
@@ -1643,6 +1647,16 @@ body::after {
   }
   .facts {
     grid-column: 1 / -1;
+  }
+  /* Handy: das zweite Foto entfällt, es steht auf /manufaktur */
+  .craft__media3 {
+    display: none;
+  }
+  .craft__media img {
+    aspect-ratio: 4 / 3;
+  }
+  .works__statement {
+    display: none;
   }
   .footer__logo {
     grid-column: 1 / -1;
