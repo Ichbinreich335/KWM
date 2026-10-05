@@ -1,6 +1,6 @@
 # Softr-Lager-App „KWM Lager“
 
-Die App läuft in Softr (`celestina80104.softr.app`, Studio: App „KWM Lager“). Hier liegen die **Quelltexte der Vibe-Coding-Blöcke**, damit sie versioniert und prüfbar sind. Maßgeblich ist der Stand in Softr. Jede Änderung wird per Softr-MCP hochgeladen und über die SHA-256-Prüfsumme gegen `blocks/` abgeglichen.
+Die App läuft in Softr (`kwm-lager.softr.app`, später `lager.<KWM-Domain>.de`, Studio: App „KWM Lager“). Hier liegen die **Quelltexte der Vibe-Coding-Blöcke**, damit sie versioniert und prüfbar sind. Maßgeblich ist der Stand in Softr. Jede Änderung wird per Softr-MCP hochgeladen und über die SHA-256-Prüfsumme gegen `blocks/` abgeglichen.
 
 ## Aufbau
 
@@ -34,6 +34,7 @@ Rahmen, Höhe und Schrift jedes Elements stehen genau einmal in `ui.tsx`. Seiten
 
 - ein Block `Button`, `Input`, `Textarea`, `Badge`, `Switch`, `Checkbox` oder shadcn-`Select` direkt importiert oder rohes `<select>`, `<input>`, `<textarea>` nutzt,
 - ein Block eine Rahmenfarbe (`border-…`, `divide-…`, `LINE`) oder einen eigenen umrandeten Kasten baut (Ausnahme: Warnfarbe `destructive`),
+- eine Seite ihre Wurzel selbst baut statt `SEITE_CLASS`/`SEITE_BREIT_CLASS` (verhindert seitliches Verschieben am Handy),
 - ein Block selbst `overflow-auto` oder `overflow-x-auto` setzt. Wischzeilen laufen nur über `SCROLL_ROW` bzw. `WISCHEN` (sperrt die senkrechte Achse), Tabellen über `TABLE_PANEL_CLASS`,
 - Dialog, Popover, Ausklappmenü oder Blatt ohne `DIALOG_CLASS` bzw. `POPOVER_CLASS` geöffnet werden,
 - in `ui.tsx` ein Rahmen ohne `LINE` steht (Ausnahmen: Status-Farben, Chips, `destructive`, `primary`, `transparent`) oder ein shadcn-Element außerhalb seines Grundbausteins vorkommt.

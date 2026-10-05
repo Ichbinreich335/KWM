@@ -4,12 +4,13 @@ import { datasource, q, useFieldOptions, useRecord, useRecordCreate, useRecords,
 import { useNavigationSetting } from "@/lib/editable-settings";
 import { NavigationAction } from "@/components/navigation-action";
 import { useCurrentUser } from "@/lib/user";
-import { Camera, Check, ChevronDown, Loader2, Minus, Plus, Search, X } from "lucide-react";
+import { Camera, Check, Loader2, Minus, Plus, Search, X } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 const PAGE_SIZE = 100;
 const VERFUEGBAR = "verfügbar";
@@ -96,8 +97,14 @@ function useAllPages(query: { hasNextPage?: boolean; isFetchingNextPage?: boolea
 // Die eine Rahmenfarbe der App: Flächen, Kacheln, Felder, Auswahlen, Knöpfe. Nur Trennlinien innerhalb einer Fläche bleiben heller.
 const LINE = "border-neutral-300";
 
+// Jedes Fenster (Dialog). Rahmen in der App-Rahmenfarbe.
+const DIALOG_CLASS = `w-[calc(100vw-2rem)] max-h-[90vh] overflow-y-auto rounded-lg border ${LINE} p-4 sm:p-6 [&>button:last-child]:hidden`;
+
 // md:text-base hebt das md:text-sm der shadcn-Felder auf, damit Eingabe und Auswahlliste gleich groß schreiben.
-const FIELD_CLASS = `h-12 rounded-md text-base md:text-base ${LINE}`;
+const FIELD_CLASS = `h-12 min-w-0 rounded-md text-base md:text-base ${LINE}`;
+
+// iOS gibt Datumsfeldern eine eigene Mindestbreite; ohne appearance-none ragen sie aus der Spalte und die Seite lässt sich seitlich schieben.
+const DATUM_CLASS = "appearance-none [&::-webkit-date-and-time-value]:text-left";
 
 // Die Box: jede umrandete Fläche (Bereich, Liste, Kachel, Tabelle). Innerhalb einer Box keine zweite Box.
 const PANEL_CLASS = `rounded-lg border ${LINE} bg-card`;
@@ -105,6 +112,9 @@ const PANEL_CLASS = `rounded-lg border ${LINE} bg-card`;
 // Nur waagerecht wischbar. overflow-x-auto allein macht in CSS auch die senkrechte Achse scrollbar, dann lässt sich der Inhalt nach oben und unten ziehen.
 // Einzige Stelle mit overflow-x-auto (geprüft von pruefung/einheitlich.mjs).
 const WISCHEN = "overflow-x-auto overflow-y-hidden overscroll-x-contain [scrollbar-width:none] [&::-webkit-scrollbar]:hidden";
+
+// Wurzel jeder Seite. overflow-x-clip: Nichts kann die Seite verbreitern, am Handy lässt sie sich nie seitlich verschieben.
+const SEITE_CLASS = "container pt-6 pb-28 sm:pb-8 overflow-x-clip";
 
 // Klebende Leisten am unteren Rand: am Handy knapp über Softrs Navigationsleiste (ca. 56 px), ab Tablet am Rand.
 const STICKY_BOTTOM = "bottom-[calc(4.25rem+env(safe-area-inset-bottom))] sm:bottom-4";
@@ -135,7 +145,7 @@ const Knopf = forwardRef<HTMLButtonElement, KnopfProps>(function Knopf({ variant
 
 // Jedes einzeilige Eingabefeld.
 const Feld = forwardRef<HTMLInputElement, React.InputHTMLAttributes<HTMLInputElement>>(function Feld({ className = "", ...props }, ref) {
-  return <Input ref={ref} className={`${FIELD_CLASS} ${className}`} {...props} />;
+  return <Input ref={ref} className={`${FIELD_CLASS} ${props.type === "date" ? DATUM_CLASS : ""} ${className}`} {...props} />;
 });
 
 // Jedes mehrzeilige Textfeld.
@@ -162,21 +172,6 @@ function SchalterFeld({ id, label, hint, checked, onChange, lage = "" }: { id: s
       <Switch id={id} className="scale-125 data-[state=unchecked]:bg-zinc-300" checked={checked} onCheckedChange={onChange} />
     </label>
   );
-}
-
-const MOBILE_QUERY = "(max-width: 639px)";
-
-// Handy oder größer. Für Bedienelemente, die am Handy anders aufgebaut sind (Filter im Blatt von unten).
-function useIsMobile(): boolean {
-  const [mobile, setMobile] = useState(() => window.matchMedia?.(MOBILE_QUERY).matches ?? false);
-  useEffect(() => {
-    const media = window.matchMedia?.(MOBILE_QUERY);
-    if (!media) return;
-    const update = () => setMobile(media.matches);
-    media.addEventListener("change", update);
-    return () => media.removeEventListener("change", update);
-  }, []);
-  return mobile;
 }
 
 // Gewählt = gefüllt. Kein zusätzliches Symbol, damit der Knopf beim Antippen nicht breiter wird und nichts springt.
@@ -240,11 +235,13 @@ function Tabs<K extends string>({ label, tabs, value, onChange }: { label: strin
   );
 }
 
-function FieldLabel({ htmlFor, children, required }: { htmlFor?: string; children: string; required?: boolean }) {
+// required: Pflichtfeld (*). empfohlen: darf leer bleiben, beim Speichern kommt eine Rückfrage.
+function FieldLabel({ htmlFor, children, required, empfohlen }: { htmlFor?: string; children: string; required?: boolean; empfohlen?: boolean }) {
   return (
     <label htmlFor={htmlFor} className="block text-base font-medium mb-2">
       {children}
       {required && <span className="text-destructive"> *</span>}
+      {empfohlen && <span className="font-normal text-muted-foreground"> · empfohlen</span>}
     </label>
   );
 }
@@ -384,6 +381,68 @@ function PageHeader({ title, description, aside, actions }: { title: string; des
   );
 }
 
+// Kopf jedes Fensters: Titel, Unterzeile, großer Schließen-Knopf.
+function PanelHeader({ title, description }: { title: string; description: string }) {
+  return (
+    <DialogHeader className="flex-row items-start justify-between gap-3 space-y-0 text-left">
+      <div className="min-w-0">
+        <DialogTitle className="text-xl break-words hyphens-auto">{title}</DialogTitle>
+        <DialogDescription>{description}</DialogDescription>
+      </div>
+      <DialogClose asChild>
+        <Knopf variant="ghost" className="h-11 w-11 p-0 shrink-0" aria-label="Schließen">
+          <X className="w-6 h-6" aria-hidden />
+        </Knopf>
+      </DialogClose>
+    </DialogHeader>
+  );
+}
+
+// Rückfrage vor einem Schritt, den man noch abbrechen kann, z. B. „Ohne Foto speichern?“. Bestätigen ist der Hauptknopf.
+function Rueckfrage({
+  offen,
+  titel,
+  text,
+  bestaetigen,
+  abbrechen,
+  onBestaetigen,
+  onAbbrechen,
+}: {
+  offen: boolean;
+  titel: string;
+  text: string;
+  bestaetigen: string;
+  abbrechen: string;
+  onBestaetigen: () => void;
+  onAbbrechen: () => void;
+}) {
+  return (
+    <Dialog open={offen} onOpenChange={(o) => !o && onAbbrechen()}>
+      <DialogContent className={`${DIALOG_CLASS} max-w-md`}>
+        <PanelHeader title={titel} description={text} />
+        <div className="pb-2 flex flex-col-reverse sm:flex-row gap-3">
+          <Knopf variant="outline" className="h-12 flex-1 text-base" onClick={onAbbrechen}>
+            {abbrechen}
+          </Knopf>
+          <Knopf className="h-12 flex-1 text-base" onClick={onBestaetigen}>
+            {bestaetigen}
+          </Knopf>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+// Unauffälliger Textknopf mit Plus, der etwas Zusätzliches öffnet („+ Neue Person“, „+ Daten einzeln angeben“).
+function ZusatzKnopf({ label, onClick }: { label: string; onClick: () => void }) {
+  return (
+    <Knopf type="button" variant="ghost" className="h-11 px-2 text-base text-primary" onClick={onClick}>
+      <Plus className="w-5 h-5 mr-1" aria-hidden />
+      {label}
+    </Knopf>
+  );
+}
+
 // „+ Neu anlegen“ mit Dublettenprüfung ohne Groß-/Kleinschreibung.
 function AddNew({ label, placeholder, existing, onAdd }: { label: string; placeholder: string; existing: Opt[]; onAdd: (name: string) => Promise<boolean> | boolean }) {
   const [open, setOpen] = useState(false);
@@ -391,14 +450,7 @@ function AddNew({ label, placeholder, existing, onAdd }: { label: string; placeh
   const [busy, setBusy] = useState(false);
   const name = value.trim();
   const duplicate = existing.find((o) => o.label.toLowerCase() === name.toLowerCase());
-  if (!open) {
-    return (
-      <Knopf type="button" variant="ghost" className="h-11 px-2 text-base text-primary" onClick={() => setOpen(true)}>
-        <Plus className="w-5 h-5 mr-1" aria-hidden />
-        {label}
-      </Knopf>
-    );
-  }
+  if (!open) return <ZusatzKnopf label={label} onClick={() => setOpen(true)} />;
   return (
     <div className="flex flex-wrap items-center gap-2 w-full">
       <Feld autoFocus value={value} onChange={(e) => setValue(e.target.value)} placeholder={placeholder} aria-label={label} className="flex-1 min-w-48" />
@@ -510,6 +562,8 @@ const unikatFields = q.select({
   gedreht: "90TmC",
   glasiert: "2PXtk",
   datum: "UfM5S",
+  gedrehtAm: "bbA3e",
+  glasiertAm: "m4gc9",
   jahr: "ZIHrT",
   glasur: "ByeH3",
   masse: "KDUVZ",
@@ -536,9 +590,7 @@ const editionFields = q.select({
 });
 
 const FIELD_NAMES: Record<string, string> = {
-  fotos: "Foto",
   name: "Name",
-  typ: "Typ",
   status: "Status",
   preis: "Preis",
   modell: "Modell",
@@ -562,6 +614,8 @@ type UnikatForm = {
   gedreht: string;
   glasiert: string;
   datum: string;
+  gedrehtAm: string;
+  glasiertAm: string;
   glasur: string[];
   masse: string;
   lagerort: string;
@@ -589,6 +643,8 @@ const emptyUnikat = (): UnikatForm => ({
   gedreht: "",
   glasiert: "",
   datum: today(),
+  gedrehtAm: "",
+  glasiertAm: "",
   glasur: [],
   masse: "",
   lagerort: "",
@@ -621,27 +677,12 @@ function SectionTitle({ title, hint }: { title: string; hint: string }) {
   );
 }
 
-const WEITERE_HINWEIS = "Kann auch später im Bestand ergänzt werden.";
-
-// Am Handy eingeklappt, damit die Pflichtangaben und Speichern im Blick bleiben. Am Rechner immer offen (zweite Spalte).
-function WeitereAngaben({ inhalt, children }: { inhalt: string; children: React.ReactNode }) {
-  const isMobile = useIsMobile();
-  const [offen, setOffen] = useState(false);
-  if (!isMobile) {
-    return (
-      <div className={`space-y-6 ${SECOND_COLUMN}`}>
-        <SectionTitle title="Weitere Angaben" hint={WEITERE_HINWEIS} />
-        {children}
-      </div>
-    );
-  }
+// Zweite Spalte am Rechner, am Handy darunter. Nichts ist eingeklappt: Speichern klebt unten und ist jederzeit erreichbar.
+function ZweiteSpalte({ title, hint, children }: { title: string; hint: string; children: React.ReactNode }) {
   return (
     <div className={`space-y-6 ${SECOND_COLUMN}`}>
-      <button type="button" aria-expanded={offen} onClick={() => setOffen((o) => !o)} className="w-full flex items-center justify-between gap-3 min-h-12 text-left">
-        <SectionTitle title="Weitere Angaben" hint={offen ? WEITERE_HINWEIS : `Optional: ${inhalt}`} />
-        <ChevronDown className={`w-5 h-5 shrink-0 text-muted-foreground transition-transform ${offen ? "rotate-180" : ""}`} aria-hidden />
-      </button>
-      {offen && children}
+      <SectionTitle title={title} hint={hint} />
+      {children}
     </div>
   );
 }
@@ -691,6 +732,8 @@ export default function Block() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [saved, setSaved] = useState<Saved | null>(null);
   const [busy, setBusy] = useState(false);
+  const [rueckfrage, setRueckfrage] = useState(false);
+  const [einzelDaten, setEinzelDaten] = useState(false);
 
   const { uploadAsync } = useUpload();
   const createUnikat = useRecordCreate({ from: ds.unikate, fields: unikatFields });
@@ -831,9 +874,7 @@ export default function Block() {
   function validate(): Record<string, string> {
     const e: Record<string, string> = {};
     if (art === "unikat") {
-      if (files.length === 0) e.fotos = "Bitte mindestens ein Foto hinzufügen.";
       if (!unikat.name.trim()) e.name = "Bitte einen Namen eingeben.";
-      if (!unikat.typ) e.typ = "Bitte einen Typ wählen.";
       if (!unikat.status) e.status = "Bitte einen Status wählen.";
       const preis = parseNumber(unikat.preis);
       if (unikat.preis.trim() && (preis === null || preis < 0)) e.preis = "Bitte einen Betrag in Euro eingeben, z. B. 1.200.";
@@ -854,6 +895,9 @@ export default function Block() {
     return results.map((r) => ({ filename: r.file.name, url: r.url as string }));
   }
 
+  // Empfohlene Angaben, die beim Unikat noch fehlen. Speichern geht trotzdem, nach einer Rückfrage.
+  const fehlendEmpfohlen = art === "unikat" ? [files.length === 0 ? "Foto" : "", unikat.typ ? "" : "Typ"].filter(Boolean) : [];
+
   async function submit(ev: React.FormEvent) {
     ev.preventDefault();
     const e = validate();
@@ -869,6 +913,15 @@ export default function Block() {
       toast.error("Der Editionsbestand lädt noch. Bitte gleich noch einmal speichern.");
       return;
     }
+    if (fehlendEmpfohlen.length > 0) {
+      setRueckfrage(true);
+      return;
+    }
+    await speichern();
+  }
+
+  async function speichern() {
+    setRueckfrage(false);
     setBusy(true);
     try {
       const fotos = await uploadFiles();
@@ -885,6 +938,8 @@ export default function Block() {
           glasiert: link(unikat.glasiert),
           datum,
           jahr: Number(datum.slice(0, 4)),
+          gedrehtAm: unikat.gedrehtAm || undefined,
+          glasiertAm: unikat.glasiertAm || undefined,
           glasur: unikat.glasur,
           masse: unikat.masse.trim(),
           fotos,
@@ -934,6 +989,7 @@ export default function Block() {
 
   function reset() {
     setSaved(null);
+    setEinzelDaten(false);
     setErrors({});
     setFiles([]);
     setUnikat(emptyUnikat());
@@ -942,10 +998,10 @@ export default function Block() {
   }
 
   return (
-    <div className="container pt-6 pb-28 sm:pb-8">
+    <div className={SEITE_CLASS}>
       <div className="content">
         <div className="mb-5">
-          <PageHeader title="Neues Stück erfassen" description="Felder mit * sind Pflicht. Alles andere kann später ergänzt werden." />
+          <PageHeader title="Neues Stück erfassen" description="Nur Felder mit * sind Pflicht. Alles andere kann später ergänzt werden." />
         </div>
 
         {saved ? (
@@ -966,12 +1022,12 @@ export default function Block() {
             {art === "unikat" ? (
               <div className={COLUMNS}>
                 <div className="space-y-6">
-                  <SectionTitle title="Pflichtangaben" hint="Reichen zum Speichern." />
+                  <SectionTitle title="Das Stück" hint="Nur der Name ist Pflicht." />
                   <div>
-                    <FieldLabel htmlFor="foto-input" required>
+                    <FieldLabel htmlFor="foto-input" empfohlen>
                       Fotos
                     </FieldLabel>
-                    <PhotoPicker files={files} onChange={changeFiles} multiple error={errors.fotos} />
+                    <PhotoPicker files={files} onChange={changeFiles} multiple />
                   </div>
 
                   <div>
@@ -989,16 +1045,15 @@ export default function Block() {
                   </div>
 
                   <div>
-                    <FieldLabel required>Typ</FieldLabel>
+                    <FieldLabel empfohlen>Typ</FieldLabel>
                     <ChoiceChips label="Typ" options={typChoices} value={unikat.typ} onChange={(v) => setU("typ", v)} />
                     <div className="mt-2">
                       <AddNew label="Neuer Typ" placeholder="z. B. Krug" existing={typChoices} onAdd={addTyp} />
                     </div>
-                    <ErrorText>{errors.typ}</ErrorText>
                   </div>
 
                   <div>
-                    <FieldLabel required>Status</FieldLabel>
+                    <FieldLabel>Status</FieldLabel>
                     <ChoiceChips
                       label="Status"
                       options={statusOptions}
@@ -1016,79 +1071,18 @@ export default function Block() {
 
                   <div>
                     <FieldLabel htmlFor="u-lagerort">Lagerort</FieldLabel>
-                    <OptionSelect
-                      id="u-lagerort"
-                      value={unikat.lagerort}
-                      onChange={(v) => setU("lagerort", v)}
-                      options={lagerortOptions}
-                      placeholder="Bitte wählen"
-                    />
+                    <OptionSelect id="u-lagerort" value={unikat.lagerort} onChange={(v) => setU("lagerort", v)} options={lagerortOptions} placeholder="Bitte wählen" />
                   </div>
 
                   {isAusserHaus(unikat.status) && (
                     <div>
                       <FieldLabel htmlFor="u-galerie">Partner (Galerie, Museum …)</FieldLabel>
-                      <OptionSelect
-                        id="u-galerie"
-                        value={unikat.galerie}
-                        onChange={(v) => setU("galerie", v)}
-                        options={galerieOptions}
-                        placeholder="Partner wählen"
-                      />
+                      <OptionSelect id="u-galerie" value={unikat.galerie} onChange={(v) => setU("galerie", v)} options={galerieOptions} placeholder="Partner wählen" />
                     </div>
                   )}
                 </div>
 
-                <WeitereAngaben inhalt="Künstler:in, Datum, Glasur, gedreht und glasiert von, Preis …">
-
-                  <div className="grid sm:grid-cols-2 gap-6">
-                    <div>
-                      <FieldLabel htmlFor="u-kuenstler">Künstler:in</FieldLabel>
-                      <OptionSelect
-                        id="u-kuenstler"
-                        value={unikat.kuenstler}
-                        onChange={(v) => setU("kuenstler", v)}
-                        options={kuenstlerOptions}
-                        placeholder="Bitte wählen"
-                      />
-                      <div className="mt-2">
-                        <AddNew label="Neue:r Künstler:in" placeholder="Vor- und Nachname" existing={kuenstlerOptions} onAdd={addPerson("kuenstler")} />
-                      </div>
-                    </div>
-                    <div>
-                      <FieldLabel htmlFor="u-datum">Datum</FieldLabel>
-                      <Feld id="u-datum" type="date" value={unikat.datum} onChange={(e) => setU("datum", e.target.value)} />
-                      <Hint>Vorbelegt mit heute. Leer gelassen gilt der Tag der Erfassung.</Hint>
-                    </div>
-                  </div>
-
-                  <div>
-                    <FieldLabel>Glasur</FieldLabel>
-                    <SearchPick label="Glasuren" createNoun="neue Glasur" options={glasurOptions} value={unikat.glasur} onChange={(ids) => setU("glasur", ids)} multiple onCreate={addGlasur} />
-                    <Hint>Mehrere möglich. Fehlt eine Glasur, den Namen ins Suchfeld schreiben und anlegen.</Hint>
-                  </div>
-
-                  <div className="grid sm:grid-cols-2 gap-6">
-                    <div>
-                      <FieldLabel htmlFor="u-masse">Maße</FieldLabel>
-                      <Feld
-                        id="u-masse"
-                        value={unikat.masse}
-                        onChange={(e) => setU("masse", e.target.value)}
-                        placeholder="z. B. Ø 24 × H 8 cm"
-                      />
-                    </div>
-                    <div>
-                      <FieldLabel htmlFor="u-bildnachweis">Bildnachweis</FieldLabel>
-                      <Feld
-                        id="u-bildnachweis"
-                        value={unikat.bildnachweis}
-                        onChange={(e) => setU("bildnachweis", e.target.value)}
-                        placeholder="z. B. Foto: Name der Fotografin"
-                      />
-                    </div>
-                  </div>
-
+                <ZweiteSpalte title="Herstellung" hint="Wer hat das Stück gemacht und wann.">
                   <div className="grid sm:grid-cols-2 gap-6">
                     <div>
                       <FieldLabel htmlFor="u-gedreht">Gedreht von</FieldLabel>
@@ -1106,17 +1100,61 @@ export default function Block() {
                     </div>
                   </div>
 
+                  <div>
+                    <FieldLabel htmlFor="u-datum">Datum</FieldLabel>
+                    <Feld id="u-datum" type="date" value={unikat.datum} onChange={(e) => setU("datum", e.target.value)} />
+                    <Hint>Vorbelegt mit heute. Leer gelassen gilt der Tag der Erfassung.</Hint>
+                    {einzelDaten || unikat.gedrehtAm || unikat.glasiertAm ? (
+                      <div className="grid sm:grid-cols-2 gap-6 mt-4">
+                        <div>
+                          <FieldLabel htmlFor="u-gedreht-am">Gedreht am</FieldLabel>
+                          <Feld id="u-gedreht-am" type="date" value={unikat.gedrehtAm} onChange={(e) => setU("gedrehtAm", e.target.value)} />
+                        </div>
+                        <div>
+                          <FieldLabel htmlFor="u-glasiert-am">Glasiert am</FieldLabel>
+                          <Feld id="u-glasiert-am" type="date" value={unikat.glasiertAm} onChange={(e) => setU("glasiertAm", e.target.value)} />
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="mt-1">
+                        <ZusatzKnopf label="Gedreht am und glasiert am einzeln angeben" onClick={() => setEinzelDaten(true)} />
+                      </div>
+                    )}
+                  </div>
+
+                  <div>
+                    <FieldLabel htmlFor="u-kuenstler">Künstler:in</FieldLabel>
+                    <OptionSelect id="u-kuenstler" value={unikat.kuenstler} onChange={(v) => setU("kuenstler", v)} options={kuenstlerOptions} placeholder="Bitte wählen" />
+                    <div className="mt-2">
+                      <AddNew label="Neue:r Künstler:in" placeholder="Vor- und Nachname" existing={kuenstlerOptions} onAdd={addPerson("kuenstler")} />
+                    </div>
+                  </div>
+
+                  <div>
+                    <FieldLabel>Glasur</FieldLabel>
+                    <SearchPick label="Glasuren" createNoun="neue Glasur" options={glasurOptions} value={unikat.glasur} onChange={(ids) => setU("glasur", ids)} multiple onCreate={addGlasur} />
+                    <Hint>Mehrere möglich. Fehlt eine Glasur, den Namen ins Suchfeld schreiben und anlegen.</Hint>
+                  </div>
+
+                  <div className="pt-2">
+                    <SectionTitle title="Details" hint="Kann auch später im Bestand ergänzt werden." />
+                  </div>
+
+                  <div className="grid sm:grid-cols-2 gap-6">
+                    <div>
+                      <FieldLabel htmlFor="u-masse">Maße</FieldLabel>
+                      <Feld id="u-masse" value={unikat.masse} onChange={(e) => setU("masse", e.target.value)} placeholder="z. B. Ø 24 × H 8 cm" />
+                    </div>
+                    <div>
+                      <FieldLabel htmlFor="u-bildnachweis">Bildnachweis</FieldLabel>
+                      <Feld id="u-bildnachweis" value={unikat.bildnachweis} onChange={(e) => setU("bildnachweis", e.target.value)} placeholder="z. B. Foto: Name der Fotografin" />
+                    </div>
+                  </div>
+
                   <div className="grid sm:grid-cols-2 gap-6">
                     <div>
                       <FieldLabel htmlFor="u-preis">Preis intern (€)</FieldLabel>
-                      <Feld
-                        id="u-preis"
-                        inputMode="decimal"
-                        value={unikat.preis}
-                        onChange={(e) => setU("preis", e.target.value)}
-                        placeholder="z. B. 480"
-                        aria-invalid={!!errors.preis}
-                      />
+                      <Feld id="u-preis" inputMode="decimal" value={unikat.preis} onChange={(e) => setU("preis", e.target.value)} placeholder="z. B. 480" aria-invalid={!!errors.preis} />
                       <Hint>Nur intern, erscheint nie auf der Website.</Hint>
                       <ErrorText>{errors.preis}</ErrorText>
                     </div>
@@ -1132,14 +1170,9 @@ export default function Block() {
 
                   <div>
                     <FieldLabel htmlFor="u-notiz">Notiz</FieldLabel>
-                    <Textfeld
-                      id="u-notiz"
-                      value={unikat.notiz}
-                      onChange={(e) => setU("notiz", e.target.value)}
-                      rows={3}
-                    />
+                    <Textfeld id="u-notiz" value={unikat.notiz} onChange={(e) => setU("notiz", e.target.value)} rows={3} />
                   </div>
-                </WeitereAngaben>
+                </ZweiteSpalte>
               </div>
             ) : (
               <div className={COLUMNS}>
@@ -1226,7 +1259,7 @@ export default function Block() {
                 </div>
 
                 {!existingRow && (
-                  <WeitereAngaben inhalt="Lagerort, Foto, Notiz">
+                  <ZweiteSpalte title="Weitere Angaben" hint="Kann auch später im Bestand ergänzt werden.">
                     <div>
                       <FieldLabel htmlFor="e-lagerort">Lagerort</FieldLabel>
                       <OptionSelect
@@ -1250,7 +1283,7 @@ export default function Block() {
                         rows={3}
                       />
                     </div>
-                  </WeitereAngaben>
+                  </ZweiteSpalte>
                 )}
               </div>
             )}
@@ -1278,6 +1311,15 @@ export default function Block() {
             ) : (
               <p className="text-base text-muted-foreground">Du hast keine Berechtigung, Stücke zu erfassen.</p>
             )}
+            <Rueckfrage
+              offen={rueckfrage}
+              titel={`${fehlendEmpfohlen.join(" und ")} ${fehlendEmpfohlen.length > 1 ? "fehlen" : "fehlt"} noch`}
+              text="Trotzdem speichern? Du kannst alles jederzeit im Bestand nachtragen."
+              bestaetigen="Trotzdem speichern"
+              abbrechen="Noch ergänzen"
+              onBestaetigen={speichern}
+              onAbbrechen={() => setRueckfrage(false)}
+            />
           </form>
         )}
       </div>

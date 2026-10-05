@@ -3,7 +3,7 @@ import { datasource, q, useRecords } from "@/lib/datasource";
 import { AlertTriangle, CalendarClock, ChevronDown, ChevronRight, CircleCheck, ClipboardList, Package, Receipt } from "lucide-react";
 import { AUSGESTELLT, KOMMISSION, PAGE_SIZE, RESERVIERT, ROHLING, VERFUEGBAR, VERKAUFT, isAusserHaus } from "../shared/konstanten";
 import { type Attachment, type RawItem, asAttachments, asOpts, firstLabel, euro, lookupValue, modellLabel, num, str, useAllPages, zahl } from "../shared/daten";
-import { EmptyState, ErrorState, ListRow, LoadingState, PageHeader, PANEL_CLASS, PANEL_GRID_CLASS, Section, Thumb, WISCHEN } from "../shared/ui";
+import { EmptyState, ErrorState, ListRow, LoadingState, PageHeader, PANEL_CLASS, PANEL_GRID_CLASS, Section, SEITE_CLASS, Thumb, WISCHEN } from "../shared/ui";
 
 const ds = datasource.define({ unikate: "unikate", edition: "edition", partner: "partner", modelle: "modelle" });
 const modellSelect = q.select({ name: "eXo5w", artikelnr: "BNpSN", vk: "772dM", archiviert: "3tlrw" });
@@ -489,7 +489,7 @@ export default function Block() {
   ];
 
   return (
-    <div className="container pt-6 pb-28 sm:pb-8">
+    <div className={SEITE_CLASS}>
       <div className="content space-y-6" lang="de">
         <PageHeader title="Übersicht" description={`${plural(unikate.length, "Unikat", "Unikate")} · ${zahl.format(stats.rohlinge + stats.glasiert)} Stück Editionsware`} />
 

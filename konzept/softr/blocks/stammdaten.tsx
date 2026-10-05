@@ -87,7 +87,10 @@ const LINE = "border-neutral-300";
 const DIALOG_CLASS = `w-[calc(100vw-2rem)] max-h-[90vh] overflow-y-auto rounded-lg border ${LINE} p-4 sm:p-6 [&>button:last-child]:hidden`;
 
 // md:text-base hebt das md:text-sm der shadcn-Felder auf, damit Eingabe und Auswahlliste gleich groß schreiben.
-const FIELD_CLASS = `h-12 rounded-md text-base md:text-base ${LINE}`;
+const FIELD_CLASS = `h-12 min-w-0 rounded-md text-base md:text-base ${LINE}`;
+
+// iOS gibt Datumsfeldern eine eigene Mindestbreite; ohne appearance-none ragen sie aus der Spalte und die Seite lässt sich seitlich schieben.
+const DATUM_CLASS = "appearance-none [&::-webkit-date-and-time-value]:text-left";
 
 // Die Box: jede umrandete Fläche (Bereich, Liste, Kachel, Tabelle). Innerhalb einer Box keine zweite Box.
 const PANEL_CLASS = `rounded-lg border ${LINE} bg-card`;
@@ -95,6 +98,9 @@ const PANEL_CLASS = `rounded-lg border ${LINE} bg-card`;
 // Nur waagerecht wischbar. overflow-x-auto allein macht in CSS auch die senkrechte Achse scrollbar, dann lässt sich der Inhalt nach oben und unten ziehen.
 // Einzige Stelle mit overflow-x-auto (geprüft von pruefung/einheitlich.mjs).
 const WISCHEN = "overflow-x-auto overflow-y-hidden overscroll-x-contain [scrollbar-width:none] [&::-webkit-scrollbar]:hidden";
+
+// Wurzel jeder Seite. overflow-x-clip: Nichts kann die Seite verbreitern, am Handy lässt sie sich nie seitlich verschieben.
+const SEITE_CLASS = "container pt-6 pb-28 sm:pb-8 overflow-x-clip";
 
 // Kräftige Variante für den gewählten Status-Knopf. Weiße Schrift nur auf ausreichend dunklen Tönen.
 const STATUS_ACTIVE: Record<string, string> = {
@@ -122,7 +128,7 @@ const Knopf = forwardRef<HTMLButtonElement, KnopfProps>(function Knopf({ variant
 
 // Jedes einzeilige Eingabefeld.
 const Feld = forwardRef<HTMLInputElement, React.InputHTMLAttributes<HTMLInputElement>>(function Feld({ className = "", ...props }, ref) {
-  return <Input ref={ref} className={`${FIELD_CLASS} ${className}`} {...props} />;
+  return <Input ref={ref} className={`${FIELD_CLASS} ${props.type === "date" ? DATUM_CLASS : ""} ${className}`} {...props} />;
 });
 
 // Jedes mehrzeilige Textfeld.
@@ -191,11 +197,13 @@ function Tabs<K extends string>({ label, tabs, value, onChange }: { label: strin
   );
 }
 
-function FieldLabel({ htmlFor, children, required }: { htmlFor?: string; children: string; required?: boolean }) {
+// required: Pflichtfeld (*). empfohlen: darf leer bleiben, beim Speichern kommt eine Rückfrage.
+function FieldLabel({ htmlFor, children, required, empfohlen }: { htmlFor?: string; children: string; required?: boolean; empfohlen?: boolean }) {
   return (
     <label htmlFor={htmlFor} className="block text-base font-medium mb-2">
       {children}
       {required && <span className="text-destructive"> *</span>}
+      {empfohlen && <span className="font-normal text-muted-foreground"> · empfohlen</span>}
     </label>
   );
 }
@@ -917,7 +925,7 @@ export default function Block() {
   );
 
   return (
-    <div className="container pt-6 pb-28 sm:pb-8">
+    <div className={SEITE_CLASS}>
       <div className="content space-y-4" lang="de">
         <PageHeader title="Stammdaten" description="Die Auswahllisten für Erfassen und Bestand. Hier anlegen, korrigieren, archivieren." />
         <Tabs

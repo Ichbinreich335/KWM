@@ -8,7 +8,7 @@ import { ArrowDown, ArrowUp, Bookmark, ChevronDown, ChevronLeft, ChevronRight, C
 import { toast } from "sonner";
 import { PAGE_SIZE, VERKAUFT } from "../shared/konstanten";
 import { type Attachment, type RawItem, asAttachments, asOpts, downloadCsv, euro, formatDate, lookupValue, num, parseNumber, printTable, str, thumb, today, useAllPages, zahl } from "../shared/daten";
-import { Ankreuzfeld, Auswahl, DIALOG_CLASS, DoneButton, EmptyState, ErrorState, ErrorText, Etikett, ExportMenu, Feld, FieldLabel, Knopf, ListRow, LoadingState, PageHeader, PANEL_CLASS, PanelHeader, POPOVER_CLASS, SCROLL_ROW, SearchField, StatusBadge, TABLE_PANEL_CLASS, Tabs, Thumb } from "../shared/ui";
+import { Ankreuzfeld, Auswahl, DIALOG_CLASS, DoneButton, EmptyState, ErrorState, ErrorText, Etikett, ExportMenu, Feld, FieldLabel, Knopf, ListRow, LoadingState, PageHeader, PANEL_CLASS, PanelHeader, POPOVER_CLASS, SCROLL_ROW, SearchField, SEITE_BREIT_CLASS, StatusBadge, TABLE_PANEL_CLASS, Tabs, Thumb } from "../shared/ui";
 
 const ds = datasource.define({ unikate: "unikate", edition: "edition", ansichten: "ansichten" });
 
@@ -21,6 +21,8 @@ const unikatSelect = q.select({
   gedreht: "90TmC",
   glasiert: "2PXtk",
   datum: "UfM5S",
+  gedrehtAm: "bbA3e",
+  glasiertAm: "m4gc9",
   jahr: "ZIHrT",
   glasur: "ByeH3",
   masse: "KDUVZ",
@@ -79,6 +81,8 @@ type Row = {
   glasiert: string;
   glasur: string[];
   datum: string;
+  gedrehtAm: string;
+  glasiertAm: string;
   jahr: number | null;
   masse: string;
   lagerort: string;
@@ -110,6 +114,8 @@ type ColKey =
   | "glasiert"
   | "glasur"
   | "datum"
+  | "gedrehtAm"
+  | "glasiertAm"
   | "jahr"
   | "masse"
   | "lagerort"
@@ -142,6 +148,8 @@ const COLUMNS: Col[] = [
   { key: "gedreht", label: "Gedreht von", type: "select", get: (r) => r.gedreht || null, visible: false, only: "unikat" },
   { key: "glasiert", label: "Glasiert von", type: "select", get: (r) => r.glasiert || null, visible: false, only: "unikat" },
   { key: "datum", label: "Datum", type: "date", get: (r) => r.datum.slice(0, 10) || null, visible: false, only: "unikat" },
+  { key: "gedrehtAm", label: "Gedreht am", type: "date", get: (r) => r.gedrehtAm.slice(0, 10) || null, visible: false, only: "unikat" },
+  { key: "glasiertAm", label: "Glasiert am", type: "date", get: (r) => r.glasiertAm.slice(0, 10) || null, visible: false, only: "unikat" },
   { key: "jahr", label: "Jahr", type: "number", get: (r) => r.jahr, visible: false, align: "right", only: "unikat" },
   { key: "masse", label: "Maße", type: "text", get: (r) => r.masse || null, visible: false, only: "unikat" },
   { key: "galerie", label: "Partner", type: "select", get: (r) => r.galerie || null, visible: false, only: "unikat" },
@@ -266,6 +274,8 @@ function toUnikatRow(i: RawItem): Row {
     glasiert: labels(f.glasiert)[0] ?? "",
     glasur: labels(f.glasur),
     datum: str(f.datum),
+    gedrehtAm: str(f.gedrehtAm),
+    glasiertAm: str(f.glasiertAm),
     jahr: num(f.jahr),
     masse: str(f.masse),
     lagerort: labels(f.lagerort)[0] ?? "",
@@ -301,6 +311,8 @@ function toEditionRow(i: RawItem): Row {
     glasiert: "",
     glasur: labels(f.glasur),
     datum: "",
+    gedrehtAm: "",
+    glasiertAm: "",
     jahr: null,
     masse: "",
     lagerort: labels(f.lagerort)[0] ?? "",
@@ -920,7 +932,7 @@ export default function Block() {
     c.key === "anzahl" ? `${zahl.format(summeAnzahl)} Stück` : c.key === "preis" ? euro.format(summePreis) : c.key === "vk" ? (summeVk ? euroCent.format(summeVk) : "") : i === 0 ? summeLabel : "";
 
   return (
-    <div className="w-full px-4 sm:px-6 pt-6 pb-28 sm:pb-8">
+    <div className={SEITE_BREIT_CLASS}>
       <div className="w-full space-y-4" lang="de">
         <PageHeader
           title="Tabelle"

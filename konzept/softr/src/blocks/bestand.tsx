@@ -55,6 +55,7 @@ import {
   SchalterFeld,
   SearchField,
   SearchPick,
+  SEITE_CLASS,
   StatusBadge,
   STICKY_BOTTOM,
   Tabs,
@@ -62,6 +63,7 @@ import {
   useAnsicht,
   useIsMobile,
   WISCHEN,
+  ZusatzKnopf,
 } from "../shared/ui";
 
 const ds = datasource.define({ unikate: "unikate", edition: "edition", kuenstler: "kuenstler", glasuren: "glasuren", lagerorte: "lagerorte", partner: "partner" });
@@ -80,6 +82,8 @@ const unikatSelect = q.select({
   gedreht: "90TmC",
   glasiert: "2PXtk",
   datum: "UfM5S",
+  gedrehtAm: "bbA3e",
+  glasiertAm: "m4gc9",
   jahr: "ZIHrT",
   glasur: "ByeH3",
   masse: "KDUVZ",
@@ -104,6 +108,8 @@ const unikatUpdateFields = q.select({
   gedreht: "90TmC",
   glasiert: "2PXtk",
   datum: "UfM5S",
+  gedrehtAm: "bbA3e",
+  glasiertAm: "m4gc9",
   jahr: "ZIHrT",
   glasur: "ByeH3",
   masse: "KDUVZ",
@@ -147,6 +153,8 @@ type Unikat = {
   gedreht: Opt | undefined;
   glasiert: Opt | undefined;
   datum: string;
+  gedrehtAm: string;
+  glasiertAm: string;
   jahr: number | null;
   glasur: Opt[];
   masse: string;
@@ -225,6 +233,8 @@ function toUnikat(item: RawItem): Unikat {
     gedreht: asOpts(f.gedreht)[0],
     glasiert: asOpts(f.glasiert)[0],
     datum: str(f.datum),
+    gedrehtAm: str(f.gedrehtAm),
+    glasiertAm: str(f.glasiertAm),
     jahr: num(f.jahr),
     glasur: asOpts(f.glasur),
     masse: str(f.masse),
@@ -353,6 +363,8 @@ type EditForm = {
   gedrehtId: string;
   glasiertId: string;
   datum: string;
+  gedrehtAm: string;
+  glasiertAm: string;
   glasurIds: string[];
   masse: string;
   bildnachweis: string;
@@ -377,6 +389,8 @@ function UnikatDetail({ u, onClose, onSaved, stamm, typen, statusListe }: { u: U
     gedrehtId: u.gedreht?.id ?? "",
     glasiertId: u.glasiert?.id ?? "",
     datum: u.datum.slice(0, 10),
+    gedrehtAm: u.gedrehtAm.slice(0, 10),
+    glasiertAm: u.glasiertAm.slice(0, 10),
     glasurIds: u.glasur.map((g) => g.id),
     masse: u.masse,
     bildnachweis: u.bildnachweis,
@@ -386,6 +400,7 @@ function UnikatDetail({ u, onClose, onSaved, stamm, typen, statusListe }: { u: U
     notiz: u.notiz,
   };
   const [editing, setEditing] = useState(false);
+  const [einzelDaten, setEinzelDaten] = useState(false);
   const [form, setForm] = useState<EditForm>(initial);
   const [formError, setFormError] = useState<Partial<Record<keyof EditForm, string>>>({});
   const [photoIndex, setPhotoIndex] = useState(0);
@@ -477,6 +492,8 @@ function UnikatDetail({ u, onClose, onSaved, stamm, typen, statusListe }: { u: U
           glasiert: link(form.glasiertId),
           datum: datum || null,
           jahr: datum ? Number(datum.slice(0, 4)) : u.jahr,
+          gedrehtAm: form.gedrehtAm || null,
+          glasiertAm: form.glasiertAm || null,
           glasur: form.glasurIds,
           masse: form.masse.trim(),
           bildnachweis: form.bildnachweis.trim(),
@@ -502,8 +519,8 @@ function UnikatDetail({ u, onClose, onSaved, stamm, typen, statusListe }: { u: U
     ["Preis intern", u.preis !== null ? euro.format(u.preis) : ""],
     ["Künstler:in", u.kuenstler?.label ?? ""],
     ["Datum", datumText(u)],
-    ["Gedreht von", u.gedreht?.label ?? ""],
-    ["Glasiert von", u.glasiert?.label ?? ""],
+    ["Gedreht von", [u.gedreht?.label, u.gedrehtAm && `am ${formatDate(u.gedrehtAm)}`].filter(Boolean).join(" ")],
+    ["Glasiert von", [u.glasiert?.label, u.glasiertAm && `am ${formatDate(u.glasiertAm)}`].filter(Boolean).join(" ")],
     ["Glasur", u.glasur.map((g) => g.label).join(", ")],
     ["Maße", u.masse],
     ["Außer Haus seit", formatDate(u.seit)],
@@ -670,14 +687,38 @@ function UnikatDetail({ u, onClose, onSaved, stamm, typen, statusListe }: { u: U
               </div>
               <div className="grid sm:grid-cols-2 gap-5">
                 <div>
-                  <FieldLabel htmlFor="d-kuenstler">Künstler:in</FieldLabel>
-                  <OptionSelect id="d-kuenstler" value={form.kuenstlerId} onChange={(v) => set("kuenstlerId", v)} options={personen} placeholder="Bitte wählen" />
+                  <FieldLabel htmlFor="d-gedreht">Gedreht von</FieldLabel>
+                  <OptionSelect id="d-gedreht" value={form.gedrehtId} onChange={(v) => set("gedrehtId", v)} options={personen} placeholder="Bitte wählen" />
                 </div>
                 <div>
-                  <FieldLabel htmlFor="d-datum">Datum</FieldLabel>
-                  <Feld id="d-datum" type="date" value={form.datum} onChange={(e) => set("datum", e.target.value)} />
-                  {!u.datum && u.jahr !== null && <Hint>{`Bisher nur das Jahr ${u.jahr} bekannt.`}</Hint>}
+                  <FieldLabel htmlFor="d-glasiert">Glasiert von</FieldLabel>
+                  <OptionSelect id="d-glasiert" value={form.glasiertId} onChange={(v) => set("glasiertId", v)} options={personen} placeholder="Bitte wählen" />
                 </div>
+              </div>
+              <div>
+                <FieldLabel htmlFor="d-datum">Datum</FieldLabel>
+                <Feld id="d-datum" type="date" value={form.datum} onChange={(e) => set("datum", e.target.value)} />
+                {!u.datum && u.jahr !== null && <Hint>{`Bisher nur das Jahr ${u.jahr} bekannt.`}</Hint>}
+                {einzelDaten || form.gedrehtAm || form.glasiertAm ? (
+                  <div className="grid sm:grid-cols-2 gap-5 mt-4">
+                    <div>
+                      <FieldLabel htmlFor="d-gedreht-am">Gedreht am</FieldLabel>
+                      <Feld id="d-gedreht-am" type="date" value={form.gedrehtAm} onChange={(e) => set("gedrehtAm", e.target.value)} />
+                    </div>
+                    <div>
+                      <FieldLabel htmlFor="d-glasiert-am">Glasiert am</FieldLabel>
+                      <Feld id="d-glasiert-am" type="date" value={form.glasiertAm} onChange={(e) => set("glasiertAm", e.target.value)} />
+                    </div>
+                  </div>
+                ) : (
+                  <div className="mt-1">
+                    <ZusatzKnopf label="Gedreht am und glasiert am einzeln angeben" onClick={() => setEinzelDaten(true)} />
+                  </div>
+                )}
+              </div>
+              <div>
+                <FieldLabel htmlFor="d-kuenstler">Künstler:in</FieldLabel>
+                <OptionSelect id="d-kuenstler" value={form.kuenstlerId} onChange={(v) => set("kuenstlerId", v)} options={personen} placeholder="Bitte wählen" />
               </div>
               <div>
                 <FieldLabel>Glasur</FieldLabel>
@@ -689,38 +730,21 @@ function UnikatDetail({ u, onClose, onSaved, stamm, typen, statusListe }: { u: U
                   <Feld id="d-masse" value={form.masse} onChange={(e) => set("masse", e.target.value)} placeholder="z. B. Ø 24 × H 8 cm" />
                 </div>
                 <div>
-                  <FieldLabel htmlFor="d-verkauft">Verkauft am</FieldLabel>
-                  <Feld id="d-verkauft" type="date" value={form.verkauftAm} onChange={(e) => set("verkauftAm", e.target.value)} />
-                </div>
-              </div>
-              <div>
-                <FieldLabel htmlFor="d-bildnachweis">Bildnachweis</FieldLabel>
-                <Feld id="d-bildnachweis" value={form.bildnachweis} onChange={(e) => set("bildnachweis", e.target.value)} />
-              </div>
-              <div className="grid sm:grid-cols-2 gap-5">
-                <div>
-                  <FieldLabel htmlFor="d-gedreht">Gedreht von</FieldLabel>
-                  <OptionSelect id="d-gedreht" value={form.gedrehtId} onChange={(v) => set("gedrehtId", v)} options={personen} placeholder="Bitte wählen" />
-                </div>
-                <div>
-                  <FieldLabel htmlFor="d-glasiert">Glasiert von</FieldLabel>
-                  <OptionSelect id="d-glasiert" value={form.glasiertId} onChange={(v) => set("glasiertId", v)} options={personen} placeholder="Bitte wählen" />
+                  <FieldLabel htmlFor="d-bildnachweis">Bildnachweis</FieldLabel>
+                  <Feld id="d-bildnachweis" value={form.bildnachweis} onChange={(e) => set("bildnachweis", e.target.value)} />
                 </div>
               </div>
               <div className="grid sm:grid-cols-2 gap-5">
                 <div>
                   <FieldLabel htmlFor="d-preis">Preis intern (€)</FieldLabel>
-                  <Feld
-                    id="d-preis"
-                    inputMode="decimal"
-                    value={form.preis}
-                    onChange={(e) => set("preis", e.target.value)}
-                    placeholder="z. B. 480"
-                    aria-invalid={!!formError.preis}
-                  />
+                  <Feld id="d-preis" inputMode="decimal" value={form.preis} onChange={(e) => set("preis", e.target.value)} placeholder="z. B. 480" aria-invalid={!!formError.preis} />
                   <ErrorText>{formError.preis}</ErrorText>
                 </div>
                 <SchalterFeld id="d-website" label="Auf Website zeigen" checked={form.website} onChange={(v) => set("website", v)} lage="self-end" />
+              </div>
+              <div>
+                <FieldLabel htmlFor="d-verkauft">Verkauft am</FieldLabel>
+                <Feld id="d-verkauft" type="date" value={form.verkauftAm} onChange={(e) => set("verkauftAm", e.target.value)} />
               </div>
               <div>
                 <FieldLabel htmlFor="d-notiz">Notiz</FieldLabel>
@@ -737,6 +761,7 @@ function UnikatDetail({ u, onClose, onSaved, stamm, typen, statusListe }: { u: U
                   disabled={busy}
                   onClick={() => {
                     setForm(initial);
+                    setEinzelDaten(false);
                     setFormError({});
                     setNewFiles([]);
                     setEditing(false);
@@ -1253,7 +1278,7 @@ export default function Block() {
     ) : undefined;
 
   return (
-    <div className="container pt-6 pb-28 sm:pb-8">
+    <div className={SEITE_CLASS}>
       <div className="content space-y-4" lang="de">
         <PageHeader
           title="Bestand"

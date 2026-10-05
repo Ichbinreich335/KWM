@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Checkbox } from "@/components/ui/checkbox";
-import { DialogClose, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import { AlertTriangle, Camera, ChevronDown, ChevronRight, Download, FileSpreadsheet, ImageOff, LayoutGrid, List, Loader2, Plus, Printer, Search, SlidersHorizontal, X } from "lucide-react";
@@ -21,7 +21,9 @@ export const DIALOG_CLASS = `w-[calc(100vw-2rem)] max-h-[90vh] overflow-y-auto r
 // Jedes aufklappende Menü (Popover, Ausklappliste).
 export const POPOVER_CLASS = `border ${LINE}`;
 // md:text-base hebt das md:text-sm der shadcn-Felder auf, damit Eingabe und Auswahlliste gleich groß schreiben.
-const FIELD_CLASS = `h-12 rounded-md text-base md:text-base ${LINE}`;
+const FIELD_CLASS = `h-12 min-w-0 rounded-md text-base md:text-base ${LINE}`;
+// iOS gibt Datumsfeldern eine eigene Mindestbreite; ohne appearance-none ragen sie aus der Spalte und die Seite lässt sich seitlich schieben.
+const DATUM_CLASS = "appearance-none [&::-webkit-date-and-time-value]:text-left";
 // Die Box: jede umrandete Fläche (Bereich, Liste, Kachel, Tabelle). Innerhalb einer Box keine zweite Box.
 export const PANEL_CLASS = `rounded-lg border ${LINE} bg-card`;
 // Box, deren Inhalt in Felder geteilt ist (z. B. Kennzahlen): Die Trennlinien haben dieselbe Farbe wie der Rahmen.
@@ -31,6 +33,10 @@ export const TABLE_PANEL_CLASS = `${PANEL_CLASS} [&>div]:overflow-y-hidden [&>di
 // Nur waagerecht wischbar. overflow-x-auto allein macht in CSS auch die senkrechte Achse scrollbar, dann lässt sich der Inhalt nach oben und unten ziehen.
 // Einzige Stelle mit overflow-x-auto (geprüft von pruefung/einheitlich.mjs).
 export const WISCHEN = "overflow-x-auto overflow-y-hidden overscroll-x-contain [scrollbar-width:none] [&::-webkit-scrollbar]:hidden";
+// Wurzel jeder Seite. overflow-x-clip: Nichts kann die Seite verbreitern, am Handy lässt sie sich nie seitlich verschieben.
+export const SEITE_CLASS = "container pt-6 pb-28 sm:pb-8 overflow-x-clip";
+// Wie SEITE_CLASS, aber über die volle Breite (Tabelle).
+export const SEITE_BREIT_CLASS = "w-full px-4 sm:px-6 pt-6 pb-28 sm:pb-8 overflow-x-clip";
 // Am Handy eine Zeile zum seitlich Wischen statt mehrerer umbrochener Reihen, ab Tablet umbrechen.
 export const SCROLL_ROW = `flex gap-2 py-0.5 ${WISCHEN} sm:flex-wrap sm:overflow-visible`;
 // Klebende Leisten am unteren Rand: am Handy knapp über Softrs Navigationsleiste (ca. 56 px), ab Tablet am Rand.
@@ -73,7 +79,7 @@ export const Knopf = forwardRef<HTMLButtonElement, KnopfProps>(function Knopf({ 
 
 // Jedes einzeilige Eingabefeld.
 export const Feld = forwardRef<HTMLInputElement, React.InputHTMLAttributes<HTMLInputElement>>(function Feld({ className = "", ...props }, ref) {
-  return <Input ref={ref} className={`${FIELD_CLASS} ${className}`} {...props} />;
+  return <Input ref={ref} className={`${FIELD_CLASS} ${props.type === "date" ? DATUM_CLASS : ""} ${className}`} {...props} />;
 });
 
 // Jedes mehrzeilige Textfeld.
@@ -214,11 +220,13 @@ export function StatusBadge({ text }: { text: string }) {
   );
 }
 
-export function FieldLabel({ htmlFor, children, required }: { htmlFor?: string; children: string; required?: boolean }) {
+// required: Pflichtfeld (*). empfohlen: darf leer bleiben, beim Speichern kommt eine Rückfrage.
+export function FieldLabel({ htmlFor, children, required, empfohlen }: { htmlFor?: string; children: string; required?: boolean; empfohlen?: boolean }) {
   return (
     <label htmlFor={htmlFor} className="block text-base font-medium mb-2">
       {children}
       {required && <span className="text-destructive"> *</span>}
+      {empfohlen && <span className="font-normal text-muted-foreground"> · empfohlen</span>}
     </label>
   );
 }
@@ -457,6 +465,51 @@ export function DoneButton() {
   );
 }
 
+// Rückfrage vor einem Schritt, den man noch abbrechen kann, z. B. „Ohne Foto speichern?“. Bestätigen ist der Hauptknopf.
+export function Rueckfrage({
+  offen,
+  titel,
+  text,
+  bestaetigen,
+  abbrechen,
+  onBestaetigen,
+  onAbbrechen,
+}: {
+  offen: boolean;
+  titel: string;
+  text: string;
+  bestaetigen: string;
+  abbrechen: string;
+  onBestaetigen: () => void;
+  onAbbrechen: () => void;
+}) {
+  return (
+    <Dialog open={offen} onOpenChange={(o) => !o && onAbbrechen()}>
+      <DialogContent className={`${DIALOG_CLASS} max-w-md`}>
+        <PanelHeader title={titel} description={text} />
+        <div className="pb-2 flex flex-col-reverse sm:flex-row gap-3">
+          <Knopf variant="outline" className="h-12 flex-1 text-base" onClick={onAbbrechen}>
+            {abbrechen}
+          </Knopf>
+          <Knopf className="h-12 flex-1 text-base" onClick={onBestaetigen}>
+            {bestaetigen}
+          </Knopf>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+// Unauffälliger Textknopf mit Plus, der etwas Zusätzliches öffnet („+ Neue Person“, „+ Daten einzeln angeben“).
+export function ZusatzKnopf({ label, onClick }: { label: string; onClick: () => void }) {
+  return (
+    <Knopf type="button" variant="ghost" className="h-11 px-2 text-base text-primary" onClick={onClick}>
+      <Plus className="w-5 h-5 mr-1" aria-hidden />
+      {label}
+    </Knopf>
+  );
+}
+
 // „+ Neu anlegen“ mit Dublettenprüfung ohne Groß-/Kleinschreibung.
 export function AddNew({ label, placeholder, existing, onAdd }: { label: string; placeholder: string; existing: Opt[]; onAdd: (name: string) => Promise<boolean> | boolean }) {
   const [open, setOpen] = useState(false);
@@ -464,14 +517,7 @@ export function AddNew({ label, placeholder, existing, onAdd }: { label: string;
   const [busy, setBusy] = useState(false);
   const name = value.trim();
   const duplicate = existing.find((o) => o.label.toLowerCase() === name.toLowerCase());
-  if (!open) {
-    return (
-      <Knopf type="button" variant="ghost" className="h-11 px-2 text-base text-primary" onClick={() => setOpen(true)}>
-        <Plus className="w-5 h-5 mr-1" aria-hidden />
-        {label}
-      </Knopf>
-    );
-  }
+  if (!open) return <ZusatzKnopf label={label} onClick={() => setOpen(true)} />;
   return (
     <div className="flex flex-wrap items-center gap-2 w-full">
       <Feld autoFocus value={value} onChange={(e) => setValue(e.target.value)} placeholder={placeholder} aria-label={label} className="flex-1 min-w-48" />

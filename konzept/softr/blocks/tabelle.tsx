@@ -161,7 +161,10 @@ const DIALOG_CLASS = `w-[calc(100vw-2rem)] max-h-[90vh] overflow-y-auto rounded-
 const POPOVER_CLASS = `border ${LINE}`;
 
 // md:text-base hebt das md:text-sm der shadcn-Felder auf, damit Eingabe und Auswahlliste gleich groß schreiben.
-const FIELD_CLASS = `h-12 rounded-md text-base md:text-base ${LINE}`;
+const FIELD_CLASS = `h-12 min-w-0 rounded-md text-base md:text-base ${LINE}`;
+
+// iOS gibt Datumsfeldern eine eigene Mindestbreite; ohne appearance-none ragen sie aus der Spalte und die Seite lässt sich seitlich schieben.
+const DATUM_CLASS = "appearance-none [&::-webkit-date-and-time-value]:text-left";
 
 // Die Box: jede umrandete Fläche (Bereich, Liste, Kachel, Tabelle). Innerhalb einer Box keine zweite Box.
 const PANEL_CLASS = `rounded-lg border ${LINE} bg-card`;
@@ -172,6 +175,9 @@ const TABLE_PANEL_CLASS = `${PANEL_CLASS} [&>div]:overflow-y-hidden [&>div]:over
 // Nur waagerecht wischbar. overflow-x-auto allein macht in CSS auch die senkrechte Achse scrollbar, dann lässt sich der Inhalt nach oben und unten ziehen.
 // Einzige Stelle mit overflow-x-auto (geprüft von pruefung/einheitlich.mjs).
 const WISCHEN = "overflow-x-auto overflow-y-hidden overscroll-x-contain [scrollbar-width:none] [&::-webkit-scrollbar]:hidden";
+
+// Wie SEITE_CLASS, aber über die volle Breite (Tabelle).
+const SEITE_BREIT_CLASS = "w-full px-4 sm:px-6 pt-6 pb-28 sm:pb-8 overflow-x-clip";
 
 // Am Handy eine Zeile zum seitlich Wischen statt mehrerer umbrochener Reihen, ab Tablet umbrechen.
 const SCROLL_ROW = `flex gap-2 py-0.5 ${WISCHEN} sm:flex-wrap sm:overflow-visible`;
@@ -201,7 +207,7 @@ const Knopf = forwardRef<HTMLButtonElement, KnopfProps>(function Knopf({ variant
 
 // Jedes einzeilige Eingabefeld.
 const Feld = forwardRef<HTMLInputElement, React.InputHTMLAttributes<HTMLInputElement>>(function Feld({ className = "", ...props }, ref) {
-  return <Input ref={ref} className={`${FIELD_CLASS} ${className}`} {...props} />;
+  return <Input ref={ref} className={`${FIELD_CLASS} ${props.type === "date" ? DATUM_CLASS : ""} ${className}`} {...props} />;
 });
 
 // Jede Auswahlliste (öffnet am Handy die Auswahl des Telefons). kompakt: für dichte Filterzeilen. breite ersetzt die volle Breite.
@@ -265,11 +271,13 @@ function StatusBadge({ text }: { text: string }) {
   );
 }
 
-function FieldLabel({ htmlFor, children, required }: { htmlFor?: string; children: string; required?: boolean }) {
+// required: Pflichtfeld (*). empfohlen: darf leer bleiben, beim Speichern kommt eine Rückfrage.
+function FieldLabel({ htmlFor, children, required, empfohlen }: { htmlFor?: string; children: string; required?: boolean; empfohlen?: boolean }) {
   return (
     <label htmlFor={htmlFor} className="block text-base font-medium mb-2">
       {children}
       {required && <span className="text-destructive"> *</span>}
+      {empfohlen && <span className="font-normal text-muted-foreground"> · empfohlen</span>}
     </label>
   );
 }
@@ -426,6 +434,8 @@ const unikatSelect = q.select({
   gedreht: "90TmC",
   glasiert: "2PXtk",
   datum: "UfM5S",
+  gedrehtAm: "bbA3e",
+  glasiertAm: "m4gc9",
   jahr: "ZIHrT",
   glasur: "ByeH3",
   masse: "KDUVZ",
@@ -484,6 +494,8 @@ type Row = {
   glasiert: string;
   glasur: string[];
   datum: string;
+  gedrehtAm: string;
+  glasiertAm: string;
   jahr: number | null;
   masse: string;
   lagerort: string;
@@ -515,6 +527,8 @@ type ColKey =
   | "glasiert"
   | "glasur"
   | "datum"
+  | "gedrehtAm"
+  | "glasiertAm"
   | "jahr"
   | "masse"
   | "lagerort"
@@ -547,6 +561,8 @@ const COLUMNS: Col[] = [
   { key: "gedreht", label: "Gedreht von", type: "select", get: (r) => r.gedreht || null, visible: false, only: "unikat" },
   { key: "glasiert", label: "Glasiert von", type: "select", get: (r) => r.glasiert || null, visible: false, only: "unikat" },
   { key: "datum", label: "Datum", type: "date", get: (r) => r.datum.slice(0, 10) || null, visible: false, only: "unikat" },
+  { key: "gedrehtAm", label: "Gedreht am", type: "date", get: (r) => r.gedrehtAm.slice(0, 10) || null, visible: false, only: "unikat" },
+  { key: "glasiertAm", label: "Glasiert am", type: "date", get: (r) => r.glasiertAm.slice(0, 10) || null, visible: false, only: "unikat" },
   { key: "jahr", label: "Jahr", type: "number", get: (r) => r.jahr, visible: false, align: "right", only: "unikat" },
   { key: "masse", label: "Maße", type: "text", get: (r) => r.masse || null, visible: false, only: "unikat" },
   { key: "galerie", label: "Partner", type: "select", get: (r) => r.galerie || null, visible: false, only: "unikat" },
@@ -671,6 +687,8 @@ function toUnikatRow(i: RawItem): Row {
     glasiert: labels(f.glasiert)[0] ?? "",
     glasur: labels(f.glasur),
     datum: str(f.datum),
+    gedrehtAm: str(f.gedrehtAm),
+    glasiertAm: str(f.glasiertAm),
     jahr: num(f.jahr),
     masse: str(f.masse),
     lagerort: labels(f.lagerort)[0] ?? "",
@@ -706,6 +724,8 @@ function toEditionRow(i: RawItem): Row {
     glasiert: "",
     glasur: labels(f.glasur),
     datum: "",
+    gedrehtAm: "",
+    glasiertAm: "",
     jahr: null,
     masse: "",
     lagerort: labels(f.lagerort)[0] ?? "",
@@ -1325,7 +1345,7 @@ export default function Block() {
     c.key === "anzahl" ? `${zahl.format(summeAnzahl)} Stück` : c.key === "preis" ? euro.format(summePreis) : c.key === "vk" ? (summeVk ? euroCent.format(summeVk) : "") : i === 0 ? summeLabel : "";
 
   return (
-    <div className="w-full px-4 sm:px-6 pt-6 pb-28 sm:pb-8">
+    <div className={SEITE_BREIT_CLASS}>
       <div className="w-full space-y-4" lang="de">
         <PageHeader
           title="Tabelle"

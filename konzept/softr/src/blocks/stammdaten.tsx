@@ -23,6 +23,7 @@ import {
   PhotoPicker,
   SearchField,
   SearchPick,
+  SEITE_CLASS,
   Tabs,
   Textfeld,
 } from "../shared/ui";
@@ -510,7 +511,7 @@ export default function Block() {
   );
 
   return (
-    <div className="container pt-6 pb-28 sm:pb-8">
+    <div className={SEITE_CLASS}>
       <div className="content space-y-4" lang="de">
         <PageHeader title="Stammdaten" description="Die Auswahllisten für Erfassen und Bestand. Hier anlegen, korrigieren, archivieren." />
         <Tabs

@@ -148,3 +148,19 @@ Grundlage: Feedback des Admins zu den Screens vom 04.10. und der Skill `impeccab
   - Stammdaten: „bei X Unikaten“ zählt jede Person einmal je Stück, egal ob gefertigt, gedreht oder glasiert. Löschen ist gesperrt, solange sie in einem der drei Felder steht.
 - **Prüfung:** Typprüfung und Einheitlichkeit grün. Messung in der Nachbildung (390 px und 1440 px): kein senkrecht scrollbarer Wischbereich, kein Text außerhalb eines Knopfs, kein waagerechtes Seiten-Scrollen, keine Konsolenfehler. Funktionstests: Datum leer → heute, Jahr 2026; Datum 04.03.2019 → Jahr 2019; Bearbeiten ohne Datum lässt das Jahr unverändert; Löschschutz greift bei „gedreht von“. Screens unter `konzept/vergleich/runde10/`. Prüfsummen aller fünf hochgeladenen Blöcke stimmen, Aktionsrechte wieder auf angemeldete Nutzer.
 
+## Runde 11: Erfassen neu, Demo-Stand, erste Veröffentlichung (05.10.)
+
+- **Erfassen:**
+  - Nur der Name ist Pflicht. Foto und Typ sind „empfohlen“. Fehlen sie, fragt die App vor dem Speichern nach („Foto und Typ fehlen noch. Trotzdem speichern?“). Dafür gibt es den neuen Baustein `Rueckfrage`.
+  - Nichts ist mehr eingeklappt. Reihenfolge: **Das Stück**, dann **Herstellung** (Gedreht von, Glasiert von, Datum, Künstler:in, Glasur), dann **Details**.
+  - „Gedreht am“ und „Glasiert am“ (neue Datenbankfelder) öffnen sich unauffällig über „+ Gedreht am und glasiert am einzeln angeben“ (neuer Baustein `ZusatzKnopf`).
+- **Bestand bearbeiten:** gleiche Reihenfolge wie beim Erfassen, beide Daten in der Ansicht („Gedreht von … am …“). Die Tabelle hat die Spalten „Gedreht am“ und „Glasiert am“.
+- **Seite ließ sich am iPhone seitlich verschieben (Erfassen):** iOS gibt Datumsfeldern eine eigene Mindestbreite. Das Datumsfeld bekommt jetzt im Baustein `Feld` `appearance-none`. Zusätzlich hat jede Seitenwurzel `overflow-x-clip` (`SEITE_CLASS`/`SEITE_BREIT_CLASS`), damit nichts die Seite verbreitern kann. Der Build bricht ab, wenn eine Seite ihre Wurzel selbst baut.
+- **Demo-Daten:**
+  - Personen: Young-Jae Lee, Michael Schmandt, Shoko Ishioka, Daniela Glattki.
+  - Alle 12 Unikate haben echte KWM-Fotos (von der Website), Herstellung und Daten.
+  - Die 10 Editionszeilen hängen an echten Katalogmodellen (Teebecher 23, Essteller 16, Müslischale 6, Kugelvase 2001, Teekanne 35), mit Fotos.
+  - Der Tippfehler „Obertopf“ ist behoben.
+- **Veröffentlicht:** https://kwm-lager.softr.app (vorher celestina80104.softr.app).
+- **Prüfung:** Typprüfung und Einheitlichkeit grün. Messung 390/1440 px ohne Befund. Rückfrage getestet. Funktionstests Erfassen, Bestand, Stammdaten, Tabelle und Übersicht grün. Prüfsummen aller fünf Blöcke stimmen, Aktionsrechte gesetzt. Screens unter `konzept/vergleich/runde11/`.
+

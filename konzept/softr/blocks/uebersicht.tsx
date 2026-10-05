@@ -78,6 +78,9 @@ const PANEL_GRID_CLASS = `rounded-lg border ${LINE} bg-neutral-300 gap-px overfl
 // Einzige Stelle mit overflow-x-auto (geprüft von pruefung/einheitlich.mjs).
 const WISCHEN = "overflow-x-auto overflow-y-hidden overscroll-x-contain [scrollbar-width:none] [&::-webkit-scrollbar]:hidden";
 
+// Wurzel jeder Seite. overflow-x-clip: Nichts kann die Seite verbreitern, am Handy lässt sie sich nie seitlich verschieben.
+const SEITE_CLASS = "container pt-6 pb-28 sm:pb-8 overflow-x-clip";
+
 function Thumb({ fotos, size = "small", className = "w-12 h-12 rounded-md" }: { fotos: Attachment[]; size?: ThumbSize; className?: string }) {
   const first = fotos[0];
   if (!first) {
@@ -650,7 +653,7 @@ export default function Block() {
   ];
 
   return (
-    <div className="container pt-6 pb-28 sm:pb-8">
+    <div className={SEITE_CLASS}>
       <div className="content space-y-6" lang="de">
         <PageHeader title="Übersicht" description={`${plural(unikate.length, "Unikat", "Unikate")} · ${zahl.format(stats.rohlinge + stats.glasiert)} Stück Editionsware`} />
 

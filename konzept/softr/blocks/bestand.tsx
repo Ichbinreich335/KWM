@@ -197,7 +197,10 @@ const DIALOG_CLASS = `w-[calc(100vw-2rem)] max-h-[90vh] overflow-y-auto rounded-
 const POPOVER_CLASS = `border ${LINE}`;
 
 // md:text-base hebt das md:text-sm der shadcn-Felder auf, damit Eingabe und Auswahlliste gleich groß schreiben.
-const FIELD_CLASS = `h-12 rounded-md text-base md:text-base ${LINE}`;
+const FIELD_CLASS = `h-12 min-w-0 rounded-md text-base md:text-base ${LINE}`;
+
+// iOS gibt Datumsfeldern eine eigene Mindestbreite; ohne appearance-none ragen sie aus der Spalte und die Seite lässt sich seitlich schieben.
+const DATUM_CLASS = "appearance-none [&::-webkit-date-and-time-value]:text-left";
 
 // Die Box: jede umrandete Fläche (Bereich, Liste, Kachel, Tabelle). Innerhalb einer Box keine zweite Box.
 const PANEL_CLASS = `rounded-lg border ${LINE} bg-card`;
@@ -205,6 +208,9 @@ const PANEL_CLASS = `rounded-lg border ${LINE} bg-card`;
 // Nur waagerecht wischbar. overflow-x-auto allein macht in CSS auch die senkrechte Achse scrollbar, dann lässt sich der Inhalt nach oben und unten ziehen.
 // Einzige Stelle mit overflow-x-auto (geprüft von pruefung/einheitlich.mjs).
 const WISCHEN = "overflow-x-auto overflow-y-hidden overscroll-x-contain [scrollbar-width:none] [&::-webkit-scrollbar]:hidden";
+
+// Wurzel jeder Seite. overflow-x-clip: Nichts kann die Seite verbreitern, am Handy lässt sie sich nie seitlich verschieben.
+const SEITE_CLASS = "container pt-6 pb-28 sm:pb-8 overflow-x-clip";
 
 // Am Handy eine Zeile zum seitlich Wischen statt mehrerer umbrochener Reihen, ab Tablet umbrechen.
 const SCROLL_ROW = `flex gap-2 py-0.5 ${WISCHEN} sm:flex-wrap sm:overflow-visible`;
@@ -249,7 +255,7 @@ const Knopf = forwardRef<HTMLButtonElement, KnopfProps>(function Knopf({ variant
 
 // Jedes einzeilige Eingabefeld.
 const Feld = forwardRef<HTMLInputElement, React.InputHTMLAttributes<HTMLInputElement>>(function Feld({ className = "", ...props }, ref) {
-  return <Input ref={ref} className={`${FIELD_CLASS} ${className}`} {...props} />;
+  return <Input ref={ref} className={`${FIELD_CLASS} ${props.type === "date" ? DATUM_CLASS : ""} ${className}`} {...props} />;
 });
 
 // Jedes mehrzeilige Textfeld.
@@ -377,11 +383,13 @@ function StatusBadge({ text }: { text: string }) {
   );
 }
 
-function FieldLabel({ htmlFor, children, required }: { htmlFor?: string; children: string; required?: boolean }) {
+// required: Pflichtfeld (*). empfohlen: darf leer bleiben, beim Speichern kommt eine Rückfrage.
+function FieldLabel({ htmlFor, children, required, empfohlen }: { htmlFor?: string; children: string; required?: boolean; empfohlen?: boolean }) {
   return (
     <label htmlFor={htmlFor} className="block text-base font-medium mb-2">
       {children}
       {required && <span className="text-destructive"> *</span>}
+      {empfohlen && <span className="font-normal text-muted-foreground"> · empfohlen</span>}
     </label>
   );
 }
@@ -585,6 +593,16 @@ function DoneButton() {
   );
 }
 
+// Unauffälliger Textknopf mit Plus, der etwas Zusätzliches öffnet („+ Neue Person“, „+ Daten einzeln angeben“).
+function ZusatzKnopf({ label, onClick }: { label: string; onClick: () => void }) {
+  return (
+    <Knopf type="button" variant="ghost" className="h-11 px-2 text-base text-primary" onClick={onClick}>
+      <Plus className="w-5 h-5 mr-1" aria-hidden />
+      {label}
+    </Knopf>
+  );
+}
+
 // Foto aufnehmen oder auswählen, mit Vorschau und Entfernen.
 function PhotoPicker({ files, onChange, multiple, error }: { files: File[]; onChange: (f: File[]) => void; multiple: boolean; error?: string }) {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -777,6 +795,8 @@ const unikatSelect = q.select({
   gedreht: "90TmC",
   glasiert: "2PXtk",
   datum: "UfM5S",
+  gedrehtAm: "bbA3e",
+  glasiertAm: "m4gc9",
   jahr: "ZIHrT",
   glasur: "ByeH3",
   masse: "KDUVZ",
@@ -801,6 +821,8 @@ const unikatUpdateFields = q.select({
   gedreht: "90TmC",
   glasiert: "2PXtk",
   datum: "UfM5S",
+  gedrehtAm: "bbA3e",
+  glasiertAm: "m4gc9",
   jahr: "ZIHrT",
   glasur: "ByeH3",
   masse: "KDUVZ",
@@ -844,6 +866,8 @@ type Unikat = {
   gedreht: Opt | undefined;
   glasiert: Opt | undefined;
   datum: string;
+  gedrehtAm: string;
+  glasiertAm: string;
   jahr: number | null;
   glasur: Opt[];
   masse: string;
@@ -922,6 +946,8 @@ function toUnikat(item: RawItem): Unikat {
     gedreht: asOpts(f.gedreht)[0],
     glasiert: asOpts(f.glasiert)[0],
     datum: str(f.datum),
+    gedrehtAm: str(f.gedrehtAm),
+    glasiertAm: str(f.glasiertAm),
     jahr: num(f.jahr),
     glasur: asOpts(f.glasur),
     masse: str(f.masse),
@@ -1050,6 +1076,8 @@ type EditForm = {
   gedrehtId: string;
   glasiertId: string;
   datum: string;
+  gedrehtAm: string;
+  glasiertAm: string;
   glasurIds: string[];
   masse: string;
   bildnachweis: string;
@@ -1074,6 +1102,8 @@ function UnikatDetail({ u, onClose, onSaved, stamm, typen, statusListe }: { u: U
     gedrehtId: u.gedreht?.id ?? "",
     glasiertId: u.glasiert?.id ?? "",
     datum: u.datum.slice(0, 10),
+    gedrehtAm: u.gedrehtAm.slice(0, 10),
+    glasiertAm: u.glasiertAm.slice(0, 10),
     glasurIds: u.glasur.map((g) => g.id),
     masse: u.masse,
     bildnachweis: u.bildnachweis,
@@ -1083,6 +1113,7 @@ function UnikatDetail({ u, onClose, onSaved, stamm, typen, statusListe }: { u: U
     notiz: u.notiz,
   };
   const [editing, setEditing] = useState(false);
+  const [einzelDaten, setEinzelDaten] = useState(false);
   const [form, setForm] = useState<EditForm>(initial);
   const [formError, setFormError] = useState<Partial<Record<keyof EditForm, string>>>({});
   const [photoIndex, setPhotoIndex] = useState(0);
@@ -1174,6 +1205,8 @@ function UnikatDetail({ u, onClose, onSaved, stamm, typen, statusListe }: { u: U
           glasiert: link(form.glasiertId),
           datum: datum || null,
           jahr: datum ? Number(datum.slice(0, 4)) : u.jahr,
+          gedrehtAm: form.gedrehtAm || null,
+          glasiertAm: form.glasiertAm || null,
           glasur: form.glasurIds,
           masse: form.masse.trim(),
           bildnachweis: form.bildnachweis.trim(),
@@ -1199,8 +1232,8 @@ function UnikatDetail({ u, onClose, onSaved, stamm, typen, statusListe }: { u: U
     ["Preis intern", u.preis !== null ? euro.format(u.preis) : ""],
     ["Künstler:in", u.kuenstler?.label ?? ""],
     ["Datum", datumText(u)],
-    ["Gedreht von", u.gedreht?.label ?? ""],
-    ["Glasiert von", u.glasiert?.label ?? ""],
+    ["Gedreht von", [u.gedreht?.label, u.gedrehtAm && `am ${formatDate(u.gedrehtAm)}`].filter(Boolean).join(" ")],
+    ["Glasiert von", [u.glasiert?.label, u.glasiertAm && `am ${formatDate(u.glasiertAm)}`].filter(Boolean).join(" ")],
     ["Glasur", u.glasur.map((g) => g.label).join(", ")],
     ["Maße", u.masse],
     ["Außer Haus seit", formatDate(u.seit)],
@@ -1367,14 +1400,38 @@ function UnikatDetail({ u, onClose, onSaved, stamm, typen, statusListe }: { u: U
               </div>
               <div className="grid sm:grid-cols-2 gap-5">
                 <div>
-                  <FieldLabel htmlFor="d-kuenstler">Künstler:in</FieldLabel>
-                  <OptionSelect id="d-kuenstler" value={form.kuenstlerId} onChange={(v) => set("kuenstlerId", v)} options={personen} placeholder="Bitte wählen" />
+                  <FieldLabel htmlFor="d-gedreht">Gedreht von</FieldLabel>
+                  <OptionSelect id="d-gedreht" value={form.gedrehtId} onChange={(v) => set("gedrehtId", v)} options={personen} placeholder="Bitte wählen" />
                 </div>
                 <div>
-                  <FieldLabel htmlFor="d-datum">Datum</FieldLabel>
-                  <Feld id="d-datum" type="date" value={form.datum} onChange={(e) => set("datum", e.target.value)} />
-                  {!u.datum && u.jahr !== null && <Hint>{`Bisher nur das Jahr ${u.jahr} bekannt.`}</Hint>}
+                  <FieldLabel htmlFor="d-glasiert">Glasiert von</FieldLabel>
+                  <OptionSelect id="d-glasiert" value={form.glasiertId} onChange={(v) => set("glasiertId", v)} options={personen} placeholder="Bitte wählen" />
                 </div>
+              </div>
+              <div>
+                <FieldLabel htmlFor="d-datum">Datum</FieldLabel>
+                <Feld id="d-datum" type="date" value={form.datum} onChange={(e) => set("datum", e.target.value)} />
+                {!u.datum && u.jahr !== null && <Hint>{`Bisher nur das Jahr ${u.jahr} bekannt.`}</Hint>}
+                {einzelDaten || form.gedrehtAm || form.glasiertAm ? (
+                  <div className="grid sm:grid-cols-2 gap-5 mt-4">
+                    <div>
+                      <FieldLabel htmlFor="d-gedreht-am">Gedreht am</FieldLabel>
+                      <Feld id="d-gedreht-am" type="date" value={form.gedrehtAm} onChange={(e) => set("gedrehtAm", e.target.value)} />
+                    </div>
+                    <div>
+                      <FieldLabel htmlFor="d-glasiert-am">Glasiert am</FieldLabel>
+                      <Feld id="d-glasiert-am" type="date" value={form.glasiertAm} onChange={(e) => set("glasiertAm", e.target.value)} />
+                    </div>
+                  </div>
+                ) : (
+                  <div className="mt-1">
+                    <ZusatzKnopf label="Gedreht am und glasiert am einzeln angeben" onClick={() => setEinzelDaten(true)} />
+                  </div>
+                )}
+              </div>
+              <div>
+                <FieldLabel htmlFor="d-kuenstler">Künstler:in</FieldLabel>
+                <OptionSelect id="d-kuenstler" value={form.kuenstlerId} onChange={(v) => set("kuenstlerId", v)} options={personen} placeholder="Bitte wählen" />
               </div>
               <div>
                 <FieldLabel>Glasur</FieldLabel>
@@ -1386,38 +1443,21 @@ function UnikatDetail({ u, onClose, onSaved, stamm, typen, statusListe }: { u: U
                   <Feld id="d-masse" value={form.masse} onChange={(e) => set("masse", e.target.value)} placeholder="z. B. Ø 24 × H 8 cm" />
                 </div>
                 <div>
-                  <FieldLabel htmlFor="d-verkauft">Verkauft am</FieldLabel>
-                  <Feld id="d-verkauft" type="date" value={form.verkauftAm} onChange={(e) => set("verkauftAm", e.target.value)} />
-                </div>
-              </div>
-              <div>
-                <FieldLabel htmlFor="d-bildnachweis">Bildnachweis</FieldLabel>
-                <Feld id="d-bildnachweis" value={form.bildnachweis} onChange={(e) => set("bildnachweis", e.target.value)} />
-              </div>
-              <div className="grid sm:grid-cols-2 gap-5">
-                <div>
-                  <FieldLabel htmlFor="d-gedreht">Gedreht von</FieldLabel>
-                  <OptionSelect id="d-gedreht" value={form.gedrehtId} onChange={(v) => set("gedrehtId", v)} options={personen} placeholder="Bitte wählen" />
-                </div>
-                <div>
-                  <FieldLabel htmlFor="d-glasiert">Glasiert von</FieldLabel>
-                  <OptionSelect id="d-glasiert" value={form.glasiertId} onChange={(v) => set("glasiertId", v)} options={personen} placeholder="Bitte wählen" />
+                  <FieldLabel htmlFor="d-bildnachweis">Bildnachweis</FieldLabel>
+                  <Feld id="d-bildnachweis" value={form.bildnachweis} onChange={(e) => set("bildnachweis", e.target.value)} />
                 </div>
               </div>
               <div className="grid sm:grid-cols-2 gap-5">
                 <div>
                   <FieldLabel htmlFor="d-preis">Preis intern (€)</FieldLabel>
-                  <Feld
-                    id="d-preis"
-                    inputMode="decimal"
-                    value={form.preis}
-                    onChange={(e) => set("preis", e.target.value)}
-                    placeholder="z. B. 480"
-                    aria-invalid={!!formError.preis}
-                  />
+                  <Feld id="d-preis" inputMode="decimal" value={form.preis} onChange={(e) => set("preis", e.target.value)} placeholder="z. B. 480" aria-invalid={!!formError.preis} />
                   <ErrorText>{formError.preis}</ErrorText>
                 </div>
                 <SchalterFeld id="d-website" label="Auf Website zeigen" checked={form.website} onChange={(v) => set("website", v)} lage="self-end" />
+              </div>
+              <div>
+                <FieldLabel htmlFor="d-verkauft">Verkauft am</FieldLabel>
+                <Feld id="d-verkauft" type="date" value={form.verkauftAm} onChange={(e) => set("verkauftAm", e.target.value)} />
               </div>
               <div>
                 <FieldLabel htmlFor="d-notiz">Notiz</FieldLabel>
@@ -1434,6 +1474,7 @@ function UnikatDetail({ u, onClose, onSaved, stamm, typen, statusListe }: { u: U
                   disabled={busy}
                   onClick={() => {
                     setForm(initial);
+                    setEinzelDaten(false);
                     setFormError({});
                     setNewFiles([]);
                     setEditing(false);
@@ -1950,7 +1991,7 @@ export default function Block() {
     ) : undefined;
 
   return (
-    <div className="container pt-6 pb-28 sm:pb-8">
+    <div className={SEITE_CLASS}>
       <div className="content space-y-4" lang="de">
         <PageHeader
           title="Bestand"
