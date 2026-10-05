@@ -25,6 +25,8 @@ import Bild from '../components/Bild.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import InquiryForm from '../components/InquiryForm.astro';
 import Figure from '../components/Figure.astro';
+import SigFarbskala from '../components/SigFarbskala.astro';
+import { glasuren } from '../data/glasuren';
 import '../styles/signaturen/signaturen.css';
 ---
 
@@ -293,145 +295,7 @@ import '../styles/signaturen/signaturen.css';
         </p>
       </SectionHead>
 
-      <div
-        class="scale"
-        role="group"
-        aria-label="Die sechstonige Farbskala des Geschirrs: Glasurproben, antippen zum Vergrößern"
-        data-sig="farbskala"
-      >
-        <button
-          type="button"
-          class="scale__band"
-          aria-pressed="false"
-          style="--c:#e2ddcd; --t:#1B1815"
-          data-grund="#e2ddcd"
-          data-dunkel="#cec6b3"
-          data-hell="#ece9db"
-          data-finish="satin"
-          data-speckle="#9a6a2c"
-          data-seed="3"
-        >
-          <Bild class="scale__sample" src="/img/kwm/weiss.webp" alt="" width="100" height="100" loading="lazy" />
-          <span class="scale__label">
-            <span class="scale__title">weiß</span>
-          </span>
-        </button>
-        <button
-          type="button"
-          class="scale__band"
-          aria-pressed="false"
-          style="--c:#cfe0d6; --t:#1B1815"
-          data-grund="#cfe0d6"
-          data-dunkel="#c1d2c8"
-          data-hell="#daeae0"
-          data-finish="matt"
-          data-seed="4"
-        >
-          <Bild
-            class="scale__sample"
-            src="/img/kwm/hellgruen_matt.webp"
-            alt=""
-            width="100"
-            height="100"
-            loading="lazy"
-          />
-          <span class="scale__label">
-            <span class="scale__title">hellgrün</span>
-            <span class="scale__meta">matt</span>
-          </span>
-        </button>
-        <button
-          type="button"
-          class="scale__band"
-          aria-pressed="false"
-          style="--c:#94ae9b; --t:#1B1815"
-          data-grund="#94ae9b"
-          data-dunkel="#85a593"
-          data-hell="#98b29f"
-          data-finish="glanz"
-          data-schichten
-          data-seed="5"
-        >
-          <Bild
-            class="scale__sample"
-            src="/img/kwm/hellgruen_glaenzend.webp"
-            alt=""
-            width="100"
-            height="100"
-            loading="lazy"
-          />
-          <span class="scale__label">
-            <span class="scale__title">hellgrün</span>
-            <span class="scale__meta">glänzend</span>
-          </span>
-        </button>
-        <button
-          type="button"
-          class="scale__band"
-          aria-pressed="false"
-          style="--c:#3f3b22; --t:#F4F1E8"
-          data-grund="#3f3b22"
-          data-dunkel="#3c381f"
-          data-hell="#423d23"
-          data-finish="glanz"
-          data-seed="6"
-        >
-          <Bild
-            class="scale__sample"
-            src="/img/kwm/dunkelgruen_glaenzend.webp"
-            alt=""
-            width="100"
-            height="100"
-            loading="lazy"
-          />
-          <span class="scale__label">
-            <span class="scale__title">dunkelgrün</span>
-            <span class="scale__meta">glänzend</span>
-          </span>
-        </button>
-        <button
-          type="button"
-          class="scale__band"
-          aria-pressed="false"
-          style="--c:#44462e; --t:#F4F1E8"
-          data-grund="#44462e"
-          data-dunkel="#363820"
-          data-hell="#64634d"
-          data-finish="matt"
-          data-speckle="#a3a28b"
-          data-seed="7"
-        >
-          <Bild
-            class="scale__sample"
-            src="/img/kwm/dunkelgruen_matt.webp"
-            alt=""
-            width="100"
-            height="100"
-            loading="lazy"
-          />
-          <span class="scale__label">
-            <span class="scale__title">dunkelgrün</span>
-            <span class="scale__meta">matt</span>
-          </span>
-        </button>
-        <button
-          type="button"
-          class="scale__band"
-          aria-pressed="false"
-          style="--c:#8d590a; --t:#FFFDF6"
-          data-grund="#8d590a"
-          data-dunkel="#864d01"
-          data-hell="#916216"
-          data-finish="satin"
-          data-speckle="#6a3a04"
-          data-seed="8"
-        >
-          <Bild class="scale__sample" src="/img/kwm/rostbraun.webp" alt="" width="100" height="100" loading="lazy" />
-          <span class="scale__label">
-            <span class="scale__title">rostbraun</span>
-          </span>
-        </button>
-      </div>
+      <SigFarbskala glasuren={glasuren} />
       <p class="scale__note grid">
         <span>
           In monatelangen Experimenten entstand die sechstonige Farbskala – von Schattierungen des Jadegrün über ein
