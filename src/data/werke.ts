@@ -49,8 +49,6 @@ export const katalog: readonly Werk[] = [
     angaben: [{ masse: 'H 16 cm, D 29,5 cm', glasur: 'Petalit-Eichenasche-Glasur', jahr: '2003–2005' }],
     bild: {
       src: '/img/kwm/schale_spitz_xxl_3.webp',
-      breite: 600,
-      hoehe: 400,
       alt: 'Spitz zulaufende Schale mit hellrosa geflammter Innenseite auf hohem Fuß',
     },
   },
@@ -60,8 +58,6 @@ export const katalog: readonly Werk[] = [
     angaben: [{ masse: 'H 10,5 cm, D 22,5 cm', glasur: 'Petalit-Eichenasche-Glasur', jahr: '2003–2005' }],
     bild: {
       src: '/img/kwm/schale_spitz_xxl_1.webp',
-      breite: 600,
-      hoehe: 400,
       alt: 'Große spitze Schale mit rosa Innenseite, von oben gesehen, auf gesprenkeltem Stein',
     },
   },
@@ -71,8 +67,6 @@ export const katalog: readonly Werk[] = [
     angaben: [{ masse: 'H 11,5 cm, D 28,5 cm', glasur: 'Spodumen-Feldspat-Glasur', jahr: '2003–2005' }],
     bild: {
       src: '/img/kwm/schale-spitz_xxl_2.webp',
-      breite: 600,
-      hoehe: 400,
       alt: 'Weite, flache Schale in hellem Grau auf schmalem Fuß vor dunklem Grund',
     },
   },
@@ -82,8 +76,6 @@ export const katalog: readonly Werk[] = [
     angaben: [{ masse: 'H 10,5 cm, D 21,5 cm', glasur: 'Strontium-Feldspat-Glasur', jahr: '2003–2005' }],
     bild: {
       src: '/img/kwm/schale_spitz_xl_1.webp',
-      breite: 600,
-      hoehe: 400,
       alt: 'Spitze Schale mit graublauer Innenseite und bräunlichem Fuß',
     },
   },
@@ -93,8 +85,6 @@ export const katalog: readonly Werk[] = [
     angaben: [{ masse: 'H 11 cm, D 21 cm', glasur: 'Barium-Feldspat-Glasur', jahr: '2004/05' }],
     bild: {
       src: '/img/kwm/schale_spitz_xl_2.webp',
-      breite: 600,
-      hoehe: 400,
       alt: 'Drei ineinandergestellte hellblaue Schalen im Streiflicht',
     },
   },
@@ -104,8 +94,6 @@ export const katalog: readonly Werk[] = [
     angaben: [{ masse: 'H 10,5 cm, D 28 cm', glasur: 'Wollastonit-Feldspat-Glasur', jahr: '2003–2005' }],
     bild: {
       src: '/img/kwm/schale_spitz_xl_3.webp',
-      breite: 600,
-      hoehe: 400,
       alt: 'Flache, weite Schale in Olivgrün vor grauem Grund',
     },
   },
@@ -115,8 +103,6 @@ export const katalog: readonly Werk[] = [
     angaben: [{ masse: 'H 10,3 cm, D 18,8 cm', glasur: 'Barium-Feldspat-Glasur', jahr: '2003–2005' }],
     bild: {
       src: '/img/kwm/schale_spitz_gross.webp',
-      breite: 600,
-      hoehe: 400,
       alt: 'Spitze Schale mit türkisgrüner Glasur auf kleinem Fuß',
     },
   },
@@ -126,8 +112,6 @@ export const katalog: readonly Werk[] = [
     angaben: [{ masse: 'H 9 cm, D 15,8 cm', glasur: 'Spodumen-Feldspat-Glasur', jahr: '2003–2005' }],
     bild: {
       src: '/img/kwm/schale_spitz_mittel.webp',
-      breite: 600,
-      hoehe: 400,
       alt: 'Spitze Schale mit orangebraun geflammter Außenseite und hellem Rand',
     },
   },
@@ -141,8 +125,6 @@ export const katalog: readonly Werk[] = [
     ],
     bild: {
       src: '/img/kwm/schale_spitz.webp',
-      breite: 600,
-      hoehe: 400,
       alt: 'Drei kleine spitze Schalen in Seladon, Olivgrün und Hellgrün',
     },
   },
@@ -160,8 +142,6 @@ export const katalog: readonly Werk[] = [
     ],
     bild: {
       src: '/img/kwm/schale_gross.webp',
-      breite: 600,
-      hoehe: 400,
       alt: 'Sehr weite, flache Schale mit graublauer Glasur, von oben gesehen',
     },
   },
@@ -179,8 +159,6 @@ export const katalog: readonly Werk[] = [
     ],
     bild: {
       src: '/img/kwm/kumme_2.webp',
-      breite: 600,
-      hoehe: 400,
       alt: 'Zwei Kummen mit großen dunkelblauen Flecken auf hellbraunem Grund',
     },
   },
@@ -198,8 +176,6 @@ export const katalog: readonly Werk[] = [
     ],
     bild: {
       src: '/img/kwm/kumme_1.webp',
-      breite: 600,
-      hoehe: 400,
       alt: 'Zwei Kummen in Türkis und Blaugrün, die rechte mit dunkleren Schlieren',
     },
   },
@@ -211,8 +187,6 @@ export const katalog: readonly Werk[] = [
     ],
     bild: {
       src: '/img/kwm/kumme_3.webp',
-      breite: 600,
-      hoehe: 400,
       alt: 'Bauchige, türkisblaue Schale mit leicht eingezogenem Rand',
     },
   },
@@ -230,8 +204,6 @@ export const katalog: readonly Werk[] = [
     ],
     bild: {
       src: '/img/kwm/zylindervasen.webp',
-      breite: 600,
-      hoehe: 400,
       alt: 'Fünf hohe, schlanke Zylindervasen mit hellgrauer Glasur und bräunlichen Holzbrandspuren',
     },
   },
@@ -249,8 +221,6 @@ export const katalog: readonly Werk[] = [
     ],
     bild: {
       src: '/img/kwm/zylindervasen_gross.webp',
-      breite: 600,
-      hoehe: 400,
       alt: 'Hohe Zylindervasen mit schräg gesetzten dunkelbraunen Engobe-Strichen',
     },
   },
@@ -266,8 +236,6 @@ export const katalog: readonly Werk[] = [
     ],
     bild: {
       src: '/img/kwm/zylindervase_mittel.webp',
-      breite: 600,
-      hoehe: 400,
       alt: 'Sechs Zylindervasen unterschiedlicher Höhe mit Ringen und Holzbrandfärbung',
     },
   },
@@ -285,8 +253,6 @@ export const katalog: readonly Werk[] = [
     ],
     bild: {
       src: '/img/kwm/zylindervase_klein.webp',
-      breite: 600,
-      hoehe: 400,
       alt: 'Zwei kleine Vasen in dunklem Olivgrün, eine leicht tailliert',
     },
   },
@@ -298,8 +264,6 @@ export const katalog: readonly Werk[] = [
     ],
     bild: {
       src: '/img/kwm/kugelvase.webp',
-      breite: 600,
-      hoehe: 400,
       alt: 'Bauchige Kugelvase mit mattweißer, leicht gesprenkelter Glasur',
     },
   },
@@ -315,8 +279,6 @@ export const katalog: readonly Werk[] = [
     ],
     bild: {
       src: '/img/kwm/spindelvase1.webp',
-      breite: 600,
-      hoehe: 400,
       alt: 'Zwei Ansichten einer weißen Spindelvase mit weiter Schulter',
     },
   },
@@ -332,8 +294,6 @@ export const katalog: readonly Werk[] = [
     ],
     bild: {
       src: '/img/kwm/spindelvase2.webp',
-      breite: 600,
-      hoehe: 400,
       alt: 'Seladongrüne Spindelvase und Nahaufnahme der fein gerissenen Glasur',
     },
   },
@@ -349,8 +309,6 @@ export const katalog: readonly Werk[] = [
     ],
     bild: {
       src: '/img/kwm/spindelvase3.webp',
-      breite: 600,
-      hoehe: 400,
       alt: 'Zwei Ansichten einer Spindelvase mit zartvioletter Glasur',
     },
   },
@@ -371,8 +329,6 @@ export const katalog: readonly Werk[] = [
     ],
     bild: {
       src: '/img/kwm/spindelvase4.webp',
-      breite: 600,
-      hoehe: 400,
       alt: 'Zwei Spindelvasen mit honigfarben bis weiß verlaufender Glasur',
     },
   },
@@ -393,8 +349,6 @@ export const katalog: readonly Werk[] = [
     ],
     bild: {
       src: '/img/kwm/spindelvase5.webp',
-      breite: 600,
-      hoehe: 400,
       alt: 'Eine seladonfarbene und eine weiße Spindelvase',
     },
   },
@@ -415,8 +369,6 @@ export const katalog: readonly Werk[] = [
     ],
     bild: {
       src: '/img/kwm/spindelvase6.webp',
-      breite: 600,
-      hoehe: 400,
       alt: 'Eine rosé geflammte und eine hellweiße Spindelvase',
     },
   },
@@ -427,8 +379,6 @@ export const stimmungen: readonly Stimmung[] = [
     schluessel: 'seladon-schalen',
     bild: {
       src: '/img/kwm/seladon-schalen.webp',
-      breite: 900,
-      hoehe: 600,
       alt: 'Flache Schalen mit blaugrüner Glasur, dicht nebeneinander auf dunklem Holz',
     },
     unterschrift: 'Schalen von Young-Jae Lee · Foto: Christopher Clem Franken',
@@ -437,8 +387,6 @@ export const stimmungen: readonly Stimmung[] = [
     schluessel: 'vasen-chemnitz',
     bild: {
       src: '/img/kwm/vasen-detail.webp',
-      breite: 1132,
-      hoehe: 637,
       alt: 'Vasen dicht beieinander: rosé, elfenbein, seladon und honigbraun glasiert',
     },
     unterschrift: 'Vasen von Young-Jae Lee in der Ausstellung in Chemnitz, 2025',
@@ -452,7 +400,7 @@ export const werkschau: readonly Werk[] = [
     titel: 'Kumme',
     jahr: '1995',
     angaben: [{ masse: 'H 18 cm, D 14,6 cm' }, { glasur: 'Petalit-Eichenasche-Glasur', brand: 'Holzofen' }],
-    bild: { src: '/img/kwm/kumme_2.webp', breite: 600, hoehe: 400, alt: 'Zwei Kummen mit blau gesprenkelter Glasur' },
+    bild: { src: '/img/kwm/kumme_2.webp', alt: 'Zwei Kummen mit blau gesprenkelter Glasur' },
     verweis: '/meisterstuecke#kummen',
   },
   {
@@ -462,8 +410,6 @@ export const werkschau: readonly Werk[] = [
     angaben: [{ masse: 'H 10,5 cm, D 22,5 cm' }, { glasur: 'Petalit-Eichenasche-Glasur' }],
     bild: {
       src: '/img/kwm/schale_spitz_xxl_1.webp',
-      breite: 600,
-      hoehe: 400,
       alt: 'Große spitze Schale mit rosa Glasurverlauf',
     },
     verweis: '/meisterstuecke#schalen',
@@ -475,8 +421,6 @@ export const werkschau: readonly Werk[] = [
     angaben: [{ masse: 'H ca. 30 cm, D ca. 11,5 cm' }, { glasur: 'Petalit-Eichenasche-Glasur', brand: 'Holzofen' }],
     bild: {
       src: '/img/kwm/zylindervasen_gross.webp',
-      breite: 600,
-      hoehe: 400,
       alt: 'Drei große Zylindervasen mit Pinselbemalung',
     },
     verweis: '/meisterstuecke#vasen',
@@ -488,8 +432,6 @@ export const werkschau: readonly Werk[] = [
     angaben: [{ masse: 'H 10,5 cm, D 21,5 cm' }, { glasur: 'Strontium-Feldspat-Glasur' }],
     bild: {
       src: '/img/kwm/schale_spitz_xl_1.webp',
-      breite: 600,
-      hoehe: 400,
       alt: 'Spitze Schale mit hellblauer Innenglasur',
     },
     verweis: '/meisterstuecke#schalen',
@@ -499,7 +441,7 @@ export const werkschau: readonly Werk[] = [
     titel: 'Bettelmönchschale',
     jahr: '1988',
     angaben: [{ masse: 'H 10,2 cm, D 13,6 cm' }, { glasur: 'Barium-Feldspat-Glasur', brand: 'Gasofen' }],
-    bild: { src: '/img/kwm/kumme_3.webp', breite: 600, hoehe: 400, alt: 'Hellblaue Bettelmönchschale' },
+    bild: { src: '/img/kwm/kumme_3.webp', alt: 'Hellblaue Bettelmönchschale' },
     verweis: '/meisterstuecke#kummen',
   },
   {
@@ -509,8 +451,6 @@ export const werkschau: readonly Werk[] = [
     angaben: [{ masse: 'H 10,3 cm, D 18,8 cm' }, { glasur: 'Barium-Feldspat-Glasur' }],
     bild: {
       src: '/img/kwm/schale_spitz_gross.webp',
-      breite: 600,
-      hoehe: 400,
       alt: 'Spitze Schale mit türkisgrüner Glasur auf kleinem Fuß',
     },
     verweis: '/meisterstuecke#schalen',

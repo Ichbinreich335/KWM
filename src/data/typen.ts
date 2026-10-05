@@ -22,8 +22,9 @@ export interface Fakt {
 export interface BildAngabe {
   /** Pfad unter `src/assets/img/`, wie ihn `Bild.astro` auflöst */
   src: string;
-  breite: number;
-  hoehe: number;
+  /** Nur setzen, wenn die Darstellung kleiner sein soll als das Bild; sonst kommen die Maße aus dem Bild selbst */
+  breite?: number;
+  hoehe?: number;
   alt: string;
   /** Breiten der srcset-Kandidaten; gehört mit `sizes` zusammen */
   widths?: readonly number[];

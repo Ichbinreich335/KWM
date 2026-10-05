@@ -7,9 +7,9 @@ type Props = Omit<HTMLAttributes<'img'>, 'src' | 'srcset' | 'alt' | 'width' | 'h
   /** Pfad wie in den Seiten, z. B. `/img/kwm/kannen.webp` (liegt unter `src/assets/img/`). */
   src: string;
   alt: string;
-  /** Eigengröße in Pixeln; bestimmt die Box wie das frühere `width`-Attribut. */
-  width: number | `${number}`;
-  height: number | `${number}`;
+  /** Eigengröße in Pixeln; ohne Angabe gelten die Maße des Bildes selbst (ImageMetadata). */
+  width?: number | `${number}` | undefined;
+  height?: number | `${number}` | undefined;
   layout?: 'constrained' | 'full-width';
   /** Bild im ersten Bildschirm: setzt loading="eager", decoding="sync" und fetchpriority="high". */
   priority?: boolean;
@@ -23,9 +23,11 @@ type Props = Omit<HTMLAttributes<'img'>, 'src' | 'srcset' | 'alt' | 'width' | 'h
     | { widths?: never; sizes?: string }
   );
 
-const { src, layout = 'constrained', ...rest } = Astro.props;
+const { src, layout = 'constrained', width, height, ...rest } = Astro.props;
+// Maße nur weitergeben, wenn sie angegeben sind; sonst nimmt Astro sie aus den ImageMetadata
+const masse = { ...(width !== undefined && { width }), ...(height !== undefined && { height }) };
 
-// fit="fill": wie das frühere <img> ohne object-fit; das Seitenverhältnis kommt aus width/height und CSS.
+// fit="fill": wie das frühere <img> ohne object-fit; das Seitenverhältnis kommt aus den Maßen (angegeben oder aus dem Bild) und CSS.
 ---
 
-<Image src={bildMetadaten(src)} layout={layout} fit="fill" {...rest} />
+<Image src={bildMetadaten(src)} layout={layout} fit="fill" {...masse} {...rest} />

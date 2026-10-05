@@ -42,8 +42,6 @@ export const geschirr: readonly Warengruppe[] = [
       {
         bild: {
           src: '/img/kwm/teller.webp',
-          breite: 600,
-          hoehe: 400,
           alt: 'Teller in Dunkelgrün, Hellgrün und Rostbraun, von oben gesehen',
         },
         teile: [
@@ -57,8 +55,6 @@ export const geschirr: readonly Warengruppe[] = [
       {
         bild: {
           src: '/img/kwm/neue_serie-1.webp',
-          breite: 600,
-          hoehe: 400,
           alt: 'Teller und Schalen der neuen Serie in Schwarz, Weiß, Ocker und Seladon',
         },
         untertitel: 'Neue Serie',
@@ -80,8 +76,6 @@ export const geschirr: readonly Warengruppe[] = [
       {
         bild: {
           src: '/img/kwm/viereckteller-2.webp',
-          breite: 600,
-          hoehe: 400,
           alt: 'Vier quadratische Teller in Hellgrün, Ocker, Dunkelgrün und Weiß',
         },
         teile: [
@@ -102,8 +96,6 @@ export const geschirr: readonly Warengruppe[] = [
       {
         bild: {
           src: '/img/kwm/schalen.webp',
-          breite: 600,
-          hoehe: 400,
           alt: 'Schalen und Schüsseln in Seladon, Braun und Orange, dazu eine kleine Kugeldose',
         },
         teile: [
@@ -116,8 +108,6 @@ export const geschirr: readonly Warengruppe[] = [
       {
         bild: {
           src: '/img/kwm/schalen2.webp',
-          breite: 600,
-          hoehe: 400,
           alt: 'Zwei flache Salatschüsseln in Dunkelbraun und Seladon',
         },
         teile: [
@@ -128,8 +118,6 @@ export const geschirr: readonly Warengruppe[] = [
       {
         bild: {
           src: '/img/kwm/schalen3.webp',
-          breite: 600,
-          hoehe: 400,
           alt: 'Spitze Müslischalen und eine Schüssel in Braun, Weiß, Grün und Orange',
         },
         teile: [
@@ -143,8 +131,6 @@ export const geschirr: readonly Warengruppe[] = [
       {
         bild: {
           src: '/img/kwm/schalen4.webp',
-          breite: 600,
-          hoehe: 400,
           alt: 'Breite Müslischale, Spaghettiteller und Schüssel in Weiß, Hellgrün und Olivbraun',
         },
         teile: [
@@ -162,8 +148,6 @@ export const geschirr: readonly Warengruppe[] = [
       {
         bild: {
           src: '/img/kwm/tassen.webp',
-          breite: 600,
-          hoehe: 400,
           alt: 'Espresso-, Cappuccino- und Kaffeetassen mit Untertassen in Hellgrün, Beige und Orange',
         },
         teile: [
@@ -177,8 +161,6 @@ export const geschirr: readonly Warengruppe[] = [
       {
         bild: {
           src: '/img/kwm/tassen2.webp',
-          breite: 600,
-          hoehe: 400,
           alt: 'Teebecher und Trinkbecher in Beige, Seladon und Dunkelbraun',
         },
         teile: [
@@ -196,8 +178,6 @@ export const geschirr: readonly Warengruppe[] = [
       {
         bild: {
           src: '/img/kwm/toepfe.webp',
-          breite: 600,
-          hoehe: 400,
           alt: 'Deckeldose und Deckeltöpfe in Dunkelbraun, Grau, Orange und Seladon',
         },
         teile: [
@@ -210,8 +190,6 @@ export const geschirr: readonly Warengruppe[] = [
       {
         bild: {
           src: '/img/kwm/toepfe2.webp',
-          breite: 600,
-          hoehe: 400,
           alt: 'Koreanische Dose mit orangefarbener Glasur und flachem Deckel',
         },
         teile: [{ name: 'Koreanische Dose', masse: 'H 8,5 × 12,5 cm', programmnr: '42' }],
@@ -219,8 +197,6 @@ export const geschirr: readonly Warengruppe[] = [
       {
         bild: {
           src: '/img/kwm/toepfe3.webp',
-          breite: 600,
-          hoehe: 400,
           alt: 'Drei Suppentöpfe mit Deckel in Orange, Weiß und Seladon',
         },
         teile: [
@@ -239,8 +215,6 @@ export const geschirr: readonly Warengruppe[] = [
       {
         bild: {
           src: '/img/kwm/kannen.webp',
-          breite: 600,
-          hoehe: 400,
           alt: 'Krüge in Seladon und Beige und ein dunkelgrüner Becher',
         },
         teile: [
@@ -253,8 +227,6 @@ export const geschirr: readonly Warengruppe[] = [
       {
         bild: {
           src: '/img/kwm/kannen2.webp',
-          breite: 600,
-          hoehe: 400,
           alt: 'Drei Teekannen in Weiß und Seladon mit Bambushenkeln',
         },
         teile: [
@@ -266,8 +238,6 @@ export const geschirr: readonly Warengruppe[] = [
       {
         bild: {
           src: '/img/kwm/kannen3.webp',
-          breite: 600,
-          hoehe: 400,
           alt: 'Zwei Flaschen mit schlankem Hals, eine dunkelbraun, eine seladongrün',
         },
         teile: [
@@ -284,8 +254,6 @@ export const geschirr: readonly Warengruppe[] = [
       {
         bild: {
           src: '/img/kwm/suppenschale.webp',
-          breite: 600,
-          hoehe: 400,
           alt: 'Ensemble aus Suppenschale, Salatschüsseln, Kugeldosen, Müslischale und Spaghettiteller in verschiedenen Glasuren',
         },
         breit: true,
@@ -302,8 +270,6 @@ export const geschirr: readonly Warengruppe[] = [
       {
         bild: {
           src: '/img/kwm/sieb.webp',
-          breite: 600,
-          hoehe: 400,
           alt: 'Zwei gelochte Siebe mit Untersetzern in Beige und Seladon',
         },
         teile: [
@@ -314,8 +280,6 @@ export const geschirr: readonly Warengruppe[] = [
       {
         bild: {
           src: '/img/kwm/milch.webp',
-          breite: 600,
-          hoehe: 400,
           alt: 'Kleines Milchkännchen und Zuckerschale in Seladon und Dunkelbraun',
         },
         teile: [
@@ -326,8 +290,6 @@ export const geschirr: readonly Warengruppe[] = [
       {
         bild: {
           src: '/img/kwm/streuer.webp',
-          breite: 600,
-          hoehe: 400,
           alt: 'Zwei zylindrische Streuer in Dunkelgrün und Olivbraun',
         },
         teile: [
@@ -348,8 +310,6 @@ export const edition: readonly Warengruppe[] = [
       {
         bild: {
           src: '/img/kwm/vasen.webp',
-          breite: 600,
-          hoehe: 400,
           alt: 'Kleine Zylinder- und Kugelvasen in Grau, Seladon und Grün',
         },
         teile: [
@@ -360,8 +320,6 @@ export const edition: readonly Warengruppe[] = [
       {
         bild: {
           src: '/img/kwm/vasen2.webp',
-          breite: 600,
-          hoehe: 400,
           alt: 'Zwei Kugelvasen mit gesprenkelter dunkelgrüner und seladongrüner Glasur',
         },
         teile: [{ name: 'Kugelvasen', masse: 'H ca. 20 cm' }],
@@ -369,8 +327,6 @@ export const edition: readonly Warengruppe[] = [
       {
         bild: {
           src: '/img/kwm/vasen3.webp',
-          breite: 296,
-          hoehe: 400,
           alt: 'Zwei schmale, hohe Wandvasen in Weiß mit blaugrüner Pinselmalerei',
         },
         kontur: true,
@@ -379,8 +335,6 @@ export const edition: readonly Warengruppe[] = [
       {
         bild: {
           src: '/img/kwm/vasen4.webp',
-          breite: 300,
-          hoehe: 198,
           alt: 'Zwei Tulpenvasen in Seladon vor dunklem Grund',
         },
         kontur: true,
@@ -389,8 +343,6 @@ export const edition: readonly Warengruppe[] = [
       {
         bild: {
           src: '/img/kwm/vasen5.webp',
-          breite: 300,
-          hoehe: 452,
           alt: 'Hohe Zylindervase in Seladon vor dunklem Grund',
         },
         kontur: true,
@@ -406,8 +358,6 @@ export const edition: readonly Warengruppe[] = [
       {
         bild: {
           src: '/img/kwm/plattenteller.webp',
-          breite: 600,
-          hoehe: 400,
           alt: 'Zwei rechteckige Plattenteller mit gerillter Oberfläche in Seladon und Dunkelgrün',
         },
         teile: [{ name: 'Plattenteller', masse: '21 × 42 cm' }],
@@ -415,8 +365,6 @@ export const edition: readonly Warengruppe[] = [
       {
         bild: {
           src: '/img/kwm/plattenteller2.webp',
-          breite: 600,
-          hoehe: 400,
           alt: 'Zwei lange Plattenteller in Olivgrün und Türkis mit Pinselmotiv',
         },
         teile: [{ name: 'Plattenteller, lang', masse: '16,5 × 42 cm' }],
@@ -424,8 +372,6 @@ export const edition: readonly Warengruppe[] = [
       {
         bild: {
           src: '/img/kwm/plattenteller3.webp',
-          breite: 600,
-          hoehe: 400,
           alt: 'Vier Plattenteller unterschiedlicher Größe mit blauer Pinselmalerei auf Weiß',
         },
         teile: [
@@ -445,8 +391,6 @@ export const edition: readonly Warengruppe[] = [
       {
         bild: {
           src: '/img/kwm/pflanzgefaesse.webp',
-          breite: 600,
-          hoehe: 400,
           alt: 'Zwei Pflanzenübertöpfe, einer türkis mit blauem Farblauf',
         },
         teile: [
@@ -458,8 +402,6 @@ export const edition: readonly Warengruppe[] = [
       {
         bild: {
           src: '/img/kwm/pflanzgefaesse2.webp',
-          breite: 300,
-          hoehe: 199,
           alt: 'Zwei zylindrische Pflanzenübertöpfe in Schwarzgrau vor dunklem Grund',
         },
         kontur: true,
@@ -472,8 +414,6 @@ export const edition: readonly Warengruppe[] = [
       {
         bild: {
           src: '/img/kwm/pflanzgefaesse3.webp',
-          breite: 600,
-          hoehe: 400,
           alt: 'Großes, weites Pflanzgefäß in gebrochenem Weiß',
         },
         teile: [{ name: 'Pflanzgefäß, weit', masse: 'H 43 cm, D 50 cm' }],
@@ -488,8 +428,6 @@ export const edition: readonly Warengruppe[] = [
       {
         bild: {
           src: '/img/kwm/schale.webp',
-          breite: 600,
-          hoehe: 400,
           alt: 'Große, flache Schale in hellem Grau, von der Seite',
         },
         teile: [{ name: 'Große Schale', masse: 'H 6,5 cm, Ø 36,5 cm' }],
@@ -497,8 +435,6 @@ export const edition: readonly Warengruppe[] = [
       {
         bild: {
           src: '/img/kwm/schale2.webp',
-          breite: 600,
-          hoehe: 400,
           alt: 'Zwei große, flache Schalen in Seladon, von oben gesehen',
         },
         teile: [{ name: 'Große Schale', masse: 'H 6,5 cm, Ø 36,5 cm' }],
@@ -554,8 +490,6 @@ export const regal: readonly Regalfach[] = [
   {
     bild: {
       src: '/img/kwm/teller.webp',
-      breite: 600,
-      hoehe: 400,
       alt: 'Teller in Dunkelgrün, Hellgrün und Rostbraun, von oben gesehen',
     },
     beschriftung: 'Teller',
@@ -564,8 +498,6 @@ export const regal: readonly Regalfach[] = [
   {
     bild: {
       src: '/img/kwm/kannen.webp',
-      breite: 600,
-      hoehe: 400,
       alt: 'Krüge in Seladon und Beige und ein dunkelgrüner Becher',
     },
     beschriftung: 'Krüge und Kannen',
@@ -574,8 +506,6 @@ export const regal: readonly Regalfach[] = [
   {
     bild: {
       src: '/img/kwm/tassen2.webp',
-      breite: 600,
-      hoehe: 400,
       alt: 'Teebecher und Trinkbecher in Beige, Seladon und Dunkelbraun',
     },
     beschriftung: 'Becher und Tassen',
@@ -584,8 +514,6 @@ export const regal: readonly Regalfach[] = [
   {
     bild: {
       src: '/img/kwm/toepfe.webp',
-      breite: 600,
-      hoehe: 400,
       alt: 'Deckeldose und Deckeltöpfe in Dunkelbraun, Grau, Orange und Seladon',
     },
     beschriftung: 'Töpfe und Dosen',
