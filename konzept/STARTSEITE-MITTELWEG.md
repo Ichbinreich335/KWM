@@ -126,28 +126,37 @@ Nichts geht verloren (Volltextsuche in `src/`):
 
 **Technisch entfallen** (nur von der alten Startseite genutzt): Signatur Farbskala (`SigFarbskala`, `sig-farbskala.ts`, Daten `glasuren` und Test), `FactsTable`, `kurzfakten`, Statement-Typ `lede`, Bilder `01-seladon-gefaess.webp` und `spindelvase-einzeln-1200.webp`. Wiederherstellbar aus `e0330a3`.
 
-## 6. Prüfung
+## 6. Abschlusspolitur und Prüfung (Endstand)
 
-- Runde 2: `npm run check` grün. Alle Playwright-Projekte (Chromium, WebKit, iPhone, Bewegung) gegen `wrangler dev` auf Port 8784: 417 bestanden, abweichend nur die Optik der Startseite in den vier Optik-Projekten (erwartet, die Referenzen sind vom Ausgangsstand). `npm run test:vorschau` grün.
-- Farbskala wiederhergestellt in der Fassung von `origin/gesamtstand` (Oberflächen-Map `OBERFLAECHEN`, `sprenkelart`, Test `glasuren.test.ts`).
-- Test der Umschaltung: ohne Angabe, `?bauhaus=1`, `=4` und unbekannte Werte zeigen Entwurf 4; `=2` und `=3` genau den gewählten.
-- Screens in WebKit 1440 und 390 selbst angesehen (Bilder vorher durch Scrollen geladen): Entwurf 4, Farben, Meisterstücke, Ganzseite. Konsole ohne Fehler, kein waagrechtes Scrollen.
+Alle 13 Seiten durchgesehen bei 1440, 1024, 768 und 390 px in Chromium und WebKit, Bilder vorher durch Scrollen geladen. Dazu automatisch geprüft: Konsole, waagrechtes Scrollen, nicht geladene Bilder, Werkbilder höher als zwei Drittel des Bildschirms.
+
+Geändert je Seite (nur kleine, ruhige Korrekturen):
+- **Startseite:** „Seit“ klein auf der Grundlinie der 1927, die Überschrift ist ein Satz. Umschalter und verworfene Entwürfe entfernt. Hinweis bei den Orten ohne Leerzeichen vor dem Komma („Auf eine Stadt klicken, um …“; vorher „klicken , um“).
+- **Meisterstücke:** Einzelwerke mit Meta-Spalte (z. B. „Große Schale“, „Schale, spitz, XXL“) folgen jetzt der Regel `--werk-max`: höchstens zwei Drittel der Bildschirmhöhe statt 676 px bei 900 px Höhe. Die 600-px-Archivbilder werden dadurch auch weniger stark vergrößert. Stimmungsbilder bleiben breit.
+- **Manufaktur:** lange Namen in den Teilelisten („Pflanzenübertopf, zylindrisch“) liefen bei 1440 px in die Maß-Spalte. Sie werden jetzt getrennt.
+- **Young-Jae Lee:** das Jahn-Zitat ist vollständig (zweiter Satz aus Runde 1). Sonst nichts geändert.
+- **Werkstatt, Aktuelles, Besuch, Impressum, AGB, Versand, Zahlung, 404:** ohne Befund, nichts geändert.
+- **Datenschutz:** ohne optischen Befund; der Kasten „Text folgt“ ist Absicht (die Erklärung liefert die Werkstatt, siehe `ADMIN-OFFEN.md`). **Vor dem Livegang ersetzen.**
+- Bewusst nicht geändert: Stimmungs- und Ausstellungsbilder, die höher als zwei Drittel sind (Einstieg, Kummerschalen auf /young-jae-lee, Regal auf /werkstatt, Ausstellungsbilder auf /aktuelles). Die Regel gilt nur für Werkbilder.
+- Zitate: Unterseiten und Startseite nutzen dieselben Statement-Typen (`zitat`, `zitat-lang`, `gross`).
+
+Tests:
+- `npm run check` grün.
+- Optik-Referenzen neu erzeugt, alle Projekte.
+- Playwright gegen `wrangler dev` (Port 8784), Chromium, WebKit und iPhone inklusive Bewegung, Stile, Formular und axe: 401 bestanden, 0 fehlgeschlagen.
+- `npm run test:vorschau` grün.
+- Konsole ohne Fehler; die WebKit-Meldung „Refused to apply a stylesheet“ kommt vom Screenshot-Werkzeug, nicht von der Seite.
 
 ## 7. Worauf beim Review achten
 
-Links (jeweils am Rechner und am Handy öffnen):
-- Entwurf 4 (Standard): https://startseite-mittelweg-kwm-redesign.entwicklung-7f3.workers.dev/?bauhaus=4
-- Vergleich Entwurf 2: https://startseite-mittelweg-kwm-redesign.entwicklung-7f3.workers.dev/?bauhaus=2
-- Vergleich Entwurf 3: https://startseite-mittelweg-kwm-redesign.entwicklung-7f3.workers.dev/?bauhaus=3
+Vorschau: https://startseite-mittelweg-kwm-redesign.entwicklung-7f3.workers.dev (am Rechner und am Handy).
 
-1. **Am Rechner, Entwurf 4:** Tragen 1927 und die Teller-Tafel zusammen? Ist die Zahl in dieser Größe richtig, oder soll sie kleiner werden? Die Station ist mit rund 1.570 px gut ein Bildschirm länger als Entwurf 2.
-2. **Am Handy, Entwurf 4:** Die Legende steht 2 × 2 unter dem Foto (die Teller sind für Spalten darunter zu klein). Ist die Zuordnung noch klar?
-3. **Farben gegen Ende:** „Sechs Glasuren, ein Geschirr.“ zwischen 99 Schalen und Feuer. Am Rechner mit der Maus über die Bänder fahren (sie öffnen sich), am Handy antippen.
-4. **Meisterstücke:** die zwei Schalen aus dem MOK-Foto. Schön genug? Stört, dass Aktuell bis zum 25.10. dasselbe Foto im Ganzen zeigt?
-5. **Rhythmus:** Aktuell (dunkel), Bauhaus, Young-Jae Lee, Orte (dunkel), Meisterstücke, 99 Schalen, Farben, Feuer (dunkel). Ruhig genug?
+1. Bauhaus-Station: „Seit 1927 in der Tradition des Bauhauses.“ als ein Satz. Ist das „Seit“ groß genug?
+2. Meisterstücke-Seite: die kleineren Einzelwerke (Große Schale, Schale spitz XXL) mit Weißraum rechts.
+3. Manufaktur, Edition: die getrennten Namen in den schmalen Listen.
 
 ## 8. Offen
 
-- **Bildrechte:** zwei Schalen bzw. MOK-Foto (Fotograf offen, vermutlich Museum), Teller-Foto Oktober 2026 (Fotograf nicht belegt). Vor dem Livegang klären. Die Teeschale ist jetzt belegt (Foto: Edi Baumann), wird aber nicht mehr verwendet.
+- **Datenschutzerklärung** fehlt (Kasten „Text folgt“).
+- **Bildrechte:** MOK-Foto (zwei Schalen, Aktuell, Meisterstücke-Kopf), Teller-Foto Oktober 2026. Fotografen nicht belegt.
 - **Historisches Werkstattfoto** (z. B. für die Bauhaus-Station oder die Chronik): Anfrage bei Archiven (BILDPLAN A12).
-- Nach der Wahl: Umschalter und die nicht gewählten Entwürfe entfernen, Kopf-Skript und CSP-Hash zurücksetzen, Optik-Referenzen neu.
