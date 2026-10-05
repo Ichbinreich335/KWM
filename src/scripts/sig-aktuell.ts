@@ -38,4 +38,6 @@ export default function init(el: Element) {
     });
   });
   el.classList.add('is-ready');
+  // Übergänge erst danach, damit das erste Zuklappen nicht als Animation läuft (Seitenhöhe bliebe sonst in Bewegung)
+  requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('is-animiert')));
 }

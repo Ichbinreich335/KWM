@@ -61,6 +61,10 @@ for (const pfad of seiten) {
     await beobachteStile(page);
     await page.goto(pfad);
     await page.waitForLoadState('networkidle');
+    // Die Seitenhöhe ist erst stabil, wenn das Skript die Aktuell-Details zugeklappt hat (vorher stehen sie offen)
+    await page.waitForFunction(
+      () => !document.querySelector('.aktuell') || document.querySelector('.aktuell.is-animiert'),
+    );
     const { hoehen } = await langsamDurchScrollen(page);
 
     const funde = await page.evaluate(() => [...(window as unknown as { __lagefunde: Set<string> }).__lagefunde]);

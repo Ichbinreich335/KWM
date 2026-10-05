@@ -346,14 +346,20 @@ const datum = zeitraumKurz(ausstellung.start, ausstellung.ende);
     grid-template-rows: 0fr;
     visibility: hidden;
     width: 100%;
-    transition:
-      grid-template-rows var(--dur-open) var(--ease),
-      visibility 0s linear var(--dur-open);
   }
   .aktuell__panel-in {
     min-height: 0;
     overflow: hidden;
     opacity: 0;
+  }
+  /* Übergänge erst, wenn das Skript die Details zugeklappt hat (sig-aktuell.ts setzt is-animiert einen Frame
+     nach is-ready); sonst schrumpft die Seite beim Laden um Hunderte px und verschiebt die Höhe beim Scrollen. */
+  :global(.aktuell.is-animiert) .aktuell__panel {
+    transition:
+      grid-template-rows var(--dur-open) var(--ease),
+      visibility 0s linear var(--dur-open);
+  }
+  :global(.aktuell.is-animiert) .aktuell__panel-in {
     transition: opacity var(--dur-open) var(--ease);
   }
   .aktuell__item.is-open .aktuell__panel {
