@@ -58,9 +58,10 @@ const zeitraum = `${gezeigt[0]?.jahr} bis ${gezeigt[gezeigt.length - 1]?.jahr}`;
   // erreicht. Am Handy ist die Chronik eine Wischreihe: Ein Punkt füllt sich, sobald seine Karte ins Bild ragt.
   import { MOBIL_ABFRAGE, reducedMotion } from '../scripts/keramik';
 
-  const READ_LINE = 0.62;
+  // Lesehöhe (Anteil Fensterhöhe): Bildschirmmitte, damit die Linie erst startet, wenn der Abschnitt darüber (Feuer) aus dem Blick rückt
+  const READ_LINE = 0.5;
   const SWIPE_EDGE = 8; // Punkt füllt sich, sobald seine Karte so weit in die Wischleiste ragt (px)
-  const SWIPE_VISIBLE = 0.9; // Wischleiste zählt als sichtbar, wenn ihre Oberkante über dieser Bildschirmhöhe liegt
+  const SWIPE_VISIBLE = 0.75; // Wischleiste zählt als sichtbar, wenn ihre Oberkante über dieser Bildschirmhöhe liegt
 
   class KwmChronik extends HTMLElement {
     private abort: AbortController | null = null;
