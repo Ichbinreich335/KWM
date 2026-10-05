@@ -1,4 +1,5 @@
 // Ausstellungen und Veranstaltungen (Sanity-Typ `ausstellung`). Keine Preise, kein Bestand, keine Lagerorte.
+import { werkstatt } from './kontakt';
 import type { BildAngabe, Fakt } from './typen';
 
 /** Bild mit Unterschrift (Bildnachweis steht in der Unterschrift) */
@@ -189,7 +190,7 @@ export const ausstellungen: readonly Ausstellung[] = [
     haus: 'Pop-up-Store Vol. 2 in der Werkstatt',
     stadt: 'Zeche Zollverein',
     ort: 'essen',
-    adresse: ['Bullmannaue 19', '45327 Essen, Gelände der Zeche Zollverein'],
+    adresse: [werkstatt.strasse, `${werkstatt.plz} ${werkstatt.ort}, Gelände der Zeche Zollverein`],
     start: '2026-11-06',
     ende: '2026-11-08',
     beschreibung: 'Pop-up-Store in den Räumen der Keramischen Werkstatt Margaretenhöhe.',
@@ -250,7 +251,7 @@ export const ausstellungen: readonly Ausstellung[] = [
             'Dietrich Pampus (Vintage Leuchten)',
           ],
         },
-        { label: 'Ort', wert: ['Bullmannaue 19, 45327 Essen', 'auf dem Gelände der Zeche Zollverein'] },
+        { label: 'Ort', wert: [`${werkstatt.strasse}, ${werkstatt.plz} ${werkstatt.ort}`, werkstatt.adresszusatz] },
       ],
     },
   },
