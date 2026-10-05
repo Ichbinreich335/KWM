@@ -141,7 +141,7 @@ Vier Typen, jede Unterseite wählt einen (Modifier-Klasse). Gemeinsam: Abstand o
 - **Anker** (`--anker`, dunkel): Titel links (Spalte 1–8), Lede rechts (9–12), randloses Panorama am Fuß (`--strip`). Werkstatt. Maximal eine Unterseite.
 - Bild und Fläche grenzen ohne Zwischenraum aneinander, nur der Sockel und das Panorama laufen randlos.
 
-### Expander (`.expander`, `css/expander.css`, `js/expander.js`)
+### Expander (`.expander`, `src/components/Expander.astro`)
 Die eine Aufklapp-Komponente der Seite. Kein `<details>`, keine eigenen Aufklapper pro Seite.
 - Aufbau: `.expander > h3.expander__bar > button.expander__btn[aria-expanded][aria-controls]` und `.expander__panel > .expander__inner`. Plus dreht sich zum Minus, Höhe über `grid-template-rows` 0fr nach 1fr in 0,5 s, bei reduzierter Bewegung ohne Animation. Ohne JavaScript bleibt der Inhalt offen sichtbar. Ein Sprung auf einen `#id` im Inhalt öffnet den Expander.
 - **Zeile** (`--row`): Jahr groß links, Teaser in der Mitte, Plus rechts, Haarlinie darunter. Jahresarchiv auf Aktuelles (Inhalt `.year__list`).
@@ -277,11 +277,11 @@ Jede wiederverwendbare Komponente hat einen künftigen Astro-Namen (`src/compone
 
 | Komponente | Zweck | Textstile | Varianten | Fundstellen |
 |---|---|---|---|---|
-| `Expander` | Die eine Aufklapp-Komponente (Abschnitt 6) | Aussage oder Titel (Label), Begleittext (Teaser) | `row` (Jahresarchiv), `lang` (ganze Breite, Schließen-Leiste sticky) | `css/expander.css`, `js/expander.js`; Aktuelles, Young-Jae Lee |
-| `YearArchive` | Jahresblock im Archiv mit Jahr und Einträgen | Aussage (Jahr), Body (Titel), Begleittext (Ort), Meta (Datum) | im `Expander` `row` oder `lang` | `.year__list`, `.exh-year` (`css/page-aktuelles.css`, `css/page-young-jae-lee.css`) |
-| `Timeline` | Lebensweg der Künstlerin, Jahr, Ort, Satz; füllt sich beim Scrollen (Abschnitt 8) | Meta (Jahr), Titel (Ort), Begleittext | hell | `.journey` (`styles.css`, Startseite, `js/main.js`) |
-| `Chronicle` | Hundert Jahre Werkstatt, Jahre ziehen vorbei, Punkte füllen sich beim Erreichen der Linie | Aussage (Jahr), Titel, Begleittext, Zitat klein (Lede) | Fläche | `.chronicle` (`styles.css`, `css/page-werkstatt.css`) |
-| `PlaceGrid` | Ausstellungsorte als Bildraster mit Detail | Abschnitt (XL), Aussage (M), Titel, Meta, Begleittext | Anker | `.orte` (`css/sig-orte.css`, `js/sig-orte.js`) |
+| `Expander` | Die eine Aufklapp-Komponente (Abschnitt 6) | Aussage oder Titel (Label), Begleittext (Teaser) | `row` (Jahresarchiv), `lang` (ganze Breite, Schließen-Leiste sticky); Custom Element `kwm-expander` | `src/components/Expander.astro`; Aktuelles, Young-Jae Lee |
+| `YearArchive` | Jahresblock im Archiv mit Jahr und Einträgen | Aussage (Jahr), Body (Titel), Begleittext (Ort), Meta (Datum) | `auswahl` (ein `Expander` `row` je Jahr, Aktuelles), `gesamt` (ein `Expander` `lang` mit allen Jahren, Young-Jae Lee); Daten aus `src/data/archiv.ts` | `src/components/YearArchive.astro` (`.year__list`, `.exh-year`) |
+| `Timeline` | Lebensweg der Künstlerin, Jahr, Ort, Satz; füllt sich beim Scrollen (Abschnitt 8) | Meta (Jahr), Titel (Ort), Begleittext | hell; Daten aus `src/data/lebensweg.ts` | `src/components/Timeline.astro` (`.journey`, Verhalten in `src/scripts/main.ts`) |
+| `Chronicle` | Hundert Jahre Werkstatt, Jahre ziehen vorbei, Punkte füllen sich beim Erreichen der Linie | Aussage (Jahr), Titel, Begleittext, Zitat klein (Lede) | Fläche; `kurz` (Startseite, nur Einträge mit Kurztext), Daten aus `src/data/chronik.ts` | `src/components/Chronicle.astro` (`.chronicle`, Verhalten in `src/scripts/main.ts`) |
+| `PlaceGrid` | Ausstellungsorte als Bildraster mit Detail | Abschnitt (XL), Aussage (M), Titel, Meta, Begleittext | Anker; Custom Element `kwm-places`, Daten aus `src/data/orte.ts` (Zahlen pro Ort berechnet) | `src/components/PlaceGrid.astro` |
 
 ### Formulare und Hinweise
 
