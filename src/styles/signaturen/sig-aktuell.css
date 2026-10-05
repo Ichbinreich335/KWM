@@ -364,6 +364,11 @@
     outline: 2px solid var(--on-coal);
     outline-offset: -2px;
   }
+  /* In der schmalen Karte steht die Bezeichnung über dem Wert, sonst stößt „Öffnungszeiten“ an */
+  .aktuell__reihe .aktuell__facts > div {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: 2px;
+  }
   .aktuell__reihe > .aktuell__item {
     flex: 0 0 var(--aktuell-karte);
     margin-bottom: 0;
