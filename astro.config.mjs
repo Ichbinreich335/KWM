@@ -1,5 +1,5 @@
 // @ts-check
-import { defineConfig, fontProviders } from 'astro/config';
+import { defineConfig, envField, fontProviders } from 'astro/config';
 
 // Unicode-Bereiche der beiden Teilmengen: Der Browser lädt nur die Datei, deren Zeichen auf der Seite vorkommen.
 /** @type {Record<'latin' | 'latin-ext', [string, ...string[]]>} */
@@ -75,8 +75,24 @@ export default defineConfig({
   // aktuelles.astro → dist/aktuelles.html, von Cloudflare als /aktuelles ausgeliefert
   build: { format: 'file', inlineStylesheets: 'never' },
   trailingSlash: 'never',
-  // Globale Stile für die responsiven Bilder (max-width bei constrained)
-  image: { responsiveStyles: true },
+  // Globale Stile für die responsiven Bilder (max-width bei constrained).
+  // Sanity-Bilder lädt und verarbeitet der Build; der Browser fragt nie bei cdn.sanity.io an.
+  image: {
+    responsiveStyles: true,
+    remotePatterns: [{ protocol: 'https', hostname: 'cdn.sanity.io', pathname: '/images/135lyh9t/production/**' }],
+  },
+  // Sanity-Zugang nur beim Bauen. Ohne Token liest der Build veröffentlichte Inhalte (öffentliches Dataset).
+  env: {
+    schema: {
+      SANITY_API_READ_TOKEN: envField.string({ context: 'server', access: 'secret', optional: true }),
+      SANITY_PERSPEKTIVE: envField.enum({
+        context: 'server',
+        access: 'public',
+        values: ['published', 'drafts'],
+        default: 'published',
+      }),
+    },
+  },
   // Verschobene Regeln behalten ihre Spezifität: 'where' erhöht sie nicht (Standard 'attribute' addiert +1)
   scopedStyleStrategy: 'where',
   // Astro 7 entfernt sonst Leerzeichen zwischen Inline-Elementen (Standard 'jsx')

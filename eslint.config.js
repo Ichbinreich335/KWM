@@ -6,6 +6,8 @@ export default [
     ignores: [
       'dist/',
       'studio/',
+      // von sanity typegen erzeugt
+      'src/sanity/sanity.types.ts',
       '.astro/',
       'public/',
       'archiv/',

@@ -4,7 +4,7 @@ import { Image } from 'astro:assets';
 import { bildMetadaten } from '../data/bilder';
 
 type Props = Omit<HTMLAttributes<'img'>, 'src' | 'srcset' | 'alt' | 'width' | 'height' | 'sizes'> & {
-  /** Pfad wie in den Seiten, z. B. `/img/kwm/kannen.webp` (liegt unter `src/assets/img/`). */
+  /** Pfad wie in den Seiten, z. B. `/img/kwm/kannen.webp` (liegt unter `src/assets/img/`), oder die https-Adresse eines Sanity-Bildes. */
   src: string;
   alt: string;
   /** Eigengröße in Pixeln; bestimmt die Box wie das frühere `width`-Attribut. */
@@ -25,7 +25,12 @@ type Props = Omit<HTMLAttributes<'img'>, 'src' | 'srcset' | 'alt' | 'width' | 'h
 
 const { src, layout = 'constrained', ...rest } = Astro.props;
 
+// Sanity-Bilder (https) lädt und verarbeitet der Build, `image.remotePatterns` in astro.config.mjs lässt nur cdn.sanity.io zu.
 // fit="fill": wie das frühere <img> ohne object-fit; das Seitenverhältnis kommt aus width/height und CSS.
 ---
 
-<Image src={bildMetadaten(src)} layout={layout} fit="fill" {...rest} />
+{src.startsWith('https://') ? (
+  <Image src={src} layout={layout} fit="fill" {...rest} />
+) : (
+  <Image src={bildMetadaten(src)} layout={layout} fit="fill" {...rest} />
+)}

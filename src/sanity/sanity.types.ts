@@ -355,3 +355,198 @@ export type AllSanitySchemaTypes =
   | SanityImageAsset
   | Geopoint
   | Slug;
+
+// Source: ../src/sanity/queries.ts
+// Variable: SEITEN_QUERY
+// Query: *[_type == "seite"]{  _id, _type, titel, einleitung, beschreibung}
+export type SEITEN_QUERY_RESULT = Array<{
+  _id: string;
+  _type: 'seite';
+  titel: string;
+  einleitung: string | null;
+  beschreibung: string;
+}>;
+
+// Source: ../src/sanity/queries.ts
+// Variable: HINWEISE_QUERY
+// Query: *[_type == "hinweis"] | order(gueltigVon asc){  _id, _type, text,  "von": gueltigVon,  "bis": gueltigBis}
+export type HINWEISE_QUERY_RESULT = Array<{
+  _id: string;
+  _type: 'hinweis';
+  text: string;
+  von: string;
+  bis: string;
+}>;
+
+// Source: ../src/sanity/queries.ts
+// Variable: AUSSTELLUNGEN_QUERY
+// Query: *[_type == "ausstellung"] | order(start asc){  _id, _type, titel, art, haus, adresse, start, ende, spotlight,  eroeffnung, oeffnungszeiten, oeffnungszeitenBezeichnung, kooperation,  beschreibung,  link { text, url },  "ort": ort->{ _id, _type, stadt, land },  "galerie": galerie->{ _id, _type, name },  hauptbild {  "asset": asset->{ _id, url, "breite": metadata.dimensions.width, "hoehe": metadata.dimensions.height },  alt,  bildunterschrift,  nachweis,  hotspot { x, y, width, height },  crop { top, bottom, left, right }},  bilder[] {  "asset": asset->{ _id, url, "breite": metadata.dimensions.width, "hoehe": metadata.dimensions.height },  alt,  bildunterschrift,  nachweis,  hotspot { x, y, width, height },  crop { top, bottom, left, right }}}
+export type AUSSTELLUNGEN_QUERY_RESULT = Array<{
+  _id: string;
+  _type: 'ausstellung';
+  titel: string;
+  art: 'galerie' | 'kirche' | 'messe' | 'museum' | 'werkstatt';
+  haus: string;
+  adresse: Array<string> | null;
+  start: string;
+  ende: string;
+  spotlight: boolean | null;
+  eroeffnung: Array<string> | null;
+  oeffnungszeiten: Array<string> | null;
+  oeffnungszeitenBezeichnung: string | null;
+  kooperation: Array<string> | null;
+  beschreibung: Array<{
+    children?: Array<{
+      marks?: Array<string>;
+      text?: string;
+      _type: 'span';
+      _key: string;
+    }>;
+    style?: 'normal';
+    listItem?: never;
+    markDefs?: Array<{
+      href: string;
+      _type: 'link';
+      _key: string;
+    }>;
+    level?: number;
+    _type: 'block';
+    _key: string;
+  }> | null;
+  link: {
+    text: string;
+    url: string;
+  } | null;
+  ort: {
+    _id: string;
+    _type: 'ort';
+    stadt: string;
+    land: string;
+  };
+  galerie: {
+    _id: string;
+    _type: 'galerie';
+    name: string;
+  } | null;
+  hauptbild: {
+    asset: {
+      _id: string;
+      url: string;
+      breite: number | null;
+      hoehe: number | null;
+    } | null;
+    alt: string;
+    bildunterschrift: string | null;
+    nachweis: string;
+    hotspot: {
+      x: number;
+      y: number;
+      width: number;
+      height: number;
+    } | null;
+    crop: {
+      top: number;
+      bottom: number;
+      left: number;
+      right: number;
+    } | null;
+  };
+  bilder: Array<{
+    asset: {
+      _id: string;
+      url: string;
+      breite: number | null;
+      hoehe: number | null;
+    } | null;
+    alt: string;
+    bildunterschrift: string | null;
+    nachweis: string;
+    hotspot: {
+      x: number;
+      y: number;
+      width: number;
+      height: number;
+    } | null;
+    crop: {
+      top: number;
+      bottom: number;
+      left: number;
+      right: number;
+    } | null;
+  }> | null;
+}>;
+
+// Source: ../src/sanity/queries.ts
+// Variable: ORTE_QUERY
+// Query: *[_type == "ort"] | order(reihenfolge asc){  _id, _type, stadt, land, kurztext, reihenfolge, haeuser,  bild {  "asset": asset->{ _id, url, "breite": metadata.dimensions.width, "hoehe": metadata.dimensions.height },  alt,  hotspot { x, y, width, height },  crop { top, bottom, left, right }}}
+export type ORTE_QUERY_RESULT = Array<{
+  _id: string;
+  _type: 'ort';
+  stadt: string;
+  land: string;
+  kurztext: string | null;
+  reihenfolge: number | null;
+  haeuser: Array<string> | null;
+  bild: {
+    asset: {
+      _id: string;
+      url: string;
+      breite: number | null;
+      hoehe: number | null;
+    } | null;
+    alt: string;
+    hotspot: {
+      x: number;
+      y: number;
+      width: number;
+      height: number;
+    } | null;
+    crop: {
+      top: number;
+      bottom: number;
+      left: number;
+      right: number;
+    } | null;
+  } | null;
+}>;
+
+// Source: ../src/sanity/queries.ts
+// Variable: ARCHIV_QUERY
+// Query: *[_type == "archivEintrag"] | order(jahr desc, reihenfolge asc){  _id, _type, jahr, beginnJahr, reihenfolge, inListe, titel, ortszeile, datum,  link { text, url },  haus,  "ortId": ort._ref,  "galerie": galerie->{ _id, _type, name }}
+export type ARCHIV_QUERY_RESULT = Array<{
+  _id: string;
+  _type: 'archivEintrag';
+  jahr: number;
+  beginnJahr: number | null;
+  reihenfolge: number;
+  inListe: boolean | null;
+  titel: string | null;
+  ortszeile: string | null;
+  datum: string | null;
+  link: {
+    text: string;
+    url: string;
+  } | null;
+  haus: string | null;
+  ortId: string | null;
+  galerie: {
+    _id: string;
+    _type: 'galerie';
+    name: string;
+  } | null;
+}>;
+
+// Query TypeMap
+declare global {
+  interface SanityQueries {
+    '*[_type == "seite"]{\n  _id, _type, titel, einleitung, beschreibung\n}': SEITEN_QUERY_RESULT;
+    '*[_type == "hinweis"] | order(gueltigVon asc){\n  _id, _type, text,\n  "von": gueltigVon,\n  "bis": gueltigBis\n}': HINWEISE_QUERY_RESULT;
+    '*[_type == "ausstellung"] | order(start asc){\n  _id, _type, titel, art, haus, adresse, start, ende, spotlight,\n  eroeffnung, oeffnungszeiten, oeffnungszeitenBezeichnung, kooperation,\n  beschreibung,\n  link { text, url },\n  "ort": ort->{ _id, _type, stadt, land },\n  "galerie": galerie->{ _id, _type, name },\n  hauptbild {\n  "asset": asset->{ _id, url, "breite": metadata.dimensions.width, "hoehe": metadata.dimensions.height },\n  alt,\n  bildunterschrift,\n  nachweis,\n  hotspot { x, y, width, height },\n  crop { top, bottom, left, right }\n},\n  bilder[] {\n  "asset": asset->{ _id, url, "breite": metadata.dimensions.width, "hoehe": metadata.dimensions.height },\n  alt,\n  bildunterschrift,\n  nachweis,\n  hotspot { x, y, width, height },\n  crop { top, bottom, left, right }\n}\n}': AUSSTELLUNGEN_QUERY_RESULT;
+    '*[_type == "ort"] | order(reihenfolge asc){\n  _id, _type, stadt, land, kurztext, reihenfolge, haeuser,\n  bild {\n  "asset": asset->{ _id, url, "breite": metadata.dimensions.width, "hoehe": metadata.dimensions.height },\n  alt,\n  hotspot { x, y, width, height },\n  crop { top, bottom, left, right }\n}\n}': ORTE_QUERY_RESULT;
+    '*[_type == "archivEintrag"] | order(jahr desc, reihenfolge asc){\n  _id, _type, jahr, beginnJahr, reihenfolge, inListe, titel, ortszeile, datum,\n  link { text, url },\n  haus,\n  "ortId": ort._ref,\n  "galerie": galerie->{ _id, _type, name }\n}': ARCHIV_QUERY_RESULT;
+  }
+}
+// Lets @sanity/client releases that predate the global registry read it too
+declare module '@sanity/client' {
+  interface SanityQueries extends globalThis.SanityQueries {}
+}
