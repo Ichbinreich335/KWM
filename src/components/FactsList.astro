@@ -3,8 +3,8 @@ import type { Fakt } from '../data/typen';
 
 interface Props {
   fakten: readonly Fakt[];
-  /** `tafel`: Bezeichnung über dem Wert, ein Wert pro Zeile, optional mit Button im Slot; `ort`: Bezeichnung über dem Wert, Werte mit Links; `raster`: vier Spalten; `zeile-hell` und `zeile-anker`: Bezeichnung links, Wert rechts, auf hellem Grund bzw. auf dem dunklen Anker */
-  typ: 'tafel' | 'ort' | 'raster' | 'zeile-hell' | 'zeile-anker';
+  /** `ort`: Bezeichnung über dem Wert, Werte mit Links; `raster`: vier Spalten; `zeile-hell` und `zeile-anker`: Bezeichnung links, Wert rechts, auf hellem Grund bzw. auf dem dunklen Anker */
+  typ: 'ort' | 'raster' | 'zeile-hell' | 'zeile-anker';
   /** Liste (`ort`, `zeile-hell`) oder ihre Zeilen (`raster`) blenden beim Scrollen ein */
   einblenden?: boolean;
 }
@@ -20,73 +20,31 @@ const reveal = einblenden ? 'fade' : undefined;
 const zeilen = (wert: Fakt['wert']) => (typeof wert === 'string' ? [wert] : (wert ?? []));
 ---
 
-{typ === 'tafel' ? (
-  <div class="facts">
-    <dl class="facts__list">
-      {fakten.map((fakt) => (
-        <div>
-          <dt>{fakt.label}</dt>
-          <dd>{fakt.wert}</dd>
-        </div>
-      ))}
-    </dl>
-    {Astro.slots.has('default') && (
-      <div class="facts__cta">
-        <slot />
-      </div>
-    )}
-  </div>
-) : (
-  <dl class={wurzel[typ]} data-reveal={typ === 'raster' ? undefined : reveal}>
-    {fakten.map((fakt) => (
-      <div data-reveal={typ === 'raster' ? reveal : undefined}>
-        <dt>{fakt.label}</dt>
-        <dd>
-          {zeilen(fakt.wert).map((zeile, i) => (
-            <Fragment>
-              {i > 0 && <br />}
-              {zeile}
-            </Fragment>
-          ))}
-          {fakt.links?.map((link, i) => (
-            <Fragment>
-              {i > 0 && ' · '}
-              <a class="tap" href={link.href}>
-                {link.text}
-              </a>
-            </Fragment>
-          ))}
-        </dd>
-      </div>
-    ))}
-  </dl>
-)}
+<dl class={wurzel[typ]} data-reveal={typ === 'raster' ? undefined : reveal}>
+  {fakten.map((fakt) => (
+    <div data-reveal={typ === 'raster' ? reveal : undefined}>
+      <dt>{fakt.label}</dt>
+      <dd>
+        {zeilen(fakt.wert).map((zeile, i) => (
+          <Fragment>
+            {i > 0 && <br />}
+            {zeile}
+          </Fragment>
+        ))}
+        {fakt.links?.map((link, i) => (
+          <Fragment>
+            {i > 0 && ' · '}
+            <a class="tap" href={link.href}>
+              {link.text}
+            </a>
+          </Fragment>
+        ))}
+      </dd>
+    </div>
+  ))}
+</dl>
 
 <style>
-  /* tafel: Fakten neben dem Bild (Startseite, Manufaktur) */
-  .facts {
-    border-top: 1px solid var(--ink);
-  }
-  .facts__list > div {
-    padding: 16px 0;
-    border-bottom: 1px solid var(--hair);
-  }
-  .facts dt {
-    font-size: var(--t-meta);
-    line-height: var(--t-meta-lh);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--ink-2);
-    margin-bottom: 2px;
-  }
-  .facts dd {
-    font-size: var(--t-body);
-    line-height: var(--t-body-lh);
-  }
-  .facts__cta {
-    padding-block: 16px;
-  }
-
   /* ort: Adresse, Zeiten und Kontakt der Werkstatt */
   .place__info {
     border-top: 1px solid var(--ink);

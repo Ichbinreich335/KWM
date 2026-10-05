@@ -1,0 +1,51 @@
+---
+import type { Fakt } from '../data/typen';
+
+interface Props {
+  fakten: readonly Fakt[];
+}
+
+const { fakten } = Astro.props;
+---
+
+<div class="facts">
+  <dl class="facts__list">
+    {fakten.map((fakt) => (
+      <div>
+        <dt>{fakt.label}</dt>
+        <dd>{fakt.wert}</dd>
+      </div>
+    ))}
+  </dl>
+  {Astro.slots.has('default') && (
+    <div class="facts__cta">
+      <slot />
+    </div>
+  )}
+</div>
+
+<style>
+  /* Fakten neben dem Bild (Startseite): Bezeichnung über dem Wert, optional mit Schaltfläche im Slot */
+  .facts {
+    border-top: 1px solid var(--ink);
+  }
+  .facts__list > div {
+    padding: 16px 0;
+    border-bottom: 1px solid var(--hair);
+  }
+  .facts dt {
+    font-size: var(--t-meta);
+    line-height: var(--t-meta-lh);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+    margin-bottom: 2px;
+  }
+  .facts dd {
+    font-size: var(--t-body);
+    line-height: var(--t-body-lh);
+  }
+  .facts__cta {
+    padding-block: 16px;
+  }
+</style>

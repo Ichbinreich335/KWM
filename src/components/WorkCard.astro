@@ -18,11 +18,6 @@ type Props =
       stimmung: Stimmung;
       /** `band` über die ganze Breite im Querformat */
       breite?: 'breit' | 'band';
-    }
-  | {
-      /** Kachel der Werkschau mit Jahr, ganz als Link zum Katalog (in einer `ol`, daher `li`) */
-      typ: 'reihe';
-      werk: Werk;
     };
 
 const props = Astro.props;
@@ -76,28 +71,6 @@ const props = Astro.props;
       <span class="catalog__spec">{props.stimmung.unterschrift}</span>
     </figcaption>
   </figure>
-)}
-{props.typ === 'reihe' && (
-  <li class="piece">
-    <a href={props.werk.verweis}>
-      <span class="piece__media">
-        <Bild
-          src={props.werk.bild.src}
-          width={props.werk.bild.breite}
-          height={props.werk.bild.hoehe}
-          loading="lazy"
-          alt={props.werk.bild.alt}
-        />
-      </span>
-      <span class="piece__head">
-        <span class="piece__name">{props.werk.titel}</span>
-        <span class="piece__year">{props.werk.jahr}</span>
-      </span>
-      {props.werk.angaben.map((angabe) => (
-        <span class="piece__spec">{angabeText(angabe)}</span>
-      ))}
-    </a>
-  </li>
 )}
 
 <style>
@@ -174,56 +147,6 @@ const props = Astro.props;
     margin-top: 0;
   }
 
-  /* Werkschau der Startseite (Platzierung im Seitenraster: global.css, .works__grid) */
-  .piece a {
-    display: block;
-    text-decoration: none;
-  }
-  .piece__media {
-    display: block;
-    aspect-ratio: 4 / 3;
-    background: var(--ground-2);
-    overflow: hidden;
-  }
-  .piece__media :global(img) {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 1s var(--ease);
-  }
-  .piece a:hover .piece__media :global(img) {
-    transform: scale(1.04);
-  }
-  .piece__head {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 12px;
-    margin-top: 16px;
-  }
-  .piece__name {
-    font-family: var(--f-display);
-    font-size: var(--t-quote);
-    line-height: var(--t-quote-lh);
-  }
-  .piece__year {
-    flex: none;
-    font-size: var(--t-meta);
-    line-height: var(--t-meta-lh);
-    font-variant-numeric: tabular-nums;
-    color: var(--ink-2);
-  }
-  .piece__spec {
-    display: block;
-    font-size: var(--t-meta);
-    line-height: var(--t-meta-lh);
-    color: var(--ink-2);
-    margin-top: 4px;
-  }
-  .piece__spec + .piece__spec {
-    margin-top: 0;
-  }
-
   @media (max-width: 900px) {
     .catalog__item--wide {
       display: block;
@@ -236,12 +159,6 @@ const props = Astro.props;
     }
     .catalog__item--band .catalog__frame :global(img) {
       aspect-ratio: 4 / 3;
-    }
-  }
-  @media (max-width: 520px) {
-    .piece__head {
-      flex-direction: column;
-      gap: 2px;
     }
   }
 </style>
