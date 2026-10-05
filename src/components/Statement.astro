@@ -1,7 +1,7 @@
 ---
 interface Props {
-  /** `gross`: Display-Zitat als Zäsur; `aussage`: Aussage in Textgröße Statement; `regel`: wie `aussage`, mit engerem Satz und Abstand; `zitat`: Text-Schnitt in Titelgröße, ruhig; `lede`: einleitender Satz der Startseite in Lede-Größe; `zitat-klein`: längeres Zitat im Text-Schnitt in Zitatgröße; `zitat-bild`: längeres Zitat auf dunklem Bild in Lede-Größe, Quelle in `--on-coal`, ohne Einblendung (Abstand zur Quelle setzt die Seite) */
-  typ: 'gross' | 'aussage' | 'regel' | 'zitat' | 'lede' | 'zitat-klein' | 'zitat-bild';
+  /** `gross`: Display-Zitat als Zäsur; `aussage`: Aussage in Textgröße Statement; `zitat`: Text-Schnitt in Titelgröße, ruhig; `lede`: einleitender Satz der Startseite in Lede-Größe; `zitat-klein`: längeres Zitat im Text-Schnitt in Zitatgröße; `zitat-bild`: längeres Zitat auf dunklem Bild in Lede-Größe, Quelle in `--on-coal`, ohne Einblendung (Abstand zur Quelle setzt die Seite) */
+  typ: 'gross' | 'aussage' | 'zitat' | 'lede' | 'zitat-klein' | 'zitat-bild';
   /** `p`: nackter Absatz ohne `blockquote` (Aussage ohne Zitat, keine Quelle) */
   als?: 'blockquote' | 'p';
   /** Einblend-Animation des Satzes; `keine` lässt `data-reveal` weg */
@@ -60,12 +60,6 @@ const reveal = einblendung === 'keine' ? undefined : einblendung;
   }
   .statement--aussage:has(+ footer) {
     margin-bottom: 22px;
-  }
-  .statement--regel {
-    letter-spacing: -0.015em;
-  }
-  .statement--regel:has(+ footer) {
-    margin-bottom: 18px;
   }
   .statement--zitat {
     font-family: var(--f-text);
