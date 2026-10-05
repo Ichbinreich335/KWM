@@ -61,6 +61,18 @@ Voraussetzung: Die Domain liegt als Zone im Cloudflare-Konto, oder der Admin ste
 - [ ] Warten, bis das Zertifikat aktiv ist (Status im Dashboard), dann `https://kwm-1924.de/` aufrufen.
 - [ ] Die Weiterleitungen aus Abschnitt 2 auf der echten Domain stichprobenartig prüfen.
 
+## 5a. Formular scharf schalten (vor oder mit dem Umlegen)
+
+Bis dahin läuft das Formular in Vorschauen im Vorschau-Modus (kein Turnstile, kein Versand, Hinweis „Vorschau“). Produktion ist streng: `ANFRAGE_MODUS` steht in `wrangler.jsonc` oben auf `produktion`, nur der `previews`-Block auf `vorschau`. Ein Test (`src/data/umgebung.test.ts`) sichert das.
+
+- [ ] Produktions-Branch festlegen: Der Build erkennt einen Vorschau-Build daran, dass `WORKERS_CI_BRANCH` vom Produktions-Branch abweicht. Standard ist `main`. Heißt der Branch anders, in Workers Builds unter Settings, Build, Build variables die Variable `PRODUKTIONS_BRANCH` auf den Namen setzen. Sonst zeigt die Live-Seite kein Turnstile-Widget, der Worker lehnt aber ohne Token ab, und jede Anfrage scheitert.
+- [ ] Turnstile-Widget in Cloudflare anlegen (Hostnamen `kwm-1924.de` und `www.kwm-1924.de`). Den Site-Key in `src/data/turnstile.ts` eintragen (ersetzt den öffentlichen Testschlüssel).
+- [ ] Secret setzen: `npx wrangler secret put TURNSTILE_SECRET` (nie ins Repo).
+- [ ] Zieladresse der Werkstatt freigeben lassen und in `wrangler.jsonc` als `ANFRAGE_ZIEL` eintragen (ersetzt `ziel@example.invalid`).
+- [ ] Email Routing im Dashboard aktivieren und die Zieladresse als verifizierte Adresse eintragen. Der Versand geht nur an verifizierte Adressen; der Absender `anfrage@kwm-1924.de` muss zur Domain gehören.
+- [ ] `ERLAUBTE_ORIGINS` und `TURNSTILE_HOSTNAMES` enthalten die echte Domain (Standard bereits so).
+- [ ] Nach dem Deploy: Testanfrage von `https://kwm-1924.de/kontakt/` senden, Mail kommt an, Antwort „Danke“.
+
 ## 6. Sicherheit auf der eigenen Domain schärfen
 
 Erst nach Abschnitt 5, wenn HTTPS auf `kwm-1924.de` fehlerfrei läuft.
@@ -84,9 +96,8 @@ Quelle: Cloudflare-Doku „HTTP Strict Transport Security (HSTS)“ (https://dev
 
 ### CSP und Header für spätere Dienste
 
-- [ ] Kommt Cloudflare Turnstile dazu: In `astro.config.mjs` unter `security.csp` `https://challenges.cloudflare.com` für Skripte, Frames (`frame-src`) und Verbindungen (`connect-src`) ergänzen. Aktuelle Angaben vorher in der Turnstile-Doku prüfen.
-- [ ] Kommt der Formular-Worker `/api/anfrage` dazu: `form-action` und `connect-src` brauchen den Pfad bzw. die Herkunft des Workers. Liegt er auf derselben Domain, reicht `'self'`.
-- [ ] Wichtig: `_headers` gilt nur für statische Dateien. Antworten des Workers (z. B. `/api/anfrage`) bekommen diese Header nicht. Der Worker-Code setzt `X-Content-Type-Options`, `Referrer-Policy` und `Cache-Control: no-store` selbst.
+- [ ] Turnstile und der Formular-Worker `/api/anfrage` sind in `astro.config.mjs` (CSP) und im Worker bereits eingerichtet. Ändert sich die Domain des Workers, `form-action` und `connect-src` prüfen. Liegt er auf derselben Domain, reicht `'self'`.
+- [ ] Wichtig: `_headers` gilt nur für statische Dateien. Antworten des Workers (z. B. `/api/anfrage`) bekommen diese Header nicht. Der Worker-Code setzt `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy`, `X-Frame-Options` und `Cache-Control: no-store` selbst.
 - [ ] `frame-ancestors` ist nur per Header wirksam, nicht per `<meta>`. Das steht in `public/_headers`.
 - [ ] Der Kopf-Skript-Hash steht in `astro.config.mjs`. Ändert sich das Inline-Skript in `BaseLayout.astro`, schlägt `tests/sicherheit.spec.ts` an. Dann den Hash neu eintragen.
 

@@ -30,7 +30,6 @@
   "ratelimits": [{ "name": "ANFRAGE_LIMIT", "namespace_id": "1001", "simple": { "limit": 5, "period": 60 } }],
   // Vorschau-URL pro Branch (Worker Previews); laut Doku explizit setzen
   "preview_urls": true,
-  // Pflicht für `wrangler preview`; leer, weil die Vorschau keine eigenen Einstellungen braucht
   // Vorschauen erben nichts aus der Produktion: Turnstile-Testschlüssel (Hostname example.com), kein echtes Ziel
   "previews": {
     "vars": {
