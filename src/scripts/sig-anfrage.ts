@@ -33,6 +33,7 @@ interface TurnstileApi {
     optionen: {
       sitekey: string;
       language: string;
+      theme: 'light';
       callback: (token: string) => void;
       'expired-callback': () => void;
       'error-callback': () => void;
@@ -87,6 +88,7 @@ function starteSicherheitspruefung(behaelter: HTMLElement, sitekey: string): Sic
       widgetId = turnstile.render(behaelter, {
         sitekey,
         language: 'de',
+        theme: 'light', // passt zum Papiergrund (Widget-Optionen laut Cloudflare-Doku)
         callback: (token) => setze({ art: 'fertig', token }),
         'expired-callback': () => setze({ art: 'wartet' }),
         'error-callback': () => setze({ art: 'fehler' }),
