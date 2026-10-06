@@ -60,6 +60,11 @@ const INTRO_STAGGER = 130;
 const SPRING = 5.5;
 const REST_EDGE = 0.34;
 const OPEN_EDGE = 0.2;
+// Feuchter Saum über der Tauchkante: einmal mit Weichzeichner vorgezeichnet, je Bild nur verschoben.
+// Die Kante schwankt um höchstens 26 px nach oben (Wellen und Beulen), der Weichzeichner reicht etwa 14 px.
+const SAUM_OBEN = 48;
+const SAUM_HOEHE = 64;
+const SAUM_BLUR = 9;
 
 const rgb = (hex: string): RGB => {
   const n = parseInt(hex.slice(1), 16);
@@ -71,6 +76,8 @@ const mix = (a: RGB, b: RGB, t: number): RGB => [
   Math.round(a[1] + (b[1] - a[1]) * t),
   Math.round(a[2] + (b[2] - a[2]) * t),
 ];
+/** Dunkle Glasur: helle Schrift, weniger Licht, Sammelschatten unten */
+const istDunkel = (c: RGB) => (c[0] + c[1] + c[2]) / 3 < 110;
 
 // feines Korn, einmal erzeugt und überall als Muster verwendet
 function grainTile() {
@@ -180,9 +187,8 @@ function paintBody(
   }
 
   const blobs = flaeche.blobs;
-  const lumBase = (grund[0] + grund[1] + grund[2]) / 3;
   for (let i = 0; i < blobs; i++) {
-    const c = rand() < (lumBase < 110 ? 0.25 : 0.5) ? hell : dunkel;
+    const c = rand() < (istDunkel(grund) ? 0.25 : 0.5) ? hell : dunkel;
     soft(x, rand() * T, rand() * L, T * (0.15 + rand() * 0.35), L * (0.03 + rand() * 0.08), c, 0.07 + rand() * 0.08);
   }
 
@@ -209,6 +215,24 @@ function paintBody(
       }
     }
   }
+}
+
+// Licht von links oben über die ganze Kachel; dunkle Glasuren sammeln sich zudem unten (das trägt die helle
+// Beschriftung). Beides ändert sich beim Tauchen nicht und liegt deshalb schon in den vorgezeichneten Flächen.
+function paintLicht(x: CanvasRenderingContext2D, T: number, L: number, dark: boolean, tiefe: boolean) {
+  if (tiefe && dark) {
+    const sg = x.createLinearGradient(0, L - 120, 0, L);
+    sg.addColorStop(0, 'rgba(20, 12, 4, 0)');
+    sg.addColorStop(1, 'rgba(20, 12, 4, 0.2)');
+    x.fillStyle = sg;
+    x.fillRect(0, L - 120, T, 120);
+  }
+  const lg = x.createLinearGradient(0, 0, T, 0);
+  lg.addColorStop(0, `rgba(255,255,255,${dark ? 0.04 : 0.1})`);
+  lg.addColorStop(0.5, 'rgba(255,255,255,0)');
+  lg.addColorStop(1, 'rgba(0,0,0,0.09)');
+  x.fillStyle = lg;
+  x.fillRect(0, 0, T, L);
 }
 
 // Farb-Attribute der Kachel: fehlt eines, ist das Markup falsch (wie bisher bricht das Skript dann ab)
@@ -240,6 +264,7 @@ class Tile {
   p0 = 0;
   bisc: Offscreen | null = null;
   body: Offscreen | null = null;
+  saum: Offscreen | null = null;
   wave: Welle[] = [];
   bumps: Beule[] = [];
 
@@ -287,14 +312,33 @@ class Tile {
     this.p0 = (this.L - this.rest) / (this.L - this.hi);
 
     const rand = random(this.glaze.seed * 977 + 13);
+    const dark = istDunkel(this.glaze.grund);
     this.bisc = offscreen(this.T, this.L, dpr);
-    if (this.bisc) paintBiscuit(this.bisc.x, this.T, this.L, this.grain, rand);
+    if (this.bisc) {
+      paintBiscuit(this.bisc.x, this.T, this.L, this.grain, rand);
+      paintLicht(this.bisc.x, this.T, this.L, dark, false);
+    }
     this.body = offscreen(this.T, this.L, dpr);
-    if (this.body) paintBody(this.body.x, this.T, this.L, this.glaze, this.grain, rand);
+    if (this.body) {
+      paintBody(this.body.x, this.T, this.L, this.glaze, this.grain, rand);
+      paintLicht(this.body.x, this.T, this.L, dark, true);
+    }
 
     const r = random(this.glaze.seed * 31 + 5);
     this.wave = [0, 1, 2].map(() => ({ a: 1 + r() * 2.2, f: 0.012 + r() * 0.03, ph: r() * 6.28 }));
     this.bumps = [0, 1].map(() => ({ x: r() * this.T, w: 8 + r() * 14, h: 3 + r() * 5 }));
+
+    // Der Scherben saugt, direkt über der Kante wird er feucht und dunkler. Die Kante verschiebt sich beim Tauchen
+    // nur senkrecht, deshalb reicht ein vorgezeichneter Saum (shadowBlur je Bild war der teuerste Schritt).
+    this.saum = offscreen(this.T, SAUM_HOEHE, dpr);
+    if (this.saum) {
+      const { x } = this.saum;
+      x.shadowColor = 'rgba(78, 52, 24, 0.4)';
+      x.shadowBlur = SAUM_BLUR * dpr;
+      x.fillStyle = rgba(this.glaze.grund, 1);
+      this.edgePath(x, SAUM_OBEN);
+      x.fill();
+    }
     this.dirty = true;
   }
 
@@ -330,17 +374,9 @@ class Tile {
     }
 
     const light = glaze.flaeche.spiegelt;
-    const lum = (glaze.grund[0] + glaze.grund[1] + glaze.grund[2]) / 3;
-    const dark = lum < 110;
+    const dark = istDunkel(glaze.grund);
 
-    // Der Scherben saugt, direkt über der Kante wird er feucht und dunkler
-    ctx.save();
-    ctx.shadowColor = 'rgba(78, 52, 24, 0.4)';
-    ctx.shadowBlur = 9 * dpr;
-    ctx.fillStyle = rgba(glaze.grund, 1);
-    this.edgePath(ctx, e);
-    ctx.fill();
-    ctx.restore();
+    if (this.saum) ctx.drawImage(this.saum.c, 0, e - SAUM_OBEN, T, SAUM_HOEHE);
 
     ctx.save();
     this.edgePath(ctx, e);
@@ -401,22 +437,6 @@ class Tile {
     ctx.stroke();
     ctx.restore();
 
-    // Dunkle Glasuren sammeln sich unten: das trägt die helle Beschriftung
-    if (dark) {
-      const sg = ctx.createLinearGradient(0, L - 120, 0, L);
-      sg.addColorStop(0, 'rgba(20, 12, 4, 0)');
-      sg.addColorStop(1, 'rgba(20, 12, 4, 0.2)');
-      ctx.fillStyle = sg;
-      ctx.fillRect(0, L - 120, T, 120);
-    }
-
-    // Licht von links oben über die ganze Kachel
-    const lg = ctx.createLinearGradient(0, 0, T, 0);
-    lg.addColorStop(0, `rgba(255,255,255,${dark ? 0.04 : 0.1})`);
-    lg.addColorStop(0.5, 'rgba(255,255,255,0)');
-    lg.addColorStop(1, 'rgba(0,0,0,0.09)');
-    ctx.fillStyle = lg;
-    ctx.fillRect(0, 0, T, L);
     this.dirty = false;
   }
 

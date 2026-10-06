@@ -13,7 +13,9 @@
     opacity: 0;
   }
 }
+/* Einstieg über die ganze Breite wie die Kopfzeile: Text am normalen Seitenrand, Bild randlos bis rechts */
 .hero {
+  --m: var(--rand);
   min-height: 100svh;
   padding-top: var(--head);
   grid-template-rows: 1fr;
