@@ -2,12 +2,13 @@
 
 Laufende Liste: Was du tun, entscheiden oder abnehmen musst, und was mir unterwegs aufgefallen ist. Überblick über alle Schritte: [STAND.md](STAND.md). Neueste Einträge oben in jedem Abschnitt. Erledigtes wandert nach unten.
 
-Stand: 05.10.2026 (mittags)
+Stand: 06.10.2026 (vormittags)
 
 ## Abnehmen
 
 | Was | Wo | Hinweis |
 |---|---|---|
+| **PR #20 mergen: Feinschliff breite Bildschirme** (Raster bis 1680 px, Kopfzeile und Einstieg randlos, Zeitstrahl später, Farbskala flüssiger) | [#20](https://github.com/Ichbinreich335/KWM/pull/20) · https://feinschliff-breit-kwm-redesign.entwicklung-7f3.workers.dev | Grün (451 Tests), Code geprüft. Den Merge hat die Sicherheitsprüfung von Claude Code blockiert, deshalb: `gh pr merge 20 --merge` oder im Browser mergen. |
 | **Gesamtstand der Website** (alles Abgenommene in einem Stand) – am Rechner und am Handy | https://gesamtstand-kwm-redesign.entwicklung-7f3.workers.dev · Sammel-PR [#19](https://github.com/Ichbinreich335/KWM/pull/19) (ersetzt #4–#18) | Diesen Link hat die Werkstatt. Code-Review erledigt, 396 Tests in Chrome und Safari-Engine. Seitentitel am Handy 8 px kleiner (passt sonst nicht auf kleine iPhones). |
 
 ## Tun (nur du kannst das)
@@ -36,8 +37,8 @@ Stand: 05.10.2026 (mittags)
 
 ## Vor Produktion aufräumen (Merkliste, 05.10.2026)
 
-Technik (kann ich erledigen, sobald du „aufräumen“ sagst):
-- Einzel-PRs #4–#18 mit Verweis auf #19 schließen; Branches `phase-*`, `zitate-angleichen`, `phase-b3-mobil-kurz`, `konzept-flyer-galerien`, `startseite-bauhaus`, `startseite-mittelweg`, `texte-korrektur`, `backup/*` nach dem Merge löschen (vorher prüfen, dass alles in `main` ist); lokale Worktrees entfernen.
+Technik (06.10.: PRs #3–#18 geschlossen, Archiv-Tags `archiv/*` für die nicht gemergten Varianten gepusht; Löschen hat die Sicherheitsprüfung blockiert, dafür gibt es ein Skript, siehe Session vom 06.10.):
+- ~~Einzel-PRs #4–#18 mit Verweis auf #19 schließen~~ erledigt; Branches `phase-*`, `zitate-angleichen`, `phase-b3-mobil-kurz`, `konzept-flyer-galerien`, `startseite-bauhaus`, `startseite-mittelweg`, `texte-korrektur`, `backup/*` nach dem Merge löschen (vorher prüfen, dass alles in `main` ist); lokale Worktrees entfernen.
 - Alte Cloudflare-Vorschauen der gelöschten Branches entfernen (Dashboard, mein Token darf nur lesen).
 - „Später“-Punkte aus dem Astro-Review (Bericht `task-G7a-report.md`) entscheiden.
 - Formular-Test mit echtem Turnstile wackelt unter Last (braucht Netz) – für die CI mocken oder als eigenen Lauf führen.
@@ -62,6 +63,10 @@ Vor dem Go-live (Inhalt, Recht, Konten):
 - GitHub meldete Sicherheitshinweise zu `undici` (steckt im Werkzeug Wrangler, nicht in der Website). Behoben durch Wrangler 4.147 im Branch `astro-umbau`; wirkt auf `main` mit dem Merge.
 
 ## Erledigt
+
+- 06.10.2026: Glasuren geprüft: Die sechs Geschirrfarben der Farbskala stimmen mit kwm-1924.de/manufakturprogramm/farben/ überein (gleiche Reihenfolge), Editionsfarben auch.
+- 06.10.2026: Bilder auf kwm-1924.de geprüft: Die Teller-Tafel der Startseite ist schon das beste vorhandene Foto (2560 px). Neues Foto „Teller und Schüsseln“ (7360 px, Mediathek 10/2026) hat eingebrannten Text „nicht mehr im Programm“. Admin: bleibt vorerst, wie es ist.
+- 06.10.2026: Aufräumen begonnen: PRs #3–#18 geschlossen (Verweis auf #19), Tags `archiv/phase-b3-mobil-kurz`, `archiv/startseite-bauhaus`, `archiv/zitate-angleichen`, `archiv/konzept-flyer-galerien`, `archiv/startseite-bauhaus-vor-rebase`, `archiv/startseite-mittelweg-vor-rebase`.
 
 - 05.10.2026: Entschieden und in den Gesamtstand übernommen: Zitate angleichen, Handy kürzer, Flyer (Vorschau), Galerien in den Orten, Hell/Dunkel bleibt, Startseite entschlacken (Mittelweg), Sanity-Umfang. Einzel-PRs #4–#18 im Sammel-PR #19 aufgegangen.
 - 05.10.2026 abends: Sanity-Nacharbeiten committet und gepusht (3d01abe, Admin-Freigabe). Sanity-Studio schaut sich der Admin später an.
