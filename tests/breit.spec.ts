@@ -4,7 +4,9 @@ import { seiten } from './seiten';
 
 // Breite Bildschirme: Das Raster wächst nur bis --raster-max (global.css), darüber wächst der Seitenrand (DESIGN.md §4).
 // Die Breite setzt der Test selbst, deshalb nur in den Desktop-Projekten (Chromium und WebKit).
-const RASTER_MAX = 1512;
+const RASTER_MAX = 1680;
+/** Raster, die bewusst über die ganze Breite laufen (Einstieg der Startseite, wie die Kopfzeile) */
+const GANZE_BREITE = '.hero';
 const BREITEN = [1920, 2560] as const;
 
 for (const breite of BREITEN) {
@@ -15,29 +17,32 @@ for (const breite of BREITEN) {
     for (const seite of seiten) {
       test(`Kein Überlauf, nichts abgeschnitten, Raster begrenzt: ${seite.name}`, async ({ page }) => {
         const fehler = await seiteVorbereiten(page, seite.pfad, { erwarte404: seite.name === '404' });
-        const befund = await page.evaluate((rasterMax) => {
-          const funde: string[] = [];
-          const breite = document.documentElement.clientWidth;
-          const name = (el: Element) => `${el.tagName.toLowerCase()}.${[...el.classList].join('.')}`;
-          for (const el of document.querySelectorAll<HTMLElement>('body *')) {
-            // Ausgenommen: nur für Screenreader und der Honigtopf des Formulars (absichtlich außerhalb des Bildschirms)
-            if (el.closest('.visually-hidden, [hidden], [aria-hidden="true"]')) continue;
-            const hatText = [...el.childNodes].some((k) => k.nodeType === Node.TEXT_NODE && k.textContent?.trim());
-            if (!hatText) continue;
-            const box = el.getBoundingClientRect();
-            if (box.width === 0 || box.height === 0) continue;
-            if (box.left < -1 || box.right > breite + 1) funde.push(`ragt hinaus: ${name(el)}`);
-            const stil = getComputedStyle(el);
-            const kappt = /hidden|clip/.test(stil.overflowX);
-            if (kappt && el.scrollWidth > el.clientWidth + 1) funde.push(`abgeschnitten: ${name(el)}`);
-          }
-          for (const raster of document.querySelectorAll<HTMLElement>('.grid')) {
-            const stil = getComputedStyle(raster);
-            const inhalt = raster.clientWidth - parseFloat(stil.paddingLeft) - parseFloat(stil.paddingRight);
-            if (inhalt > rasterMax + 1) funde.push(`Raster ${Math.round(inhalt)} px breit: ${name(raster)}`);
-          }
-          return funde;
-        }, RASTER_MAX);
+        const befund = await page.evaluate(
+          ([rasterMax, ganzeBreite]) => {
+            const funde: string[] = [];
+            const breite = document.documentElement.clientWidth;
+            const name = (el: Element) => `${el.tagName.toLowerCase()}.${[...el.classList].join('.')}`;
+            for (const el of document.querySelectorAll<HTMLElement>('body *')) {
+              // Ausgenommen: nur für Screenreader und der Honigtopf des Formulars (absichtlich außerhalb des Bildschirms)
+              if (el.closest('.visually-hidden, [hidden], [aria-hidden="true"]')) continue;
+              const hatText = [...el.childNodes].some((k) => k.nodeType === Node.TEXT_NODE && k.textContent?.trim());
+              if (!hatText) continue;
+              const box = el.getBoundingClientRect();
+              if (box.width === 0 || box.height === 0) continue;
+              if (box.left < -1 || box.right > breite + 1) funde.push(`ragt hinaus: ${name(el)}`);
+              const stil = getComputedStyle(el);
+              const kappt = /hidden|clip/.test(stil.overflowX);
+              if (kappt && el.scrollWidth > el.clientWidth + 1) funde.push(`abgeschnitten: ${name(el)}`);
+            }
+            for (const raster of document.querySelectorAll<HTMLElement>(`.grid:not(${ganzeBreite})`)) {
+              const stil = getComputedStyle(raster);
+              const inhalt = raster.clientWidth - parseFloat(stil.paddingLeft) - parseFloat(stil.paddingRight);
+              if (inhalt > rasterMax + 1) funde.push(`Raster ${Math.round(inhalt)} px breit: ${name(raster)}`);
+            }
+            return funde;
+          },
+          [RASTER_MAX, GANZE_BREITE] as const,
+        );
         expect(befund).toEqual([]);
         expect(fehler, 'Konsolenfehler').toEqual([]);
       });

@@ -31,10 +31,11 @@
   --f-text: var(--font-caslon-text);
   --f-sans: var(--font-jost);
 
-  /* Seitenrand; über --raster-max hinaus wächst nur er, das Raster bleibt so breit wie bei 1600 px Fensterbreite,
-     wo auch die Textstile ihre Höchstgröße erreichen. Stimmungsbilder laufen weiter randlos. */
+  /* Seitenrand; über --raster-max hinaus wächst nur er, damit die Abschnitte auf großen Bildschirmen beisammen
+     bleiben (Laptops bis etwa 1728 px behalten den normalen Rand). Kopfzeile, Einstieg und Stimmungsbilder laufen
+     weiter über die ganze Breite (dort gilt --m: var(--rand)). */
   --rand: clamp(16px, 2.8vw, 44px);
-  --raster-max: 1512px;
+  --raster-max: 1680px;
   --m: max(var(--rand), (100vw - var(--raster-max)) / 2);
   --g: clamp(12px, 1.6vw, 24px);
   --head: 64px;
@@ -245,8 +246,9 @@ body::after {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.3 0 0 0 0 0.3 0 0 0 0 0.3 0 0 0 1 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
-/* Masthead */
+/* Masthead: über die ganze Breite, fluchtet mit dem Einstieg der Startseite */
 .masthead {
+  --m: var(--rand);
   position: fixed;
   inset: 0 0 auto 0;
   z-index: 50;
