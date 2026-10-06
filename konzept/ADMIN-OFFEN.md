@@ -40,7 +40,7 @@ Stand: 06.10.2026 (vormittags)
 Technik (06.10.: PRs #3–#18 geschlossen, Archiv-Tags `archiv/*` für die nicht gemergten Varianten gepusht; Löschen hat die Sicherheitsprüfung blockiert, dafür gibt es ein Skript, siehe Session vom 06.10.):
 - ~~Einzel-PRs #4–#18 mit Verweis auf #19 schließen~~ erledigt; Branches `phase-*`, `zitate-angleichen`, `phase-b3-mobil-kurz`, `konzept-flyer-galerien`, `startseite-bauhaus`, `startseite-mittelweg`, `texte-korrektur`, `backup/*` nach dem Merge löschen (vorher prüfen, dass alles in `main` ist); lokale Worktrees entfernen.
 - Alte Cloudflare-Vorschauen der gelöschten Branches entfernen (Dashboard, mein Token darf nur lesen).
-- „Später“-Punkte aus dem Astro-Review (Bericht `task-G7a-report.md`) entscheiden.
+- „Später“-Punkte aus dem Astro-Review (Bericht `task-G7a-report.md`) entscheiden. **Achtung:** Der Bericht lag im ignorierten Ordner `.superpowers/` von `KWM-gesamt` und ging beim Aufräumen am 06.10. verloren (ebenso die Ledger von mittelweg, texte, formular, phase-b, phase-c, phase-d). Wiederherstellbar nur aus Time Machine: `KWM-gesamt/.superpowers/sdd/…/task-G7a-report.md`. Sonst die Punkte per neuem Review gegen `main` neu erheben.
 - Formular-Test mit echtem Turnstile wackelt unter Last (braucht Netz) – für die CI mocken oder als eigenen Lauf führen.
 
 Vor dem Go-live (Inhalt, Recht, Konten):
